@@ -13,9 +13,7 @@
 #include "Valve.h"
 #include "View.h"
 
-Document::Document() {
-	valves.resize(VALVE_COUNT);
-	
+Document::Document() : nextProgramID(0) {
 	valves[0] = new Valve(0);
 	valves[1] = new Valve(2);
 	valves[2] = new Valve(3);
@@ -27,7 +25,7 @@ Document::Document() {
 
 Document::~Document() {
 	if (true) {
-		//std::lock_guard<std::mutex> guard(viewMutex);
+		std::lock_guard<std::mutex> guard(viewMutex);
 		std::list<View*>::iterator itView;
 		for (itView = views.begin(); views.end() != itView; ++itView) {
 			delete (*itView);
@@ -36,46 +34,44 @@ Document::~Document() {
 	}
 
 	if (true) {
-		//std::lock_guard<std::mutex> guard(valveMutex);
-		std::vector<Valve*>::iterator itValve;
-		for (itValve = valves.begin(); valves.end() != itValve; ++itValve) {
+		std::lock_guard<std::mutex> guard(valveMutex);
+		for (auto itValve = valves.begin(); valves.end() != itValve; ++itValve) {
 			delete (*itValve);
 		}
-		valves.clear();
 	}
 }
 
 /////////////////////////////////////////////////////
 // Program
-
+/*
 const Document::ProgramList& Document::getPrograms() const {
-	programMutex.lock_shared();
-	return programs;
+	return programs.getItems();
 }
-
+*/
 void Document::releasePrograms() const {
-	programMutex.unlock_shared();
+	programs.unlock();
 }
 
 Program& Document::addProgram() {
-	std::lock_guard<std::shared_timed_mutex> lock(programMutex);
-	programs.push_back(new Program(this));
-	return *programs.back();
+	Program* program = new Program(this);
+	programs.insert(ProgramList::ItemType(nextProgramID++, program));
+	return *program;
 }
 
 void Document::deleteProgram(unsigned id) {
-	std::lock_guard<std::shared_timed_mutex> lock(programMutex);
-	ProgramList::const_iterator it = getProgram_notSafe(id);
+/*
+	Program* program;
 
-	if (programs.end() == it) {
+	if (!programs.erase(id, &program)) {
 		throw std::runtime_error("Program doesn't exist");
 	}
 
-	deletedPrograms.push_back(*it);
-	programs.erase(it);
+	deletedPrograms.push_back(program);
+*/
 }
 
 void Document::moveProgram(unsigned id, unsigned newIdx) {
+/*
 	std::lock_guard<std::shared_timed_mutex> lock(programMutex);
 
 	if (programs.size() <= newIdx) {
@@ -96,9 +92,11 @@ void Document::moveProgram(unsigned id, unsigned newIdx) {
 	}
 
 	programs.insert(it, program);
+	*/
 }
 
 Program& Document::getProgram(unsigned id) {
+/*
 	std::shared_lock<std::shared_timed_mutex> lock(programMutex);
 
 	ProgramList::const_iterator it = getProgram_notSafe(id);
@@ -108,17 +106,9 @@ Program& Document::getProgram(unsigned id) {
 	}
 
 	return **it;
+	*/
 }
 
-Document::ProgramList::const_iterator Document::getProgram_notSafe(unsigned id) const {
-	for (auto it = programs.begin(); programs.end() != it; ++it) {
-		if ((*it)->getID() == id) {
-			return it;
-		}
-	}
-
-	return programs.end();
-}
 
 /////////////////////////////////////////////////////
 // View
@@ -139,24 +129,28 @@ void Document::updateViews() {
 // Zone
 
 void Document::openZone(unsigned i, bool open) {
-	if (ZONE_COUNT <= i) { 
+	if (getZoneCount() <= i) {
 		throw std::out_of_range("Zone index out of range"); 
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);
 	openValve(i, open);
-	openValve(ZONE_COUNT, open);
+	openValve(getZoneCount(), open);
 }
 
 /////////////////////////////////////////////////////
 // Valve
 
 void Document::openValve(unsigned i, bool open) { 
-	if (valves.size() <= i) { 
+	if (getValveCount() <= i) {
 		throw std::out_of_range("Valve index out of range"); 
 	} 
 	
-	//std::lock_guard<std::mutex> guard(valveMutex);
+	std::lock_guard<std::mutex> guard(valveMutex);
+#ifdef __arm__
+	valves[i]->open(open);
+#else
 	printf("OpenValve(%u, %s)\n", i, open ? "true" : "false");
-	//valves[i]->open(open);
+#endif // __arm__
+
 }

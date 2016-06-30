@@ -7,12 +7,14 @@
 
 #include "common.h"
 #include <stdexcept>
-//#include <wiringPi.h>
 #include "Valve.h"
 
-Valve::Valve(int pin) :
-		pin(pin) {
-//	pinMode (pin, OUTPUT);
+#ifdef __arm__
+
+#include <wiringPi.h>
+
+Valve::Valve(int pin) : pin(pin) {
+	pinMode (pin, OUTPUT);
 }
 
 Valve::~Valve() {
@@ -20,13 +22,27 @@ Valve::~Valve() {
 }
 
 void Valve::init() {
-/*
 	if (wiringPiSetup() == -1) {
 		throw std::runtime_error("GPIO initialization FAILED");
 	}
-	*/
 }
 
 void Valve::open(bool open) {
-//	digitalWrite(pin, open ? 1 : 0);
+	digitalWrite(pin, open ? 1 : 0);
 }
+
+#else
+
+Valve::Valve(int pin) : pin(pin) {
+}
+
+Valve::~Valve() {
+}
+
+void Valve::init() {
+}
+
+void Valve::open(bool open) {
+}
+
+#endif // __arm__

@@ -9,11 +9,12 @@
 #define DOCUMENT_H_
 
 #include <list>
-#include <vector>
+#include <array>
 #include <mutex>
 #include <shared_mutex>
 
 #include "Program.h"
+#include "SortedMap.h"
 
 class Valve;
 class View;
@@ -21,22 +22,25 @@ class View;
 class Document : public SchedulerCallBack {
 
 public:
-	typedef std::list<Program*> ProgramList;
+	typedef SortedMap<unsigned, Program*> ProgramList;
 
 private:
 	static const unsigned ZONE_COUNT = 6;
 	static const unsigned VALVE_COUNT = ZONE_COUNT + 1;
 
+	// Views
+	mutable std::mutex viewMutex;
 	std::list<View*> views;
-	std::vector<Valve*> valves;
+
+	// Valves
+	mutable std::mutex valveMutex;
+	std::array<Valve*, VALVE_COUNT> valves;
+
+	// Programs
+	mutable std::shared_timed_mutex programMutex;
+	unsigned nextProgramID;
 	ProgramList programs;
 	ProgramList deletedPrograms;
-
-	mutable std::mutex viewMutex;
-	mutable std::mutex valveMutex;
-	mutable std::shared_timed_mutex programMutex;
-
-	ProgramList::const_iterator getProgram_notSafe(unsigned id) const;
 
 public:
 

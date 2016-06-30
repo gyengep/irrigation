@@ -210,6 +210,7 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 	Document* document = p->getDocument();
 
 	if (subcommand == "list") {
+/*
 		CHECK_PARAMETERS(0);
 
 		const Document::ProgramList& programs = document->getPrograms();
@@ -221,7 +222,7 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 		}
 
 		document->releasePrograms();
-
+*/
 	} else if (subcommand == "add") {
 		CHECK_PARAMETERS(1);
 
