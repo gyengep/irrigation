@@ -8,6 +8,7 @@
 #ifndef PROGRAM_H_
 #define PROGRAM_H_
 
+#include <atomic>
 #include <utility>
 #include <mutex>
 #include <string>
@@ -15,7 +16,6 @@
 #include <list>
 #include <climits>
 
-#include "LockableObject.h"
 
 class SchedulerCallBack {
 public:
@@ -29,31 +29,22 @@ class Program {
 	static const unsigned DAY_COUNT = 7;
 	static const unsigned ZONE_COUNT = 6;
 
-	static const unsigned INVALID_ZONE = UINT_MAX;
-
-
 	SchedulerCallBack* callBack;
-
-	mutable std::mutex wateringStartMutex;
-	time_t wateringStart;
-
-	unsigned wateringZone;
 
 	static unsigned nextProgramID;
 	static unsigned nextStartTimeID;
 
-	typedef std::list<std::pair<unsigned, unsigned>> StartTimes;
-	typedef std::array<bool, 7> Days;
-	typedef std::array<unsigned, ZONE_COUNT> RunTimes;
+	typedef std::array<std::pair<IdType, std::atomic<bool>>, 7> Days;
+	typedef std::array<std::pair<IdType, std::atomic<unsigned>>, ZONE_COUNT> RunTimes;
+	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
 
-	const unsigned id;
-
-	LockableObject<std::string> name;
-	LockableObject<Days> days;
+	// Name
+	mutable std::mutex nameMutex;
+	std::string name;
 
 	// Day
-	//mutable std::mutex dayMutex;
-	//Days days;
+	mutable std::mutex dayMutex;
+	Days days;
 
 	// Runtime
 	mutable std::mutex runTimeMutex;
@@ -62,22 +53,18 @@ class Program {
 	// StartTime
 	mutable std::mutex startTimeMutex;
 	StartTimes startTimes;
-
+/*
 
 
 	bool isPeriodScheduled(time_t rawTime) const;
 	bool isSpecifiedScheduled(time_t rawTime) const;
 	unsigned getWateringZone(time_t rawTime) const;
 
-	bool getDay_noSafe(unsigned dayId) const;
-	unsigned getRunTime_noSafe(unsigned runTimeId) const;
-	StartTimes::const_iterator getStartTime_noSafe(unsigned startTimeId) const;
+*/
 
 public:
 	Program(SchedulerCallBack* callBack);
 	~Program();
-
-	unsigned getID() const { return id; }
 
 	std::string getName() const;
 	void setName(const std::string& name);
@@ -92,16 +79,18 @@ public:
 	//unsigned getSkipDays(void) const { return skipDays; }
 
 	//SPECIFIED
-	void enableDay(unsigned dayIdx, bool enable);
-	bool isDayEnabled(unsigned dayIdx) const;
+	void enableDay(IdType id, bool enable);
+	bool isDayEnabled(IdType id) const;
 
-	void setRunTime(unsigned runTimeId, unsigned minutes);
-	unsigned getRunTime(unsigned runTimeId) const;
+	// Runtime
+	void setRunTime(IdType id, unsigned minutes);
+	unsigned getRunTime(IdType id) const;
 
+	// StartTime
 	unsigned addStartTime(unsigned minutes);
-	void deleteStartTime(unsigned startTimeId);
-	void setStartTime(unsigned startTimeId, unsigned minutes);
-	unsigned getStartTime(unsigned startTimeId) const;
+	void deleteStartTime(IdType id);
+	void setStartTime(IdType id, unsigned minutes);
+	unsigned getStartTime(IdType id) const;
 };
 
 #endif /* PROGRAM_H_ */

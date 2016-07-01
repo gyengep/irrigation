@@ -6,12 +6,14 @@
  */
 
 #include "common.h"
-#include <stdexcept>
-#include <sstream>
 #include "Document.h"
 #include "Program.h"
 #include "Valve.h"
 #include "View.h"
+
+#include <stdexcept>
+#include <sstream>
+
 
 Document::Document() : nextProgramID(0) {
 	valves[0] = new Valve(0);
@@ -26,53 +28,57 @@ Document::Document() : nextProgramID(0) {
 Document::~Document() {
 	if (true) {
 		std::lock_guard<std::mutex> guard(viewMutex);
-		std::list<View*>::iterator itView;
-		for (itView = views.begin(); views.end() != itView; ++itView) {
-			delete (*itView);
+		for (auto it = views.begin(); views.end() != it; ++it) {
+			delete (*it);
 		}
 		views.clear();
 	}
 
 	if (true) {
 		std::lock_guard<std::mutex> guard(valveMutex);
-		for (auto itValve = valves.begin(); valves.end() != itValve; ++itValve) {
-			delete (*itValve);
+		for (auto it = valves.begin(); valves.end() != it; ++it) {
+			delete (*it);
 		}
 	}
 }
 
 /////////////////////////////////////////////////////
 // Program
-/*
+
 const Document::ProgramList& Document::getPrograms() const {
-	return programs.getItems();
+	programMutex.lock();
+	return programs;
 }
-*/
+
 void Document::releasePrograms() const {
-	programs.unlock();
+	programMutex.unlock();
 }
 
 Program& Document::addProgram() {
+	std::lock_guard<std::mutex> lock(programMutex);
+
 	Program* program = new Program(this);
-	programs.insert(ProgramList::ItemType(nextProgramID++, program));
+	tools::push_back(programs, nextProgramID, program);
+	nextProgramID++;
 	return *program;
 }
 
-void Document::deleteProgram(unsigned id) {
-/*
-	Program* program;
+void Document::deleteProgram(IdType id) {
+	std::lock_guard<std::mutex> lock(programMutex);
 
-	if (!programs.erase(id, &program)) {
-		throw std::runtime_error("Program doesn't exist");
+	Program* program;
+	try {
+		program = tools::erase(programs, id);
+	} catch(not_found_exception& e) {
+		throw not_found_exception(INVALID_PROGRAMID);
 	}
 
 	deletedPrograms.push_back(program);
-*/
 }
 
-void Document::moveProgram(unsigned id, unsigned newIdx) {
+void Document::moveProgram(IdType id, unsigned newPos) {
 /*
-	std::lock_guard<std::shared_timed_mutex> lock(programMutex);
+	std::lock_guard<std::mutex> lock(programMutex);
 
 	if (programs.size() <= newIdx) {
 		throw std::out_of_range("Invalid program index");
@@ -80,7 +86,7 @@ void Document::moveProgram(unsigned id, unsigned newIdx) {
 
 	ProgramList::const_iterator it = getProgram_notSafe(id);
 	if (programs.end() == it) {
-		throw std::runtime_error("Program doesn't exist");
+		throw std::runtime_error(INVALID_PROGRAMID);
 	}
 
 	Program* program = *it;
@@ -95,18 +101,17 @@ void Document::moveProgram(unsigned id, unsigned newIdx) {
 	*/
 }
 
-Program& Document::getProgram(unsigned id) {
-/*
-	std::shared_lock<std::shared_timed_mutex> lock(programMutex);
+Program& Document::getProgram(IdType id) {
+	std::lock_guard<std::mutex> lock(programMutex);
 
-	ProgramList::const_iterator it = getProgram_notSafe(id);
-
-	if (programs.end() == it) {
-		throw std::runtime_error("Program doesn't exist");
+	Program* program = NULL;
+	try {
+		program = tools::get(programs, id);
+	} catch(not_found_exception& e) {
+		throw not_found_exception(INVALID_PROGRAMID);
 	}
 
-	return **it;
-	*/
+	return *program;
 }
 
 
@@ -126,31 +131,28 @@ void Document::updateViews() {
 }
 
 /////////////////////////////////////////////////////
-// Zone
+// Zone, Valve
 
-void Document::openZone(unsigned i, bool open) {
-	if (getZoneCount() <= i) {
-		throw std::out_of_range("Zone index out of range"); 
+void Document::openZone(IdType id, bool open) {
+	if (getZoneCount() <= id) {
+		throw std::out_of_range("Invalid zoneID");
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);
-	openValve(i, open);
+	openValve(id, open);
 	openValve(getZoneCount(), open);
 }
 
-/////////////////////////////////////////////////////
-// Valve
-
-void Document::openValve(unsigned i, bool open) { 
-	if (getValveCount() <= i) {
-		throw std::out_of_range("Valve index out of range"); 
+void Document::openValve(IdType id, bool open) {
+	if (getValveCount() <= id) {
+		throw std::out_of_range("Invalid valveID");
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);
 #ifdef __arm__
 	valves[i]->open(open);
 #else
-	printf("OpenValve(%u, %s)\n", i, open ? "true" : "false");
+	printf("OpenValve(%lu, %s)\n", id, open ? "true" : "false");
 #endif // __arm__
 
 }

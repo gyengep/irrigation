@@ -14,7 +14,7 @@
 #include <shared_mutex>
 
 #include "Program.h"
-#include "SortedMap.h"
+#include "Tools.h"
 
 class Valve;
 class View;
@@ -22,7 +22,7 @@ class View;
 class Document : public SchedulerCallBack {
 
 public:
-	typedef SortedMap<unsigned, Program*> ProgramList;
+	typedef std::list<std::pair<IdType, Program*>> ProgramList;
 
 private:
 	static const unsigned ZONE_COUNT = 6;
@@ -37,10 +37,10 @@ private:
 	std::array<Valve*, VALVE_COUNT> valves;
 
 	// Programs
-	mutable std::shared_timed_mutex programMutex;
-	unsigned nextProgramID;
+	mutable std::mutex programMutex;
+	IdType nextProgramID;
 	ProgramList programs;
-	ProgramList deletedPrograms;
+	std::list<Program*> deletedPrograms;
 
 public:
 
@@ -51,17 +51,15 @@ public:
 	const ProgramList& getPrograms() const;
 	void releasePrograms() const;
 	Program& addProgram();
-	void deleteProgram(unsigned id);
-	void moveProgram(unsigned id, unsigned newIdx);
-	Program& getProgram(unsigned id);
+	void deleteProgram(IdType id);
+	void moveProgram(IdType id, unsigned newPos);
+	Program& getProgram(IdType id);
 
-	// Zone
+	// Zone, Valve
 	unsigned getZoneCount() const { return ZONE_COUNT; }
-	void openZone(unsigned idx, bool open);
-
-	// Valve
 	unsigned getValveCount() const { return VALVE_COUNT; }
-	void openValve(unsigned idx, bool open);
+	void openZone(IdType id, bool open);
+	void openValve(IdType id, bool open);
 
 	// View
 	void addView(View* view);
