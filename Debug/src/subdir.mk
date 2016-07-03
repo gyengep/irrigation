@@ -10,7 +10,8 @@ CPP_SRCS += \
 ../src/Irrigation.cpp \
 ../src/Program.cpp \
 ../src/Valve.cpp \
-../src/View.cpp 
+../src/View.cpp \
+../src/WateringSpecified.cpp 
 
 OBJS += \
 ./src/Application.o \
@@ -19,7 +20,8 @@ OBJS += \
 ./src/Irrigation.o \
 ./src/Program.o \
 ./src/Valve.o \
-./src/View.o 
+./src/View.o \
+./src/WateringSpecified.o 
 
 CPP_DEPS += \
 ./src/Application.d \
@@ -28,7 +30,8 @@ CPP_DEPS += \
 ./src/Irrigation.d \
 ./src/Program.d \
 ./src/Valve.d \
-./src/View.d 
+./src/View.d \
+./src/WateringSpecified.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

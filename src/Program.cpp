@@ -8,19 +8,16 @@
 #include "common.h"
 #include "Program.h"
 #include "Tools.h"
+#include "WateringSpecified.h"
 
 #include <stdexcept>
 
-unsigned Program::nextProgramID = 0;
-unsigned Program::nextStartTimeID = 0;
-
 
 Program::Program(SchedulerCallBack* callBack) :
-	callBack(callBack)
+	callBack(callBack),
+	nextStartTimeID(0)
 {
-	for (IdType i = 0; i < days.size(); i++) {
-		days[i] = std::make_pair(i, false);
-	}
+	watering[SPECIFIED] = new Watering_Specified();
 
 	for (IdType i = 0; i < runTimes.size(); i++) {
 		runTimes[i] = std::make_pair(i, 0);
@@ -28,10 +25,22 @@ Program::Program(SchedulerCallBack* callBack) :
 }
 
 Program::~Program() {
-	// TODO Auto-generated destructor stub
+	std::lock_guard<std::mutex> guard(wateringMutex);
+
+	for (auto it = watering.begin(); watering.end() != it; ++it) {
+		delete *it;
+	}
 }
 
 ////////////////////////////////////////////////////////////////
+
+bool Program::isDayScheduled() const {
+	std::time_t rawtime = std::time(NULL);
+	std::tm* timeinfo = std::localtime(&rawtime);
+
+	return watering[wateringType]->isDayScheduled(timeinfo);
+
+}
 
 void Program::start(time_t rawTime) {
 	/*
@@ -76,32 +85,6 @@ void Program::setName(const std::string& newName) {
 }
 
 ////////////////////////////////////////////////////////////////
-// DAY
-
-void Program::enableDay(IdType id, bool enable) {
-	std::lock_guard<std::mutex> guard(dayMutex);
-
-	try {
-		tools::set(days, id, enable);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_DAYID);
-	}
-}
-
-bool Program::isDayEnabled(IdType id) const {
-	std::lock_guard<std::mutex> guard(dayMutex);
-
-	bool result;
-	try {
-		result = tools::get(days, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_DAYID);
-	}
-
-	return result;
-}
-
-////////////////////////////////////////////////////////////////
 // RUN TIME
 
 void Program::setRunTime(IdType id, unsigned minutes) {
@@ -130,12 +113,13 @@ unsigned Program::getRunTime(IdType id) const {
 ////////////////////////////////////////////////////////////////
 // START TIME
 
-unsigned Program::addStartTime(unsigned minutes) {
+IdType Program::addStartTime(unsigned minutes) {
 	std::lock_guard<std::mutex> guard(startTimeMutex);
 
-	IdType startTime = nextStartTimeID++;
-	tools::push_back(startTimes, startTime, minutes);
-	return startTime;
+	IdType startTimeID = nextStartTimeID++;
+	tools::push_back(startTimes, startTimeID, minutes);
+	nextStartTimeID++;
+	return startTimeID;
 }
 
 void Program::deleteStartTime(IdType id) {

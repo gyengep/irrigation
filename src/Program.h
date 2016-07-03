@@ -17,6 +17,9 @@
 #include <climits>
 
 
+class Watering;
+
+
 class SchedulerCallBack {
 public:
 	virtual void onProgramStart() = 0;
@@ -25,16 +28,20 @@ public:
 };
 
 class Program {
+public:
 
-	static const unsigned DAY_COUNT = 7;
+	enum WateringType {
+		SPECIFIED,
+
+		LAST
+	};
+
+private:
+
 	static const unsigned ZONE_COUNT = 6;
 
 	SchedulerCallBack* callBack;
 
-	static unsigned nextProgramID;
-	static unsigned nextStartTimeID;
-
-	typedef std::array<std::pair<IdType, std::atomic<bool>>, 7> Days;
 	typedef std::array<std::pair<IdType, std::atomic<unsigned>>, ZONE_COUNT> RunTimes;
 	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
 
@@ -42,25 +49,24 @@ class Program {
 	mutable std::mutex nameMutex;
 	std::string name;
 
-	// Day
-	mutable std::mutex dayMutex;
-	Days days;
+	// Watering day
+	mutable std::mutex wateringMutex;
+	WateringType wateringType;
+	std::array<Watering*, WateringType::LAST> watering;
 
 	// Runtime
 	mutable std::mutex runTimeMutex;
 	RunTimes runTimes;
 
 	// StartTime
+	IdType nextStartTimeID;
 	mutable std::mutex startTimeMutex;
 	StartTimes startTimes;
 /*
-
-
-	bool isPeriodScheduled(time_t rawTime) const;
-	bool isSpecifiedScheduled(time_t rawTime) const;
 	unsigned getWateringZone(time_t rawTime) const;
-
 */
+
+	bool isDayScheduled() const;
 
 public:
 	Program(SchedulerCallBack* callBack);
@@ -72,22 +78,13 @@ public:
 	bool isScheduled(time_t rawTime) const;
 	void start(time_t rawTime);
 	void stop();
-	bool periodic(time_t rawTime);
-
-	// PERIOD
-	//void setSkipDays(unsigned skipDays) { this->skipDays = skipDays; }
-	//unsigned getSkipDays(void) const { return skipDays; }
-
-	//SPECIFIED
-	void enableDay(IdType id, bool enable);
-	bool isDayEnabled(IdType id) const;
 
 	// Runtime
 	void setRunTime(IdType id, unsigned minutes);
 	unsigned getRunTime(IdType id) const;
 
 	// StartTime
-	unsigned addStartTime(unsigned minutes);
+	IdType addStartTime(unsigned minutes);
 	void deleteStartTime(IdType id);
 	void setStartTime(IdType id, unsigned minutes);
 	unsigned getStartTime(IdType id) const;
