@@ -38,7 +38,7 @@ private:
 
 	// Programs
 	mutable std::mutex programMutex;
-	IdType nextProgramID;
+	IdType nextProgramId;
 	ProgramList programs;
 	std::list<Program*> deletedPrograms;
 
@@ -52,8 +52,9 @@ public:
 	void releasePrograms() const;
 	Program& addProgram();
 	void deleteProgram(IdType id);
-	void moveProgram(IdType id, unsigned newPos);
+	void moveProgram(IdType id, unsigned newPosition);
 	Program& getProgram(IdType id);
+	const Program& getProgram(IdType id) const;
 
 	// Zone, Valve
 	unsigned getZoneCount() const { return ZONE_COUNT; }

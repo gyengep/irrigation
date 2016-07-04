@@ -28,7 +28,14 @@ public:
 };
 
 class Program {
+
+	static const unsigned ZONE_COUNT = 6;
+
 public:
+
+	typedef std::array<std::pair<IdType, std::atomic<unsigned>>, ZONE_COUNT> RunTimes;
+	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
+
 
 	enum WateringType {
 		SPECIFIED,
@@ -38,12 +45,8 @@ public:
 
 private:
 
-	static const unsigned ZONE_COUNT = 6;
 
 	SchedulerCallBack* callBack;
-
-	typedef std::array<std::pair<IdType, std::atomic<unsigned>>, ZONE_COUNT> RunTimes;
-	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
 
 	// Name
 	mutable std::mutex nameMutex;
@@ -59,12 +62,9 @@ private:
 	RunTimes runTimes;
 
 	// StartTime
-	IdType nextStartTimeID;
+	IdType nextStartTimeId;
 	mutable std::mutex startTimeMutex;
 	StartTimes startTimes;
-/*
-	unsigned getWateringZone(time_t rawTime) const;
-*/
 
 	bool isDayScheduled() const;
 
@@ -80,10 +80,14 @@ public:
 	void stop();
 
 	// Runtime
+	const RunTimes& getRunTimes() const;
+	void releaseRunTimes() const;
 	void setRunTime(IdType id, unsigned minutes);
 	unsigned getRunTime(IdType id) const;
 
 	// StartTime
+	const StartTimes& getStartTimes() const;
+	void releaseStartTimes() const;
 	IdType addStartTime(unsigned minutes);
 	void deleteStartTime(IdType id);
 	void setStartTime(IdType id, unsigned minutes);

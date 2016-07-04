@@ -11,6 +11,8 @@
 #define INVALID_DAYID 		"Invalid dayID"
 #define INVALID_RUNTIMEID 	"Invalid runTimeID"
 #define INVALID_STARTTIMEID "Invalid startTimeID"
+#define INVALID_ZONEID 		"Invalid zoneID"
+#define INVALID_VALVEID 	"Invalid valveID"
 
 typedef unsigned long IdType;
 

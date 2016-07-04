@@ -16,7 +16,7 @@
 #include "View.h"
 
 
-Document::Document() : nextProgramID(0) {
+Document::Document() : nextProgramId(0) {
 	valves[0] = new Valve(0);
 	valves[1] = new Valve(2);
 	valves[2] = new Valve(3);
@@ -59,8 +59,8 @@ Program& Document::addProgram() {
 	std::lock_guard<std::mutex> lock(programMutex);
 
 	Program* program = new Program(this);
-	tools::push_back(programs, nextProgramID, program);
-	nextProgramID++;
+	tools::push_back(programs, nextProgramId, program);
+	nextProgramId++;
 	return *program;
 }
 
@@ -77,35 +77,48 @@ void Document::deleteProgram(IdType id) {
 	deletedPrograms.push_back(program);
 }
 
-void Document::moveProgram(IdType id, unsigned newPos) {
-/*
+void Document::moveProgram(IdType id, unsigned newPosition) {
 	std::lock_guard<std::mutex> lock(programMutex);
 
-	if (programs.size() <= newIdx) {
-		throw std::out_of_range("Invalid program index");
+	if (programs.size() <= newPosition) {
+		throw std::out_of_range("Invalid position");
 	}
 
-	ProgramList::const_iterator it = getProgram_notSafe(id);
-	if (programs.end() == it) {
-		throw std::runtime_error(INVALID_PROGRAMID);
-	}
+	Program* program;
 
-	Program* program = *it;
-	programs.erase(it);
+	try {
+		program = tools::erase(programs, id);
+	} catch(not_found_exception& e) {
+		throw not_found_exception(INVALID_PROGRAMID);
+	}
 
 	unsigned count = 0;
-	for (it = programs.begin(); count < newIdx; ++count) {
+	auto it = programs.begin();
+	while (count < newPosition) {
 		++it;
+		++count;
 	}
 
-	programs.insert(it, program);
-	*/
+	programs.insert(it, std::make_pair(id, program));
 }
 
 Program& Document::getProgram(IdType id) {
 	std::lock_guard<std::mutex> lock(programMutex);
 
 	Program* program = NULL;
+	try {
+		program = tools::get(programs, id);
+	} catch(not_found_exception& e) {
+		throw not_found_exception(INVALID_PROGRAMID);
+	}
+
+	return *program;
+}
+
+const Program& Document::getProgram(IdType id) const {
+	std::lock_guard<std::mutex> lock(programMutex);
+
+	const Program* program = NULL;
 	try {
 		program = tools::get(programs, id);
 	} catch(not_found_exception& e) {
@@ -136,7 +149,7 @@ void Document::updateViews() {
 
 void Document::openZone(IdType id, bool open) {
 	if (getZoneCount() <= id) {
-		throw std::out_of_range("Invalid zoneID");
+		throw std::out_of_range(INVALID_ZONEID);
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);
@@ -146,7 +159,7 @@ void Document::openZone(IdType id, bool open) {
 
 void Document::openValve(IdType id, bool open) {
 	if (getValveCount() <= id) {
-		throw std::out_of_range("Invalid valveID");
+		throw std::out_of_range(INVALID_VALVEID);
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);

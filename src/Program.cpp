@@ -14,7 +14,7 @@
 
 Program::Program(SchedulerCallBack* callBack) :
 	callBack(callBack),
-	nextStartTimeID(0)
+	nextStartTimeId(0)
 {
 	watering[SPECIFIED] = new DayScheduler_Specified();
 
@@ -86,6 +86,15 @@ void Program::setName(const std::string& newName) {
 ////////////////////////////////////////////////////////////////
 // RUN TIME
 
+const Program::RunTimes& Program::getRunTimes() const {
+	runTimeMutex.lock();
+	return runTimes;
+}
+
+void Program::releaseRunTimes() const {
+	runTimeMutex.unlock();
+}
+
 void Program::setRunTime(IdType id, unsigned minutes) {
 	std::lock_guard<std::mutex> guard(runTimeMutex);
 
@@ -112,13 +121,21 @@ unsigned Program::getRunTime(IdType id) const {
 ////////////////////////////////////////////////////////////////
 // START TIME
 
+const Program::StartTimes& Program::getStartTimes() const {
+	startTimeMutex.lock();
+	return startTimes;
+}
+
+void Program::releaseStartTimes() const {
+	startTimeMutex.unlock();
+}
+
 IdType Program::addStartTime(unsigned minutes) {
 	std::lock_guard<std::mutex> guard(startTimeMutex);
 
-	IdType startTimeID = nextStartTimeID++;
-	tools::push_back(startTimes, startTimeID, minutes);
-	nextStartTimeID++;
-	return startTimeID;
+	IdType startTimeId = nextStartTimeId++;
+	tools::push_back(startTimes, startTimeId, minutes);
+	return startTimeId;
 }
 
 void Program::deleteStartTime(IdType id) {

@@ -65,8 +65,8 @@ private:
 	//static void cmd_exit(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_help(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_program(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	//static void cmd_runtime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	//static void cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
+	static void cmd_runtime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
+	static void cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_valve(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_zone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 
@@ -74,6 +74,7 @@ public:
 	CommandLineView(Document* document);
 	virtual ~CommandLineView();
 
+	static IdType parseId(const std::string& text, const char* errorMessage);
 	static unsigned parseUInt(const std::string& text, const char* errorMessage);
 	static bool parseOnOff(const std::string& text, const char* errorMessage);
 	static void tokenize(const std::string& text, Tokens& tokens);

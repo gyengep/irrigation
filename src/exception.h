@@ -13,7 +13,7 @@
 
 class not_found_exception : public std::runtime_error {
 public:
-  explicit not_found_exception() : std::runtime_error(NULL) {}
+  explicit not_found_exception() : std::runtime_error("") {}
   explicit not_found_exception(const char* what_arg) : std::runtime_error(what_arg) {}
 };
 

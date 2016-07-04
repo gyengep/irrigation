@@ -31,6 +31,35 @@ if (parameters.size() < req) {				\
 	throw TooMuchArgumentsException();		\
 }
 
+
+#define PRINT_RUNTIME(id, runTime)											\
+	std::cout << id << " - " << runTime << " min" << std::endl;
+
+#define PRINT_RUNTIMES(program)												\
+{																			\
+	const Program::RunTimes& runTimes = program.getRunTimes();				\
+	std::cout << "Run times:" << std::endl;									\
+	for (auto it = runTimes.cbegin(); runTimes.cend() != it; ++it) {		\
+		PRINT_RUNTIME(it->first, it->second);								\
+	}																		\
+	program.releaseRunTimes();												\
+}
+
+#define PRINT_STARTTIME(id, startTime)										\
+	std::cout << id << " - " << startTime << " min" << std::endl;
+
+#define PRINT_STARTTIMES(program)											\
+{																			\
+	const Program::StartTimes& startTimes = program.getStartTimes();		\
+	std::cout << "Start times:" << std::endl;								\
+	for (auto it = startTimes.cbegin(); startTimes.cend() != it; ++it) {	\
+		PRINT_STARTTIME(it->first, it->second);								\
+	}																		\
+	program.releaseStartTimes();											\
+}
+
+
+
 CommandLineView::CommandLineView(Document* document) : View(document), isTerminated(false) {
 	workerThread = new std::thread(workerFunc, this);
 }
@@ -41,6 +70,10 @@ CommandLineView::~CommandLineView() {
 	workerThread->join();
 	delete workerThread;
 	workerThread = NULL;
+}
+
+IdType CommandLineView::parseId(const std::string& text, const char* errorMessage) {
+	return (IdType)parseUInt(text, errorMessage);
 }
 
 unsigned CommandLineView::parseUInt(const std::string& text, const char* errorMessage) {
@@ -86,8 +119,8 @@ CommandLineView::Commands CommandLineView::commands[] = {
 	// { "exit", CommandLineView::cmd_exit },
 	{ "help", false, CommandLineView::cmd_help },
 	{ "program", true, CommandLineView::cmd_program},
-	// { "runtime", CommandLineView::cmd_runtime},
-	// { "starttime", CommandLineView::cmd_starttime},
+	{ "runtime", true, CommandLineView::cmd_runtime},
+	{ "starttime", true, CommandLineView::cmd_starttime},
 	{ "valve", false, CommandLineView::cmd_valve },
 	{ "zone", false, CommandLineView::cmd_zone },
 	{ NULL, NULL }
@@ -188,23 +221,109 @@ void CommandLineView::cmd_help(CommandLineView* p, const std::string& subcommand
 	std::cout << "help" << std::endl;
 
 	std::cout << "program list" << std::endl;
+	std::cout << "program show <programID>" << std::endl;
 	std::cout << "program add <name>" << std::endl;
 	std::cout << "program delete <programID>" << std::endl;
 	std::cout << "program rename <programID> <name>" << std::endl;
-	std::cout << "program move <programID> <newIndex>" << std::endl;
+	std::cout << "program move <programID> <newPosition>" << std::endl;
 
-	std::cout << "runtime set <programID> <runtimeIdx> <runtime>" << std::endl;
-	std::cout << "runtime get <programID> <runtimeIdx>" << std::endl;
+	std::cout << "runtime list <programID>" << std::endl;
+	std::cout << "runtime set <programID> <runtimeID> <runtime>" << std::endl;
+	std::cout << "runtime get <programID> <runtimeID>" << std::endl;
 
+	std::cout << "startime list <programID>" << std::endl;
 	std::cout << "startime add <programID> <starttime>" << std::endl;
-	std::cout << "startime delete <programID> <starttimeIdx>" << std::endl;
-	std::cout << "startime set <programID> <starttimeIdx> <starttime>" << std::endl;
-	std::cout << "startime get <programID> <starttimeIdx>" << std::endl;
+	std::cout << "startime delete <programID> <starttimeID>" << std::endl;
+	std::cout << "startime set <programID> <starttimeID> <starttime>" << std::endl;
+	std::cout << "startime get <programID> <starttimeID>" << std::endl;
 
 	std::cout << "valve <valveID> {on|off}" << std::endl;
 	std::cout << "zone <zoneID> {on|off}" << std::endl;
+
 	std::cout << "time get" << std::endl;
 	std::cout << "time set" << std::endl;
+}
+
+void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+
+	Document* document = p->getDocument();
+
+	if (subcommand == "list") {
+		CHECK_PARAMETERS(1);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		const Program& program = document->getProgram(programId);
+
+		PRINT_STARTTIMES(program);
+
+	} else if (subcommand == "set") {
+		CHECK_PARAMETERS(3);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
+		unsigned startTime = parseUInt(parameters[2], "Invalid starttime");
+		document->getProgram(programId).setStartTime(startTimeId, startTime);
+
+	} else if (subcommand == "get") {
+		CHECK_PARAMETERS(2);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
+		unsigned startTime = document->getProgram(programId).getStartTime(startTimeId);
+
+		PRINT_STARTTIME(startTimeId, startTime);
+
+	} else if (subcommand == "add") {
+		CHECK_PARAMETERS(2);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		unsigned startTime = parseUInt(parameters[1], "Invalid starttime");
+		document->getProgram(programId).addStartTime(startTime);
+
+	} else if (subcommand == "delete") {
+		CHECK_PARAMETERS(2);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
+		document->getProgram(programId).deleteStartTime(startTimeId);
+
+	} else {
+		throw UnknownSubcommandException();
+	}
+}
+
+void CommandLineView::cmd_runtime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+
+	Document* document = p->getDocument();
+
+	if (subcommand == "list") {
+		CHECK_PARAMETERS(1);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		const Program& program = document->getProgram(programId);
+
+		PRINT_RUNTIMES(program);
+
+	} else if (subcommand == "set") {
+		CHECK_PARAMETERS(3);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
+		unsigned runTime = parseUInt(parameters[2], "Invalid runtime");
+		document->getProgram(programId).setRunTime(runTimeId, runTime);
+
+	} else if (subcommand == "get") {
+		CHECK_PARAMETERS(2);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
+		unsigned runTime = document->getProgram(programId).getRunTime(runTimeId);
+
+		PRINT_RUNTIME(runTimeId, runTime);
+
+	} else {
+		throw UnknownSubcommandException();
+	}
 }
 
 void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
@@ -212,19 +331,30 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 	Document* document = p->getDocument();
 
 	if (subcommand == "list") {
-/*
 		CHECK_PARAMETERS(0);
 
 		const Document::ProgramList& programs = document->getPrograms();
 
 		std::cout << "Programs:" << std::endl;
-		for (auto it = programs.begin(); programs.end() != it; ++it) {
-			const Program* program = *it;
-			std::cout << program->getID() << " - " << program->getName() << std::endl;
+		for (auto it = programs.cbegin(); programs.cend() != it; ++it) {
+			IdType id = it->first;
+			const Program* program = it->second;
+			std::cout << id << " - " << program->getName() << std::endl;
 		}
 
 		document->releasePrograms();
-*/
+
+	} else if (subcommand == "show") {
+		CHECK_PARAMETERS(1);
+
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		const Program& program = document->getProgram(programId);
+
+		std::cout << "Name: " << program.getName() << std::endl;
+
+		PRINT_RUNTIMES(program);
+		PRINT_STARTTIMES(program);
+
 	} else if (subcommand == "add") {
 		CHECK_PARAMETERS(1);
 
@@ -234,21 +364,21 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 	} else if (subcommand == "delete") {
 		CHECK_PARAMETERS(1);
 
-		unsigned long programId = parseUInt(parameters[0], "Invalid programID");
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		document->deleteProgram(programId);
 
 	} else if (subcommand == "rename") {
 		CHECK_PARAMETERS(2);
 
-		unsigned long programId = parseUInt(parameters[0], "Invalid programID");
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		document->getProgram(programId).setName(parameters[1]);
 
 	} else if (subcommand == "move") {
 		CHECK_PARAMETERS(2);
 
-		unsigned long programId = parseUInt(parameters[0], "Invalid programID");
-		unsigned long newProgramIdx = parseUInt(parameters[1], "Invalid index");
-		document->moveProgram(programId, newProgramIdx);
+		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		unsigned position = parseUInt(parameters[1], "Invalid position");
+		document->moveProgram(programId, position);
 
 	} else {
 		throw UnknownSubcommandException();
@@ -260,32 +390,17 @@ void CommandLineView::cmd_valve(CommandLineView* p, const std::string& subcomman
 
 	Document* document = p->getDocument();
 
-	unsigned valveId = parseUInt(parameters[0], "Invalid valveID");
+	IdType valveId = parseId(parameters[0], INVALID_VALVEID);
 	bool open = parseOnOff(parameters[1], "Invalid parameter");
 	document->openValve(valveId, open);
 }
 
 void CommandLineView::cmd_zone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
-/*
-	unsigned long zone;
-	bool open;
+	CHECK_PARAMETERS(2);
 
-	if (args.size() != 2) {
-		throw CommandLineException("Keves parameter");
-	}
+	Document* document = p->getDocument();
 
-	if (!parseUInt(args[0], zone)) {
-		throw CommandLineException("Invalid zoneIdx");
-	}
-
-	if (p->getDocument()->getZoneCount() <= zone) {
-		throw CommandLineException("Invalid zoneIdx 2");
-	}
-
-	if (!parseOnOff(args[1], open)) {
-		throw CommandLineException("{on|off}");
-	}
-
-	p->getDocument()->openZone((unsigned)zone, open);
-*/
+	IdType zoneId = parseId(parameters[0], INVALID_ZONEID);
+	bool open = parseOnOff(parameters[1], "Invalid parameter");
+	document->openZone(zoneId, open);
 }
