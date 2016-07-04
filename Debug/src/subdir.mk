@@ -6,32 +6,32 @@
 CPP_SRCS += \
 ../src/Application.cpp \
 ../src/CommandLineView.cpp \
+../src/DaySchedulerSpecified.cpp \
 ../src/Document.cpp \
 ../src/Irrigation.cpp \
 ../src/Program.cpp \
 ../src/Valve.cpp \
-../src/View.cpp \
-../src/WateringSpecified.cpp 
+../src/View.cpp 
 
 OBJS += \
 ./src/Application.o \
 ./src/CommandLineView.o \
+./src/DaySchedulerSpecified.o \
 ./src/Document.o \
 ./src/Irrigation.o \
 ./src/Program.o \
 ./src/Valve.o \
-./src/View.o \
-./src/WateringSpecified.o 
+./src/View.o 
 
 CPP_DEPS += \
 ./src/Application.d \
 ./src/CommandLineView.d \
+./src/DaySchedulerSpecified.d \
 ./src/Document.d \
 ./src/Irrigation.d \
 ./src/Program.d \
 ./src/Valve.d \
-./src/View.d \
-./src/WateringSpecified.d 
+./src/View.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

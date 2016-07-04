@@ -6,15 +6,17 @@
  */
 
 #include "common.h"
-#include "Application.h"
 #include "CommandLineView.h"
-#include "Document.h"
-#include "Program.h"
+
 #include <climits>
 #include <thread>
 #include <sstream>
 #include <cstring>
 #include <stdexcept>
+
+#include "Application.h"
+#include "Document.h"
+#include "Program.h"
 
 
 #define	CHECK_SUBCOMMAND()					\

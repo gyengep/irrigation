@@ -10,6 +10,7 @@
 
 #include <stdexcept>
 
+
 class not_found_exception : public std::runtime_error {
 public:
   explicit not_found_exception() : std::runtime_error(NULL) {}

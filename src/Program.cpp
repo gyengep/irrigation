@@ -7,17 +7,16 @@
 
 #include "common.h"
 #include "Program.h"
-#include "Tools.h"
-#include "WateringSpecified.h"
 
-#include <stdexcept>
+#include "Tools.h"
+#include "DaySchedulerSpecified.h"
 
 
 Program::Program(SchedulerCallBack* callBack) :
 	callBack(callBack),
 	nextStartTimeID(0)
 {
-	watering[SPECIFIED] = new Watering_Specified();
+	watering[SPECIFIED] = new DayScheduler_Specified();
 
 	for (IdType i = 0; i < runTimes.size(); i++) {
 		runTimes[i] = std::make_pair(i, 0);

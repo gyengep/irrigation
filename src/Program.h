@@ -17,7 +17,7 @@
 #include <climits>
 
 
-class Watering;
+class DayScheduler;
 
 
 class SchedulerCallBack {
@@ -52,7 +52,7 @@ private:
 	// Watering day
 	mutable std::mutex wateringMutex;
 	WateringType wateringType;
-	std::array<Watering*, WateringType::LAST> watering;
+	std::array<DayScheduler*, WateringType::LAST> watering;
 
 	// Runtime
 	mutable std::mutex runTimeMutex;

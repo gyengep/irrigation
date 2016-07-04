@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "Application.h"
+
 #include "CommandLineView.h"
 #include "Document.h"
 #include "Valve.h"

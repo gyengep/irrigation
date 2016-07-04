@@ -7,12 +7,13 @@
 
 #include "common.h"
 #include "Document.h"
-#include "Program.h"
-#include "Valve.h"
-#include "View.h"
 
 #include <stdexcept>
 #include <sstream>
+
+#include "Program.h"
+#include "Valve.h"
+#include "View.h"
 
 
 Document::Document() : nextProgramID(0) {

@@ -11,13 +11,13 @@
 #include <list>
 #include <array>
 #include <mutex>
-#include <shared_mutex>
 
 #include "Program.h"
 #include "Tools.h"
 
 class Valve;
 class View;
+
 
 class Document : public SchedulerCallBack {
 

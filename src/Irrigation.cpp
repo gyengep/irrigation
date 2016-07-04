@@ -7,8 +7,10 @@
 //============================================================================
 
 #include "common.h"
-#include <exception>
 #include "Application.h"
+
+#include <exception>
+
 
 int main() {
 	Application application;
