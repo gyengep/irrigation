@@ -1,0 +1,7 @@
+20:48:43 **** Clean-only build of configuration Debug for project Irrigation_test ****
+make clean 
+rm -rf  ./src/Document_test.o ./src/Irrigation_test.o  ./src/Document_test.d ./src/Irrigation_test.d  Irrigation_test.exe
+ 
+
+20:48:44 Build Finished (took 234ms)
+
