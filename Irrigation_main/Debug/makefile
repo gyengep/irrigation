@@ -41,13 +41,13 @@ endif
 all: Irrigation_main.exe
 
 dependents:
-	-cd C:/projects/irrigation_copy/Irrigation_lib/Debug && $(MAKE) clean all
+	-cd C:/projects/irrigation/Irrigation_lib/Debug && $(MAKE) all
 
 # Tool invocations
-Irrigation_main.exe: $(OBJS) $(USER_OBJS) C:/projects/irrigation_copy/Irrigation_lib/Debug/libIrrigation_lib.a
+Irrigation_main.exe: $(OBJS) $(USER_OBJS) C:/projects/irrigation/Irrigation_lib/Debug/libIrrigation_lib.a
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cygwin C++ Linker'
-	g++ -L"C:\projects\irrigation_copy\Irrigation_lib\Debug" -o "Irrigation_main.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"C:\projects\irrigation\Irrigation_lib\Debug" -o "Irrigation_main.exe" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -58,6 +58,6 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-C:/projects/irrigation_copy/Irrigation_lib/Debug/libIrrigation_lib.a:
+C:/projects/irrigation/Irrigation_lib/Debug/libIrrigation_lib.a:
 
 -include ../makefile.targets

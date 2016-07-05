@@ -16,6 +16,6 @@ TEST(Document, Program) {
 	EXPECT_EQ(0, doc.getPrograms().size());
 	doc.releasePrograms();
 
-	//EXPECT_EQ(1, doc.getPrograms().size());
+	EXPECT_EQ(1, doc.getPrograms().size());
 
 }

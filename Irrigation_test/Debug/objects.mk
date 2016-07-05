@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-USER_OBJS := C:/Work/Apps/cygwin64/home/pgyenge/googletest/googletest/make/libgtest.a
+USER_OBJS :=
 
-LIBS := -lIrrigation_lib
+LIBS := -lIrrigation_lib -lgtest
 
