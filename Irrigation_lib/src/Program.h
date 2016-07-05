@@ -16,6 +16,7 @@
 #include <list>
 #include <climits>
 
+#include "common.h"
 
 class DayScheduler;
 
