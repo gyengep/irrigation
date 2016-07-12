@@ -1,0 +1,12 @@
+###################
+# Compiled source #
+###################
+*.exe
+*.o
+*.d
+*.a
+###############
+# Directories #
+###############
+.metadata/*
+RemoteSystemsTempFiles/*
