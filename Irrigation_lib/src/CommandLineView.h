@@ -69,6 +69,7 @@ private:
 	static void cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_valve(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_zone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
+	static void cmd_reset(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 
 public:
 	CommandLineView(Document* document);

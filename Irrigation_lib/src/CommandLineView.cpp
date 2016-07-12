@@ -123,6 +123,7 @@ CommandLineView::Commands CommandLineView::commands[] = {
 	{ "starttime", true, CommandLineView::cmd_starttime},
 	{ "valve", false, CommandLineView::cmd_valve },
 	{ "zone", false, CommandLineView::cmd_zone },
+	{ "reset", true, CommandLineView::cmd_reset },
 	{ NULL, NULL }
 };
 
@@ -227,6 +228,8 @@ void CommandLineView::cmd_help(CommandLineView* p, const std::string& subcommand
 	std::cout << "program rename <programID> <name>" << std::endl;
 	std::cout << "program move <programID> <newPosition>" << std::endl;
 
+	std::cout << "reset valves" << std::endl;
+	
 	std::cout << "runtime list <programID>" << std::endl;
 	std::cout << "runtime set <programID> <runtimeID> <runtime>" << std::endl;
 	std::cout << "runtime get <programID> <runtimeID>" << std::endl;
@@ -403,4 +406,19 @@ void CommandLineView::cmd_zone(CommandLineView* p, const std::string& subcommand
 	IdType zoneId = parseId(parameters[0], INVALID_ZONEID);
 	bool open = parseOnOff(parameters[1], "Invalid parameter");
 	document->openZone(zoneId, open);
+}
+
+void CommandLineView::cmd_reset(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+
+	Document* document = p->getDocument();
+
+	if (subcommand == "valves") {
+		CHECK_PARAMETERS(0);
+
+		for (unsigned i = 0; i < document->getValveCount(); i++) {
+			document->openValve(i, false);
+		}
+	} else {
+		throw UnknownSubcommandException();
+	}
 }
