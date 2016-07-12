@@ -6,10 +6,11 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include "common.h"
-#include "Application.h"
 
 #include <exception>
+#include <iostream>
+
+#include "Application.h"
 
 
 int main() {

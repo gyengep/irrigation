@@ -42,6 +42,8 @@ private:
 	ProgramList programs;
 	std::list<Program*> deletedPrograms;
 
+	void openValve_notSafe(IdType id, bool open);
+	
 public:
 
 	Document();

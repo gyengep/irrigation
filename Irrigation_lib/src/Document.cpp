@@ -147,14 +147,22 @@ void Document::updateViews() {
 /////////////////////////////////////////////////////
 // Zone, Valve
 
+void Document::openValve_notSafe(IdType id, bool open) {
+#ifdef __arm__
+	valves[id]->open(open);
+#else
+	printf("OpenValve(%lu, %s)\n", id, open ? "true" : "false");
+#endif // __arm__
+}
+
 void Document::openZone(IdType id, bool open) {
 	if (getZoneCount() <= id) {
 		throw std::out_of_range(INVALID_ZONEID);
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);
-	openValve(id, open);
-	openValve(getZoneCount(), open);
+	openValve_notSafe(id, open);
+	openValve_notSafe(getZoneCount(), open);
 }
 
 void Document::openValve(IdType id, bool open) {
@@ -163,10 +171,5 @@ void Document::openValve(IdType id, bool open) {
 	} 
 	
 	std::lock_guard<std::mutex> guard(valveMutex);
-#ifdef __arm__
-	valves[i]->open(open);
-#else
-	printf("OpenValve(%lu, %s)\n", id, open ? "true" : "false");
-#endif // __arm__
-
+	openValve_notSafe(id, open);
 }

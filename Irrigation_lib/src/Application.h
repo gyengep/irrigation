@@ -9,6 +9,8 @@
 #define APPLICATION_H_
 
 
+#include <ctime>
+
 class Document;
 
 class Application {
