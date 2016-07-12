@@ -1,7 +1,0 @@
-21:20:13 **** Clean-only build of configuration Debug for project Irrigation_main ****
-make clean 
-rm -rf  ./src/Irrigation.o  ./src/Irrigation.d  Irrigation_main.exe
- 
-
-21:20:13 Build Finished (took 219ms)
-
