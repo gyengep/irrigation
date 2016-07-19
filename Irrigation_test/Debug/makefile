@@ -8,7 +8,8 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include src/subdir.mk
+-include test/subdir.mk
+-include imported_src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -40,14 +41,11 @@ endif
 # All Target
 all: Irrigation_test.exe
 
-dependents:
-	-cd C:/projects/irrigation/Irrigation_lib/Debug && $(MAKE) all
-
 # Tool invocations
-Irrigation_test.exe: $(OBJS) $(USER_OBJS) C:/projects/irrigation/Irrigation_lib/Debug/libIrrigation_lib.a
+Irrigation_test.exe: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cygwin C++ Linker'
-	g++ -L"C:\projects\irrigation\Irrigation_lib\Debug" -o "Irrigation_test.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++  -o "Irrigation_test.exe" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -58,6 +56,5 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-C:/projects/irrigation/Irrigation_lib/Debug/libIrrigation_lib.a:
 
 -include ../makefile.targets

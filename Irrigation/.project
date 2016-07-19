@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Irrigation_main</name>
+	<name>Irrigation</name>
 	<comment></comment>
 	<projects>
-		<project>Irrigation_lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

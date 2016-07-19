@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lIrrigation_lib -lgtest
+LIBS := -lgtest
 

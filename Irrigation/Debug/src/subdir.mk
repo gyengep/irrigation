@@ -8,6 +8,7 @@ CPP_SRCS += \
 ../src/CommandLineView.cpp \
 ../src/DaySchedulerSpecified.cpp \
 ../src/Document.cpp \
+../src/Irrigation.cpp \
 ../src/Program.cpp \
 ../src/Valve.cpp \
 ../src/View.cpp 
@@ -17,6 +18,7 @@ OBJS += \
 ./src/CommandLineView.o \
 ./src/DaySchedulerSpecified.o \
 ./src/Document.o \
+./src/Irrigation.o \
 ./src/Program.o \
 ./src/Valve.o \
 ./src/View.o 
@@ -26,6 +28,7 @@ CPP_DEPS += \
 ./src/CommandLineView.d \
 ./src/DaySchedulerSpecified.d \
 ./src/Document.d \
+./src/Irrigation.d \
 ./src/Program.d \
 ./src/Valve.d \
 ./src/View.d 

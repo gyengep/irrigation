@@ -3,7 +3,6 @@
 	<name>Irrigation_test</name>
 	<comment></comment>
 	<projects>
-		<project>Irrigation_lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -25,4 +24,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>imported_src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/Irrigation_main/src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
