@@ -66,6 +66,9 @@ private:
 	static void cmd_help(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_program(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_runtime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
+	//static void cmd_startprog(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
+	//static void cmd_startzone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
+	//static void cmd_stop(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_valve(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
 	static void cmd_zone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);

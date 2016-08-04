@@ -18,15 +18,8 @@
 
 #include "common.h"
 
+
 class DayScheduler;
-
-
-class SchedulerCallBack {
-public:
-	virtual void onProgramStart() = 0;
-	virtual void onProgramStop() = 0;
-	virtual void onZoneChanged(unsigned zoneIdx, bool enable) = 0;
-};
 
 class Program {
 
@@ -46,9 +39,6 @@ public:
 
 private:
 
-
-	SchedulerCallBack* callBack;
-
 	// Name
 	mutable std::mutex nameMutex;
 	std::string name;
@@ -67,18 +57,16 @@ private:
 	mutable std::mutex startTimeMutex;
 	StartTimes startTimes;
 
-	bool isDayScheduled() const;
+	bool isDayScheduled(std::time_t rawTime) const;
 
 public:
-	Program(SchedulerCallBack* callBack);
+	Program();
 	~Program();
 
 	std::string getName() const;
 	void setName(const std::string& name);
 
-	bool isScheduled(time_t rawTime) const;
-	void start(time_t rawTime);
-	void stop();
+	bool isScheduled(std::time_t rawTime) const;
 
 	// Runtime
 	const RunTimes& getRunTimes() const;

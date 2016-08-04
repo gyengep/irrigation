@@ -36,6 +36,7 @@ void Application::run() {
 	puts("Application::run __BEGIN__");
 	
 	while (!isTerminated) {
+		document->doTask();
 /*
 		for(int i = 0; i < 6; i++) {
 			document->openValve(i, true);
@@ -64,6 +65,6 @@ void Application::terminate() {
 	isTerminated = true; 
 }
 
-time_t Application::getTime() const {
-	return time(NULL);
+std::time_t Application::getTime() const {
+	return std::time(NULL);
 }

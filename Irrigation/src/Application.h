@@ -26,7 +26,7 @@ public:
 	void uninit();
 	void terminate();
 	
-	time_t getTime() const;
+	std::time_t getTime() const;
 };
 
 Application* getApplication();

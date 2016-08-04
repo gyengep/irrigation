@@ -12,8 +12,7 @@
 #include "DaySchedulerSpecified.h"
 
 
-Program::Program(SchedulerCallBack* callBack) :
-	callBack(callBack),
+Program::Program() :
 	nextStartTimeId(0)
 {
 	watering[SPECIFIED] = new DayScheduler_Specified();
@@ -33,42 +32,11 @@ Program::~Program() {
 
 ////////////////////////////////////////////////////////////////
 
-bool Program::isDayScheduled() const {
-	std::time_t rawtime = std::time(NULL);
-	std::tm* timeinfo = std::localtime(&rawtime);
-
+bool Program::isScheduled(std::time_t rawTime) const {
+	std::tm* timeinfo = std::localtime(&rawTime);
 	return watering[wateringType]->isDayScheduled(timeinfo);
 
 }
-
-void Program::start(time_t rawTime) {
-	/*
-	std::lock_guard<std::mutex> guard(wateringStartMutex);
-	wateringStart = rawTime;
-
-	if (NULL != callBack) {
-		callBack->onProgramStart();
-	}
-	*/
-}
-
-void Program::stop() {
-	/*
-	std::lock_guard<std::mutex> guard(wateringStartMutex);
-	wateringStart = 0;
-
-	if (NULL != callBack) {
-		if (wateringZone < ZONE_COUNT) {
-			callBack->onZoneChanged(wateringZone, false);
-			wateringZone = INVALID_ZONE;
-		}
-
-		callBack->onProgramStop();
-	}
-	*/
-}
-
-
 
 ////////////////////////////////////////////////////////////////
 // NAME

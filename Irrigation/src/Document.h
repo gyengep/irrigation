@@ -19,7 +19,7 @@ class Valve;
 class View;
 
 
-class Document : public SchedulerCallBack {
+class Document {
 
 public:
 	typedef std::list<std::pair<IdType, Program*>> ProgramList;
@@ -27,6 +27,8 @@ public:
 private:
 	static const unsigned ZONE_COUNT = 6;
 	static const unsigned VALVE_COUNT = ZONE_COUNT + 1;
+
+	typedef std::array<std::atomic<unsigned>, ZONE_COUNT> WateringTimes;
 
 	// Views
 	mutable std::mutex viewMutex;
@@ -42,12 +44,30 @@ private:
 	ProgramList programs;
 	std::list<Program*> deletedPrograms;
 
+	// Watering
+	mutable std::mutex wateringMutex;
+	std::atomic<std::time_t> wateringStart;
+	WateringTimes wateringTimes;
+	IdType wateringZone;
+
 	void openValve_notSafe(IdType id, bool open);
+
+	IdType getWateringZone(std::time_t rawTime) const;
+	bool isWateringActive_notSafe() const;
+	void startWatering_notSafe(Program& program, std::time_t rawTime);
+	void stopWatering_notSafe();
 	
 public:
 
 	Document();
 	virtual ~Document();
+
+	void doTask();
+
+	// Watering
+	bool isWateringActive() const { return (0 != wateringStart); }
+	void startWatering(IdType programId);
+	void stopWatering();
 
 	// Program
 	const ProgramList& getPrograms() const;
@@ -67,12 +87,6 @@ public:
 	// View
 	void addView(View* view);
 	void updateViews();
-
-	// from SchedulerCallBack
-	virtual void onProgramStart() {}
-	virtual void onProgramStop() {}
-	virtual void onZoneChanged(unsigned zoneIdx, bool enable) {}
-
 };
 
 #endif /* DOCUMENT_H_ */

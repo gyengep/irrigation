@@ -121,6 +121,8 @@ CommandLineView::Commands CommandLineView::commands[] = {
 	{ "program", true, CommandLineView::cmd_program},
 	{ "runtime", true, CommandLineView::cmd_runtime},
 	{ "starttime", true, CommandLineView::cmd_starttime},
+	//{ "start", false, CommandLineView::cmd_start},
+	//{ "stop", false, CommandLineView::cmd_stop},
 	{ "valve", false, CommandLineView::cmd_valve },
 	{ "zone", false, CommandLineView::cmd_zone },
 	{ "reset", true, CommandLineView::cmd_reset },
@@ -243,10 +245,23 @@ void CommandLineView::cmd_help(CommandLineView* p, const std::string& subcommand
 	std::cout << "valve <valveID> {on|off}" << std::endl;
 	std::cout << "zone <zoneID> {on|off}" << std::endl;
 
+	std::cout << "startprog <programID>" << std::endl;
+	std::cout << "startzone <programID> <zoneID>" << std::endl;
+	std::cout << "stop" << std::endl;
+
 	std::cout << "time get" << std::endl;
 	std::cout << "time set" << std::endl;
 }
+/*
+void CommandLineView::cmd_start(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+	CHECK_PARAMETERS(1);
 
+	Document* document = p->getDocument();
+
+	IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+	document->getProgram(programId).start();
+}
+*/
 void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
 
 	Document* document = p->getDocument();

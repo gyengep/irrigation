@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "Application.h"
 #include "Program.h"
 #include "Valve.h"
 #include "View.h"
@@ -24,6 +25,9 @@ Document::Document() : nextProgramId(0) {
 	valves[4] = new Valve(5);
 	valves[5] = new Valve(6);
 	valves[6] = new Valve(27);
+
+	wateringZone = ZONE_COUNT;
+	wateringStart = 0;
 }
 
 Document::~Document() {
@@ -43,6 +47,111 @@ Document::~Document() {
 	}
 }
 
+void Document::doTask() {
+	std::time_t rawTime = getApplication()->getTime();
+
+	std::lock_guard<std::mutex> lock(wateringMutex);
+
+	if (!isWateringActive()) {
+		Program* scheduledProgram = NULL;
+		const ProgramList& programList = getPrograms();
+
+		for (auto it = programList.begin(); programList.end() != it; ++it) {
+			Program* program = it->second;
+			if (program->isScheduled(rawTime)) {
+				scheduledProgram = program;
+				break;
+			}
+		}
+
+		releasePrograms();
+
+		if (scheduledProgram) {
+			startWatering_notSafe(*scheduledProgram, rawTime);
+		}
+	}
+
+	if (isWateringActive()) {
+		IdType zone = getWateringZone(rawTime);
+
+		if (wateringZone != zone) {
+			if (wateringZone < ZONE_COUNT) {
+				openZone(wateringZone, false);
+			}
+
+			wateringZone = zone;
+			if (wateringZone < ZONE_COUNT) {
+				openZone(wateringZone, true);
+			} else {
+				stopWatering_notSafe();
+			}
+		}
+	}
+}
+
+/////////////////////////////////////////////////////
+// Watering
+
+
+IdType Document::getWateringZone(std::time_t rawTime) const {
+	if (0 == wateringStart) {
+		throw std::runtime_error("Watering doesn't started");
+	}
+
+	if (rawTime < wateringStart) {
+		throw std::runtime_error("Invalid time");
+	}
+
+	std::time_t t = wateringStart;
+	for (unsigned zone = 0; zone < ZONE_COUNT; ++zone) {
+		t += wateringTimes[zone];
+
+		if (rawTime < t) {
+			return (IdType)zone;
+		}
+	}
+
+	return ZONE_COUNT;
+}
+
+void Document::startWatering(IdType programId) {
+	Program& program = getProgram(programId);
+
+	std::lock_guard<std::mutex> lock(wateringMutex);
+	startWatering_notSafe(program, getApplication()->getTime());
+}
+
+void Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
+	const Program::RunTimes& runTimes = program.getRunTimes();
+
+	if (runTimes.size() != wateringTimes.size()) {
+		throw std::runtime_error("runTimes.length() != wateringTimes.length()");
+	}
+
+	for (unsigned i = 0; i < wateringTimes.size(); i++) {
+		wateringTimes[i].store(runTimes[i].second);
+	}
+
+	program.releaseRunTimes();
+
+	wateringZone = ZONE_COUNT;
+	wateringStart = rawTime;
+}
+
+void Document::stopWatering() {
+	std::lock_guard<std::mutex> lock(wateringMutex);
+	stopWatering_notSafe();
+}
+
+void Document::stopWatering_notSafe() {
+	if (ZONE_COUNT != wateringZone) {
+		openZone(wateringZone, false);
+	}
+
+	wateringZone = ZONE_COUNT;
+}
+
+
 /////////////////////////////////////////////////////
 // Program
 
@@ -58,7 +167,7 @@ void Document::releasePrograms() const {
 Program& Document::addProgram() {
 	std::lock_guard<std::mutex> lock(programMutex);
 
-	Program* program = new Program(this);
+	Program* program = new Program();
 	tools::push_back(programs, nextProgramId, program);
 	nextProgramId++;
 	return *program;
