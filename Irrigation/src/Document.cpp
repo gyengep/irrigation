@@ -18,13 +18,13 @@
 
 
 Document::Document() : nextProgramId(0) {
-	valves[0] = new Valve(0);
-	valves[1] = new Valve(2);
-	valves[2] = new Valve(3);
-	valves[3] = new Valve(4);
-	valves[4] = new Valve(5);
-	valves[5] = new Valve(6);
-	valves[6] = new Valve(27);
+	valves[0] = new Valve(4);
+	valves[1] = new Valve(5);
+	valves[2] = new Valve(6);
+	valves[3] = new Valve(26);
+	valves[4] = new Valve(27);
+	valves[5] = new Valve(28);
+	valves[6] = new Valve(29);
 
 	wateringZone = ZONE_COUNT;
 	wateringStart = 0;
