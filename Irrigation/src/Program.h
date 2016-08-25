@@ -8,13 +8,13 @@
 #ifndef PROGRAM_H_
 #define PROGRAM_H_
 
-#include <atomic>
-#include <utility>
-#include <mutex>
-#include <string>
-#include <vector>
+#include <array>
+//#include <climits>
+#include <ctime>
 #include <list>
-#include <climits>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "common.h"
 
@@ -27,12 +27,12 @@ class Program {
 
 public:
 
-	typedef std::array<std::pair<IdType, std::atomic<unsigned>>, ZONE_COUNT> RunTimes;
+	typedef std::array<std::pair<IdType, unsigned>, ZONE_COUNT> RunTimes;
 	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
 
 
-	enum WateringType {
-		SPECIFIED,
+	enum SchedulerType {
+		SPECIFIED_DAYS,
 
 		LAST
 	};
@@ -40,24 +40,18 @@ public:
 private:
 
 	// Name
-	mutable std::mutex nameMutex;
 	std::string name;
 
 	// Watering day
-	mutable std::mutex wateringMutex;
-	WateringType wateringType;
-	std::array<DayScheduler*, WateringType::LAST> watering;
+	SchedulerType schedulerType;
+	std::array<DayScheduler*, SchedulerType::LAST> schedulers;
 
 	// Runtime
-	mutable std::mutex runTimeMutex;
 	RunTimes runTimes;
 
 	// StartTime
 	IdType nextStartTimeId;
-	mutable std::mutex startTimeMutex;
 	StartTimes startTimes;
-
-	bool isDayScheduled(std::time_t rawTime) const;
 
 public:
 	Program();
@@ -70,13 +64,11 @@ public:
 
 	// Runtime
 	const RunTimes& getRunTimes() const;
-	void releaseRunTimes() const;
 	void setRunTime(IdType id, unsigned minutes);
 	unsigned getRunTime(IdType id) const;
 
 	// StartTime
 	const StartTimes& getStartTimes() const;
-	void releaseStartTimes() const;
 	IdType addStartTime(unsigned minutes);
 	void deleteStartTime(IdType id);
 	void setStartTime(IdType id, unsigned minutes);

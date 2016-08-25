@@ -74,10 +74,10 @@ void set(std::list<std::pair<K, V>>& container, const K& uid, const V& value) {
 /////////////////////////////////////////////////////////////////////////
 
 template <typename K, typename V, std::size_t S>
-void set(std::array<std::pair<K, std::atomic<V>>, S>& container, const K& uid, const V& value) {
+void set(std::array<std::pair<K, V>, S>& container, const K& uid, const V& value) {
 
 	if (container.size() > uid) {
-		container[uid].second.store(value);
+		container[uid].second = value;
 		return;
 	}
 
@@ -85,20 +85,20 @@ void set(std::array<std::pair<K, std::atomic<V>>, S>& container, const K& uid, c
 }
 
 template <typename K, typename V, std::size_t S>
-V get(std::array<std::pair<K, std::atomic<V>>, S>& container, const K& uid) {
+V get(std::array<std::pair<K, V>, S>& container, const K& uid) {
 
 	if (container.size() > uid) {
-		return container[uid].second.load();
+		return container[uid].second;
 	}
 
 	throw not_found_exception();
 }
 
 template <typename K, typename V, std::size_t S>
-V get(const std::array<std::pair<K, std::atomic<V>>, S>& container, const K& uid) {
+V get(const std::array<std::pair<K, V>, S>& container, const K& uid) {
 
 	if (container.size() > uid) {
-		return container[uid].second.load();
+		return container[uid].second;
 	}
 
 	throw not_found_exception();

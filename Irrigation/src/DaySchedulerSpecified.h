@@ -9,7 +9,6 @@
 #define DAYSCHEDULERSPECIFIED_H_
 
 #include <array>
-#include <atomic>
 #include <ctime>
 
 #include "DayScheduler.h"
@@ -19,7 +18,7 @@ class DayScheduler_Specified : public DayScheduler {
 
 	static const unsigned DAY_COUNT = 7;
 
-	typedef std::array<std::pair<IdType, std::atomic<bool>>, DAY_COUNT> Days;
+	typedef std::array<std::pair<IdType, bool>, DAY_COUNT> Days;
 
 	Days days;
 

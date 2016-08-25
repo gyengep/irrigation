@@ -15,6 +15,9 @@
 #include "Program.h"
 #include "Tools.h"
 
+
+#define AUTO_LOCK_PROGRAMS(document) std::lock_guard<std::mutex> lock(document->getProgramMutex());
+
 class Valve;
 class View;
 
@@ -28,7 +31,7 @@ private:
 	static const unsigned ZONE_COUNT = 6;
 	static const unsigned VALVE_COUNT = ZONE_COUNT + 1;
 
-	typedef std::array<std::atomic<unsigned>, ZONE_COUNT> WateringTimes;
+	typedef std::array<unsigned, ZONE_COUNT> WateringTimes;
 
 	// Views
 	mutable std::mutex viewMutex;
@@ -42,19 +45,17 @@ private:
 	mutable std::mutex programMutex;
 	IdType nextProgramId;
 	ProgramList programs;
-	std::list<Program*> deletedPrograms;
 
 	// Watering
 	mutable std::mutex wateringMutex;
-	std::atomic<std::time_t> wateringStart;
+	std::time_t wateringStart;
 	WateringTimes wateringTimes;
 	IdType wateringZone;
 
 	void openValve_notSafe(IdType id, bool open);
 
-	IdType getWateringZone(std::time_t rawTime) const;
-	bool isWateringActive_notSafe() const;
-	void startWatering_notSafe(Program& program, std::time_t rawTime);
+	IdType getWateringZone_notSafe(std::time_t rawTime) const;
+	bool startWatering_notSafe(Program& program, std::time_t rawTime);
 	void stopWatering_notSafe();
 	
 public:
@@ -65,13 +66,13 @@ public:
 	void doTask();
 
 	// Watering
-	bool isWateringActive() const { return (0 != wateringStart); }
+	bool isWateringActive() const;
 	void startWatering(IdType programId);
 	void stopWatering();
 
 	// Program
+	std::mutex& getProgramMutex() { return programMutex; }
 	const ProgramList& getPrograms() const;
-	void releasePrograms() const;
 	Program& addProgram();
 	void deleteProgram(IdType id);
 	void moveProgram(IdType id, unsigned newPosition);

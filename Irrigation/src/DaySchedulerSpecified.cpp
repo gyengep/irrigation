@@ -41,5 +41,5 @@ bool DayScheduler_Specified::isDayEnabled(IdType id) const {
 }
 
 bool DayScheduler_Specified::isDayScheduled(std::tm* timeinfo) const {
-	return days[timeinfo->tm_wday].second.load();
+	return days[timeinfo->tm_wday].second;
 }
