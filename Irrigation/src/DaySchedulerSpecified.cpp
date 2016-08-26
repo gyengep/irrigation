@@ -23,8 +23,8 @@ DayScheduler_Specified::~DayScheduler_Specified() {
 void DayScheduler_Specified::enableDay(IdType id, bool enable) {
 	try {
 		tools::set(days, id, enable);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_DAYID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_DAYID);
 	}
 }
 
@@ -33,8 +33,8 @@ bool DayScheduler_Specified::isDayEnabled(IdType id) const {
 
 	try {
 		result = tools::get(days, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_DAYID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_DAYID);
 	}
 
 	return result;

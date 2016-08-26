@@ -170,7 +170,7 @@ IdType Document::getWateringZone_notSafe(std::time_t rawTime) const {
 
 const Document::ProgramList& Document::getPrograms() const {
 	if (programMutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+		throw not_locked("Programs are not locked");
 	}
 
 	return programs;
@@ -178,7 +178,7 @@ const Document::ProgramList& Document::getPrograms() const {
 
 Program& Document::addProgram() {
 	if (programMutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+		throw not_locked("Programs are not locked");
 	}
 
 	Program* program = new Program();
@@ -189,15 +189,15 @@ Program& Document::addProgram() {
 
 void Document::deleteProgram(IdType id) {
 	if (programMutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+		throw not_locked("Programs are not locked");
 	}
 
 	Program* program = NULL;
 
 	try {
 		program = tools::erase(programs, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_PROGRAMID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_PROGRAMID);
 	}
 
 	delete program;
@@ -205,7 +205,7 @@ void Document::deleteProgram(IdType id) {
 
 void Document::moveProgram(IdType id, unsigned newPosition) {
 	if (programMutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+		throw not_locked("Programs are not locked");
 	}
 
 	if (programs.size() <= newPosition) {
@@ -216,8 +216,8 @@ void Document::moveProgram(IdType id, unsigned newPosition) {
 
 	try {
 		program = tools::erase(programs, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_PROGRAMID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_PROGRAMID);
 	}
 
 	unsigned count = 0;
@@ -232,14 +232,14 @@ void Document::moveProgram(IdType id, unsigned newPosition) {
 
 Program& Document::getProgram(IdType id) {
 	if (programMutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+		throw not_locked("Programs are not locked");
 	}
 
 	Program* program = NULL;
 	try {
 		program = tools::get(programs, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_PROGRAMID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_PROGRAMID);
 	}
 
 	return *program;
@@ -247,14 +247,14 @@ Program& Document::getProgram(IdType id) {
 
 const Program& Document::getProgram(IdType id) const {
 	if (programMutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+		throw not_locked("Programs are not locked");
 	}
 
 	const Program* program = NULL;
 	try {
 		program = tools::get(programs, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_PROGRAMID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_PROGRAMID);
 	}
 
 	return *program;
@@ -280,11 +280,13 @@ void Document::updateViews() {
 // Zone, Valve
 
 void Document::openValve_notSafe(IdType id, bool open) {
+#ifndef IRRIGATION_TEST
 #ifdef __arm__
 	valves[id]->open(open);
 #else
 	printf("OpenValve(%lu, %s)\n", id, open ? "true" : "false");
 #endif // __arm__
+#endif // IRRIGATION_TEST
 }
 
 void Document::openZone(IdType id, bool open) {

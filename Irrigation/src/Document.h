@@ -16,7 +16,7 @@
 #include "Tools.h"
 
 
-#define AUTO_LOCK_PROGRAMS(document) std::lock_guard<std::mutex> lock(document->getProgramMutex());
+#define AUTO_LOCK_PROGRAMS(document) std::lock_guard<std::mutex> lock((document)->getProgramMutex());
 
 class Valve;
 class View;

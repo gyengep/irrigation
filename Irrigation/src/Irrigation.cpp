@@ -12,6 +12,7 @@
 
 #include "Application.h"
 
+#ifndef IRRIGATION_TEST
 
 int main() {
 	Application application;
@@ -26,3 +27,5 @@ int main() {
 	
 	return 0;
 }
+
+#endif

@@ -56,8 +56,8 @@ const Program::RunTimes& Program::getRunTimes() const {
 void Program::setRunTime(IdType id, unsigned minutes) {
 	try {
 		tools::set(runTimes, id, minutes);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_RUNTIMEID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_RUNTIMEID);
 	}
 }
 
@@ -66,8 +66,8 @@ unsigned Program::getRunTime(IdType id) const {
 
 	try {
 		result = tools::get(runTimes, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_RUNTIMEID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_RUNTIMEID);
 	}
 
 	return result;
@@ -89,16 +89,16 @@ IdType Program::addStartTime(unsigned minutes) {
 void Program::deleteStartTime(IdType id) {
 	try {
 		tools::erase(startTimes, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_STARTTIMEID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_STARTTIMEID);
 	}
 }
 
 void Program::setStartTime(IdType id, unsigned minutes) {
 	try {
 		tools::set(startTimes, id, minutes);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_STARTTIMEID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_STARTTIMEID);
 	}
 }
 
@@ -107,8 +107,8 @@ unsigned Program::getStartTime(IdType id) const {
 
 	try {
 		result = tools::get(startTimes, id);
-	} catch(not_found_exception& e) {
-		throw not_found_exception(INVALID_STARTTIMEID);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_STARTTIMEID);
 	}
 
 	return result;

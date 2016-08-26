@@ -34,7 +34,7 @@ V erase(std::list<std::pair<K, V>>& container, const K& uid) {
 		}
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 template <typename K, typename V>
@@ -45,7 +45,7 @@ V& get(std::list<std::pair<K, V>>& container, const K& uid) {
 		}
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 template <typename K, typename V>
@@ -56,7 +56,7 @@ const V& get(const std::list<std::pair<K, V>>& container, const K& uid) {
 		}
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 template <typename K, typename V>
@@ -68,7 +68,7 @@ void set(std::list<std::pair<K, V>>& container, const K& uid, const V& value) {
 		}
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ void set(std::array<std::pair<K, V>, S>& container, const K& uid, const V& value
 		return;
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 template <typename K, typename V, std::size_t S>
@@ -91,7 +91,7 @@ V get(std::array<std::pair<K, V>, S>& container, const K& uid) {
 		return container[uid].second;
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 template <typename K, typename V, std::size_t S>
@@ -101,7 +101,7 @@ V get(const std::array<std::pair<K, V>, S>& container, const K& uid) {
 		return container[uid].second;
 	}
 
-	throw not_found_exception();
+	throw invalid_id();
 }
 
 
