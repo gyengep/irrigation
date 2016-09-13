@@ -57,20 +57,18 @@ if (parameters.size() < req) {				\
 
 
 CommandLineView::Commands CommandLineView::commands[] = {
-	//{ "exit", false, cmd_exit },
-	{ "help", false, cmd_help },
-	{ "program", true, cmd_program},
-	{ "runtime", true, cmd_runtime},
-	{ "starttime", true, cmd_starttime},
-	//{ "start", false, cmd_start},
-	//{ "stop", false, cmd_stop},
-	{ "valve", false, cmd_valve },
-	{ "zone", false, cmd_zone },
-	{ "reset", true, cmd_reset },
-	{ NULL, NULL }
+	//{ "exit", false, &CommandLineView::cmd_exit },
+	{ "help", false, &CommandLineView::cmd_help },
+	{ "program", true, &CommandLineView::cmd_program},
+	{ "runtime", true, &CommandLineView::cmd_runtime},
+	{ "starttime", true, &CommandLineView::cmd_starttime},
+	//{ "start", false, &CommandLineView::cmd_start},
+	//{ "stop", false, &CommandLineView::cmd_stop},
+	{ "valve", false, &CommandLineView::cmd_valve },
+	{ "zone", false, &CommandLineView::cmd_zone },
+	{ "reset", true, &CommandLineView::cmd_reset },
+	{ NULL, false, NULL }
 };
-
-
 
 CommandLineView::CommandLineView(Document* document) :
 	View(document),
