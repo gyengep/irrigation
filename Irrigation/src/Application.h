@@ -9,13 +9,14 @@
 #define APPLICATION_H_
 
 
+#include <atomic>
 #include <ctime>
 
 class Document;
 
 class Application {
 	Document* document;
-	volatile bool isTerminated;
+	std::atomic_bool isTerminated;
 
 public:
 	Application();

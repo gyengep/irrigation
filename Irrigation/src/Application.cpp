@@ -37,18 +37,6 @@ void Application::run() {
 	
 	while (!isTerminated) {
 		document->doTask();
-/*
-		for(int i = 0; i < 6; i++) {
-			document->openValve(i, true);
-			usleep(50000);
-			document->openValve(i, false);
-		}
-		for(int i = 6; i > 0; i--) {
-			document->openValve(i, true);
-			usleep(50000);
-			document->openValve(i, false);
-		}
-*/
 		usleep(50000);
 	}
 	

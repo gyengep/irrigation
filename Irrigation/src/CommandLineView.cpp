@@ -9,10 +9,9 @@
 #include "CommandLineView.h"
 
 #include <climits>
-#include <thread>
-#include <sstream>
 #include <cstring>
 #include <stdexcept>
+#include <sstream>
 
 #include "Application.h"
 #include "Document.h"
@@ -57,9 +56,27 @@ if (parameters.size() < req) {				\
 }
 
 
+CommandLineView::Commands CommandLineView::commands[] = {
+	//{ "exit", false, cmd_exit },
+	{ "help", false, cmd_help },
+	{ "program", true, cmd_program},
+	{ "runtime", true, cmd_runtime},
+	{ "starttime", true, cmd_starttime},
+	//{ "start", false, cmd_start},
+	//{ "stop", false, cmd_stop},
+	{ "valve", false, cmd_valve },
+	{ "zone", false, cmd_zone },
+	{ "reset", true, cmd_reset },
+	{ NULL, NULL }
+};
 
-CommandLineView::CommandLineView(Document* document) : View(document), isTerminated(false) {
-	workerThread = new std::thread(workerFunc, this);
+
+
+CommandLineView::CommandLineView(Document* document) :
+	View(document),
+	isTerminated(false)
+{
+	workerThread = new std::thread(&CommandLineView::workerFunc, this);
 }
 
 CommandLineView::~CommandLineView() {
@@ -113,25 +130,11 @@ void CommandLineView::tokenize(const std::string& text, Tokens& tokens) {
 	delete[] text_copy;
 }
 
-CommandLineView::Commands CommandLineView::commands[] = {
-	// { "exit", CommandLineView::cmd_exit },
-	{ "help", false, CommandLineView::cmd_help },
-	{ "program", true, CommandLineView::cmd_program},
-	{ "runtime", true, CommandLineView::cmd_runtime},
-	{ "starttime", true, CommandLineView::cmd_starttime},
-	//{ "start", false, CommandLineView::cmd_start},
-	//{ "stop", false, CommandLineView::cmd_stop},
-	{ "valve", false, CommandLineView::cmd_valve },
-	{ "zone", false, CommandLineView::cmd_zone },
-	{ "reset", true, CommandLineView::cmd_reset },
-	{ NULL, NULL }
-};
-
-void CommandLineView::workerFunc(CommandLineView* p) {
+void CommandLineView::workerFunc() {
 	Tokens tokens;
 	std::string line;
 
-	while (!p->isTerminated) {
+	while (!isTerminated) {
 		std::cout << "> ";
 		std::getline(std::cin, line);
 		tokenize(line, tokens);
@@ -162,7 +165,8 @@ void CommandLineView::workerFunc(CommandLineView* p) {
 							tokens.erase(tokens.begin());
 						}
 
-						commands[i].func(p, subcommand, tokens);
+						FuncType f = commands[i].func;
+						(this->*f)(subcommand, tokens);
 					} catch (CommandLineException& e) {
 						std::cerr << "Error: " << e.what() << std::endl;
 					} catch (std::exception& e) {
@@ -183,7 +187,7 @@ void CommandLineView::workerFunc(CommandLineView* p) {
 /*
 	initscr();
 	
-	while(!p->isTerminated) {
+	while(!isTerminated) {
 	
 		char ch = getch();
 		
@@ -191,7 +195,7 @@ void CommandLineView::workerFunc(CommandLineView* p) {
 			if (10 == ch) {
 				printf("%s\r\n", text.c_str());
 				if (text == "exit") {
-					p->isTerminated = true;
+					isTerminated = true;
 					break;
 				}
 				text.clear();
@@ -208,21 +212,8 @@ void CommandLineView::workerFunc(CommandLineView* p) {
 	getApplication()->terminate();
 */	
 }
-/*
-void CommandLineView::cmd_exit(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
-	std::cout << "cmd_exit()" << std::endl;
 
-	if (!args.empty()) {
-		// TODO exception
-		std::cout << "Invalid parameter" << std::endl;
-		return;
-	}
-
-	//TODO ez itt nem mukodik
-	p->isTerminated = true;
-}
-*/
-void CommandLineView::cmd_help(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+void CommandLineView::cmd_help(const std::string& subcommand, const Tokens& parameters) {
 	CHECK_PARAMETERS(0);
 
 	//std::cout << "exit" << std::endl;
@@ -258,26 +249,23 @@ void CommandLineView::cmd_help(CommandLineView* p, const std::string& subcommand
 	std::cout << "time set" << std::endl;
 }
 /*
-void CommandLineView::cmd_start(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+void CommandLineView::cmd_start(const std::string& subcommand, const Tokens& parameters) {
 	CHECK_PARAMETERS(1);
 
-	Document* document = p->getDocument();
 
 	IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-	document->getProgram(programId).start();
+	getDocument()->getProgram(programId).start();
 }
 */
-void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
-
-	Document* document = p->getDocument();
+void CommandLineView::cmd_starttime(const std::string& subcommand, const Tokens& parameters) {
 
 	if (subcommand == "list") {
 		CHECK_PARAMETERS(1);
 
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		const Program& program = document->getProgram(programId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		const Program& program = getDocument()->getProgram(programId);
 
 		PRINT_STARTTIMES(program);
 
@@ -288,8 +276,8 @@ void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subco
 		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
 		unsigned startTime = parseUInt(parameters[2], "Invalid starttime");
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->getProgram(programId).setStartTime(startTimeId, startTime);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->getProgram(programId).setStartTime(startTimeId, startTime);
 
 	} else if (subcommand == "get") {
 		CHECK_PARAMETERS(2);
@@ -297,8 +285,8 @@ void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subco
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		unsigned startTime = document->getProgram(programId).getStartTime(startTimeId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		unsigned startTime = getDocument()->getProgram(programId).getStartTime(startTimeId);
 
 		PRINT_STARTTIME(startTimeId, startTime);
 
@@ -308,8 +296,8 @@ void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subco
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		unsigned startTime = parseUInt(parameters[1], "Invalid starttime");
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->getProgram(programId).addStartTime(startTime);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->getProgram(programId).addStartTime(startTime);
 
 	} else if (subcommand == "delete") {
 		CHECK_PARAMETERS(2);
@@ -317,25 +305,23 @@ void CommandLineView::cmd_starttime(CommandLineView* p, const std::string& subco
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->getProgram(programId).deleteStartTime(startTimeId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->getProgram(programId).deleteStartTime(startTimeId);
 
 	} else {
 		throw UnknownSubcommandException();
 	}
 }
 
-void CommandLineView::cmd_runtime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
-
-	Document* document = p->getDocument();
+void CommandLineView::cmd_runtime(const std::string& subcommand, const Tokens& parameters) {
 
 	if (subcommand == "list") {
 		CHECK_PARAMETERS(1);
 
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		const Program& program = document->getProgram(programId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		const Program& program = getDocument()->getProgram(programId);
 
 		PRINT_RUNTIMES(program);
 
@@ -346,8 +332,8 @@ void CommandLineView::cmd_runtime(CommandLineView* p, const std::string& subcomm
 		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
 		unsigned runTime = parseUInt(parameters[2], "Invalid runtime");
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->getProgram(programId).setRunTime(runTimeId, runTime);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->getProgram(programId).setRunTime(runTimeId, runTime);
 
 	} else if (subcommand == "get") {
 		CHECK_PARAMETERS(2);
@@ -355,8 +341,8 @@ void CommandLineView::cmd_runtime(CommandLineView* p, const std::string& subcomm
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		unsigned runTime = document->getProgram(programId).getRunTime(runTimeId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		unsigned runTime = getDocument()->getProgram(programId).getRunTime(runTimeId);
 
 		PRINT_RUNTIME(runTimeId, runTime);
 
@@ -365,15 +351,13 @@ void CommandLineView::cmd_runtime(CommandLineView* p, const std::string& subcomm
 	}
 }
 
-void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
-
-	Document* document = p->getDocument();
+void CommandLineView::cmd_program(const std::string& subcommand, const Tokens& parameters) {
 
 	if (subcommand == "list") {
 		CHECK_PARAMETERS(0);
 
-		AUTO_LOCK_PROGRAMS(document);
-		const Document::ProgramList& programs = document->getPrograms();
+		AUTO_LOCK_PROGRAMS(getDocument());
+		const Document::ProgramList& programs = getDocument()->getPrograms();
 
 		std::cout << "Programs:" << std::endl;
 		for (auto it = programs.cbegin(); programs.cend() != it; ++it) {
@@ -387,8 +371,8 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		const Program& program = document->getProgram(programId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		const Program& program = getDocument()->getProgram(programId);
 
 		std::cout << "Name: " << program.getName() << std::endl;
 
@@ -398,8 +382,8 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 	} else if (subcommand == "add") {
 		CHECK_PARAMETERS(1);
 
-		AUTO_LOCK_PROGRAMS(document);
-		Program& program = document->addProgram();
+		AUTO_LOCK_PROGRAMS(getDocument());
+		Program& program = getDocument()->addProgram();
 		program.setName(parameters[0]);
 
 	} else if (subcommand == "delete") {
@@ -407,16 +391,16 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->deleteProgram(programId);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->deleteProgram(programId);
 
 	} else if (subcommand == "rename") {
 		CHECK_PARAMETERS(2);
 
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->getProgram(programId).setName(parameters[1]);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->getProgram(programId).setName(parameters[1]);
 
 	} else if (subcommand == "move") {
 		CHECK_PARAMETERS(2);
@@ -424,45 +408,52 @@ void CommandLineView::cmd_program(CommandLineView* p, const std::string& subcomm
 		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
 		unsigned position = parseUInt(parameters[1], "Invalid position");
 
-		AUTO_LOCK_PROGRAMS(document);
-		document->moveProgram(programId, position);
+		AUTO_LOCK_PROGRAMS(getDocument());
+		getDocument()->moveProgram(programId, position);
 
 	} else {
 		throw UnknownSubcommandException();
 	}
 }
 
-void CommandLineView::cmd_valve(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+void CommandLineView::cmd_valve(const std::string& subcommand, const Tokens& parameters) {
 	CHECK_PARAMETERS(2);
-
-	Document* document = p->getDocument();
 
 	IdType valveId = parseId(parameters[0], INVALID_VALVEID);
 	bool open = parseOnOff(parameters[1], "Invalid parameter");
-	document->openValve(valveId, open);
+	getDocument()->openValve(valveId, open);
 }
 
-void CommandLineView::cmd_zone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
+void CommandLineView::cmd_zone(const std::string& subcommand, const Tokens& parameters) {
 	CHECK_PARAMETERS(2);
-
-	Document* document = p->getDocument();
 
 	IdType zoneId = parseId(parameters[0], INVALID_ZONEID);
 	bool open = parseOnOff(parameters[1], "Invalid parameter");
-	document->openZone(zoneId, open);
+	getDocument()->openZone(zoneId, open);
 }
 
-void CommandLineView::cmd_reset(CommandLineView* p, const std::string& subcommand, const Tokens& parameters) {
-
-	Document* document = p->getDocument();
+void CommandLineView::cmd_reset(const std::string& subcommand, const Tokens& parameters) {
 
 	if (subcommand == "valves") {
 		CHECK_PARAMETERS(0);
 
 		for (unsigned i = 0; i < VALVE_COUNT; i++) {
-			document->openValve(i, false);
+			getDocument()->openValve(i, false);
 		}
 	} else {
 		throw UnknownSubcommandException();
 	}
 }
+
+void CommandLineView::cmd_exit(const std::string& subcommand, const Tokens& parameters) {
+	CHECK_PARAMETERS(0);
+
+/*
+	IdType valveId = parseId(parameters[0], INVALID_VALVEID);
+	bool open = parseOnOff(parameters[1], "Invalid parameter");
+	getDocument()->openValve(valveId, open);
+*/
+	//TODO ez itt nem mukodik
+	//getDocument()->isTerminated = true;
+}
+

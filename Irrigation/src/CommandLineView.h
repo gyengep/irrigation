@@ -8,15 +8,14 @@
 #ifndef COMMANDLINEVIEW_H_
 #define COMMANDLINEVIEW_H_
 
+#include <atomic>
 #include <list>
-#include <vector>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include "View.h"
 
-namespace std {
-	class thread;
-}
 
 class CommandLineView : public View {
 public:
@@ -47,7 +46,7 @@ private:
 		UnknownSubcommandException() : CommandLineException("Unknown subcommand") {}
 	};
 
-	typedef void (*FuncType)(CommandLineView*, const std::string&, const Tokens&);
+	typedef void (CommandLineView::*FuncType)(const std::string&, const Tokens&);
 
 	struct Commands {
 		const char* cmd;
@@ -56,32 +55,32 @@ private:
 	};
 
 	std::thread* workerThread;
-	volatile bool isTerminated;
+	std::atomic_bool isTerminated;
 
 	static Commands commands[];
 
-	static void workerFunc(CommandLineView* p);
+	void workerFunc();
 
-	//static void cmd_exit(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_help(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_program(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_runtime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	//static void cmd_startprog(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	//static void cmd_startzone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	//static void cmd_stop(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_starttime(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_valve(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_zone(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-	static void cmd_reset(CommandLineView* p, const std::string& subcommand, const Tokens& parameters);
-
-public:
-	CommandLineView(Document* document);
-	virtual ~CommandLineView();
+	void cmd_exit(const std::string& subcommand, const Tokens& parameters);
+	void cmd_help(const std::string& subcommand, const Tokens& parameters);
+	void cmd_program(const std::string& subcommand, const Tokens& parameters);
+	void cmd_runtime(const std::string& subcommand, const Tokens& parameters);
+	//void cmd_startprog(const std::string& subcommand, const Tokens& parameters);
+	//void cmd_startzone(const std::string& subcommand, const Tokens& parameters);
+	//void cmd_stop(const std::string& subcommand, const Tokens& parameters);
+	void cmd_starttime(const std::string& subcommand, const Tokens& parameters);
+	void cmd_valve(const std::string& subcommand, const Tokens& parameters);
+	void cmd_zone(const std::string& subcommand, const Tokens& parameters);
+	void cmd_reset(const std::string& subcommand, const Tokens& parameters);
 
 	static IdType parseId(const std::string& text, const char* errorMessage);
 	static unsigned parseUInt(const std::string& text, const char* errorMessage);
 	static bool parseOnOff(const std::string& text, const char* errorMessage);
 	static void tokenize(const std::string& text, Tokens& tokens);
+
+public:
+	CommandLineView(Document* document);
+	virtual ~CommandLineView();
 };
 
 #endif /* COMMANDLINEVIEW_H_ */
