@@ -12,6 +12,7 @@
 #include <array>
 #include <mutex>
 
+#include "common.h"
 #include "Program.h"
 #include "Tools.h"
 
@@ -28,8 +29,6 @@ public:
 	typedef std::list<std::pair<IdType, Program*>> ProgramList;
 
 private:
-	static const unsigned ZONE_COUNT = 6;
-	static const unsigned VALVE_COUNT = ZONE_COUNT + 1;
 
 	typedef std::array<unsigned, ZONE_COUNT> WateringTimes;
 
@@ -80,8 +79,6 @@ public:
 	const Program& getProgram(IdType id) const;
 
 	// Zone, Valve
-	unsigned getZoneCount() const { return ZONE_COUNT; }
-	unsigned getValveCount() const { return VALVE_COUNT; }
 	void openZone(IdType id, bool open);
 	void openValve(IdType id, bool open);
 

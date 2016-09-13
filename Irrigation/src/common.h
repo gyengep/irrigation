@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
+const unsigned ZONE_COUNT = 6;
+const unsigned VALVE_COUNT = 7;
+
 #define INVALID_PROGRAMID 	"Invalid programID"
 #define INVALID_DAYID 		"Invalid dayID"
 #define INVALID_RUNTIMEID 	"Invalid runTimeID"

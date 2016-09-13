@@ -9,7 +9,6 @@
 #define PROGRAM_H_
 
 #include <array>
-//#include <climits>
 #include <ctime>
 #include <list>
 #include <string>
@@ -20,10 +19,21 @@
 
 
 class DayScheduler;
+class Program_SetName_Test;
+class Program_SetRunTime_Test;
+class Program_AddStartTime_Test;
+class Program_DeleteStartTime_Test;
+class Program_SetStartTime_Test;
+class Program_GetStartTime_Test;
 
 class Program {
 
-	static const unsigned ZONE_COUNT = 6;
+	friend Program_SetName_Test;
+	friend Program_SetRunTime_Test;
+	friend Program_AddStartTime_Test;
+	friend Program_DeleteStartTime_Test;
+	friend Program_SetStartTime_Test;
+	friend Program_GetStartTime_Test;
 
 public:
 

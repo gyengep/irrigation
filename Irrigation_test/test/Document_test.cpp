@@ -5,9 +5,10 @@
  *      Author: pgyenge
  */
 
+#include "gtest/gtest.h"
+
 #include "Document.h"
 
-#include "gtest/gtest.h"
 
 TEST(Document, ProgramLock) {
 	Document doc;
@@ -141,20 +142,20 @@ TEST(Document, getProgram) {
 TEST(Document, openValve) {
 	Document doc;
 
-	for (unsigned i = 0; i < doc.getValveCount(); i++) {
+	for (unsigned i = 0; i < VALVE_COUNT; i++) {
 		EXPECT_NO_THROW(doc.openValve(i, true));
 	}
 
-	EXPECT_THROW(doc.openValve(doc.getValveCount(), true), std::out_of_range);
+	EXPECT_THROW(doc.openValve(VALVE_COUNT, true), std::out_of_range);
 }
 
 TEST(Document, openZone) {
 	Document doc;
 
-	for (unsigned i = 0; i < doc.getZoneCount(); i++) {
+	for (unsigned i = 0; i < ZONE_COUNT; i++) {
 		EXPECT_NO_THROW(doc.openZone(i, true));
 	}
 
-	EXPECT_THROW(doc.openZone(doc.getZoneCount(), true), std::out_of_range);
+	EXPECT_THROW(doc.openZone(ZONE_COUNT, true), std::out_of_range);
 }
 

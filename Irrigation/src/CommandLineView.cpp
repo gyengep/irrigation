@@ -459,7 +459,7 @@ void CommandLineView::cmd_reset(CommandLineView* p, const std::string& subcomman
 	if (subcommand == "valves") {
 		CHECK_PARAMETERS(0);
 
-		for (unsigned i = 0; i < document->getValveCount(); i++) {
+		for (unsigned i = 0; i < VALVE_COUNT; i++) {
 			document->openValve(i, false);
 		}
 	} else {

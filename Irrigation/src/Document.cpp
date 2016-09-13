@@ -290,17 +290,17 @@ void Document::openValve_notSafe(IdType id, bool open) {
 }
 
 void Document::openZone(IdType id, bool open) {
-	if (getZoneCount() <= id) {
+	if (ZONE_COUNT <= id) {
 		throw std::out_of_range(INVALID_ZONEID);
 	} 
 	
 	AUTO_LOCK_VALVE();
 	openValve_notSafe(id, open);
-	openValve_notSafe(getZoneCount(), open);
+	openValve_notSafe(ZONE_COUNT, open);
 }
 
 void Document::openValve(IdType id, bool open) {
-	if (getValveCount() <= id) {
+	if (VALVE_COUNT <= id) {
 		throw std::out_of_range(INVALID_VALVEID);
 	} 
 	
