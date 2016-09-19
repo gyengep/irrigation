@@ -6,19 +6,19 @@
  */
 
 #include "common.h"
-#include "DaySchedulerSpecified.h"
+#include "Scheduler.h"
 
 #include "exception.h"
 
 
-DayScheduler_Specified::DayScheduler_Specified() {
+SpecifiedScheduler::SpecifiedScheduler() {
 	days.fill(false);
 }
 
-DayScheduler_Specified::~DayScheduler_Specified() {
+SpecifiedScheduler::~SpecifiedScheduler() {
 }
 
-void DayScheduler_Specified::enableDay(IdType id, bool enable) {
+void SpecifiedScheduler::enableDay(IdType id, bool enable) {
 	if (DAY_COUNT <= id) {
 		throw invalid_id(INVALID_DAYID);
 	}
@@ -26,7 +26,7 @@ void DayScheduler_Specified::enableDay(IdType id, bool enable) {
 	days[id] = enable;
 }
 
-bool DayScheduler_Specified::isDayEnabled(IdType id) const {
+bool SpecifiedScheduler::isDayEnabled(IdType id) const {
 	if (DAY_COUNT <= id) {
 		throw invalid_id(INVALID_DAYID);
 	}
@@ -34,6 +34,6 @@ bool DayScheduler_Specified::isDayEnabled(IdType id) const {
 	return days[id];
 }
 
-bool DayScheduler_Specified::isDayScheduled(std::tm* timeinfo) const {
+bool SpecifiedScheduler::isScheduled(std::tm* timeinfo) const {
 	return days[timeinfo->tm_wday];
 }

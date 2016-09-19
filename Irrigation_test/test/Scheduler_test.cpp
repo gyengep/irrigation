@@ -6,12 +6,12 @@
  */
 
 #include "gtest/gtest.h"
-#include "DaySchedulerSpecified.h"
+#include "Scheduler.h"
 #include "exception.h"
 
 
-TEST(SchedulerSpecified, enableDay) {
-	DayScheduler_Specified scheduler;
+TEST(SpecifiedScheduler, enableDay) {
+	SpecifiedScheduler scheduler;
 
 	for (int i = 0; i < 7; i++) {
 		EXPECT_FALSE(scheduler.days[i]);
@@ -22,8 +22,8 @@ TEST(SchedulerSpecified, enableDay) {
 	EXPECT_THROW(scheduler.enableDay(7, true), invalid_id);
 }
 
-TEST(SchedulerSpecified, isDayEnabled) {
-	DayScheduler_Specified scheduler;
+TEST(SpecifiedScheduler, isDayEnabled) {
+	SpecifiedScheduler scheduler;
 
 	for (int i = 0; i < 7; i++) {
 		EXPECT_FALSE(scheduler.isDayEnabled(i));
@@ -72,7 +72,7 @@ std::tm makeTm(int year, int month, int day, int hour, int min, int sec) {
 	return tm;
 }
 
-TEST(SchedulerSpecified, makeTm) {
+TEST(SpecifiedScheduler, makeTm) {
 
 	std::cout << std::endl;
 	std::tm tm;
@@ -108,21 +108,21 @@ TEST(SchedulerSpecified, makeTm) {
 	EXPECT_EQ(33, tm.tm_sec);
 }
 
-void checkDay(DayScheduler_Specified& scheduler, bool requestedResult, int day) {
+void checkDay(SpecifiedScheduler& scheduler, bool requestedResult, int day) {
 	std::tm tm;
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm = makeTm(2016, 9, day, hour, min, sec);
-				EXPECT_EQ(requestedResult, scheduler.isDayScheduled(&tm));
+				EXPECT_EQ(requestedResult, scheduler.isScheduled(&tm));
 			}
 		}
 	}
 
 }
 
-TEST(SchedulerSpecified, isDayScheduled) {
-	DayScheduler_Specified scheduler;
+TEST(SpecifiedScheduler, isScheduled) {
+	SpecifiedScheduler scheduler;
 
 	scheduler.enableDay(WEDNESDAY, true);
 

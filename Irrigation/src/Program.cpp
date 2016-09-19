@@ -9,12 +9,12 @@
 #include "Program.h"
 
 #include "Tools.h"
-#include "DaySchedulerSpecified.h"
+#include "Scheduler.h"
 
 
 Program::Program() {
 	schedulerType = SPECIFIED_DAYS;
-	schedulers[SPECIFIED_DAYS] = new DayScheduler_Specified();
+	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
 
 }
 
@@ -28,7 +28,13 @@ Program::~Program() {
 
 bool Program::isScheduled(const std::time_t& rawTime) const {
 	std::tm timeinfo = *std::localtime(&rawTime);
-	return schedulers[schedulerType]->isDayScheduled(&timeinfo);
+
+// TODO starttime
+//	for (auto it = startTimeContainer.begin(); startTimeContainer.end() != it; ++it) {
+//		if ()
+//	}
+
+	return schedulers[schedulerType]->isScheduled(&timeinfo);
 }
 
 ////////////////////////////////////////////////////////////////

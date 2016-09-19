@@ -19,7 +19,7 @@
 #include "Containers.h"
 
 
-class DayScheduler;
+class Scheduler;
 class Program_SetName_Test;
 
 class Program {
@@ -45,7 +45,7 @@ private:
 
 	// Watering day
 	SchedulerType schedulerType;
-	std::array<DayScheduler*, SchedulerType::LAST> schedulers;
+	std::array<Scheduler*, SchedulerType::LAST> schedulers;
 
 	RunTimeContainer runTimeContainer;
 	StartTimeContainer startTimeContainer;
