@@ -15,8 +15,6 @@
 #include "common.h"
 
 
-#define AUTO_LOCK_PROGRAMS(programContainer) std::lock_guard<std::mutex> lock((programContainer).getMutex());
-
 class Program;
 
 class RunTimeContainer_set_Test;

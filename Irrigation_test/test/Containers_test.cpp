@@ -1,8 +1,13 @@
 
 #include "gtest/gtest.h"
 
+#include <mutex>
+
 #include "Containers.h"
 #include "exception.h"
+
+#define AUTO_LOCK(MUTEX) std::lock_guard<std::mutex> lock(MUTEX)
+
 
 TEST(RunTimeContainer, set) {
 	RunTimeContainer runTimes;
@@ -164,8 +169,7 @@ TEST(ProgramContainer, ProgramLock) {
 
 TEST(ProgramContainer, add) {
 	ProgramContainer programs;
-
-	AUTO_LOCK_PROGRAMS(programs);
+	AUTO_LOCK(programs.getMutex());
 
 	EXPECT_EQ(0, programs.container().size());
 	Program& program0 = programs.add();
@@ -184,8 +188,7 @@ TEST(ProgramContainer, add) {
 
 TEST(ProgramContainer, del) {
 	ProgramContainer programs;
-
-	AUTO_LOCK_PROGRAMS(programs);
+	AUTO_LOCK(programs.getMutex());
 
 	programs.add();
 	programs.add();
@@ -209,8 +212,7 @@ TEST(ProgramContainer, del) {
 
 TEST(ProgramContainer, move) {
 	ProgramContainer programs;
-
-	AUTO_LOCK_PROGRAMS(programs);
+	AUTO_LOCK(programs.getMutex());
 
 	Program* program0 = &programs.add();
 	Program* program1 = &programs.add();
@@ -251,8 +253,7 @@ TEST(ProgramContainer, move) {
 
 TEST(ProgramContainer, get) {
 	ProgramContainer programs;
-
-	AUTO_LOCK_PROGRAMS(programs);
+	AUTO_LOCK(programs.getMutex());
 
 	Program* program0 = &programs.add();
 	Program* program1 = &programs.add();

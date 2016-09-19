@@ -17,8 +17,6 @@
 #include "View.h"
 
 
-#undef AUTO_LOCK_PROGRAMS
-
 #define AUTO_LOCK_VIEW() std::lock_guard<std::mutex> lockView(viewMutex)
 #define AUTO_LOCK_VALVE() std::lock_guard<std::mutex> lockValve(valveMutex)
 #define AUTO_LOCK_PROGRAMS() std::lock_guard<std::mutex> lockProgram(programContainer.getMutex())
