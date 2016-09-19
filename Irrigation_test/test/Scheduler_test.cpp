@@ -5,7 +5,9 @@
  *      Author: pgyenge
  */
 
-#include "gtest/gtest.h"
+#include <cstring>
+#include <gtest/gtest.h>
+
 #include "Scheduler.h"
 #include "exception.h"
 
@@ -36,9 +38,6 @@ TEST(SpecifiedScheduler, isDayEnabled) {
 	EXPECT_THROW(scheduler.isDayEnabled(7), invalid_id);
 }
 
-
-#include <cstring>
-
 std::tm makeTm(int year, int month, int day, int hour, int min, int sec) {
 
 	EXPECT_TRUE(0 <= month && month < 12);
@@ -60,24 +59,11 @@ std::tm makeTm(int year, int month, int day, int hour, int min, int sec) {
 	tm.tm_isdst = 1;
 
 	std::time_t t = std::mktime(&tm);
-	tm = *std::localtime(&t);
-/*
-	std::cout << std::ctime(&t);
-	std::cout << year << "." << month << "." << day << " ";
-	std::cout << hour << ":" << min << ":" << sec << std::endl;
-
-	std::cout << tm.tm_year + 1900 << "." << tm.tm_mon + 1 << "." << tm.tm_mday << " ";
-	std::cout << tm.tm_hour << ":" << tm.tm_min << ":" << tm.tm_sec << std::endl;
-*/
-	return tm;
+	return *std::localtime(&t);
 }
 
 TEST(SpecifiedScheduler, makeTm) {
-
-	std::cout << std::endl;
-	std::tm tm;
-
-	tm = makeTm(2016, 9, 11, 20, 59, 33);
+	std::tm tm = makeTm(2016, 9, 11, 20, 59, 33);
 
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);

@@ -6,7 +6,7 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 
 int main(int argc, char **argv) {

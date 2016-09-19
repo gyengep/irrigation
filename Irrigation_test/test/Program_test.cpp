@@ -5,7 +5,7 @@
  *      Author: pgyenge
  */
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "exception.h"
 #include "Program.h"
