@@ -20,12 +20,8 @@
 
 
 class Scheduler;
-class Program_SetName_Test;
 
 class Program {
-
-	friend Program_SetName_Test;
-
 public:
 
 	typedef RunTimeContainer::RunTimes RunTimes;

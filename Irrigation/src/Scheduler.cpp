@@ -34,6 +34,6 @@ bool SpecifiedScheduler::isDayEnabled(IdType id) const {
 	return days[id];
 }
 
-bool SpecifiedScheduler::isScheduled(std::tm* timeinfo) const {
-	return days[timeinfo->tm_wday];
+bool SpecifiedScheduler::isScheduled(const std::tm& timeinfo) const {
+	return days[timeinfo.tm_wday];
 }

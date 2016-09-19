@@ -34,7 +34,7 @@ bool Program::isScheduled(const std::time_t& rawTime) const {
 //		if ()
 //	}
 
-	return schedulers[schedulerType]->isScheduled(&timeinfo);
+	return schedulers[schedulerType]->isScheduled(timeinfo);
 }
 
 ////////////////////////////////////////////////////////////////

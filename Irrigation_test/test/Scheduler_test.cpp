@@ -100,7 +100,7 @@ void checkDay(SpecifiedScheduler& scheduler, bool requestedResult, int day) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm = makeTm(2016, 9, day, hour, min, sec);
-				EXPECT_EQ(requestedResult, scheduler.isScheduled(&tm));
+				EXPECT_EQ(requestedResult, scheduler.isScheduled(tm));
 			}
 		}
 	}

@@ -11,21 +11,12 @@
 #include "Program.h"
 
 
-TEST(Program, SetName) {
+TEST(Program, name) {
 	Program program;
 	const char* name = "AbcXyz";
 
-	EXPECT_EQ("", program.name);
-
-	program.setName(name);
-	EXPECT_EQ(name, program.name);
-}
-
-TEST(Program, GetName) {
-	Program program;
-	const char* name = "AbcXyz";
+	EXPECT_EQ("", program.getName());
 
 	program.setName(name);
 	EXPECT_EQ(name, program.getName());
 }
-

@@ -19,7 +19,7 @@ class SpecifiedScheduler_enableDay_Test;
 class Scheduler {
 public:
 	virtual ~Scheduler() {}
-	virtual bool isScheduled(std::tm* timeinfo) const = 0;
+	virtual bool isScheduled(const std::tm& timeinfo) const = 0;
 };
 
 enum Days {
@@ -49,7 +49,7 @@ public:
 	void enableDay(IdType id, bool enable);
 	bool isDayEnabled(IdType id) const;
 
-	virtual bool isScheduled(std::tm* timeinfo) const;
+	virtual bool isScheduled(const std::tm& timeinfo) const;
 };
 
 

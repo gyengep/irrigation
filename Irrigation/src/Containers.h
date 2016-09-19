@@ -17,17 +17,9 @@
 
 class Program;
 
-class RunTimeContainer_set_Test;
-class StartTimeContainer_add_Test;
-class StartTimeContainer_del_Test;
-class StartTimeContainer_set_Test;
-class StartTimeContainer_get_Test;
-
 ////////////////////////////////////////////////////////////////
 
 class RunTimeContainer {
-	friend RunTimeContainer_set_Test;
-
 public:
 	typedef std::array<std::pair<IdType, unsigned>, ZONE_COUNT> RunTimes;
 
@@ -46,11 +38,6 @@ public:
 ////////////////////////////////////////////////////////////////
 
 class StartTimeContainer {
-	friend StartTimeContainer_add_Test;
-	friend StartTimeContainer_del_Test;
-	friend StartTimeContainer_set_Test;
-	friend StartTimeContainer_get_Test;
-
 public:
 	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
 

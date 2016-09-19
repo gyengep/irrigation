@@ -19,8 +19,8 @@ TEST(RunTimeContainer, set) {
 	EXPECT_THROW(runTimes.set(i, 0), invalid_id);
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_EQ(i, runTimes.runTimes[i].first);
-		EXPECT_EQ(i * 10, runTimes.runTimes[i].second);
+		EXPECT_EQ(i, runTimes.container().at(i).first);
+		EXPECT_EQ(i * 10, runTimes.container().at(i).second);
 	}
 }
 
@@ -50,17 +50,17 @@ TEST(RunTimeContainer, get) {
 TEST(StartTimeContainer, add) {
 	StartTimeContainer startTimes;
 
-	EXPECT_EQ(0, startTimes.startTimes.size());
+	EXPECT_EQ(0, startTimes.container().size());
 
 	EXPECT_EQ(0, startTimes.add(10));
-	EXPECT_EQ(1, startTimes.startTimes.size());
-	EXPECT_EQ(0, startTimes.startTimes.back().first);
-	EXPECT_EQ(10, startTimes.startTimes.back().second);
+	EXPECT_EQ(1, startTimes.container().size());
+	EXPECT_EQ(0, startTimes.container().back().first);
+	EXPECT_EQ(10, startTimes.container().back().second);
 
 	EXPECT_EQ(1, startTimes.add(20));
-	EXPECT_EQ(2, startTimes.startTimes.size());
-	EXPECT_EQ(1, startTimes.startTimes.back().first);
-	EXPECT_EQ(20, startTimes.startTimes.back().second);
+	EXPECT_EQ(2, startTimes.container().size());
+	EXPECT_EQ(1, startTimes.container().back().first);
+	EXPECT_EQ(20, startTimes.container().back().second);
 }
 
 TEST(StartTimeContainer, del) {
@@ -78,9 +78,9 @@ TEST(StartTimeContainer, del) {
 	// Delete from middle
 	startTimes.del(1);
 
-	EXPECT_EQ(3, startTimes.startTimes.size());
+	EXPECT_EQ(3, startTimes.container().size());
 
-	it = startTimes.startTimes.begin();
+	it = startTimes.container().begin();
 	EXPECT_EQ(0, it->first);
 	EXPECT_EQ(10, it->second);
 
@@ -96,9 +96,9 @@ TEST(StartTimeContainer, del) {
 	// Delete first
 	startTimes.del(0);
 
-	EXPECT_EQ(2, startTimes.startTimes.size());
+	EXPECT_EQ(2, startTimes.container().size());
 
-	it = startTimes.startTimes.begin();
+	it = startTimes.container().begin();
 	EXPECT_EQ(2, it->first);
 	EXPECT_EQ(30, it->second);
 
@@ -109,9 +109,9 @@ TEST(StartTimeContainer, del) {
 	// Delete last
 	startTimes.del(3);
 
-	EXPECT_EQ(1, startTimes.startTimes.size());
+	EXPECT_EQ(1, startTimes.container().size());
 
-	it = startTimes.startTimes.begin();
+	it = startTimes.container().begin();
 	EXPECT_EQ(2, it->first);
 	EXPECT_EQ(30, it->second);
 }
