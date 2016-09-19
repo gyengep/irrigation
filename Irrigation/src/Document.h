@@ -13,11 +13,10 @@
 #include <mutex>
 
 #include "common.h"
+#include "Containers.h"
 #include "Program.h"
 #include "Tools.h"
 
-
-#define AUTO_LOCK_PROGRAMS(document) std::lock_guard<std::mutex> lock((document)->getProgramMutex());
 
 class Valve;
 class View;
@@ -26,7 +25,7 @@ class View;
 class Document {
 
 public:
-	typedef std::list<std::pair<IdType, Program*>> ProgramList;
+	typedef ProgramContainer::Programs Programs;
 
 private:
 
@@ -41,9 +40,7 @@ private:
 	std::array<Valve*, VALVE_COUNT> valves;
 
 	// Programs
-	mutable std::mutex programMutex;
-	IdType nextProgramId;
-	ProgramList programs;
+	ProgramContainer programContainer;
 
 	// Watering
 	mutable std::mutex wateringMutex;
@@ -70,13 +67,8 @@ public:
 	void stopWatering();
 
 	// Program
-	std::mutex& getProgramMutex() { return programMutex; }
-	const ProgramList& getPrograms() const;
-	Program& addProgram();
-	void deleteProgram(IdType id);
-	void moveProgram(IdType id, unsigned newPosition);
-	Program& getProgram(IdType id);
-	const Program& getProgram(IdType id) const;
+	const ProgramContainer& programs() const { return programContainer; }
+	ProgramContainer& programs() { return programContainer; }
 
 	// Zone, Valve
 	void openZone(IdType id, bool open);

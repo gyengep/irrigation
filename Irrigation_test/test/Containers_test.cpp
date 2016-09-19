@@ -138,3 +138,134 @@ TEST(StartTimeContainer, set) {
 	EXPECT_EQ(100, startTimes.get(0));
 	EXPECT_EQ(200, startTimes.get(1));
 }
+
+//////////////////////////////////////////////////////////////////////
+
+TEST(ProgramContainer, ProgramLock) {
+	ProgramContainer programs;
+
+	programs.getMutex().lock();
+	EXPECT_FALSE(programs.getMutex().try_lock());
+	programs.getMutex().unlock();
+
+	EXPECT_THROW(programs.container(), not_locked);
+	programs.getMutex().unlock();
+	EXPECT_THROW(programs.add(), not_locked);
+	programs.getMutex().unlock();
+	EXPECT_THROW(programs.del(0), not_locked);
+	programs.getMutex().unlock();
+	EXPECT_THROW(programs.move(0, 0), not_locked);
+	programs.getMutex().unlock();
+	EXPECT_THROW(programs.get(0), not_locked);
+	programs.getMutex().unlock();
+
+}
+
+
+TEST(ProgramContainer, add) {
+	ProgramContainer programs;
+
+	AUTO_LOCK_PROGRAMS(programs);
+
+	EXPECT_EQ(0, programs.container().size());
+	Program& program0 = programs.add();
+	EXPECT_EQ(1, programs.container().size());
+	Program& program1 = programs.add();
+	EXPECT_EQ(2, programs.container().size());
+
+	auto programIt = programs.container().begin();
+	EXPECT_EQ(0, programIt->first);
+	EXPECT_EQ(&program0, programIt->second);
+
+	++programIt;
+	EXPECT_EQ(1, programIt->first);
+	EXPECT_EQ(&program1, programIt->second);
+}
+
+TEST(ProgramContainer, del) {
+	ProgramContainer programs;
+
+	AUTO_LOCK_PROGRAMS(programs);
+
+	programs.add();
+	programs.add();
+	programs.add();
+
+	EXPECT_THROW(programs.del(3), invalid_id);
+	EXPECT_EQ(3, programs.container().size());
+
+	EXPECT_NO_THROW(programs.del(1));
+	EXPECT_EQ(2, programs.container().size());
+
+	EXPECT_THROW(programs.del(1), invalid_id);
+	EXPECT_EQ(2, programs.container().size());
+
+	EXPECT_NO_THROW(programs.del(0));
+	EXPECT_EQ(1, programs.container().size());
+
+	EXPECT_NO_THROW(programs.del(2));
+	EXPECT_EQ(0, programs.container().size());
+}
+
+TEST(ProgramContainer, move) {
+	ProgramContainer programs;
+
+	AUTO_LOCK_PROGRAMS(programs);
+
+	Program* program0 = &programs.add();
+	Program* program1 = &programs.add();
+	Program* program2 = &programs.add();
+
+	EXPECT_THROW(programs.move(1, 3), std::out_of_range);
+	EXPECT_THROW(programs.move(3, 1), invalid_id);
+
+	programs.move(1, 0);
+
+	auto programIt = programs.container().begin();
+	EXPECT_EQ(1, programIt->first);
+	EXPECT_EQ(program1, programIt->second);
+
+	++programIt;
+	EXPECT_EQ(0, programIt->first);
+	EXPECT_EQ(program0, programIt->second);
+
+	++programIt;
+	EXPECT_EQ(2, programIt->first);
+	EXPECT_EQ(program2, programIt->second);
+
+
+	programs.move(1, 2);
+
+	programIt = programs.container().begin();
+	EXPECT_EQ(0, programIt->first);
+	EXPECT_EQ(program0, programIt->second);
+
+	++programIt;
+	EXPECT_EQ(2, programIt->first);
+	EXPECT_EQ(program2, programIt->second);
+
+	++programIt;
+	EXPECT_EQ(1, programIt->first);
+	EXPECT_EQ(program1, programIt->second);
+}
+
+TEST(ProgramContainer, get) {
+	ProgramContainer programs;
+
+	AUTO_LOCK_PROGRAMS(programs);
+
+	Program* program0 = &programs.add();
+	Program* program1 = &programs.add();
+	Program* program2 = &programs.add();
+
+	EXPECT_THROW(programs.get(3), invalid_id);
+	EXPECT_EQ(program0, &programs.get(0));
+	EXPECT_EQ(program1, &programs.get(1));
+	EXPECT_EQ(program2, &programs.get(2));
+
+	const ProgramContainer& cprograms = programs;
+	EXPECT_THROW(cprograms.get(3), invalid_id);
+	EXPECT_EQ(program0, &cprograms.get(0));
+	EXPECT_EQ(program1, &cprograms.get(1));
+	EXPECT_EQ(program2, &cprograms.get(2));
+}

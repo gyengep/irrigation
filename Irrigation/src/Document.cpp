@@ -21,10 +21,10 @@
 
 #define AUTO_LOCK_VIEW() std::lock_guard<std::mutex> lockView(viewMutex)
 #define AUTO_LOCK_VALVE() std::lock_guard<std::mutex> lockValve(valveMutex)
-#define AUTO_LOCK_PROGRAMS() std::lock_guard<std::mutex> lockView(programMutex)
+#define AUTO_LOCK_PROGRAMS() std::lock_guard<std::mutex> lockProgram(programContainer.getMutex())
 #define AUTO_LOCK_WATERING() std::lock_guard<std::mutex> lockValve(wateringMutex)
 
-Document::Document() : nextProgramId(0) {
+Document::Document() {
 	valves[0] = new Valve(4);
 	valves[1] = new Valve(5);
 	valves[2] = new Valve(6);
@@ -63,7 +63,7 @@ void Document::doTask() {
 
 		AUTO_LOCK_PROGRAMS();
 
-		const ProgramList& programList = getPrograms();
+		const Programs& programList = programContainer.container();
 
 		for (auto it = programList.begin(); programList.end() != it; ++it) {
 			Program* program = it->second;
@@ -104,7 +104,7 @@ bool Document::isWateringActive() const {
 void Document::startWatering(IdType programId) {
 	AUTO_LOCK_WATERING();
 	AUTO_LOCK_PROGRAMS();
-	Program& program = getProgram(programId);
+	Program& program = programs().get(programId);
 	startWatering_notSafe(program, getApplication()->getTime());
 }
 
@@ -164,102 +164,6 @@ IdType Document::getWateringZone_notSafe(std::time_t rawTime) const {
 
 	return ZONE_COUNT;
 }
-
-/////////////////////////////////////////////////////
-// Program
-
-const Document::ProgramList& Document::getPrograms() const {
-	if (programMutex.try_lock()) {
-		throw not_locked("Programs are not locked");
-	}
-
-	return programs;
-}
-
-Program& Document::addProgram() {
-	if (programMutex.try_lock()) {
-		throw not_locked("Programs are not locked");
-	}
-
-	Program* program = new Program();
-	tools::push_back(programs, nextProgramId, program);
-	nextProgramId++;
-	return *program;
-}
-
-void Document::deleteProgram(IdType id) {
-	if (programMutex.try_lock()) {
-		throw not_locked("Programs are not locked");
-	}
-
-	Program* program = NULL;
-
-	try {
-		program = tools::erase(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
-	}
-
-	delete program;
-}
-
-void Document::moveProgram(IdType id, unsigned newPosition) {
-	if (programMutex.try_lock()) {
-		throw not_locked("Programs are not locked");
-	}
-
-	if (programs.size() <= newPosition) {
-		throw std::out_of_range("Invalid position");
-	}
-
-	Program* program;
-
-	try {
-		program = tools::erase(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
-	}
-
-	unsigned count = 0;
-	auto it = programs.begin();
-	while (count < newPosition) {
-		++it;
-		++count;
-	}
-
-	programs.insert(it, std::make_pair(id, program));
-}
-
-Program& Document::getProgram(IdType id) {
-	if (programMutex.try_lock()) {
-		throw not_locked("Programs are not locked");
-	}
-
-	Program* program = NULL;
-	try {
-		program = tools::get(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
-	}
-
-	return *program;
-}
-
-const Program& Document::getProgram(IdType id) const {
-	if (programMutex.try_lock()) {
-		throw not_locked("Programs are not locked");
-	}
-
-	const Program* program = NULL;
-	try {
-		program = tools::get(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
-	}
-
-	return *program;
-}
-
 
 /////////////////////////////////////////////////////
 // View

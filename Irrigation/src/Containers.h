@@ -10,9 +10,14 @@
 
 #include <array>
 #include <list>
+#include <mutex>
 
 #include "common.h"
 
+
+#define AUTO_LOCK_PROGRAMS(programContainer) std::lock_guard<std::mutex> lock((programContainer).getMutex());
+
+class Program;
 
 class RunTimeContainer_set_Test;
 class StartTimeContainer_add_Test;
@@ -20,6 +25,7 @@ class StartTimeContainer_del_Test;
 class StartTimeContainer_set_Test;
 class StartTimeContainer_get_Test;
 
+////////////////////////////////////////////////////////////////
 
 class RunTimeContainer {
 	friend RunTimeContainer_set_Test;
@@ -65,5 +71,29 @@ public:
 	unsigned get(IdType id) const;
 };
 
+////////////////////////////////////////////////////////////////
+
+class ProgramContainer {
+
+public:
+	typedef std::list<std::pair<IdType, Program*>> Programs;
+
+private:
+	mutable std::mutex mutex;
+	IdType nextProgramId;
+	Programs programs;
+
+public:
+	ProgramContainer();
+	virtual ~ProgramContainer();
+
+	std::mutex& getMutex() const { return mutex; }
+	const Programs& container() const;
+	Program& add();
+	void del(IdType id);
+	void move(IdType id, unsigned newPosition);
+	Program& get(IdType id);
+	const Program& get(IdType id) const;
+};
 
 #endif /* CONTAINERS_H_ */
