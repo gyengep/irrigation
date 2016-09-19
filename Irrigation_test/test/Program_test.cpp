@@ -29,43 +29,6 @@ TEST(Program, GetName) {
 	EXPECT_EQ(name, program.getName());
 }
 
-TEST(Program, SetRunTime) {
-	Program program;
-	unsigned i;
-
-	for (i = 0; i < ZONE_COUNT; i++) {
-		program.setRunTime(i, i * 10);
-	}
-
-	EXPECT_THROW(program.setRunTime(i, 0), invalid_id);
-
-	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_EQ(i, program.runTimes[i].first);
-		EXPECT_EQ(i * 10, program.runTimes[i].second);
-	}
-}
-
-TEST(Program, GetRunTime) {
-	Program program;
-	unsigned i;
-
-	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_NO_THROW(program.getRunTime(i));
-	}
-
-	EXPECT_THROW(program.getRunTime(i), invalid_id);
-
-	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_EQ(0, program.getRunTime(i));
-		program.setRunTime(i, i * 10);
-	}
-
-	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_EQ(i * 10, program.getRunTime(i));
-	}
-
-}
-
 TEST(Program, AddStartTime) {
 	Program program;
 

@@ -18,9 +18,6 @@ Program::Program() :
 	schedulerType = SPECIFIED_DAYS;
 	schedulers[SPECIFIED_DAYS] = new DayScheduler_Specified();
 
-	for (IdType i = 0; i < runTimes.size(); i++) {
-		runTimes[i] = std::make_pair(i, 0);
-	}
 }
 
 Program::~Program() {
@@ -45,33 +42,6 @@ std::string Program::getName() const {
 
 void Program::setName(const std::string& newName) {
 	name = newName;
-}
-
-////////////////////////////////////////////////////////////////
-// RUN TIME
-
-const Program::RunTimes& Program::getRunTimes() const {
-	return runTimes;
-}
-
-void Program::setRunTime(IdType id, unsigned minutes) {
-	try {
-		tools::set(runTimes, id, minutes);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_RUNTIMEID);
-	}
-}
-
-unsigned Program::getRunTime(IdType id) const {
-	unsigned result;
-
-	try {
-		result = tools::get(runTimes, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_RUNTIMEID);
-	}
-
-	return result;
 }
 
 ////////////////////////////////////////////////////////////////

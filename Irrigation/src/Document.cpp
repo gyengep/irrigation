@@ -114,7 +114,7 @@ void Document::stopWatering() {
 }
 
 bool Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
-	const Program::RunTimes& runTimes = program.getRunTimes();
+	const Program::RunTimes& runTimes = program.runTimes().container();
 
 	if (runTimes.size() != wateringTimes.size()) {
 		throw std::runtime_error("runTimes.length() != wateringTimes.length()");

@@ -16,11 +16,11 @@
 #include <vector>
 
 #include "common.h"
+#include "Containers.h"
 
 
 class DayScheduler;
 class Program_SetName_Test;
-class Program_SetRunTime_Test;
 class Program_AddStartTime_Test;
 class Program_DeleteStartTime_Test;
 class Program_SetStartTime_Test;
@@ -29,7 +29,6 @@ class Program_GetStartTime_Test;
 class Program {
 
 	friend Program_SetName_Test;
-	friend Program_SetRunTime_Test;
 	friend Program_AddStartTime_Test;
 	friend Program_DeleteStartTime_Test;
 	friend Program_SetStartTime_Test;
@@ -37,7 +36,7 @@ class Program {
 
 public:
 
-	typedef std::array<std::pair<IdType, unsigned>, ZONE_COUNT> RunTimes;
+	typedef RunTimeContainer::RunTimes RunTimes;
 	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
 
 
@@ -57,7 +56,7 @@ private:
 	std::array<DayScheduler*, SchedulerType::LAST> schedulers;
 
 	// Runtime
-	RunTimes runTimes;
+	RunTimeContainer runTimeContainer;
 
 	// StartTime
 	IdType nextStartTimeId;
@@ -73,9 +72,8 @@ public:
 	bool isScheduled(const std::time_t& rawTime) const;
 
 	// Runtime
-	const RunTimes& getRunTimes() const;
-	void setRunTime(IdType id, unsigned minutes);
-	unsigned getRunTime(IdType id) const;
+	const RunTimeContainer& runTimes() const { return runTimeContainer; }
+	RunTimeContainer& runTimes() { return runTimeContainer; }
 
 	// StartTime
 	const StartTimes& getStartTimes() const;

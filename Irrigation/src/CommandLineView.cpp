@@ -36,7 +36,7 @@ if (parameters.size() < req) {				\
 
 #define PRINT_RUNTIMES(program)												\
 {																			\
-	const Program::RunTimes& runTimes = program.getRunTimes();				\
+	const Program::RunTimes& runTimes = program.runTimes().container();		\
 	std::cout << "Run times:" << std::endl;									\
 	for (auto it = runTimes.cbegin(); runTimes.cend() != it; ++it) {		\
 		PRINT_RUNTIME(it->first, it->second);								\
@@ -331,7 +331,7 @@ void CommandLineView::cmd_runtime(const std::string& subcommand, const Tokens& p
 		unsigned runTime = parseUInt(parameters[2], "Invalid runtime");
 
 		AUTO_LOCK_PROGRAMS(getDocument());
-		getDocument()->getProgram(programId).setRunTime(runTimeId, runTime);
+		getDocument()->getProgram(programId).runTimes().set(runTimeId, runTime);
 
 	} else if (subcommand == "get") {
 		CHECK_PARAMETERS(2);
@@ -340,7 +340,7 @@ void CommandLineView::cmd_runtime(const std::string& subcommand, const Tokens& p
 		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
 
 		AUTO_LOCK_PROGRAMS(getDocument());
-		unsigned runTime = getDocument()->getProgram(programId).getRunTime(runTimeId);
+		unsigned runTime = getDocument()->getProgram(programId).runTimes().get(runTimeId);
 
 		PRINT_RUNTIME(runTimeId, runTime);
 
