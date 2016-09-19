@@ -21,23 +21,15 @@
 
 class DayScheduler;
 class Program_SetName_Test;
-class Program_AddStartTime_Test;
-class Program_DeleteStartTime_Test;
-class Program_SetStartTime_Test;
-class Program_GetStartTime_Test;
 
 class Program {
 
 	friend Program_SetName_Test;
-	friend Program_AddStartTime_Test;
-	friend Program_DeleteStartTime_Test;
-	friend Program_SetStartTime_Test;
-	friend Program_GetStartTime_Test;
 
 public:
 
 	typedef RunTimeContainer::RunTimes RunTimes;
-	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
+	typedef StartTimeContainer::StartTimes StartTimes;
 
 
 	enum SchedulerType {
@@ -55,12 +47,8 @@ private:
 	SchedulerType schedulerType;
 	std::array<DayScheduler*, SchedulerType::LAST> schedulers;
 
-	// Runtime
 	RunTimeContainer runTimeContainer;
-
-	// StartTime
-	IdType nextStartTimeId;
-	StartTimes startTimes;
+	StartTimeContainer startTimeContainer;
 
 public:
 	Program();
@@ -71,16 +59,10 @@ public:
 
 	bool isScheduled(const std::time_t& rawTime) const;
 
-	// Runtime
 	const RunTimeContainer& runTimes() const { return runTimeContainer; }
 	RunTimeContainer& runTimes() { return runTimeContainer; }
-
-	// StartTime
-	const StartTimes& getStartTimes() const;
-	IdType addStartTime(unsigned minutes);
-	void deleteStartTime(IdType id);
-	void setStartTime(IdType id, unsigned minutes);
-	unsigned getStartTime(IdType id) const;
+	const StartTimeContainer& startTimes() const { return startTimeContainer; }
+	StartTimeContainer& startTimes() { return startTimeContainer; }
 };
 
 #endif /* PROGRAM_H_ */

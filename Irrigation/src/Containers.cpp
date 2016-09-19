@@ -8,14 +8,6 @@
 #include "Containers.h"
 #include "Tools.h"
 
-Containers::Containers() {
-	// TODO Auto-generated constructor stub
-
-}
-
-Containers::~Containers() {
-	// TODO Auto-generated destructor stub
-}
 
 ////////////////////////////////////////////////////////////////
 // RUN TIME
@@ -48,6 +40,53 @@ unsigned RunTimeContainer::get(IdType id) const {
 		result = tools::get(runTimes, id);
 	} catch(invalid_id& e) {
 		throw invalid_id(INVALID_RUNTIMEID);
+	}
+
+	return result;
+}
+
+////////////////////////////////////////////////////////////////
+// START TIME
+
+StartTimeContainer::StartTimeContainer() : nextStartTimeId(0) {
+}
+
+StartTimeContainer::~StartTimeContainer() {
+}
+
+const StartTimeContainer::StartTimes& StartTimeContainer::container() const {
+	return startTimes;
+}
+
+IdType StartTimeContainer::add(unsigned minutes) {
+	IdType startTimeId = nextStartTimeId++;
+	tools::push_back(startTimes, startTimeId, minutes);
+	return startTimeId;
+}
+
+void StartTimeContainer::del(IdType id) {
+	try {
+		tools::erase(startTimes, id);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_STARTTIMEID);
+	}
+}
+
+void StartTimeContainer::set(IdType id, unsigned minutes) {
+	try {
+		tools::set(startTimes, id, minutes);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_STARTTIMEID);
+	}
+}
+
+unsigned StartTimeContainer::get(IdType id) const {
+	unsigned result;
+
+	try {
+		result = tools::get(startTimes, id);
+	} catch(invalid_id& e) {
+		throw invalid_id(INVALID_STARTTIMEID);
 	}
 
 	return result;

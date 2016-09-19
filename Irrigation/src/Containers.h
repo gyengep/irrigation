@@ -9,17 +9,17 @@
 #define CONTAINERS_H_
 
 #include <array>
+#include <list>
 
 #include "common.h"
 
 
 class RunTimeContainer_set_Test;
+class StartTimeContainer_add_Test;
+class StartTimeContainer_del_Test;
+class StartTimeContainer_set_Test;
+class StartTimeContainer_get_Test;
 
-class Containers {
-public:
-	Containers();
-	virtual ~Containers();
-};
 
 class RunTimeContainer {
 	friend RunTimeContainer_set_Test;
@@ -35,6 +35,32 @@ public:
 	virtual ~RunTimeContainer();
 
 	const RunTimes& container() const;
+	void set(IdType id, unsigned minutes);
+	unsigned get(IdType id) const;
+};
+
+////////////////////////////////////////////////////////////////
+
+class StartTimeContainer {
+	friend StartTimeContainer_add_Test;
+	friend StartTimeContainer_del_Test;
+	friend StartTimeContainer_set_Test;
+	friend StartTimeContainer_get_Test;
+
+public:
+	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
+
+private:
+	StartTimes startTimes;
+	IdType nextStartTimeId;
+
+public:
+	StartTimeContainer();
+	virtual ~StartTimeContainer();
+
+	const StartTimes& container() const;
+	IdType add(unsigned minutes);
+	void del(IdType id);
 	void set(IdType id, unsigned minutes);
 	unsigned get(IdType id) const;
 };

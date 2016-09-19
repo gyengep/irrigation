@@ -12,9 +12,7 @@
 #include "DaySchedulerSpecified.h"
 
 
-Program::Program() :
-	nextStartTimeId(0)
-{
+Program::Program() {
 	schedulerType = SPECIFIED_DAYS;
 	schedulers[SPECIFIED_DAYS] = new DayScheduler_Specified();
 
@@ -44,43 +42,4 @@ void Program::setName(const std::string& newName) {
 	name = newName;
 }
 
-////////////////////////////////////////////////////////////////
-// START TIME
 
-const Program::StartTimes& Program::getStartTimes() const {
-	return startTimes;
-}
-
-IdType Program::addStartTime(unsigned minutes) {
-	IdType startTimeId = nextStartTimeId++;
-	tools::push_back(startTimes, startTimeId, minutes);
-	return startTimeId;
-}
-
-void Program::deleteStartTime(IdType id) {
-	try {
-		tools::erase(startTimes, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_STARTTIMEID);
-	}
-}
-
-void Program::setStartTime(IdType id, unsigned minutes) {
-	try {
-		tools::set(startTimes, id, minutes);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_STARTTIMEID);
-	}
-}
-
-unsigned Program::getStartTime(IdType id) const {
-	unsigned result;
-
-	try {
-		result = tools::get(startTimes, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_STARTTIMEID);
-	}
-
-	return result;
-}

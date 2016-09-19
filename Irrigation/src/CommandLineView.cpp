@@ -31,28 +31,28 @@ if (parameters.size() < req) {				\
 }
 
 
-#define PRINT_RUNTIME(id, runTime)											\
+#define PRINT_RUNTIME(id, runTime)												\
 	std::cout << id << " - " << runTime << " min" << std::endl;
 
-#define PRINT_RUNTIMES(program)												\
-{																			\
-	const Program::RunTimes& runTimes = program.runTimes().container();		\
-	std::cout << "Run times:" << std::endl;									\
-	for (auto it = runTimes.cbegin(); runTimes.cend() != it; ++it) {		\
-		PRINT_RUNTIME(it->first, it->second);								\
-	}																		\
+#define PRINT_RUNTIMES(program)													\
+{																				\
+	const Program::RunTimes& runTimes = program.runTimes().container();			\
+	std::cout << "Run times:" << std::endl;										\
+	for (auto it = runTimes.cbegin(); runTimes.cend() != it; ++it) {			\
+		PRINT_RUNTIME(it->first, it->second);									\
+	}																			\
 }
 
-#define PRINT_STARTTIME(id, startTime)										\
+#define PRINT_STARTTIME(id, startTime)											\
 	std::cout << id << " - " << startTime << " min" << std::endl;
 
-#define PRINT_STARTTIMES(program)											\
-{																			\
-	const Program::StartTimes& startTimes = program.getStartTimes();		\
-	std::cout << "Start times:" << std::endl;								\
-	for (auto it = startTimes.cbegin(); startTimes.cend() != it; ++it) {	\
-		PRINT_STARTTIME(it->first, it->second);								\
-	}																		\
+#define PRINT_STARTTIMES(program)												\
+{																				\
+	const Program::StartTimes& startTimes = program.startTimes().container();	\
+	std::cout << "Start times:" << std::endl;									\
+	for (auto it = startTimes.cbegin(); startTimes.cend() != it; ++it) {		\
+		PRINT_STARTTIME(it->first, it->second);									\
+	}																			\
 }
 
 
@@ -275,7 +275,7 @@ void CommandLineView::cmd_starttime(const std::string& subcommand, const Tokens&
 		unsigned startTime = parseUInt(parameters[2], "Invalid starttime");
 
 		AUTO_LOCK_PROGRAMS(getDocument());
-		getDocument()->getProgram(programId).setStartTime(startTimeId, startTime);
+		getDocument()->getProgram(programId).startTimes().set(startTimeId, startTime);
 
 	} else if (subcommand == "get") {
 		CHECK_PARAMETERS(2);
@@ -284,7 +284,7 @@ void CommandLineView::cmd_starttime(const std::string& subcommand, const Tokens&
 		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
 
 		AUTO_LOCK_PROGRAMS(getDocument());
-		unsigned startTime = getDocument()->getProgram(programId).getStartTime(startTimeId);
+		unsigned startTime = getDocument()->getProgram(programId).startTimes().get(startTimeId);
 
 		PRINT_STARTTIME(startTimeId, startTime);
 
@@ -295,7 +295,7 @@ void CommandLineView::cmd_starttime(const std::string& subcommand, const Tokens&
 		unsigned startTime = parseUInt(parameters[1], "Invalid starttime");
 
 		AUTO_LOCK_PROGRAMS(getDocument());
-		getDocument()->getProgram(programId).addStartTime(startTime);
+		getDocument()->getProgram(programId).startTimes().add(startTime);
 
 	} else if (subcommand == "delete") {
 		CHECK_PARAMETERS(2);
@@ -304,7 +304,7 @@ void CommandLineView::cmd_starttime(const std::string& subcommand, const Tokens&
 		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
 
 		AUTO_LOCK_PROGRAMS(getDocument());
-		getDocument()->getProgram(programId).deleteStartTime(startTimeId);
+		getDocument()->getProgram(programId).startTimes().del(startTimeId);
 
 	} else {
 		throw UnknownSubcommandException();
