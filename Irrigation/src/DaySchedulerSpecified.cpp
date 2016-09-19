@@ -8,38 +8,32 @@
 #include "common.h"
 #include "DaySchedulerSpecified.h"
 
-#include "Tools.h"
+#include "exception.h"
 
 
 DayScheduler_Specified::DayScheduler_Specified() {
-	for (IdType i = 0; i < days.size(); i++) {
-		days[i] = std::make_pair(i, false);
-	}
+	days.fill(false);
 }
 
 DayScheduler_Specified::~DayScheduler_Specified() {
 }
 
 void DayScheduler_Specified::enableDay(IdType id, bool enable) {
-	try {
-		tools::set(days, id, enable);
-	} catch(invalid_id& e) {
+	if (DAY_COUNT <= id) {
 		throw invalid_id(INVALID_DAYID);
 	}
+
+	days[id] = enable;
 }
 
 bool DayScheduler_Specified::isDayEnabled(IdType id) const {
-	bool result;
-
-	try {
-		result = tools::get(days, id);
-	} catch(invalid_id& e) {
+	if (DAY_COUNT <= id) {
 		throw invalid_id(INVALID_DAYID);
 	}
 
-	return result;
+	return days[id];
 }
 
 bool DayScheduler_Specified::isDayScheduled(std::tm* timeinfo) const {
-	return days[timeinfo->tm_wday].second;
+	return days[timeinfo->tm_wday];
 }

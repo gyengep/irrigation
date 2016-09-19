@@ -70,7 +70,7 @@ public:
 	std::string getName() const;
 	void setName(const std::string& name);
 
-	bool isScheduled(std::time_t rawTime) const;
+	bool isScheduled(const std::time_t& rawTime) const;
 
 	// Runtime
 	const RunTimes& getRunTimes() const;

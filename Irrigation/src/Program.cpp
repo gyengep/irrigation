@@ -15,6 +15,7 @@
 Program::Program() :
 	nextStartTimeId(0)
 {
+	schedulerType = SPECIFIED_DAYS;
 	schedulers[SPECIFIED_DAYS] = new DayScheduler_Specified();
 
 	for (IdType i = 0; i < runTimes.size(); i++) {
@@ -30,9 +31,9 @@ Program::~Program() {
 
 ////////////////////////////////////////////////////////////////
 
-bool Program::isScheduled(std::time_t rawTime) const {
-	std::tm* timeinfo = std::localtime(&rawTime);
-	return schedulers[schedulerType]->isDayScheduled(timeinfo);
+bool Program::isScheduled(const std::time_t& rawTime) const {
+	std::tm timeinfo = *std::localtime(&rawTime);
+	return schedulers[schedulerType]->isDayScheduled(&timeinfo);
 }
 
 ////////////////////////////////////////////////////////////////

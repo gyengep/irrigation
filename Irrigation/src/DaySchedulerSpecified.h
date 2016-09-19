@@ -11,14 +11,28 @@
 #include <array>
 #include <ctime>
 
+#include "common.h"
 #include "DayScheduler.h"
 
+class SchedulerSpecified_enableDay_Test;
+
+enum Days {
+	SUNDAY,
+	MONDAY,
+	TUESDAY,
+	WEDNESDAY,
+	THURSDAY,
+	FRIDAY,
+	SATURDAY
+};
 
 class DayScheduler_Specified : public DayScheduler {
 
+	friend SchedulerSpecified_enableDay_Test;
+
 	static const unsigned DAY_COUNT = 7;
 
-	typedef std::array<std::pair<IdType, bool>, DAY_COUNT> Days;
+	typedef std::array<bool, DAY_COUNT> Days;
 
 	Days days;
 
