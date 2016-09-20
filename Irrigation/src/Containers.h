@@ -54,6 +54,9 @@ public:
 	void del(IdType id);
 	void set(IdType id, unsigned minutes);
 	unsigned get(IdType id) const;
+
+	static unsigned hourMin2StartTime(unsigned hour, unsigned min);
+	static void startTime2HourMin(unsigned startTime, unsigned& hour, unsigned& min);
 };
 
 ////////////////////////////////////////////////////////////////

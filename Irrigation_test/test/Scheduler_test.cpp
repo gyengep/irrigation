@@ -38,7 +38,7 @@ TEST(SpecifiedScheduler, isDayEnabled) {
 	EXPECT_THROW(scheduler.isDayEnabled(7), invalid_id);
 }
 
-std::tm makeTm(int year, int month, int day, int hour, int min, int sec) {
+std::time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
 
 	EXPECT_TRUE(0 <= month && month < 12);
 	EXPECT_TRUE(1 <= day && day < 32);
@@ -56,14 +56,18 @@ std::tm makeTm(int year, int month, int day, int hour, int min, int sec) {
 	tm.tm_hour = hour;
 	tm.tm_min = min;
 	tm.tm_sec = sec;
-	tm.tm_isdst = 1;
+	tm.tm_isdst = dst ? 1 : 0;
 
-	std::time_t t = std::mktime(&tm);
+	return std::mktime(&tm);
+}
+
+std::tm toCalendarTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
+	std::time_t t = toTime(year, month, day, hour, min, sec, dst);
 	return *std::localtime(&t);
 }
 
-TEST(SpecifiedScheduler, makeTm) {
-	std::tm tm = makeTm(2016, 9, 11, 20, 59, 33);
+TEST(SpecifiedScheduler, Time) {
+	std::tm tm = toCalendarTime(2016, 9, 11, 20, 59, 33, true);
 
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
@@ -73,7 +77,7 @@ TEST(SpecifiedScheduler, makeTm) {
 	EXPECT_EQ(59, tm.tm_min);
 	EXPECT_EQ(33, tm.tm_sec);
 
-	tm = makeTm(2016, 9, 12, 23, 59, 33);
+	tm = toCalendarTime(2016, 9, 12, 23, 59, 33, true);
 
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
@@ -83,7 +87,7 @@ TEST(SpecifiedScheduler, makeTm) {
 	EXPECT_EQ(59, tm.tm_min);
 	EXPECT_EQ(33, tm.tm_sec);
 
-	tm = makeTm(2016, 9, 17, 23, 59, 33);
+	tm = toCalendarTime(2016, 9, 17, 23, 59, 33, true);
 
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
@@ -94,17 +98,16 @@ TEST(SpecifiedScheduler, makeTm) {
 	EXPECT_EQ(33, tm.tm_sec);
 }
 
-void checkDay(SpecifiedScheduler& scheduler, bool requestedResult, int day) {
+void checkDay(Scheduler& scheduler, bool requestedResult, int day) {
 	std::tm tm;
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				tm = makeTm(2016, 9, day, hour, min, sec);
+				tm = toCalendarTime(2016, 9, day, hour, min, sec, true);
 				EXPECT_EQ(requestedResult, scheduler.isScheduled(tm));
 			}
 		}
 	}
-
 }
 
 TEST(SpecifiedScheduler, isScheduled) {

@@ -35,5 +35,6 @@ bool SpecifiedScheduler::isDayEnabled(IdType id) const {
 }
 
 bool SpecifiedScheduler::isScheduled(const std::tm& timeinfo) const {
+	// TODO range check
 	return days[timeinfo.tm_wday];
 }

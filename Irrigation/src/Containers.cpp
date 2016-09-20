@@ -93,6 +93,15 @@ unsigned StartTimeContainer::get(IdType id) const {
 	return result;
 }
 
+unsigned StartTimeContainer::hourMin2StartTime(unsigned hour, unsigned min) {
+	return 60 * hour + min;
+}
+
+void StartTimeContainer::startTime2HourMin(unsigned startTime, unsigned& hour, unsigned& min) {
+	hour = startTime / 60;
+	min = startTime % 60;
+}
+
 /////////////////////////////////////////////////////
 // Program
 

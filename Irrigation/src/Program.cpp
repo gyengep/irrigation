@@ -26,15 +26,32 @@ Program::~Program() {
 
 ////////////////////////////////////////////////////////////////
 
+void Program::setSchedulerType(SchedulerType schedulerType) {
+	if (schedulerType >= LAST) {
+		throw invalid_id(INVALID_SCHEDULER);
+	}
+
+	this->schedulerType = schedulerType;
+}
+
+Program::SchedulerType Program::getSchedulerType(void) const {
+	return schedulerType;
+}
+
 bool Program::isScheduled(const std::time_t& rawTime) const {
 	std::tm timeinfo = *std::localtime(&rawTime);
 
-// TODO starttime
-//	for (auto it = startTimeContainer.begin(); startTimeContainer.end() != it; ++it) {
-//		if ()
-//	}
+	if (0 == timeinfo.tm_sec && schedulers[schedulerType]->isScheduled(timeinfo)) {
+		unsigned startTime = StartTimeContainer::hourMin2StartTime(timeinfo.tm_hour, timeinfo.tm_min);
 
-	return schedulers[schedulerType]->isScheduled(timeinfo);
+		for (auto it = startTimeContainer.container().begin(); startTimeContainer.container().end() != it; ++it) {
+			if (it->second == startTime) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -49,3 +66,10 @@ void Program::setName(const std::string& newName) {
 }
 
 
+const SpecifiedScheduler& Program::getSpecifiedScheduler() const {
+	return *static_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS]);
+}
+
+SpecifiedScheduler& Program::getSpecifiedScheduler() {
+	return *static_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS]);
+}

@@ -15,11 +15,13 @@
 #include <utility>
 #include <vector>
 
+// TODO "common.h"-kat cpp be athelyezni
 #include "common.h"
 #include "Containers.h"
 
 
 class Scheduler;
+class SpecifiedScheduler;
 
 class Program {
 public:
@@ -52,6 +54,12 @@ public:
 
 	std::string getName() const;
 	void setName(const std::string& name);
+
+	void setSchedulerType(SchedulerType schedulerType);
+	SchedulerType getSchedulerType(void) const;
+
+	const SpecifiedScheduler& getSpecifiedScheduler() const;
+	SpecifiedScheduler& getSpecifiedScheduler();
 
 	bool isScheduled(const std::time_t& rawTime) const;
 
