@@ -6,10 +6,7 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-
-#include <exception>
-#include <iostream>
-
+#include "common.h"
 #include "Application.h"
 
 #ifndef IRRIGATION_TEST

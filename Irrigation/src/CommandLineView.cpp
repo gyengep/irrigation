@@ -10,7 +10,6 @@
 
 #include <climits>
 #include <cstring>
-#include <stdexcept>
 #include <sstream>
 
 #include "Application.h"

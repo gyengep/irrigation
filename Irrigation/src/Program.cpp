@@ -7,7 +7,6 @@
 
 #include "common.h"
 #include "Program.h"
-
 #include "Tools.h"
 #include "Scheduler.h"
 
@@ -15,7 +14,6 @@
 Program::Program() {
 	schedulerType = SPECIFIED_DAYS;
 	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
-
 }
 
 Program::~Program() {

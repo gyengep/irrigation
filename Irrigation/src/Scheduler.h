@@ -11,8 +11,6 @@
 #include <array>
 #include <ctime>
 
-#include "common.h"
-
 
 class SpecifiedScheduler_enableDay_Test;
 

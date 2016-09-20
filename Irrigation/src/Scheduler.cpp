@@ -8,8 +8,6 @@
 #include "common.h"
 #include "Scheduler.h"
 
-#include "exception.h"
-
 
 SpecifiedScheduler::SpecifiedScheduler() {
 	days.fill(false);

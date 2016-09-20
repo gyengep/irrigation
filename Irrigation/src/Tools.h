@@ -10,11 +10,8 @@
 
 #include <array>
 #include <atomic>
-#include <cstddef>
 #include <list>
 #include <utility>
-
-#include "exception.h"
 
 
 namespace tools {

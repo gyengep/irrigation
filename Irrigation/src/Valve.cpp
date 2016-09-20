@@ -8,8 +8,6 @@
 #include "common.h"
 #include "Valve.h"
 
-#include <stdexcept>
-
 
 #ifdef __arm__
 

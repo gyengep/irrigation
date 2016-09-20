@@ -7,6 +7,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef IRRIGATION_TEST
+#include <gtest/gtest.h>
+#endif // IRRIGATION_TEST
+
+#include "exception.h"
+
 const unsigned ZONE_COUNT = 6;
 const unsigned VALVE_COUNT = 7;
 

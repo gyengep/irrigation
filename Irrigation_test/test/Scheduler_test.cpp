@@ -5,11 +5,10 @@
  *      Author: pgyenge
  */
 
-#include <cstring>
-#include <gtest/gtest.h>
-
+#include "common.h"
 #include "Scheduler.h"
-#include "exception.h"
+
+#include <cstring>
 
 
 TEST(SpecifiedScheduler, enableDay) {

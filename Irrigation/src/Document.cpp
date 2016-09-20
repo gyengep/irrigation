@@ -7,10 +7,6 @@
 
 #include "common.h"
 #include "Document.h"
-
-#include <stdexcept>
-#include <sstream>
-
 #include "Application.h"
 #include "Program.h"
 #include "Valve.h"

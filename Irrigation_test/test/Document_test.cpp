@@ -5,11 +5,8 @@
  *      Author: pgyenge
  */
 
-#include <gtest/gtest.h>
-
+#include "common.h"
 #include "Document.h"
-
-
 
 
 TEST(Document, openValve) {

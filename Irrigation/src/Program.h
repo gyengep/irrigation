@@ -10,13 +10,8 @@
 
 #include <array>
 #include <ctime>
-#include <list>
 #include <string>
-#include <utility>
-#include <vector>
 
-// TODO "common.h"-kat cpp be athelyezni
-#include "common.h"
 #include "Containers.h"
 
 

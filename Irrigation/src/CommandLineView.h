@@ -9,7 +9,6 @@
 #define COMMANDLINEVIEW_H_
 
 #include <atomic>
-#include <list>
 #include <string>
 #include <thread>
 #include <vector>

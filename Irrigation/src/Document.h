@@ -12,7 +12,6 @@
 #include <array>
 #include <mutex>
 
-#include "common.h"
 #include "Containers.h"
 #include "Program.h"
 #include "Tools.h"

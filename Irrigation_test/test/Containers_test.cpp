@@ -1,9 +1,7 @@
 
-#include <gtest/gtest.h>
-#include <mutex>
-
+#include "common.h"
 #include "Containers.h"
-#include "exception.h"
+
 
 #define AUTO_LOCK(MUTEX) std::lock_guard<std::mutex> lock(MUTEX)
 
