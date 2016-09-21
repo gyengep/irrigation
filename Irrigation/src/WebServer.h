@@ -12,7 +12,6 @@
 #define INVALID_SOCKET 	-1
 #define SOCKET_ERROR 	-1
 #define TRACE		 	printf
-#define closesocket		close
 
 typedef int 			SOCKET;
 typedef const char* 	LPCSTR;
@@ -71,10 +70,10 @@ class WebServer {
 	typedef std::map<std::string, pGetFileFunctionPtr_t> GetFileMap_t;
 	typedef std::vector<std::string> tStringArray;
 
-	Socket				sockets[ MAX_SOCKET ];
-	const std::string	m_strDirectory;
-	const uint16_t		m_uPort;
-	GetFileMap_t		m_theGetFileMap;
+	Socket					sockets[ MAX_SOCKET ];
+	const std::string		m_strDirectory;
+	const unsigned short	port;
+	GetFileMap_t			m_theGetFileMap;
 
 
 	static std::string getDateStr(void);
@@ -128,7 +127,7 @@ class WebServer {
 	static void setAnswer(Answer& answer, const char* text, size_t length = std::string::npos);
 
 public:
-	WebServer( unsigned uPort );
+	WebServer( unsigned short port );
 	virtual ~WebServer();
 
 	int  DoService( void);

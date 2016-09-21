@@ -11,9 +11,14 @@
 
 #ifndef IRRIGATION_TEST
 
+#include "WebServer.h"
+
 int main() {
 	Application application;
 	
+	WebServer server(80);
+	server.DoService();
+
 	try {
 		application.init();
 		application.run();

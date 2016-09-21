@@ -5,6 +5,8 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <arpa/inet.h>
+
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -18,8 +20,8 @@ int GetLastError() { return errno; }
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-WebServer::WebServer(unsigned uPort) :
-		m_uPort(uPort) {
+WebServer::WebServer(unsigned short port) :
+		port(port) {
 
 	for (int ii = 0; ii < MAX_SOCKET; ++ii) {
 		sockets[ii].socket = INVALID_SOCKET;
@@ -525,37 +527,46 @@ int WebServer::DoService(void) {
 	const unsigned BufferSize = 1024;
 	char buffer[BufferSize];
 	bool terminate = false;
-	SOCKET listenSocket = INVALID_SOCKET;
-	struct fd_set masterSet;
-	struct fd_set workingSet;
+	int listener = INVALID_SOCKET;
+	int fdmax;
+	struct fd_set master_fd;
+	struct fd_set read_fds;
 	struct timeval timeout;
-	struct sockaddr_in address;
+	struct sockaddr_in serveraddr;
 	int result;
+
+	/*************************************************************/
+	/* Initialize the fd_set                                     */
+	/*************************************************************/
+	FD_ZERO(&master_fd);
+	FD_ZERO(&read_fds);
 
 	/*************************************************************/
 	/* Create an AF_INET stream socket to receive incoming       */
 	/* connections on                                            */
 	/*************************************************************/
-	listenSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (INVALID_SOCKET == listenSocket) {
+	listener = socket(AF_INET, SOCK_STREAM, 0);
+	if (INVALID_SOCKET == listener) {
 #ifdef WEBSRV_LOG
 		printf("socket() failed: %d\n", GetLastError() );
 #endif
 		return 2;
 	}
 
-	std::cout << "int WebServer::DoService(void) __1__" << std::endl;
+	std::cout << "listensocket: " << listener << std::endl;
 
 	/*************************************************************/
 	/* Allow socket descriptor to be reuseable                   */
 	/*************************************************************/
-	int on = 1;
-	result = setsockopt(listenSocket, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on));
+	/* for setsockopt() SO_REUSEADDR, below */
+	int yes = 1;
+
+	result = setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 	if (SOCKET_ERROR == result) {
 #ifdef WEBSRV_LOG
 		printf("setsockopt() failed: %d\n", GetLastError() );
 #endif
-		closesocket(listenSocket);
+		close(listener);
 		return 3;
 	}
 
@@ -564,38 +575,42 @@ int WebServer::DoService(void) {
 	/*************************************************************/
 	/* Bind the socket                                           */
 	/*************************************************************/
-	memset(&address, 0, sizeof(address));
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = htonl(INADDR_ANY);
-	address.sin_port = htons(m_uPort);
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddr.sin_port = htons(port);
 
-	result = bind(listenSocket, (struct sockaddr *) &address, sizeof(address));
+	result = bind(listener, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == result) {
 #ifdef WEBSRV_LOG
 		printf("bind() failed: %d\n", GetLastError() );
 #endif
-		closesocket(listenSocket);
+		close(listener);
 		return 4;
 	}
 
 	/*************************************************************/
 	/* Set the listen back log                                   */
 	/*************************************************************/
-	result = listen(listenSocket, 32);
+	result = listen(listener, 32);
 	if (SOCKET_ERROR == result) {
 #ifdef WEBSRV_LOG
 		printf("listen() failed: %d\n", GetLastError() );
 #endif
-		closesocket(listenSocket);
+		close(listener);
 		return 5;
 	}
 
 	/*************************************************************/
-	/* Initialize the master fd_set                              */
+	/* Add the listener to the master set                        */
 	/*************************************************************/
-	FD_ZERO(&masterSet);
-	FD_SET(listenSocket, &masterSet);
-	onSocketCreate(listenSocket);
+	FD_SET(listener, &master_fd);
+	onSocketCreate(listener);
+
+	/*************************************************************/
+	/* Keep track of the biggest file descriptor */
+	/*************************************************************/
+	fdmax = listener;
 
 	/*************************************************************/
 	/* Initialize the timeval struct to 1 second.  If no        */
@@ -610,16 +625,16 @@ int WebServer::DoService(void) {
 	/*************************************************************/
 	while (!terminate) {
 		/**********************************************************/
-		/* Copy the master fd_set over to the working fd_set.     */
+		/* Copy the master_fd fd_set over to the working fd_set.     */
 		/**********************************************************/
-		memcpy(&workingSet, &masterSet, sizeof(masterSet));
+		memcpy(&read_fds, &master_fd, sizeof(master_fd));
 
 		std::cout << "int WebServer::DoService(void) __3__" << std::endl;
 
 		/**********************************************************/
 		/* Call select() and wait the timeout for it to complete.   */
 		/**********************************************************/
-		result = select(0, &workingSet, NULL, NULL, &timeout);
+		result = select(fdmax + 1, &read_fds, NULL, NULL, &timeout);
 		std::cout << "result:" << result << std::endl;
 
 		/**********************************************************/
@@ -657,7 +672,7 @@ int WebServer::DoService(void) {
 			/*******************************************************/
 			/* Check to see if this descriptor is ready            */
 			/*******************************************************/
-			if (FD_ISSET(hSocket, &workingSet)) {
+			if (FD_ISSET(hSocket, &read_fds)) {
 
 				///****************************************************/
 				///* A descriptor was found that was readable - one   */
@@ -671,8 +686,8 @@ int WebServer::DoService(void) {
 				/****************************************************/
 				/* Check to see if this is the listening socket     */
 				/****************************************************/
-				if (hSocket == listenSocket) {
-					SOCKET hNew;
+				if (hSocket == listener) {
+					SOCKET newfd;
 
 					/**********************************************/
 					/* Accept each incoming connection.  If       */
@@ -681,10 +696,10 @@ int WebServer::DoService(void) {
 					/* failure on accept will cause us to end the */
 					/* server.                                    */
 					/**********************************************/
-					struct sockaddr theSockaddr;
-					int nAddrLen = sizeof(theSockaddr);
-					hNew = accept(listenSocket, &theSockaddr, &nAddrLen);
-					if ( SOCKET_ERROR == hNew) {
+					struct sockaddr_in clientaddr;
+					int addrlen = sizeof(clientaddr);
+					newfd = accept(listener, (struct sockaddr*)&clientaddr, &addrlen);
+					if ( SOCKET_ERROR == newfd) {
 #ifdef WEBSRV_LOG
 						printf("accept() failed: %d\n", GetLastError() );
 #endif
@@ -693,14 +708,14 @@ int WebServer::DoService(void) {
 
 					/**********************************************/
 					/* Add the new incoming connection to the     */
-					/* master read set                            */
+					/* master_fd read set                            */
 					/**********************************************/
 #ifdef WEBSRV_LOG
-					printf("New incoming connection - 0x%04X\n", hNew);
+					printf("New connection from %s on socket %d\n", inet_ntoa(clientaddr.sin_addr), newfd);
 #endif
-					FD_SET(hNew, &masterSet);
+					FD_SET(newfd, &master_fd);
 
-					onSocketCreate(hNew);
+					onSocketCreate(newfd);
 				}
 
 				/****************************************************/
@@ -750,14 +765,14 @@ int WebServer::DoService(void) {
 					/* If the bCloseConn flag was turned on, we need */
 					/* to clean up this active connection.  This     */
 					/* clean up process includes removing the        */
-					/* descriptor from the master set and            */
+					/* descriptor from the master_fd set and            */
 					/* determining the new maximum descriptor value  */
 					/* based on the bits that are still turned on in */
-					/* the master set.                               */
+					/* the master_fd set.                               */
 					/*************************************************/
 					if (bCloseConn) {
-						closesocket(hSocket);
-						FD_CLR(hSocket, &masterSet);
+						close(hSocket);
+						FD_CLR(hSocket, &master_fd);
 						onSocketClose(socketID);
 					}
 				} /* End of existing connection is readable */
@@ -770,7 +785,7 @@ int WebServer::DoService(void) {
 	/*************************************************************/
 	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
 		if ( INVALID_SOCKET != sockets[socketID].socket) {
-			closesocket(sockets[socketID].socket);
+			close(sockets[socketID].socket);
 			sockets[socketID].text.clear();
 			sockets[socketID].request.clear();
 		}
