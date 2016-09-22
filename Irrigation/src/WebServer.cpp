@@ -1,3 +1,4 @@
+
 #include "common.h"
 #include "WebServer.h"
 
@@ -12,17 +13,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #define HTTP_VERSION	"HTTP/1.1"
-#define WEBSRV_LOG
-#define NOT_USE_RESOURCE
 
-int GetLastError() { return errno; }
+#define TRACE0(TEXT) puts(TEXT);fflush(stdout)
+#define TRACE1(TEXT, P1) printf(TEXT, P1);puts("");fflush(stdout)
+#define TRACE2(TEXT, P1, P2) printf(TEXT, P1, P2);puts("");fflush(stdout)
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-WebServer::WebServer(unsigned short port) :
-		port(port) {
-
+WebServer::WebServer(const char* rootDirectory, unsigned short port) :
+	rootDirectory(rootDirectory),
+	port(port)
+{
 	for (int ii = 0; ii < MAX_SOCKET; ++ii) {
 		sockets[ii].socket = INVALID_SOCKET;
 		sockets[ii].contentStarted = false;
@@ -190,16 +192,12 @@ bool WebServer::sendAnswer(unsigned socketID, const Answer& answer) {
 				sendResult = send(sockets[socketID].socket, answer.messageBody, answer.messageLength, MSG_DONTROUTE);
 			}
 		} else {
-#ifdef WEBSRV_LOG
-			puts( "ERROR: WebServer::SendAnswer()" );
-#endif
+			TRACE0("ERROR: WebServer::SendAnswer()");
 			result = false;
 		}
 
 	} else {
-#ifdef WEBSRV_LOG
-		puts( "ERROR: WebServer::SendAnswer()" );
-#endif
+		TRACE0("ERROR: WebServer::SendAnswer()");
 	}
 
 	return result;
@@ -262,9 +260,7 @@ void WebServer::onSocketClose(unsigned socketID) {
 		sockets[socketID].text.clear();
 		sockets[socketID].request.clear();
 	} else {
-#ifdef WEBSRV_LOG
-		puts( "ERROR: WebServer::OnSocketClose()" );
-#endif
+		TRACE0("ERROR: WebServer::OnSocketClose()");
 	}
 }
 
@@ -323,110 +319,42 @@ bool WebServer::onSocketReceive(unsigned socketID, const char* buffer, unsigned 
 			return true;
 		}
 	} else {
-#ifdef WEBSRV_LOG
-		puts( "ERROR: WebServer::OnSocketReceive()" );
-#endif
+		TRACE0("ERROR: WebServer::OnSocketReceive()");
 	}
 
 	return true;
 }
 
-void WebServer::onSocketCreate(SOCKET socket) {
+bool WebServer::onSocketCreate(SOCKET socket) {
 	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
 		if (INVALID_SOCKET == sockets[socketID].socket) {
 			sockets[socketID].socket = socket;
 			sockets[socketID].text.clear();
-			return;
-		}
-	}
-
-#ifdef WEBSRV_LOG
-	puts( "ERROR: WebServer::OnSocketCreate()" );
-#endif
-}
-
-bool WebServer::GetFileFromResource(bool bFullPath, LPCSTR lpFileName,
-		Answer& rAnswer) {
-
-#ifdef NOT_USE_RESOURCE
-
-	return GetFile(bFullPath, lpFileName, rAnswer);
-
-#else
-	typedef
-	struct tagWebFileResources {
-		UINT uResouceID;
-		LPCSTR lpFileName;
-	}WebFileResources_t;
-
-	static const WebFileResources_t theWebFileResources[] = {
-		{	IDR_HTML_FAVICON_ICO, "/favicon.ico"},
-		{	IDR_HTML_INDEX_HTML, "/index.html"},
-		{	IDR_HTML_JQUERY_1_8_1_MIN_JS, "/jquery-1.8.1.min.js"},
-		{	IDR_HTML_JQUERY_UI_1_8_23_CUSTOM_CSS, "/jquery-ui-1.8.23.custom.css"},
-		{	IDR_HTML_JQUERY_UI_1_8_23_CUSTOM_MIN_JS, "/jquery-ui-1.8.23.custom.min.js"},
-		{	IDR_HTML_KNORR_BREMSE_LOGO_JPG, "/knorr-bremse-logo.jpg"},
-		{	IDR_HTML_LOADING_INDICATOR_GIF, "/loading-indicator.gif"},
-		{	IDR_HTML_SITE_CSS, "/site.css"},
-		{	IDR_HTML_SITE_JS, "/site.js"},
-		{	IDR_HTML_IMAGES_UI_BG_FLAT_0_AAAAAA_40X100_PNG, "/images/ui-bg_flat_0_aaaaaa_40x100.png"},
-		{	IDR_HTML_IMAGES_UI_BG_FLAT_75_FFFFFF_40X100_PNG, "/images/ui-bg_flat_75_ffffff_40x100.png"},
-		{	IDR_HTML_IMAGES_UI_BG_GLASS_55_FBF9EE_1X400_PNG, "/images/ui-bg_glass_55_fbf9ee_1x400.png"},
-		{	IDR_HTML_IMAGES_UI_BG_GLASS_65_FFFFFF_1X400_PNG, "/images/ui-bg_glass_65_ffffff_1x400.png"},
-		{	IDR_HTML_IMAGES_UI_BG_GLASS_75_DADADA_1X400_PNG, "/images/ui-bg_glass_75_dadada_1x400.png"},
-		{	IDR_HTML_IMAGES_UI_BG_GLASS_75_E6E6E6_1X400_PNG, "/images/ui-bg_glass_75_e6e6e6_1x400.png"},
-		{	IDR_HTML_IMAGES_UI_BG_GLASS_95_FEF1EC_1X400_PNG, "/images/ui-bg_glass_95_fef1ec_1x400.png"},
-		{	IDR_HTML_IMAGES_UI_BG_HIGHLIGHT_SOFT_75_CCCCCC_1X100_PNG, "/images/ui-bg_highlight-soft_75_cccccc_1x100.png"},
-		{	IDR_HTML_IMAGES_UI_ICONS_222222_256X240_PNG, "/images/ui-icons_222222_256x240.png"},
-		{	IDR_HTML_IMAGES_UI_ICONS_2E83FF_256X240_PNG, "/images/ui-icons_2e83ff_256x240.png"},
-		{	IDR_HTML_IMAGES_UI_ICONS_454545_256X240_PNG, "/images/ui-icons_454545_256x240.png"},
-		{	IDR_HTML_IMAGES_UI_ICONS_888888_256X240_PNG, "/images/ui-icons_888888_256x240.png"},
-		{	IDR_HTML_IMAGES_UI_ICONS_CD0A0A_256X240_PNG, "/images/ui-icons_cd0a0a_256x240.png"},
-		{	0, NULL}
-	};
-
-	for( UINT ii = 0; NULL != theWebFileResources[ii].lpFileName; ++ii ) {
-		if( 0 == _stricmp( theWebFileResources[ii].lpFileName, lpFileName )) {
-			CResourceReader_General theHTML( "WEBPAGE" );
-			rAnswer.stausCode = HTTP_OK;
-			rAnswer.messageLength = theHTML.CopyTo( theWebFileResources[ii].uResouceID, &rAnswer.messageBody );
 			return true;
 		}
 	}
 
+	TRACE0("ERROR: WebServer::OnSocketCreate()");
 	return false;
-#endif
 }
 
-bool WebServer::GetFile(bool bFullPath, LPCSTR lpFileName, Answer& rAnswer) {
-	std::string strFullPath;
-	FILE* f = NULL;
+bool WebServer::getFile(const char* fileName, Answer& answer) {
+	std::string strFullPath(rootDirectory);
+	strFullPath += fileName;
 
-#ifdef NOT_USE_RESOURCE
-	if (false == bFullPath) {
-		const std::string m_strDirectory("C:\\Temp\\html");
-		strFullPath = m_strDirectory;
-	}
-#endif
+	TRACE1("Required file: \"%s\"", strFullPath.c_str());
 
-	strFullPath += lpFileName;
-
-#ifdef WEBSRV_LOG
-	printf( "Required file: \"%s\"\n", strFullPath.c_str() );
-#endif
-
-	f = fopen(strFullPath.c_str(), "rb");
-
-	if ( NULL == f) {
+	FILE* f = fopen(strFullPath.c_str(), "rb");
+	if (NULL == f) {
 		return false;
 	}
 
 	fseek(f, 0, SEEK_END);
-	rAnswer.stausCode = HTTP_OK;
-	rAnswer.messageLength = ftell(f);
-	rAnswer.messageBody = new char[rAnswer.messageLength];
+	answer.stausCode = HTTP_OK;
+	answer.messageLength = ftell(f);
+	answer.messageBody = new char[answer.messageLength];
 	rewind(f);
-	fread(rAnswer.messageBody, 1, rAnswer.messageLength, f);
+	fread(answer.messageBody, 1, answer.messageLength, f);
 	fclose(f);
 	return true;
 }
@@ -440,16 +368,11 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 	answer.messageLength = 0;
 	answer.contentType = CONTTYPE_UNKNOWN;
 
-#ifdef WEBSRV_LOG
-	TRACE( "*******************************************************" );
+	TRACE0( "*******************************************************" );
 	for( Request::const_iterator it = request.begin(); request.end() != it; ++it ) {
-		TRACE( it->c_str() );
+		TRACE1("%s", it->c_str());
 	}
-	puts( "*******************************************************" );
-	for( Request::const_iterator it = request.begin(); request.end() != it; ++it ) {
-		printf( "\"%s\"\n", it->c_str() );
-	}
-#endif // WEBSRV_LOG
+
 	if (!request.empty()) {
 		tStringArray theRequestLineArray;
 		tokenize(request.front(), theRequestLineArray, ' ');
@@ -486,13 +409,15 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 					answer.stausCode = HTTP_METHOD_NOT_ALLOWED;
 				} else {
 
+					TRACE1("File request: %s", fileName.c_str());
+
 					GetFileMap_t::iterator it = m_theGetFileMap.find(fileName);
 					bool fileFound;
 
 					if (m_theGetFileMap.end() != it) {
 						fileFound = it->second(this, getParameters, postParameters, answer);
 					} else {
-						fileFound = GetFileFromResource(false, fileName.c_str(), answer);
+						fileFound = getFile(fileName.c_str(), answer);
 					}
 
 					if (fileFound) {
@@ -504,15 +429,13 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 						}
 					} else {
 						answer.stausCode = HTTP_NOT_FOUND;
-						TRACE("WebServer: File not found: \"%s\"", fileName.c_str());
+						TRACE1("WebServer: File not found: \"%s\"", fileName.c_str());
 					}
 				}
 			}
 		}
 	} else {
-#ifdef WEBSRV_LOG
-		puts( "ERROR: WebServer::OnRequestReceive()" );
-#endif
+		TRACE0("ERROR: WebServer::OnRequestReceive()");
 	}
 
 	bool bResult = sendAnswer(socketID, answer);
@@ -522,8 +445,6 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 }
 
 int WebServer::DoService(void) {
-	std::cout << "int WebServer::DoService(void)" << std::endl;
-
 	const unsigned BufferSize = 1024;
 	char buffer[BufferSize];
 	bool terminate = false;
@@ -533,6 +454,7 @@ int WebServer::DoService(void) {
 	struct fd_set read_fds;
 	struct timeval timeout;
 	struct sockaddr_in serveraddr;
+	struct sockaddr_in clientaddr;
 	int result;
 
 	/*************************************************************/
@@ -547,13 +469,9 @@ int WebServer::DoService(void) {
 	/*************************************************************/
 	listener = socket(AF_INET, SOCK_STREAM, 0);
 	if (INVALID_SOCKET == listener) {
-#ifdef WEBSRV_LOG
-		printf("socket() failed: %d\n", GetLastError() );
-#endif
+		TRACE1("socket() failed: %d\n", errno);
 		return 2;
 	}
-
-	std::cout << "listensocket: " << listener << std::endl;
 
 	/*************************************************************/
 	/* Allow socket descriptor to be reuseable                   */
@@ -563,14 +481,10 @@ int WebServer::DoService(void) {
 
 	result = setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 	if (SOCKET_ERROR == result) {
-#ifdef WEBSRV_LOG
-		printf("setsockopt() failed: %d\n", GetLastError() );
-#endif
+		TRACE1("setsockopt() failed: %d", errno);
 		close(listener);
 		return 3;
 	}
-
-	std::cout << "int WebServer::DoService(void) __2__" << std::endl;
 
 	/*************************************************************/
 	/* Bind the socket                                           */
@@ -582,9 +496,7 @@ int WebServer::DoService(void) {
 
 	result = bind(listener, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == result) {
-#ifdef WEBSRV_LOG
-		printf("bind() failed: %d\n", GetLastError() );
-#endif
+		TRACE1("bind() failed: %d", errno);
 		close(listener);
 		return 4;
 	}
@@ -592,11 +504,9 @@ int WebServer::DoService(void) {
 	/*************************************************************/
 	/* Set the listen back log                                   */
 	/*************************************************************/
-	result = listen(listener, 32);
+	result = listen(listener, 1);
 	if (SOCKET_ERROR == result) {
-#ifdef WEBSRV_LOG
-		printf("listen() failed: %d\n", GetLastError() );
-#endif
+		TRACE1("listen() failed: %d", errno);
 		close(listener);
 		return 5;
 	}
@@ -629,21 +539,16 @@ int WebServer::DoService(void) {
 		/**********************************************************/
 		memcpy(&read_fds, &master_fd, sizeof(master_fd));
 
-		std::cout << "int WebServer::DoService(void) __3__" << std::endl;
-
 		/**********************************************************/
 		/* Call select() and wait the timeout for it to complete.   */
 		/**********************************************************/
 		result = select(fdmax + 1, &read_fds, NULL, NULL, &timeout);
-		std::cout << "result:" << result << std::endl;
 
 		/**********************************************************/
 		/* Check to see if the select call failed.                */
 		/**********************************************************/
 		if ( SOCKET_ERROR == result) {
-#ifdef WEBSRV_LOG
-			printf( "select() failed: %d\n", GetLastError() );
-#endif
+			TRACE1("select() failed: %d", errno);
 			terminate = true;
 			continue;
 		}
@@ -652,11 +557,8 @@ int WebServer::DoService(void) {
 		/* Check to see if the time out expired.                  */
 		/**********************************************************/
 		if (0 == result) {
-			std::cout << "int WebServer::DoService(void) __4__" << std::endl;
 			continue;
 		}
-
-		std::cout << "int WebServer::DoService(void) __5__" << std::endl;
 
 		/**********************************************************/
 		/* One or more descriptors are readable.  Need to         */
@@ -674,15 +576,6 @@ int WebServer::DoService(void) {
 			/*******************************************************/
 			if (FD_ISSET(hSocket, &read_fds)) {
 
-				///****************************************************/
-				///* A descriptor was found that was readable - one   */
-				///* less has to be looked for.  This is being done   */
-				///* so that we can stop looking at the working set   */
-				///* once we have found all of the descriptors that   */
-				///* were ready.                                      */
-				///****************************************************/
-				//desc_ready -= 1;
-
 				/****************************************************/
 				/* Check to see if this is the listening socket     */
 				/****************************************************/
@@ -696,13 +589,12 @@ int WebServer::DoService(void) {
 					/* failure on accept will cause us to end the */
 					/* server.                                    */
 					/**********************************************/
-					struct sockaddr_in clientaddr;
-					int addrlen = sizeof(clientaddr);
+					socklen_t addrlen = sizeof(clientaddr);
+
+					// TODO le kellene kezelni, ha több mint MAX_SOCKET socket van
 					newfd = accept(listener, (struct sockaddr*)&clientaddr, &addrlen);
-					if ( SOCKET_ERROR == newfd) {
-#ifdef WEBSRV_LOG
-						printf("accept() failed: %d\n", GetLastError() );
-#endif
+					if (SOCKET_ERROR == newfd) {
+						TRACE1("accept() failed: %d", errno);
 						break;
 					}
 
@@ -710,12 +602,20 @@ int WebServer::DoService(void) {
 					/* Add the new incoming connection to the     */
 					/* master_fd read set                            */
 					/**********************************************/
-#ifdef WEBSRV_LOG
-					printf("New connection from %s on socket %d\n", inet_ntoa(clientaddr.sin_addr), newfd);
-#endif
-					FD_SET(newfd, &master_fd);
 
-					onSocketCreate(newfd);
+					TRACE2("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
+
+					if (onSocketCreate(newfd)) {
+
+						FD_SET(newfd, &master_fd);
+
+						if (newfd > fdmax) {
+							fdmax = newfd;
+						}
+					} else {
+						shutdown(newfd, SHUT_RDWR);
+						close(newfd);
+					}
 				}
 
 				/****************************************************/
@@ -723,7 +623,7 @@ int WebServer::DoService(void) {
 				/* existing connection must be readable             */
 				/****************************************************/
 				else {
-					bool bCloseConn = false;
+					bool closeConnection = false;
 
 					/**********************************************/
 					/* Receive data on this connection until the  */
@@ -734,10 +634,8 @@ int WebServer::DoService(void) {
 					result = recv(hSocket, buffer, BufferSize, 0);
 					if (result < 0) {
 						if ( EWOULDBLOCK != errno) {
-#ifdef WEBSRV_LOG
-							printf("recv() failed: %d\n", GetLastError() );
-#endif
-							bCloseConn = true;
+							TRACE1("recv() failed: %d", errno);
+							closeConnection = true;
 						}
 					}
 
@@ -746,10 +644,8 @@ int WebServer::DoService(void) {
 					/* closed by the client                       */
 					/**********************************************/
 					else if (0 == result) {
-#ifdef WEBSRV_LOG
-						puts("Connection closed");
-#endif
-						bCloseConn = true;
+						TRACE0("Connection closed");
+						closeConnection = true;
 					}
 
 					/**********************************************/
@@ -757,12 +653,12 @@ int WebServer::DoService(void) {
 					/**********************************************/
 					else {
 						if (false == onSocketReceive(socketID, buffer, result)) {
-							bCloseConn = true;
+							closeConnection = true;
 						}
 					}
 
 					/*************************************************/
-					/* If the bCloseConn flag was turned on, we need */
+					/* If the closeConnection flag was turned on, we need */
 					/* to clean up this active connection.  This     */
 					/* clean up process includes removing the        */
 					/* descriptor from the master_fd set and            */
@@ -770,7 +666,7 @@ int WebServer::DoService(void) {
 					/* based on the bits that are still turned on in */
 					/* the master_fd set.                               */
 					/*************************************************/
-					if (bCloseConn) {
+					if (closeConnection) {
 						close(hSocket);
 						FD_CLR(hSocket, &master_fd);
 						onSocketClose(socketID);
@@ -1098,7 +994,7 @@ bool WebServer::GetFile_SystemDateTime(const Parameters& rGetParams,
 bool WebServer::GetFile_SystemConfig(const Parameters& rGetParams,
 		const Parameters& rPostParams, Answer& rAnswer) {
 
-	 bool bResult = GetFile( true, KBLabGetApp()->GetSystemConfigName(), rAnswer );
+	 bool bResult = getFile(KBLabGetApp()->GetSystemConfigName(), rAnswer );
 	 rAnswer.bNoCache = true;
 	 rAnswer.eContentType = CONTTYPE_TEXT_XML;
 	 return bResult;

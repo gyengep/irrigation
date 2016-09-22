@@ -16,7 +16,7 @@
 int main() {
 	Application application;
 	
-	WebServer server(80);
+	WebServer server("c:/Temp/html/", 80);
 	server.DoService();
 
 	try {

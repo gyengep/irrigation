@@ -11,7 +11,6 @@
 
 #define INVALID_SOCKET 	-1
 #define SOCKET_ERROR 	-1
-#define TRACE		 	printf
 
 typedef int 			SOCKET;
 typedef const char* 	LPCSTR;
@@ -21,18 +20,18 @@ typedef unsigned 		UINT;
 
 class WebServer {
 	enum {
-		MAX_SOCKET = 50
+		MAX_SOCKET = 30
 	};
 
 	typedef std::list< std::string > Request;
 	typedef std::map<std::string, std::string> Parameters;
 
 	typedef enum {
-			HTTP_OK					= 200,
-			HTTP_BAD_REQUEST		= 400,
-			HTTP_NOT_FOUND			= 404,
-			HTTP_METHOD_NOT_ALLOWED	= 405,
-			HTTP_VER_NOT_SUPPORTED	= 505,
+			HTTP_OK					 = 200,
+			HTTP_BAD_REQUEST		 = 400,
+			HTTP_NOT_FOUND			 = 404,
+			HTTP_METHOD_NOT_ALLOWED	 = 405,
+			HTTP_VER_NOT_SUPPORTED	 = 505,
 		} StatusCodes;
 
 	typedef enum {
@@ -70,8 +69,8 @@ class WebServer {
 	typedef std::map<std::string, pGetFileFunctionPtr_t> GetFileMap_t;
 	typedef std::vector<std::string> tStringArray;
 
-	Socket					sockets[ MAX_SOCKET ];
-	const std::string		m_strDirectory;
+	Socket					sockets[MAX_SOCKET];
+	const std::string		rootDirectory;
 	const unsigned short	port;
 	GetFileMap_t			m_theGetFileMap;
 
@@ -91,12 +90,11 @@ class WebServer {
 
 	void onSocketClose(unsigned socketID );
 	bool onSocketReceive(unsigned socketID, const char* buffer, unsigned length);
-	void onSocketCreate(SOCKET socket);
+	bool onSocketCreate(SOCKET socket);
 	bool onRequestReceive(unsigned socketID, const Request& request);
 	bool sendAnswer(unsigned socketID, const Answer& answer);
 
-	bool GetFile( bool bFullPath, LPCSTR lpFileName, Answer& rAnswer );
-	bool GetFileFromResource( bool bFullPath, LPCSTR lpFileName, Answer& rAnswer );
+	bool getFile(const char* fileName, Answer& answer);
 /*
 	bool GetFile_DefaultFile( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer );
 	bool GetFile_Index_html( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer );
@@ -127,7 +125,7 @@ class WebServer {
 	static void setAnswer(Answer& answer, const char* text, size_t length = std::string::npos);
 
 public:
-	WebServer( unsigned short port );
+	WebServer(const char* rootDirectory, unsigned short port);
 	virtual ~WebServer();
 
 	int  DoService( void);
