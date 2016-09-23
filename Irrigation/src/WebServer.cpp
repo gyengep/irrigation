@@ -13,6 +13,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #define HTTP_VERSION	"HTTP/1.1"
+#define INVALID_SOCKET 	-1
+#define SOCKET_ERROR 	-1
 
 #define TRACE0(TEXT) puts(TEXT);fflush(stdout)
 #define TRACE1(TEXT, P1) printf(TEXT, P1);puts("");fflush(stdout)
@@ -21,29 +23,325 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-WebServer::WebServer(const char* rootDirectory, unsigned short port) :
-	rootDirectory(rootDirectory),
-	port(port)
+Server::Server(unsigned short port) :
+	port(port),
+	listener(INVALID_SOCKET),
+	fdmax(0)
 {
-	for (int ii = 0; ii < MAX_SOCKET; ++ii) {
-		sockets[ii].socket = INVALID_SOCKET;
-		sockets[ii].contentStarted = false;
-		sockets[ii].contentLengthLeft = 0;
+	for (unsigned i = 0; i < MAX_SOCKET; i++) {
+		sockets[i] = INVALID_SOCKET;
 	}
-/*
-	m_theGetFileMap.insert(std::make_pair(std::string("/"), stat_GetFile_DefaultFile));
-	m_theGetFileMap.insert(std::make_pair(std::string("/index.html"), stat_GetFile_Index_html));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/SYSTEMDATETIME" ), stat_GetFile_SystemDateTime ));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/SYSTEMCONFIG" ), stat_GetFile_SystemConfig ));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/SYSTEMERROR" ), stat_GetFile_SystemError));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/SYSTEMWARNING" ), stat_GetFile_SystemWarning ));
-	m_theGetFileMap.insert(std::make_pair(std::string("/SWVERSION"), stat_GetFile_SwVersion));
-	m_theGetFileMap.insert(std::make_pair(std::string("/FREEDISK"), stat_GetFile_FreeDisk));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/TOTALDISK" ), stat_GetFile_TotalDisk ));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/LOGFILEPATH" ), stat_GetFile_LogFilePath ));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/LOGFILE" ), stat_GetFile_LogFile ));
-	m_theGetFileMap.insert( std::make_pair( std::string( "/STATUSDBC" ), stat_GetFile_StatusDBC ));
-*/
+}
+
+Server::~Server() {
+	for (unsigned i = 0; i < MAX_SOCKET; i++) {
+		if (INVALID_SOCKET != sockets[i]) {
+			shutdown(sockets[i], SHUT_RDWR);
+			close(sockets[i]);
+			sockets[i] = INVALID_SOCKET;
+		}
+	}
+}
+
+int Server::onSocketCreate(SOCKET socket) {
+	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
+		if (INVALID_SOCKET == sockets[socketID]) {
+
+			if (socket > fdmax) {
+				fdmax = socket;
+			}
+
+			sockets[socketID] = socket;
+			return socketID;
+		}
+	}
+
+	TRACE0("ERROR: Server::OnSocketCreate()");
+	return -1;
+}
+
+void Server::onSocketClose(unsigned socketID) {
+	if (MAX_SOCKET <= socketID ) {
+		throw invalid_socketID();
+	}
+
+	sockets[socketID] = INVALID_SOCKET;
+
+	fdmax = listener;
+	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
+		SOCKET socket = sockets[socketID];
+		if (socket > fdmax) {
+			fdmax = socket;
+		}
+	}
+}
+
+int Server::send(unsigned socketID, const void* buffer, unsigned length) {
+	if (MAX_SOCKET <= socketID ) {
+		throw invalid_socketID();
+	}
+
+	return ::send(sockets[socketID], buffer, length, MSG_DONTROUTE);
+}
+
+int Server::doService(void) {
+	const unsigned BufferSize = 1024;
+	char buffer[BufferSize];
+	bool terminate = false;
+	struct fd_set master_fd;
+	struct fd_set read_fds;
+	struct timeval timeout;
+	struct sockaddr_in serveraddr;
+	int result;
+
+	/*************************************************************/
+	/* Initialize the fd_set                                     */
+	/*************************************************************/
+	FD_ZERO(&master_fd);
+	FD_ZERO(&read_fds);
+
+	/*************************************************************/
+	/* Create an AF_INET stream socket to receive incoming       */
+	/* connections on                                            */
+	/*************************************************************/
+	listener = socket(AF_INET, SOCK_STREAM, 0);
+	if (INVALID_SOCKET == listener) {
+		TRACE1("socket() failed: %d\n", errno);
+		return 2;
+	}
+
+	/*************************************************************/
+	/* Allow socket descriptor to be reuseable                   */
+	/*************************************************************/
+	int yes = 1;
+	result = setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+	if (SOCKET_ERROR == result) {
+		TRACE1("setsockopt() failed: %d", errno);
+		close(listener);
+		return 3;
+	}
+
+	/*************************************************************/
+	/* Bind the socket                                           */
+	/*************************************************************/
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddr.sin_port = htons(port);
+
+	result = bind(listener, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (SOCKET_ERROR == result) {
+		TRACE1("bind() failed: %d", errno);
+		close(listener);
+		return 4;
+	}
+
+	/*************************************************************/
+	/* Set the listen back log                                   */
+	/*************************************************************/
+	result = listen(listener, 1);
+	if (SOCKET_ERROR == result) {
+		TRACE1("listen() failed: %d", errno);
+		close(listener);
+		return 5;
+	}
+
+	/*************************************************************/
+	/* Add the listener to the master set                        */
+	/*************************************************************/
+	FD_SET(listener, &master_fd);
+
+	/*************************************************************/
+	/* Save the biggest file descriptor                          */
+	/*************************************************************/
+	fdmax = listener;
+
+	/*************************************************************/
+	/* Initialize the timeval struct to 1 second.  If no         */
+	/* activity after 1 second this program will end.            */
+	/*************************************************************/
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
+
+	/*************************************************************/
+	/* Loop waiting for incoming connects or for incoming data   */
+	/* on any of the connected sockets.                          */
+	/*************************************************************/
+	while (!terminate) {
+		/**********************************************************/
+		/* Copy the master_fd fd_set over to the working fd_set.  */
+		/**********************************************************/
+		memcpy(&read_fds, &master_fd, sizeof(master_fd));
+
+		/**********************************************************/
+		/* Call select() and wait the timeout for it to complete. */
+		/**********************************************************/
+		result = select(fdmax + 1, &read_fds, NULL, NULL, &timeout);
+
+		/**********************************************************/
+		/* Check to see if the select call failed.                */
+		/**********************************************************/
+		if ( SOCKET_ERROR == result) {
+			TRACE1("select() failed: %d", errno);
+			terminate = true;
+			continue;
+		}
+
+		/**********************************************************/
+		/* Check to see if the time out expired.                  */
+		/**********************************************************/
+		if (0 == result) {
+			continue;
+		}
+
+		/****************************************************/
+		/* Check to see if this is the listening socket     */
+		/****************************************************/
+		if (FD_ISSET(listener, &read_fds)) {
+			struct sockaddr_in clientaddr;
+			SOCKET newfd;
+
+			/**********************************************/
+			/* Accept each incoming connection.  If       */
+			/* accept fails with EWOULDBLOCK, then we     */
+			/* have accepted all of them.  Any other      */
+			/* failure on accept will cause us to end the */
+			/* server.                                    */
+			/**********************************************/
+			socklen_t addrlen = sizeof(clientaddr);
+
+			// TODO le kellene kezelni, ha több mint MAX_SOCKET socket van
+			newfd = accept(listener, (struct sockaddr*)&clientaddr, &addrlen);
+			if (SOCKET_ERROR == newfd) {
+				TRACE1("accept() failed: %d", errno);
+				break;
+			}
+
+			/**********************************************/
+			/* Add the new incoming connection to the     */
+			/* master_fd read set                            */
+			/**********************************************/
+
+			TRACE2("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
+
+			if (0 <= onSocketCreate(newfd)) {
+				FD_SET(newfd, &master_fd);
+			} else {
+				shutdown(newfd, SHUT_RDWR);
+				close(newfd);
+			}
+		}
+
+
+		/**********************************************************/
+		/* One or more descriptors are readable.  Need to         */
+		/* determine which ones they are.                         */
+		/**********************************************************/
+		for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
+
+			SOCKET hSocket = sockets[socketID];
+
+			if ( INVALID_SOCKET == hSocket) {
+				continue;
+			}
+
+			/*******************************************************/
+			/* Check to see if this descriptor is ready            */
+			/*******************************************************/
+			if (FD_ISSET(hSocket, &read_fds)) {
+
+
+				/**********************************************/
+				/* Receive data on this connection until the  */
+				/* recv fails with EWOULDBLOCK.  If any other */
+				/* failure occurs, we will close the          */
+				/* connection.                                */
+				/**********************************************/
+				if ((result = recv(hSocket, buffer, BufferSize, 0)) > 0) {
+					/**********************************************/
+					/* Data was recevied                          */
+					/**********************************************/
+					onSocketReceive(socketID, buffer, result);
+
+				} else {
+					/**********************************************/
+					/* Check to see if the connection has been    */
+					/* closed by the client                       */
+					/**********************************************/
+					if (0 == result) {
+						TRACE0("Connection closed");
+					} else {
+						TRACE1("recv() failed: %d", errno);
+					}
+
+					close(hSocket);
+					FD_CLR(hSocket, &master_fd);
+
+					onSocketClose(socketID);
+				}
+			} /* End of if (FD_ISSET(i, &theWorkingSet)) */
+		} /* End of loop through selectable descriptors */
+	}
+
+	/*************************************************************/
+	/* Cleanup all of the sockets that are open                  */
+	/*************************************************************/
+	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
+		if (INVALID_SOCKET != sockets[socketID]) {
+			shutdown(sockets[socketID], SHUT_RDWR);
+		}
+	}
+
+	return 0;
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+WebServer::Answer::tagAnswer() {
+	stausCode = HTTP_BAD_REQUEST;
+	contentType = CONTTYPE_UNKNOWN;
+	messageLength = 0;
+	noCache = false;
+	messageBody = NULL;
+	otherFields = NULL;
+}
+
+WebServer::Answer::~tagAnswer() {
+	delete[] messageBody;
+	delete[] otherFields;
+}
+
+void WebServer::Answer::set(const char* text, size_t length /*= std::string::npos*/) {
+	stausCode = HTTP_OK;
+	messageLength = (std::string::npos == length) ? strlen(text) : length;
+	messageBody = new char[messageLength];
+	noCache = true;
+	contentType = CONTTYPE_UNKNOWN;
+	if (messageLength > 0) {
+		memcpy(messageBody, text, messageLength);
+	}
+}
+
+void WebServer::Answer::replace(char* text, size_t length /*= std::string::npos*/) {
+	stausCode = HTTP_OK;
+	messageLength = (std::string::npos == length) ? strlen(text) : length;
+	messageBody = text;
+	noCache = true;
+	contentType = CONTTYPE_UNKNOWN;
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+WebServer::WebServer(unsigned short port) :
+	Server(port)
+{
+	for (int i = 0; i < MAX_SOCKET; ++i) {
+		sockets[i].contentStarted = false;
+		sockets[i].contentLengthLeft = 0;
+	}
 }
 
 WebServer::~WebServer() {
@@ -53,7 +351,7 @@ std::string WebServer::getStatusCodeText(StatusCodes statusCode) {
 
 	typedef struct {
 		StatusCodes statusCode;
-		LPCSTR text;
+		const char* text;
 	} StatusCodeAndText;
 
 	const static StatusCodeAndText statusCodeAndTexts[] = {
@@ -149,7 +447,7 @@ std::string WebServer::getDateStr(void) {
 	return std::string(Str);
 }
 
-std::string WebServer::getParamValue(const Parameters& parameters, LPCSTR name) {
+std::string WebServer::getParamValue(const Parameters& parameters, const char* name) {
 	Parameters::const_iterator it = parameters.find(name);
 
 	if (parameters.end() == it) {
@@ -160,44 +458,48 @@ std::string WebServer::getParamValue(const Parameters& parameters, LPCSTR name) 
 }
 
 bool WebServer::sendAnswer(unsigned socketID, const Answer& answer) {
+
+	if (MAX_SOCKET <= socketID ) {
+		throw invalid_socketID();
+	}
+
 	bool result = true;
 
-	if ((socketID < MAX_SOCKET) && (INVALID_SOCKET != sockets[socketID].socket)) {
-		std::ostringstream o;
-		const char* contentTypeText = getContentTypeText(answer.contentType);
+	std::ostringstream o;
+	const char* contentTypeText = getContentTypeText(answer.contentType);
 
-		o << HTTP_VERSION << " " << answer.stausCode << " " << getStatusCodeText(answer.stausCode) << "\r\n";
-		o << "Date: " << getDateStr() << "\r\n";
-		o << "Content-Length: " << (answer.messageBody ? answer.messageLength : 0) << "\r\n";
+	o << HTTP_VERSION << " " << answer.stausCode << " " << getStatusCodeText(answer.stausCode) << "\r\n";
+	o << "Date: " << getDateStr() << "\r\n";
+	o << "Content-Length: " << (answer.messageBody ? answer.messageLength : 0) << "\r\n";
 
-		if ( NULL != contentTypeText) {
-			o << "Content-Type: " << contentTypeText << "\r\n";
+	if ( NULL != contentTypeText) {
+		o << "Content-Type: " << contentTypeText << "\r\n";
+	}
+
+	if ( NULL != answer.otherFields) {
+		o << answer.otherFields << "\r\n";
+	}
+
+	if (answer.noCache) {
+		o << "Cache-Control: no-cache, no-store\r\n";
+	}
+
+	o << "\r\n";
+
+	TRACE1("answer: %s", o.str().c_str());
+
+	int sendResult;
+	sendResult = send(socketID, o.str().c_str(), o.str().length());
+
+	if ( SOCKET_ERROR != sendResult) {
+		if (( NULL != answer.messageBody) && (0 != answer.messageLength)) {
+			sendResult = send(socketID, answer.messageBody, answer.messageLength);
 		}
+	}
 
-		if ( NULL != answer.otherFields) {
-			o << answer.otherFields << "\r\n";
-		}
-
-		if (answer.noCache) {
-			o << "Cache-Control: no-cache, no-store\r\n";
-		}
-
-		o << "\r\n";
-
-		int sendResult;
-		sendResult = send(sockets[socketID].socket, o.str().c_str(), o.str().length(), MSG_DONTROUTE);
-
-		if ( SOCKET_ERROR != sendResult) {
-			if (( NULL != answer.messageBody) && (0 != answer.messageLength)) {
-				sendResult = send(sockets[socketID].socket, answer.messageBody, answer.messageLength, MSG_DONTROUTE);
-			}
-		} else {
-			TRACE0("ERROR: WebServer::SendAnswer()");
-			result = false;
-		}
-
-	} else {
+	if ( SOCKET_ERROR == sendResult) {
 		TRACE0("ERROR: WebServer::SendAnswer()");
+		result = false;
 	}
 
 	return result;
@@ -254,119 +556,93 @@ bool WebServer::tokenizeParams(const std::string& parameterText, Parameters& res
 	return true;
 }
 
-void WebServer::onSocketClose(unsigned socketID) {
-	if (socketID < MAX_SOCKET) {
-		sockets[socketID].socket = INVALID_SOCKET;
+int WebServer::onSocketCreate(SOCKET socket) {
+
+	int socketID = Server::onSocketCreate(socket);
+
+	if (0 <= socketID) {
 		sockets[socketID].text.clear();
 		sockets[socketID].request.clear();
-	} else {
-		TRACE0("ERROR: WebServer::OnSocketClose()");
+		sockets[socketID].contentStarted = false;
+		sockets[socketID].contentLengthLeft = 0;
 	}
+
+	return socketID;
 }
 
-bool WebServer::onSocketReceive(unsigned socketID, const char* buffer, unsigned length) {
-	if (socketID < MAX_SOCKET) {
-		std::string::size_type pos;
-		sockets[socketID].text += std::string(buffer, length);
+void WebServer::onSocketClose(unsigned socketID) {
 
-		while (true) {
+	Server::onSocketClose(socketID);
 
-			if (sockets[socketID].contentStarted) {
+	sockets[socketID].text.clear();
+	sockets[socketID].request.clear();
+}
 
-				if (0 != sockets[socketID].contentLengthLeft) {
-					std::string::size_type size = std::min(
-							sockets[socketID].contentLengthLeft,
-							(DWORD) sockets[socketID].text.size());
+bool WebServer::onSocketReceive(unsigned socketID, const void* buffer, unsigned length) {
 
-					sockets[socketID].request.back() += sockets[socketID].text.substr(0, size);
-					sockets[socketID].text.erase(0, size);
-					sockets[socketID].contentLengthLeft -= size;
-				}
+	if (MAX_SOCKET <= socketID ) {
+		throw invalid_socketID();
+	}
 
-				if (0 == sockets[socketID].contentLengthLeft) {
-					bool bReceiveOK = onRequestReceive(socketID, sockets[socketID].request);
-					sockets[socketID].request.clear();
-					sockets[socketID].contentStarted = false;
-					sockets[socketID].contentLengthLeft = 0;
+	std::string::size_type pos;
+	sockets[socketID].text += std::string((char*)buffer, length);
 
-					if (false == bReceiveOK) {
-						return false;
-					}
-				}
+	while (true) {
+
+		if (sockets[socketID].contentStarted) {
+
+			if (0 != sockets[socketID].contentLengthLeft) {
+				std::string::size_type size = std::min(
+						sockets[socketID].contentLengthLeft,
+						(DWORD) sockets[socketID].text.size());
+
+				sockets[socketID].request.back() += sockets[socketID].text.substr(0, size);
+				sockets[socketID].text.erase(0, size);
+				sockets[socketID].contentLengthLeft -= size;
 			}
 
-			if (std::string::npos != (pos = sockets[socketID].text.find("\r\n"))) {
-				sockets[socketID].request.push_back(sockets[socketID].text.substr(0, pos));
-				sockets[socketID].text.erase(0, pos + 2);
+			if (0 == sockets[socketID].contentLengthLeft) {
+				bool bReceiveOK = onRequestReceive(socketID, sockets[socketID].request);
 
-				if ("Content-Length: " == sockets[socketID].request.back().substr(0, 16)) {
-					char* chDummy = NULL;
-					sockets[socketID].contentStarted = false;
-					sockets[socketID].contentLengthLeft = strtoul(sockets[socketID].request.back().substr(16).c_str(), &chDummy, 10);
+				sockets[socketID].request.clear();
+				sockets[socketID].contentStarted = false;
+				sockets[socketID].contentLengthLeft = 0;
+
+				if (false == bReceiveOK) {
+					return false;
 				}
+			}
+		}
 
-				if (sockets[socketID].request.back().empty()) {
-					if (0 < sockets[socketID].contentLengthLeft) {
-						sockets[socketID].request.push_back(std::string());
-					}
+		if (std::string::npos != (pos = sockets[socketID].text.find("\r\n"))) {
+			sockets[socketID].request.push_back(sockets[socketID].text.substr(0, pos));
+			sockets[socketID].text.erase(0, pos + 2);
 
-					sockets[socketID].contentStarted = true;
-				}
-
-				continue;
+			if ("Content-Length: " == sockets[socketID].request.back().substr(0, 16)) {
+				char* chDummy = NULL;
+				sockets[socketID].contentStarted = false;
+				sockets[socketID].contentLengthLeft = strtoul(sockets[socketID].request.back().substr(16).c_str(), &chDummy, 10);
 			}
 
-			return true;
+			if (sockets[socketID].request.back().empty()) {
+				if (0 < sockets[socketID].contentLengthLeft) {
+					sockets[socketID].request.push_back(std::string());
+				}
+
+				sockets[socketID].contentStarted = true;
+			}
+
+			continue;
 		}
-	} else {
-		TRACE0("ERROR: WebServer::OnSocketReceive()");
+
+		return true;
 	}
 
-	return true;
-}
-
-bool WebServer::onSocketCreate(SOCKET socket) {
-	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
-		if (INVALID_SOCKET == sockets[socketID].socket) {
-			sockets[socketID].socket = socket;
-			sockets[socketID].text.clear();
-			return true;
-		}
-	}
-
-	TRACE0("ERROR: WebServer::OnSocketCreate()");
-	return false;
-}
-
-bool WebServer::getFile(const char* fileName, Answer& answer) {
-	std::string strFullPath(rootDirectory);
-	strFullPath += fileName;
-
-	TRACE1("Required file: \"%s\"", strFullPath.c_str());
-
-	FILE* f = fopen(strFullPath.c_str(), "rb");
-	if (NULL == f) {
-		return false;
-	}
-
-	fseek(f, 0, SEEK_END);
-	answer.stausCode = HTTP_OK;
-	answer.messageLength = ftell(f);
-	answer.messageBody = new char[answer.messageLength];
-	rewind(f);
-	fread(answer.messageBody, 1, answer.messageLength, f);
-	fclose(f);
 	return true;
 }
 
 bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 	Answer answer;
-	answer.stausCode = HTTP_BAD_REQUEST;
-	answer.noCache = false;
-	answer.messageBody = NULL;
-	answer.otherFields = NULL;
-	answer.messageLength = 0;
-	answer.contentType = CONTTYPE_UNKNOWN;
 
 	TRACE0( "*******************************************************" );
 	for( Request::const_iterator it = request.begin(); request.end() != it; ++it ) {
@@ -405,22 +681,10 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 					}
 				}
 
-				if (false == methodFound) {
-					answer.stausCode = HTTP_METHOD_NOT_ALLOWED;
-				} else {
-
+				if (methodFound) {
 					TRACE1("File request: %s", fileName.c_str());
 
-					GetFileMap_t::iterator it = m_theGetFileMap.find(fileName);
-					bool fileFound;
-
-					if (m_theGetFileMap.end() != it) {
-						fileFound = it->second(this, getParameters, postParameters, answer);
-					} else {
-						fileFound = getFile(fileName.c_str(), answer);
-					}
-
-					if (fileFound) {
+					if (getFile(fileName, getParameters, postParameters, answer)) {
 						if (CONTTYPE_UNKNOWN == answer.contentType) {
 							std::string::size_type pos = fileName.find_last_of('.');
 							if (std::string::npos != pos) {
@@ -431,6 +695,8 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 						answer.stausCode = HTTP_NOT_FOUND;
 						TRACE1("WebServer: File not found: \"%s\"", fileName.c_str());
 					}
+				} else {
+					answer.stausCode = HTTP_METHOD_NOT_ALLOWED;
 				}
 			}
 		}
@@ -438,256 +704,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 		TRACE0("ERROR: WebServer::OnRequestReceive()");
 	}
 
-	bool bResult = sendAnswer(socketID, answer);
-	delete[] answer.messageBody;
-	delete[] answer.otherFields;
-	return bResult;
-}
-
-int WebServer::DoService(void) {
-	const unsigned BufferSize = 1024;
-	char buffer[BufferSize];
-	bool terminate = false;
-	int listener = INVALID_SOCKET;
-	int fdmax;
-	struct fd_set master_fd;
-	struct fd_set read_fds;
-	struct timeval timeout;
-	struct sockaddr_in serveraddr;
-	struct sockaddr_in clientaddr;
-	int result;
-
-	/*************************************************************/
-	/* Initialize the fd_set                                     */
-	/*************************************************************/
-	FD_ZERO(&master_fd);
-	FD_ZERO(&read_fds);
-
-	/*************************************************************/
-	/* Create an AF_INET stream socket to receive incoming       */
-	/* connections on                                            */
-	/*************************************************************/
-	listener = socket(AF_INET, SOCK_STREAM, 0);
-	if (INVALID_SOCKET == listener) {
-		TRACE1("socket() failed: %d\n", errno);
-		return 2;
-	}
-
-	/*************************************************************/
-	/* Allow socket descriptor to be reuseable                   */
-	/*************************************************************/
-	/* for setsockopt() SO_REUSEADDR, below */
-	int yes = 1;
-
-	result = setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
-	if (SOCKET_ERROR == result) {
-		TRACE1("setsockopt() failed: %d", errno);
-		close(listener);
-		return 3;
-	}
-
-	/*************************************************************/
-	/* Bind the socket                                           */
-	/*************************************************************/
-	memset(&serveraddr, 0, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serveraddr.sin_port = htons(port);
-
-	result = bind(listener, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-	if (SOCKET_ERROR == result) {
-		TRACE1("bind() failed: %d", errno);
-		close(listener);
-		return 4;
-	}
-
-	/*************************************************************/
-	/* Set the listen back log                                   */
-	/*************************************************************/
-	result = listen(listener, 1);
-	if (SOCKET_ERROR == result) {
-		TRACE1("listen() failed: %d", errno);
-		close(listener);
-		return 5;
-	}
-
-	/*************************************************************/
-	/* Add the listener to the master set                        */
-	/*************************************************************/
-	FD_SET(listener, &master_fd);
-	onSocketCreate(listener);
-
-	/*************************************************************/
-	/* Keep track of the biggest file descriptor */
-	/*************************************************************/
-	fdmax = listener;
-
-	/*************************************************************/
-	/* Initialize the timeval struct to 1 second.  If no        */
-	/* activity after 1 second this program will end.           */
-	/*************************************************************/
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
-
-	/*************************************************************/
-	/* Loop waiting for incoming connects or for incoming data   */
-	/* on any of the connected sockets.                          */
-	/*************************************************************/
-	while (!terminate) {
-		/**********************************************************/
-		/* Copy the master_fd fd_set over to the working fd_set.     */
-		/**********************************************************/
-		memcpy(&read_fds, &master_fd, sizeof(master_fd));
-
-		/**********************************************************/
-		/* Call select() and wait the timeout for it to complete.   */
-		/**********************************************************/
-		result = select(fdmax + 1, &read_fds, NULL, NULL, &timeout);
-
-		/**********************************************************/
-		/* Check to see if the select call failed.                */
-		/**********************************************************/
-		if ( SOCKET_ERROR == result) {
-			TRACE1("select() failed: %d", errno);
-			terminate = true;
-			continue;
-		}
-
-		/**********************************************************/
-		/* Check to see if the time out expired.                  */
-		/**********************************************************/
-		if (0 == result) {
-			continue;
-		}
-
-		/**********************************************************/
-		/* One or more descriptors are readable.  Need to         */
-		/* determine which ones they are.                         */
-		/**********************************************************/
-		for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
-
-			SOCKET hSocket = sockets[socketID].socket;
-			if ( INVALID_SOCKET == hSocket) {
-				continue;
-			}
-
-			/*******************************************************/
-			/* Check to see if this descriptor is ready            */
-			/*******************************************************/
-			if (FD_ISSET(hSocket, &read_fds)) {
-
-				/****************************************************/
-				/* Check to see if this is the listening socket     */
-				/****************************************************/
-				if (hSocket == listener) {
-					SOCKET newfd;
-
-					/**********************************************/
-					/* Accept each incoming connection.  If       */
-					/* accept fails with EWOULDBLOCK, then we     */
-					/* have accepted all of them.  Any other      */
-					/* failure on accept will cause us to end the */
-					/* server.                                    */
-					/**********************************************/
-					socklen_t addrlen = sizeof(clientaddr);
-
-					// TODO le kellene kezelni, ha több mint MAX_SOCKET socket van
-					newfd = accept(listener, (struct sockaddr*)&clientaddr, &addrlen);
-					if (SOCKET_ERROR == newfd) {
-						TRACE1("accept() failed: %d", errno);
-						break;
-					}
-
-					/**********************************************/
-					/* Add the new incoming connection to the     */
-					/* master_fd read set                            */
-					/**********************************************/
-
-					TRACE2("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
-
-					if (onSocketCreate(newfd)) {
-
-						FD_SET(newfd, &master_fd);
-
-						if (newfd > fdmax) {
-							fdmax = newfd;
-						}
-					} else {
-						shutdown(newfd, SHUT_RDWR);
-						close(newfd);
-					}
-				}
-
-				/****************************************************/
-				/* This is not the listening socket, therefore an   */
-				/* existing connection must be readable             */
-				/****************************************************/
-				else {
-					bool closeConnection = false;
-
-					/**********************************************/
-					/* Receive data on this connection until the  */
-					/* recv fails with EWOULDBLOCK.  If any other */
-					/* failure occurs, we will close the          */
-					/* connection.                                */
-					/**********************************************/
-					result = recv(hSocket, buffer, BufferSize, 0);
-					if (result < 0) {
-						if ( EWOULDBLOCK != errno) {
-							TRACE1("recv() failed: %d", errno);
-							closeConnection = true;
-						}
-					}
-
-					/**********************************************/
-					/* Check to see if the connection has been    */
-					/* closed by the client                       */
-					/**********************************************/
-					else if (0 == result) {
-						TRACE0("Connection closed");
-						closeConnection = true;
-					}
-
-					/**********************************************/
-					/* Data was recevied                          */
-					/**********************************************/
-					else {
-						if (false == onSocketReceive(socketID, buffer, result)) {
-							closeConnection = true;
-						}
-					}
-
-					/*************************************************/
-					/* If the closeConnection flag was turned on, we need */
-					/* to clean up this active connection.  This     */
-					/* clean up process includes removing the        */
-					/* descriptor from the master_fd set and            */
-					/* determining the new maximum descriptor value  */
-					/* based on the bits that are still turned on in */
-					/* the master_fd set.                               */
-					/*************************************************/
-					if (closeConnection) {
-						close(hSocket);
-						FD_CLR(hSocket, &master_fd);
-						onSocketClose(socketID);
-					}
-				} /* End of existing connection is readable */
-			} /* End of if (FD_ISSET(i, &theWorkingSet)) */
-		} /* End of loop through selectable descriptors */
-	}
-
-	/*************************************************************/
-	/* Cleanup all of the sockets that are open                  */
-	/*************************************************************/
-	for (unsigned socketID = 0; socketID < MAX_SOCKET; ++socketID) {
-		if ( INVALID_SOCKET != sockets[socketID].socket) {
-			close(sockets[socketID].socket);
-			sockets[socketID].text.clear();
-			sockets[socketID].request.clear();
-		}
-	}
-
-	return 0;
+	return sendAnswer(socketID, answer);
 }
 
 const char HEX2DEC[256] = {
@@ -794,388 +811,54 @@ const char SAFE[256] = {
 	delete[] pStart;
 	return sResult;
 }
+
+ ////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
+
+
+IrrigationWebServer::IrrigationWebServer(const char* rootDirectory, unsigned short port) :
+	WebServer(port),
+	rootDirectory(rootDirectory)
+{
+//	m_theGetFileMap.insert(std::make_pair(std::string("/"), stat_GetFile_DefaultFile));
+}
+
+IrrigationWebServer::~IrrigationWebServer() {
+}
+
+bool IrrigationWebServer::getFile(const std::string& fileName, const Parameters& getParameters, const Parameters& postParameters, Answer& answer) {
+	std::string strFullPath = rootDirectory + fileName;
+
+	FILE* f = fopen(strFullPath.c_str(), "rb");
+	if (NULL == f) {
+		return false;
+	}
+
+	long messageLength;
+	char* messageBody;
+
+	fseek(f, 0, SEEK_END);
+	messageLength = ftell(f);
+	messageBody = new char[messageLength];
+	rewind(f);
+	fread(messageBody, 1, messageLength, f);
+	fclose(f);
+
+	answer.replace(messageBody, messageLength);
+
+	return true;
+
 /*
-bool WebServer::GetFile_DefaultFile(const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer) {
-	return GetFile_Index_html(rGetParams, rPostParams, rAnswer);
-}
+	GetFileMap_t::iterator it = m_theGetFileMap.find(fileName);
+	bool fileFound;
 
-bool WebServer::GetFile_Index_html(const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer) {
-
-	if (rPostParams.size() == 1) {
-		Parameters::const_iterator it;
-
-		if (rPostParams.end() != (it = rPostParams.find("reboot"))) {
-			if ("true" == it->second) {
-				// TODO terminate
-				//KBLabGetApp()->DoTerminate();
-				return GetFileFromResource(false, "/index.html", rAnswer);
-			}
-		}
+	if (m_theGetFileMap.end() != it) {
+		fileFound = it->second(this, getParameters, postParameters, answer);
+	} else {
+		fileFound = readFileFromDisk(fileName, answer);
 	}
 
-#ifdef WEBSRV_LOG
-	OutputDebugString( "-------------------------------\n" );
-
-	for( Parameters::const_iterator it = rPostParams.begin(); rPostParams.end() != it; ++it ) {
-		OutputDebugString( it->first.c_str() );
-		OutputDebugString( " := " );
-		OutputDebugString( it->second.c_str() );
-		OutputDebugString( "\n" );
-	}
-#endif // WEBSRV_LOG
-
-	 CXMLElement* pSectionRoot = NULL;
-	 Parameters::const_iterator itDelete = rPostParams.find( "DeleteSection" );
-	 Parameters::const_iterator itAdd    = rPostParams.find( "AddSection" );
-	 Parameters::const_iterator itSection = rPostParams.find( "Section" );
-	 Parameters::const_iterator itKeyName = rPostParams.find( "Key" );
-	 Parameters::const_iterator itKeyValue = rPostParams.end();
-	 Parameters::const_iterator it;
-
-	 #ifdef WEBSRV_LOG
-	 for( it = rPostParams.begin(); rPostParams.end() != it; ++it ) {
-	 printf( "   %s := \"%s\"\n", it->first.c_str(), it->second.c_str() );
-	 }
-	 #endif
-
-	 bool bDeleteSection = false;
-	 bool bAddSection = false;
-
-	 std::string strSection;
-	 std::string strKeyName;
-	 std::string strKeyValue;
-
-	 if( rPostParams.end() != itSection ) {
-	 strSection = itSection->second;
-	 std::replace( strSection.begin(), strSection.end(), '.', '/' ); // replace all '.' to '/'
-	 }
-
-	 if( rPostParams.end() != itKeyName ) {
-	 strKeyName = itKeyName->second;
-	 itKeyValue = rPostParams.find( strKeyName );
-
-	 if( rPostParams.end() != itKeyValue ) {
-	 strKeyValue = itKeyValue->second;
-	 } else {
-	 #ifdef WEBSRV_LOG
-	 printf( "WARNING!!! Key property does not exist: \"%s\"", strKeyName.c_str() );
-	 #endif
-	 }
-	 }
-
-	 if( rPostParams.end() != itDelete && 0 == strcmpi( itDelete->second.c_str(), "true" )) {
-	 bDeleteSection = true;
-	 }
-
-	 if( rPostParams.end() != itAdd && 0 == strcmpi( itAdd->second.c_str(), "true" )) {
-	 bAddSection = true;
-	 }
-
-	 if( strKeyName.empty() ) {
-
-	 if( false == strSection.empty() ) {
-	 pSectionRoot = KBLabGetApp()->GetSystemConfig().GetElemFromRoot( strSection.c_str(), false );
-	 }
-	 if( NULL == pSectionRoot ) {
-	 pSectionRoot = KBLabGetApp()->GetSystemConfig().GetRoot();
-	 }
-
-	 } else {
-
-	 std::string strKeySection;
-	 std::string strParentSection;
-	 std::string::size_type pos = strSection.find_last_of( '/' );
-
-	 if( std::string::npos == pos ) {
-	 strParentSection.clear();
-	 strKeySection = strSection;
-	 } else {
-	 strParentSection = strSection.substr( 0, pos );
-	 strKeySection = strSection.substr( pos + 1 );
-	 }
-
-	 CXMLElement* pSectionParent = KBLabGetApp()->GetSystemConfig().GetElemFromRoot( strParentSection.c_str(), false );
-	 if( NULL != pSectionParent ) {
-	 pSectionRoot = pSectionParent->FindFirst( strKeySection.c_str(), false, strKeyName.c_str(), strKeyValue.c_str() );
-
-	 if( NULL == pSectionRoot &&  bAddSection ) {
-	 pSectionRoot = pSectionParent->CreateChild( strKeySection.c_str() );
-	 if( pSectionRoot ) {
-	 pSectionRoot->ModifyProperty( strKeyName.c_str(), strKeyValue.c_str() );
-	 }
-	 }
-	 }
-	 }
-
-	 if( bDeleteSection ) {
-	 if( NULL != pSectionRoot ) {
-	 pSectionRoot->Delete();
-	 }
-	 } else {
-	 CXMLElement* pElement;
-	 for( it = rPostParams.begin(); rPostParams.end() != it; ++it ) {
-	 if( ( it == itSection ) || ( it == itKeyName ) || ( it == itKeyValue ) || ( it == itDelete ) || ( it == itAdd ) ) {
-	 continue;
-	 }
-
-	 std::string strSubSection;
-	 std::string strProperty;
-	 std::string::size_type pos = it->first.find_last_of( '.' );
-
-	 if( std::string::npos == pos ) {
-	 strSubSection.clear();
-	 strProperty = it->first;
-	 pElement = pSectionRoot;
-	 } else {
-	 strSubSection = it->first.substr( 0, pos );
-	 std::replace( strSubSection.begin(), strSubSection.end(), '.', '/' ); // replace all '.' to '/'
-	 strProperty = it->first.substr( pos + 1 );
-	 pElement = pSectionRoot->Find( strSubSection.c_str(), false );
-	 }
-
-	 if( NULL != pElement ) {
-	 pElement->ModifyProperty( strProperty.c_str(), UriDecode( it->second ).c_str() );
-	 } else {
-	 #ifdef WEBSRV_LOG
-	 printf( "SubSection not found: \"%s\"\n", strSubSection.c_str() );
-	 #endif
-	 }
-	 } // for
-	 }
-
-
-	 KBLabGetApp()->GetSystemConfig().SetChanged();
-	 KBLabGetApp()->SaveSystemConfig();
-
-	 bool bResult = GetFileFromResource( false, "/index.html", rAnswer );
-	 rAnswer.bNoCache = true;
-	 return bResult;
-
-	return false;
+	return fileFound;
+*/
 }
 
-bool WebServer::GetFile_SystemDateTime(const Parameters& rGetParams,
-		const Parameters& rPostParams, Answer& rAnswer) {
-
-	 Parameters::const_iterator it = rPostParams.find( "SystemDateTime" );
-
-	 if( rPostParams.end() != it ) {
-	 SYSTEMTIME theSystemtime;
-	 time_t theTime;
-	 struct tm* pTM;
-	 char* chDummy;
-
-	 theTime = strtoul( it->second.c_str(), &chDummy, 10 );
-	 pTM = gmtime( &theTime );
-
-	 theSystemtime.wYear = pTM->tm_year + 1900;
-	 theSystemtime.wMonth = pTM->tm_mon + 1;
-	 theSystemtime.wDay = pTM->tm_mday;
-	 theSystemtime.wHour = pTM->tm_hour;
-	 theSystemtime.wMinute = pTM->tm_min;
-	 theSystemtime.wSecond = pTM->tm_sec;
-	 theSystemtime.wMilliseconds = 0;
-	 SetSystemTime( &theSystemtime );
-	 RTCMOSSetRTC();
-	 KBLabGetApp()->UpdateBackupDate();
-
-	 time( &theTime );
-	 KBLabGetApp()->DisplayString( "System Time set to: ", ctime( &theTime ), false );
-	 }
-
-	 std::ostringstream o;
-	 o << time( NULL );
-
-	 SetAnswer( rAnswer, o.str().c_str(), o.str().length() );
-
-	return true;
-}
-
-bool WebServer::GetFile_SystemConfig(const Parameters& rGetParams,
-		const Parameters& rPostParams, Answer& rAnswer) {
-
-	 bool bResult = getFile(KBLabGetApp()->GetSystemConfigName(), rAnswer );
-	 rAnswer.bNoCache = true;
-	 rAnswer.eContentType = CONTTYPE_TEXT_XML;
-	 return bResult;
-
-	return false;
-}
-
-bool WebServer::GetFile_SwVersion(const Parameters& rGetParams,
-		const Parameters& rPostParams, Answer& rAnswer) {
-	//setAnswer( rAnswer, KBDIA_VERSION );
-	return true;
-}
-
-bool WebServer::GetFile_FreeDisk(const Parameters& rGetParams,
-		const Parameters& rPostParams, Answer& rAnswer) {
-
-	 UINT nPermilleFree = 0;
-	 UINT nFreeDisk = CKBDiaBufferedIO_i::GetFreeDiskKB( "C:\\", nPermilleFree );
-	 char lpText[100];
-
-	 sprintf( lpText, "%lu %lu %lu kB (%lu.%lu%%)",
-	 ( nFreeDisk / (1000*1000) ),
-	 ( nFreeDisk / 1000 % 1000 ) ,
-	 ( nFreeDisk % 1000 ),
-	 nPermilleFree / 10,
-	 nPermilleFree % 10
-	 );
-
-	 SetAnswer( rAnswer, lpText );
-
-	return true;
-}
-
-
- bool
- WebServer::GetFile_TotalDisk( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer ) {
- UINT nFreeDisk = CKBDiaBufferedIO_i::GetTotalDiskKB( "C:\\" );
- char lpText[100];
-
- sprintf( lpText, "%lu %lu %lu kB",
- ( nFreeDisk / (1000*1000) ),
- ( nFreeDisk / 1000 % 1000 ) ,
- ( nFreeDisk % 1000 )
- );
-
- SetAnswer( rAnswer, lpText );
- return true;
- }
-
-
-
- bool
- WebServer::GetFile_SystemError( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer ) {
- WORD wErrors = KBLabGetApp()->GetReportedErrors();
- std::ostringstream o;
-
- for( UINT i=0; i<16; i++ ) {
- if( wErrors & (1<<i) ) {
- LPCSTR lpErrorText = CKBDiaApplication::ErrorToString( ( 1 << i ) | ( ERROR_LEVEL_ERROR << 12 ));
- if( lpErrorText ) {
- if( false == o.str().empty() ) {
- o << "<br/>";
- }
-
- o << lpErrorText;
- }
- }
- }
-
- if( o.str().empty() ) {
- o << "No errors";
- }
-
- SetAnswer( rAnswer, o.str().c_str(), o.str().length() );
- return true;
- }
-
-
-
- bool
- WebServer::GetFile_SystemWarning( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer ) {
- WORD wErrors = KBLabGetApp()->GetReportedWarnings();
- std::ostringstream o;
-
- for( UINT i=0; i<16; i++ ) {
- if( wErrors & (1<<i) ) {
- LPCSTR lpErrorText = CKBDiaApplication::WarningToString( ( 1 << i ) | ( ERROR_LEVEL_WARNING << 12 ));
- if( lpErrorText ) {
- if( false == o.str().empty() ) {
- o << "<br/>";
- }
-
- o << lpErrorText;
- }
- }
- }
-
- if( o.str().empty() ) {
- o << "No warnings";
- }
-
- SetAnswer( rAnswer, o.str().c_str(), o.str().length() );
- return true;
- }
-
-
-
- bool
- WebServer::GetFile_LogFilePath( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer ) {
- LPCSTR lpFileName = KBLabGetApp()->GetLogFileName();
- SetAnswer( rAnswer, lpFileName ? lpFileName : "" );
- return true;
- }
-
-
-
- bool
- WebServer::GetFile_LogFile( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer ) {
- LPCSTR lpFileName = KBLabGetApp()->GetLogFileName();
- const char* lpOtherFields = "Content-Disposition: attachment; filename=\"KBDiaDebug.log\"";
- std::ostringstream o;
-
- if( NULL != lpFileName ) {
- std::string line;
- std::ifstream myfile( lpFileName );
- if( myfile.is_open() ) {
- while ( myfile.good() ) {
- getline( myfile, line );
- o << line << std::endl;
- }
- myfile.close();
- } else {
- o << "ERROR: Can't open file";
- }
- }
-
- rAnswer.pOtherFields = new char[ strlen(lpOtherFields)+1 ];
- strcpy( rAnswer.pOtherFields, lpOtherFields );
-
- SetAnswer( rAnswer, o.str().c_str(), o.str().length() );
- return true;
- }
-
-
-
- bool
- WebServer::GetFile_StatusDBC( const Parameters& rGetParams, const Parameters& rPostParams, Answer& rAnswer ) {
- CResourceReader_General theResourceDBC( "DBC" );
- const char* lpOtherFields = "Content-Disposition: attachment; filename=\"MeasboxStatus.DBC\"";
- std::string theDBC;
-
- theResourceDBC.CopyTo( IDR_DBC_STATUSMSG, theDBC );
-
- std::string::size_type nPos = theDBC.find( "$ID$");
- if( std::string::npos != nPos ) {
- char lpID[20];
- theDBC.erase( nPos, 4 );
- theDBC.insert( nPos, _ultoa( KBLabGetApp()->GetStoredStatusMsgID(), lpID, 10 ) );
- }
-
- rAnswer.eStausCode = HTTP_OK;
- rAnswer.bNoCache = true;
- rAnswer.eContentType = CONTTYPE_DOWNLOAD;
- rAnswer.dwMessageLength = theDBC.length();
- rAnswer.pOtherFields = new char[ strlen(lpOtherFields)+1 ];
- rAnswer.pMessageBody = new char[ rAnswer.dwMessageLength ];
- memcpy( rAnswer.pMessageBody, theDBC.c_str(), theDBC.length() );
- strcpy( rAnswer.pOtherFields, lpOtherFields );
-
- return true;
- } // WebServer::GetFile_StatusDBC()
- */
-
-/*static */
-void WebServer::setAnswer(Answer& answer, LPCSTR text, size_t length /*= std::string::npos*/) {
-	answer.stausCode = HTTP_OK;
-	answer.messageLength = (std::string::npos == length) ? strlen(text) : length;
-	answer.messageBody = new char[answer.messageLength];
-	answer.noCache = true;
-	answer.contentType = CONTTYPE_TEXT_PLAIN;
-	if (answer.messageLength > 0) {
-		memcpy(answer.messageBody, text, answer.messageLength);
-	}
-}

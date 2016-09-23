@@ -16,8 +16,8 @@
 int main() {
 	Application application;
 	
-	WebServer server("c:/Temp/html/", 80);
-	server.DoService();
+	IrrigationWebServer server("c:/Temp/html/", 80);
+	server.doService();
 
 	try {
 		application.init();
