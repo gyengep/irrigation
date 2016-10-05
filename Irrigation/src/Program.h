@@ -19,6 +19,9 @@ class Scheduler;
 class SpecifiedScheduler;
 
 class Program {
+	Program(const Program&);
+	void operator= (const Program&);
+
 public:
 
 	typedef RunTimeContainer::RunTimes RunTimes;
