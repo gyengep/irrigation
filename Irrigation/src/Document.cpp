@@ -35,7 +35,6 @@ Document::~Document() {
 	if (true) {
 		AUTO_LOCK_VIEW();
 		for (auto it = views.begin(); views.end() != it; ++it) {
-			(*it)->stop();
 			delete (*it);
 		}
 		views.clear();
