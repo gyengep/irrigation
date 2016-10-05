@@ -16,7 +16,7 @@
 #include "View.h"
 
 
-class CommandLineView : public CommandExecutor, View {
+class CommandLineView : public CommandExecutor, View, CommandCallback {
 	std::thread* workerThread;
 	std::atomic_bool isTerminated;
 
@@ -24,6 +24,26 @@ class CommandLineView : public CommandExecutor, View {
 
 	virtual void onExecutionFailed(const CommandLineException& e);
 	virtual void onError(const std::exception& e);
+
+	virtual void onHelpSuccess();
+	virtual void onStarttimeListSuccess(const Program& program);
+	virtual void onStarttimeSetSuccess();
+	virtual void onStarttimeGetSuccess(IdType startTimeId, unsigned startTime);
+	virtual void onStarttimeAddSuccess();
+	virtual void onStarttimeDeleteSuccess();
+	virtual void onRuntimeListSuccess(const Program& program);
+	virtual void onRuntimeSetSuccess();
+	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime);
+	virtual void onProgramListSuccess(const Document::Programs& programs);
+	virtual void onProgramShowSuccess(const Program& program);
+	virtual void onProgramAddSuccess();
+	virtual void onProgramDeleteSuccess();
+	virtual void onProgramRenameSuccess();
+	virtual void onProgramMoveSuccess();
+	virtual void onValveSuccess();
+	virtual void onZoneSuccess();
+	virtual void onResetValvesSuccess();
+	virtual void onExitSuccess();
 
 public:
 	CommandLineView(Document* document);

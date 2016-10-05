@@ -10,6 +10,14 @@
 
 #include "CommandExecutor.h"
 
+#define DECLARE_COMMAND(CLASS_NAME, COMMAND, SUBCOMMAND)		\
+	class CLASS_NAME : public Command {							\
+	public:														\
+		CLASS_NAME(CommandCallback* callback, Document* doc) :	\
+			Command(callback, doc, COMMAND, SUBCOMMAND) {}		\
+		virtual void execute(const Tokens& parameters);			\
+	};
+
 
 class TooFewArgumentsException : public CommandLineException {
 public:
@@ -24,119 +32,25 @@ public:
 
 namespace command {
 
-	class Help : public Command {
-	public:
-		Help(Document* doc) : Command(doc, "help") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class Exit : public Command {
-	public:
-		Exit(Document* doc) : Command(doc, "exit") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ProgramList : public Command {
-	public:
-		ProgramList(Document* doc) : Command(doc, "program", "list") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ProgramShow : public Command {
-	public:
-		ProgramShow(Document* doc) : Command(doc, "program", "show") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ProgramAdd : public Command {
-	public:
-		ProgramAdd(Document* doc) : Command(doc, "program", "add") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ProgramDelete : public Command {
-	public:
-		ProgramDelete(Document* doc) : Command(doc, "program", "delete") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ProgramRename : public Command {
-	public:
-		ProgramRename(Document* doc) : Command(doc, "program", "rename") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ProgramMove : public Command {
-	public:
-		ProgramMove(Document* doc) : Command(doc, "program", "move") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class StarttimeList : public Command {
-	public:
-		StarttimeList(Document* doc) : Command(doc, "starttime", "list") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class StarttimeAdd : public Command {
-	public:
-		StarttimeAdd(Document* doc) : Command(doc, "starttime", "add") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class StarttimeDelete : public Command {
-	public:
-		StarttimeDelete(Document* doc) : Command(doc, "starttime", "d") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class StarttimeSet : public Command {
-	public:
-		StarttimeSet(Document* doc) : Command(doc, "starttime", "set") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class StarttimeGet : public Command {
-	public:
-		StarttimeGet(Document* doc) : Command(doc, "starttime", "get") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class RuntimeList : public Command {
-	public:
-		RuntimeList(Document* doc) : Command(doc, "runtime", "list") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class RuntimeSet : public Command {
-	public:
-		RuntimeSet(Document* doc) : Command(doc, "runtime", "set") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class RuntimeGet : public Command {
-	public:
-		RuntimeGet(Document* doc) : Command(doc, "runtime", "get") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class Valve : public Command {
-	public:
-		Valve(Document* doc) : Command(doc, "valve") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class Zone : public Command {
-	public:
-		Zone(Document* doc) : Command(doc, "zone") {}
-		virtual void execute(const Tokens& parameters);
-	};
-
-	class ResetValves : public Command {
-	public:
-		ResetValves(Document* doc) : Command(doc, "reset", "valves") {}
-		virtual void execute(const Tokens& parameters);
-	};
+	DECLARE_COMMAND(Help, "help", NULL);
+	DECLARE_COMMAND(Exit, "exit", NULL);
+	DECLARE_COMMAND(Valve, "valve", NULL);
+	DECLARE_COMMAND(Zone, "zone", NULL);
+	DECLARE_COMMAND(ProgramList, "program", "list");
+	DECLARE_COMMAND(ProgramShow, "program", "show");
+	DECLARE_COMMAND(ProgramAdd, "program", "add");
+	DECLARE_COMMAND(ProgramDelete, "program", "delete");
+	DECLARE_COMMAND(ProgramRename, "program", "rename");
+	DECLARE_COMMAND(ProgramMove, "program", "move");
+	DECLARE_COMMAND(StarttimeList, "starttime", "list");
+	DECLARE_COMMAND(StarttimeAdd, "starttime", "add");
+	DECLARE_COMMAND(StarttimeDelete, "starttime", "delete");
+	DECLARE_COMMAND(StarttimeSet, "starttime", "set");
+	DECLARE_COMMAND(StarttimeGet, "starttime", "get");
+	DECLARE_COMMAND(RuntimeList, "runtime", "list");
+	DECLARE_COMMAND(RuntimeSet, "runtime", "set");
+	DECLARE_COMMAND(RuntimeGet, "runtime", "get");
+	DECLARE_COMMAND(ResetValves, "reset", "valves");
 
 }
 

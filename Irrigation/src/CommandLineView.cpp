@@ -17,34 +17,59 @@
 #include "Program.h"
 
 
+#define PRINT_RUNTIME(id, runTime)												\
+	std::cout << id << " - " << runTime << " min" << std::endl;
+
+#define PRINT_RUNTIMES(program)													\
+{																				\
+	const Program::RunTimes& runTimes = (program).runTimes().container();		\
+	std::cout << "Run times:" << std::endl;										\
+	for (auto it = runTimes.cbegin(); runTimes.cend() != it; ++it) {			\
+		PRINT_RUNTIME(it->first, it->second);									\
+	}																			\
+}
+
+#define PRINT_STARTTIME(id, startTime)											\
+	std::cout << id << " - " << startTime << " min" << std::endl;
+
+#define PRINT_STARTTIMES(program)												\
+{																				\
+	const Program::StartTimes& startTimes = (program).startTimes().container();	\
+	std::cout << "Start times:" << std::endl;									\
+	for (auto it = startTimes.cbegin(); startTimes.cend() != it; ++it) {		\
+		PRINT_STARTTIME(it->first, it->second);									\
+	}																			\
+}
+
+
 CommandLineView::CommandLineView(Document* document) :
 	CommandExecutor(),
 	View(document),
 	isTerminated(false)
 {
-	addCommand(new command::Help(getDocument()));
-	addCommand(new command::Exit(getDocument()));
+	addCommand(new command::Help(this, getDocument()));
+	addCommand(new command::Exit(this, getDocument()));
 
-	addCommand(new command::ProgramList(getDocument()));
-	addCommand(new command::ProgramShow(getDocument()));
-	addCommand(new command::ProgramAdd(getDocument()));
-	addCommand(new command::ProgramDelete(getDocument()));
-	addCommand(new command::ProgramRename(getDocument()));
-	addCommand(new command::ProgramMove(getDocument()));
+	addCommand(new command::ProgramList(this, getDocument()));
+	addCommand(new command::ProgramShow(this, getDocument()));
+	addCommand(new command::ProgramAdd(this, getDocument()));
+	addCommand(new command::ProgramDelete(this, getDocument()));
+	addCommand(new command::ProgramRename(this, getDocument()));
+	addCommand(new command::ProgramMove(this, getDocument()));
 
-	addCommand(new command::StarttimeList(getDocument()));
-	addCommand(new command::StarttimeAdd(getDocument()));
-	addCommand(new command::StarttimeDelete(getDocument()));
-	addCommand(new command::StarttimeSet(getDocument()));
-	addCommand(new command::StarttimeGet(getDocument()));
+	addCommand(new command::StarttimeList(this, getDocument()));
+	addCommand(new command::StarttimeAdd(this, getDocument()));
+	addCommand(new command::StarttimeDelete(this, getDocument()));
+	addCommand(new command::StarttimeSet(this, getDocument()));
+	addCommand(new command::StarttimeGet(this, getDocument()));
 
-	addCommand(new command::RuntimeList(getDocument()));
-	addCommand(new command::RuntimeSet(getDocument()));
-	addCommand(new command::RuntimeGet(getDocument()));
+	addCommand(new command::RuntimeList(this, getDocument()));
+	addCommand(new command::RuntimeSet(this, getDocument()));
+	addCommand(new command::RuntimeGet(this, getDocument()));
 
-	addCommand(new command::Valve(getDocument()));
-	addCommand(new command::Zone(getDocument()));
-	addCommand(new command::ResetValves(getDocument()));
+	addCommand(new command::Valve(this, getDocument()));
+	addCommand(new command::Zone(this, getDocument()));
+	addCommand(new command::ResetValves(this, getDocument()));
 
 	workerThread = new std::thread(&CommandLineView::workerFunc, this);
 }
@@ -192,4 +217,107 @@ void CommandLineView::onExecutionFailed(const CommandLineException& e) {
 
 void CommandLineView::onError(const std::exception& e) {
 	std::cout << "Exception occured: " << e.what() << std::endl;
+}
+
+
+void CommandLineView::onHelpSuccess() {
+	std::cout << "exit" << std::endl;
+	std::cout << "help" << std::endl;
+
+	std::cout << "program list" << std::endl;
+	std::cout << "program show <programID>" << std::endl;
+	std::cout << "program add <name>" << std::endl;
+	std::cout << "program delete <programID>" << std::endl;
+	std::cout << "program rename <programID> <name>" << std::endl;
+	std::cout << "program move <programID> <newPosition>" << std::endl;
+
+	std::cout << "reset valves" << std::endl;
+
+	std::cout << "runtime list <programID>" << std::endl;
+	std::cout << "runtime set <programID> <runtimeID> <runtime>" << std::endl;
+	std::cout << "runtime get <programID> <runtimeID>" << std::endl;
+
+	std::cout << "startime list <programID>" << std::endl;
+	std::cout << "startime add <programID> <starttime>" << std::endl;
+	std::cout << "startime delete <programID> <starttimeID>" << std::endl;
+	std::cout << "startime set <programID> <starttimeID> <starttime>" << std::endl;
+	std::cout << "startime get <programID> <starttimeID>" << std::endl;
+
+	std::cout << "valve <valveID> {on|off}" << std::endl;
+	std::cout << "zone <zoneID> {on|off}" << std::endl;
+
+	std::cout << "startprog <programID>" << std::endl;
+	std::cout << "startzone <programID> <zoneID>" << std::endl;
+	std::cout << "stop" << std::endl;
+
+	std::cout << "time get" << std::endl;
+	std::cout << "time set" << std::endl;
+}
+
+void CommandLineView::onStarttimeListSuccess(const Program& program) {
+	PRINT_STARTTIMES(program);
+}
+
+void CommandLineView::onStarttimeSetSuccess() {
+}
+
+void CommandLineView::onStarttimeGetSuccess(IdType startTimeId, unsigned startTime) {
+	PRINT_STARTTIME(startTimeId, startTime);
+}
+
+void CommandLineView::onStarttimeAddSuccess() {
+}
+
+void CommandLineView::onStarttimeDeleteSuccess() {
+}
+
+void CommandLineView::onRuntimeListSuccess(const Program& program) {
+	PRINT_RUNTIMES(program);
+}
+
+void CommandLineView::onRuntimeSetSuccess() {
+}
+
+void CommandLineView::onRuntimeGetSuccess(IdType runTimeId, unsigned runTime) {
+	PRINT_RUNTIME(runTimeId, runTime);
+}
+
+void CommandLineView::onProgramListSuccess(const Document::Programs& programs) {
+	std::cout << "Programs:" << std::endl;
+	for (auto it = programs.cbegin(); programs.cend() != it; ++it) {
+		IdType id = it->first;
+		const Program* program = it->second;
+		std::cout << id << " - " << program->getName() << std::endl;
+	}
+}
+
+void CommandLineView::onProgramShowSuccess(const Program& program) {
+	std::cout << "Name: " << program.getName() << std::endl;
+
+	PRINT_RUNTIMES(program);
+	PRINT_STARTTIMES(program);
+}
+
+void CommandLineView::onProgramAddSuccess() {
+}
+
+void CommandLineView::onProgramDeleteSuccess() {
+}
+
+void CommandLineView::onProgramRenameSuccess() {
+}
+
+void CommandLineView::onProgramMoveSuccess() {
+}
+
+void CommandLineView::onValveSuccess() {
+}
+
+void CommandLineView::onZoneSuccess() {
+}
+
+void CommandLineView::onResetValvesSuccess() {
+}
+
+void CommandLineView::onExitSuccess() {
 }

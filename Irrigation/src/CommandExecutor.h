@@ -12,7 +12,10 @@
 #include <mutex>
 #include <vector>
 
+#include "Document.h"
+
 class Document;
+class Program;
 
 
 typedef std::vector<std::string> Tokens;
@@ -39,14 +42,42 @@ public:
 	UnknownSubcommandException() : CommandLineException("Unknown subcommand") {}
 };
 
+class CommandCallback {
+public:
+	virtual ~CommandCallback() {}
+
+	virtual void onHelpSuccess() = 0;
+	virtual void onStarttimeListSuccess(const Program& program) = 0;
+	virtual void onStarttimeSetSuccess() = 0;
+	virtual void onStarttimeGetSuccess(IdType startTimeId, unsigned startTime) = 0;
+	virtual void onStarttimeAddSuccess() = 0;
+	virtual void onStarttimeDeleteSuccess() = 0;
+	virtual void onRuntimeListSuccess(const Program& program) = 0;
+	virtual void onRuntimeSetSuccess() = 0;
+	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime) = 0;
+	virtual void onProgramListSuccess(const Document::Programs& programs) = 0;
+	virtual void onProgramShowSuccess(const Program& program) = 0;
+	virtual void onProgramAddSuccess() = 0;
+	virtual void onProgramDeleteSuccess() = 0;
+	virtual void onProgramRenameSuccess() = 0;
+	virtual void onProgramMoveSuccess() = 0;
+	virtual void onValveSuccess() = 0;
+	virtual void onZoneSuccess() = 0;
+	virtual void onResetValvesSuccess() = 0;
+	virtual void onExitSuccess() = 0;
+};
+
 
 class Command {
+protected:
+	CommandCallback* const callback;
 	Document* const document;
 	const std::string command;
 	const std::string subCommand;
 
 public:
-	Command(Document* document, const char* command, const char* subCommand = NULL) :
+	Command(CommandCallback* callback, Document* document, const char* command, const char* subCommand = NULL) :
+		callback(callback),
 		document(document),
 		command(command),
 		subCommand(subCommand ? subCommand : "")
@@ -55,8 +86,6 @@ public:
 
 	virtual ~Command() {}
 	virtual void execute(const Tokens& parameters) = 0;
-
-	Document* getDocument() { return document; }
 
 	const std::string& getCommand() const { return command; }
 	const std::string& getSubCommand() const { return subCommand; }
