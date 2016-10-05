@@ -49,6 +49,7 @@ private:
 
 	void openValve_notSafe(IdType id, bool open);
 
+	bool isWateringActive_notSafe() const;
 	IdType getWateringZone_notSafe(std::time_t rawTime) const;
 	bool startWatering_notSafe(Program& program, std::time_t rawTime);
 	void stopWatering_notSafe();

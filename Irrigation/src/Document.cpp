@@ -35,6 +35,7 @@ Document::~Document() {
 	if (true) {
 		AUTO_LOCK_VIEW();
 		for (auto it = views.begin(); views.end() != it; ++it) {
+			(*it)->stop();
 			delete (*it);
 		}
 		views.clear();
@@ -53,7 +54,7 @@ void Document::doTask() {
 
 	AUTO_LOCK_WATERING();
 
-	if (!isWateringActive()) {
+	if (!isWateringActive_notSafe()) {
 
 		AUTO_LOCK_PROGRAMS();
 
@@ -92,7 +93,7 @@ void Document::doTask() {
 
 bool Document::isWateringActive() const {
 	AUTO_LOCK_WATERING();
-	return (ZONE_COUNT > wateringZone);
+	return isWateringActive_notSafe();
 }
 
 void Document::startWatering(IdType programId) {
@@ -105,6 +106,10 @@ void Document::startWatering(IdType programId) {
 void Document::stopWatering() {
 	AUTO_LOCK_WATERING();
 	stopWatering_notSafe();
+}
+
+bool Document::isWateringActive_notSafe() const {
+	return (ZONE_COUNT > wateringZone);
 }
 
 bool Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
