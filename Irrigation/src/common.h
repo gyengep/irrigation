@@ -12,6 +12,7 @@
 #endif // IRRIGATION_TEST
 
 #include "exception.h"
+#include "Logger.h"
 
 const unsigned ZONE_COUNT = 6;
 const unsigned VALVE_COUNT = 7;

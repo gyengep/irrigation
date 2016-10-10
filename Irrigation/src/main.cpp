@@ -16,15 +16,17 @@
 int main() {
 	Application application;
 	
-	IrrigationWebServer server("c:/Temp/html/", 80);
-	server.doService();
+	//IrrigationWebServer server("c:/Temp/html/", 80);
+	//server.doService();
+
+	Logger::getInstance().setLevel(Logger::INFO);
 
 	try {
 		application.init();
 		application.run();
 		application.uninit();
 	} catch(std::exception& e) {
-		std::cout << e.what() << std::endl;
+		Logger::getInstance().error(e.what());
 	}
 	
 	return 0;

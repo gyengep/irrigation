@@ -16,13 +16,6 @@
 #define INVALID_SOCKET 	-1
 #define SOCKET_ERROR 	-1
 
-#define TRACE0(TEXT) puts(TEXT);fflush(stdout)
-#define TRACE1(TEXT, P1) printf(TEXT, P1);puts("");fflush(stdout)
-#define TRACE2(TEXT, P1, P2) printf(TEXT, P1, P2);puts("");fflush(stdout)
-
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
 Server::Server(unsigned short port) :
 	port(port),
 	listener(INVALID_SOCKET),
@@ -56,7 +49,7 @@ int Server::onSocketCreate(SOCKET socket) {
 		}
 	}
 
-	TRACE0("ERROR: Server::OnSocketCreate()");
+	Logger::getInstance().error("ERROR: Server::OnSocketCreate()");
 	return -1;
 }
 
@@ -106,7 +99,7 @@ int Server::doService(void) {
 	/*************************************************************/
 	listener = socket(AF_INET, SOCK_STREAM, 0);
 	if (INVALID_SOCKET == listener) {
-		TRACE1("socket() failed: %d\n", errno);
+		Logger::getInstance().error("socket() failed: %d\n", errno);
 		return 2;
 	}
 
@@ -116,7 +109,7 @@ int Server::doService(void) {
 	int yes = 1;
 	result = setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 	if (SOCKET_ERROR == result) {
-		TRACE1("setsockopt() failed: %d", errno);
+		Logger::getInstance().error("setsockopt() failed: %d", errno);
 		close(listener);
 		return 3;
 	}
@@ -131,7 +124,7 @@ int Server::doService(void) {
 
 	result = bind(listener, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == result) {
-		TRACE1("bind() failed: %d", errno);
+		Logger::getInstance().error("bind() failed: %d", errno);
 		close(listener);
 		return 4;
 	}
@@ -141,7 +134,7 @@ int Server::doService(void) {
 	/*************************************************************/
 	result = listen(listener, 1);
 	if (SOCKET_ERROR == result) {
-		TRACE1("listen() failed: %d", errno);
+		Logger::getInstance().error("listen() failed: %d", errno);
 		close(listener);
 		return 5;
 	}
@@ -182,7 +175,7 @@ int Server::doService(void) {
 		/* Check to see if the select call failed.                */
 		/**********************************************************/
 		if ( SOCKET_ERROR == result) {
-			TRACE1("select() failed: %d", errno);
+			Logger::getInstance().error("select() failed: %d", errno);
 			terminate = true;
 			continue;
 		}
@@ -213,7 +206,7 @@ int Server::doService(void) {
 			// TODO le kellene kezelni, ha több mint MAX_SOCKET socket van
 			newfd = accept(listener, (struct sockaddr*)&clientaddr, &addrlen);
 			if (SOCKET_ERROR == newfd) {
-				TRACE1("accept() failed: %d", errno);
+				Logger::getInstance().error("accept() failed: %d", errno);
 				break;
 			}
 
@@ -222,7 +215,7 @@ int Server::doService(void) {
 			/* master_fd read set                            */
 			/**********************************************/
 
-			TRACE2("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
+			Logger::getInstance().debug("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
 
 			if (0 <= onSocketCreate(newfd)) {
 				FD_SET(newfd, &master_fd);
@@ -269,9 +262,9 @@ int Server::doService(void) {
 					/* closed by the client                       */
 					/**********************************************/
 					if (0 == result) {
-						TRACE0("Connection closed");
+						Logger::getInstance().info("Connection closed");
 					} else {
-						TRACE1("recv() failed: %d", errno);
+						Logger::getInstance().info("recv() failed: %d", errno);
 					}
 
 					close(hSocket);
@@ -486,7 +479,7 @@ bool WebServer::sendAnswer(unsigned socketID, const Answer& answer) {
 
 	o << "\r\n";
 
-	TRACE1("answer: %s", o.str().c_str());
+	Logger::getInstance().debug("answer: %s", o.str().c_str());
 
 	int sendResult;
 	sendResult = send(socketID, o.str().c_str(), o.str().length());
@@ -498,7 +491,7 @@ bool WebServer::sendAnswer(unsigned socketID, const Answer& answer) {
 	}
 
 	if ( SOCKET_ERROR == sendResult) {
-		TRACE0("ERROR: WebServer::SendAnswer()");
+		Logger::getInstance().error("ERROR: WebServer::SendAnswer()");
 		result = false;
 	}
 
@@ -644,9 +637,9 @@ bool WebServer::onSocketReceive(unsigned socketID, const void* buffer, unsigned 
 bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 	Answer answer;
 
-	TRACE0( "*******************************************************" );
+	Logger::getInstance().trace( "*******************************************************" );
 	for( Request::const_iterator it = request.begin(); request.end() != it; ++it ) {
-		TRACE1("%s", it->c_str());
+		Logger::getInstance().trace("%s", it->c_str());
 	}
 
 	if (!request.empty()) {
@@ -682,7 +675,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 				}
 
 				if (methodFound) {
-					TRACE1("File request: %s", fileName.c_str());
+					Logger::getInstance().debug("File request: %s", fileName.c_str());
 
 					if (getFile(fileName, getParameters, postParameters, answer)) {
 						if (CONTTYPE_UNKNOWN == answer.contentType) {
@@ -693,7 +686,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 						}
 					} else {
 						answer.stausCode = HTTP_NOT_FOUND;
-						TRACE1("WebServer: File not found: \"%s\"", fileName.c_str());
+						Logger::getInstance().warning("WebServer: File not found: \"%s\"", fileName.c_str());
 					}
 				} else {
 					answer.stausCode = HTTP_METHOD_NOT_ALLOWED;
@@ -701,7 +694,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 			}
 		}
 	} else {
-		TRACE0("ERROR: WebServer::OnRequestReceive()");
+		Logger::getInstance().error("ERROR: WebServer::OnRequestReceive()");
 	}
 
 	return sendAnswer(socketID, answer);
