@@ -12,6 +12,12 @@
 #include <mutex>
 #include <stdarg.h>
 
+#define LOGGER()		Logger::getInstance()
+#define LOG_ERROR 		Logger::getInstance().error
+#define LOG_WARNING 	Logger::getInstance().warning
+#define LOG_INFO	 	Logger::getInstance().info
+#define LOG_DEBUG	 	Logger::getInstance().debug
+#define LOG_TRACE	 	Logger::getInstance().trace
 
 class Logger {
 public:
@@ -27,10 +33,12 @@ public:
 private:
 	static Logger* instance;
 	static std::mutex initMutex;
+	static const unsigned bufferSize = 1000;
 
-	std::ofstream out;
-	Level level;
 	std::mutex logMutex;
+	char buffer[bufferSize + 1];
+	Level level;
+	//std::ofstream out;
 
 	Logger();
 	void log(Level level, const char * format, va_list args);
@@ -40,7 +48,7 @@ public:
 	static Logger& getInstance();
 
 	void setLevel(Level level);
-	void setFile(const char* fileName);
+	//void setFile(const char* fileName);
 
 	void error(const char * format, ...);
 	void warning(const char * format, ...);

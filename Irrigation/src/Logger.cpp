@@ -6,7 +6,6 @@
  */
 
 #include "common.h"
-#include "Logger.h"
 
 #include <cstdio>
 
@@ -14,15 +13,17 @@ Logger* Logger::instance = NULL;
 std::mutex Logger::initMutex;
 
 Logger::Logger() :
-	out(),
+	logMutex(),
 	level(ERROR)
+	//out()
 {
+	buffer[bufferSize] = '\0';
 }
 
 Logger::~Logger() {
-	out.close();
+	//out.close();
 }
-
+/*
 void Logger::setFile(const char* fileName) {
 	std::ofstream tmp;
 	tmp.open(fileName, std::ios::out | std::ios::app);
@@ -33,7 +34,7 @@ void Logger::setFile(const char* fileName) {
 		std::cerr << "Logfile create error!" << std::endl;
 	}
 }
-
+*/
 void Logger::setLevel(Level level) {
 	std::lock_guard<std::mutex> lock(logMutex);
 	this->level = level;
@@ -51,14 +52,12 @@ Logger& Logger::getInstance() {
 }
 
 void Logger::log(Level level, const char * format, va_list args) {
-	static const unsigned size = 1000;
-	static char buffer[size + 1];
-
 	std::lock_guard<std::mutex> lock(logMutex);
 
+	// TODO kulon threadbe kellene tenni a fajlba irast
+
 	if (level <= this->level) {
-		buffer[size] = '\0';
-		vsnprintf(buffer, size, format, args);
+		vsnprintf(buffer, bufferSize, format, args);
 		std::cout << buffer << std::endl;
 	}
 }
