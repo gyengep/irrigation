@@ -12,12 +12,7 @@
 #include <mutex>
 #include <stdarg.h>
 
-#define LOGGER()		Logger::getInstance()
-#define LOG_ERROR 		Logger::getInstance().error
-#define LOG_WARNING 	Logger::getInstance().warning
-#define LOG_INFO	 	Logger::getInstance().info
-#define LOG_DEBUG	 	Logger::getInstance().debug
-#define LOG_TRACE	 	Logger::getInstance().trace
+#define LOGGER			Logger::getInstance()
 
 class Logger {
 public:

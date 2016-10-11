@@ -19,14 +19,14 @@ int main() {
 	//IrrigationWebServer server("c:/Temp/html/", 80);
 	//server.doService();
 
-	LOGGER().setLevel(Logger::INFO);
+	LOGGER.setLevel(Logger::INFO);
 
 	try {
 		application.init();
 		application.run();
 		application.uninit();
 	} catch(std::exception& e) {
-		LOG_ERROR(e.what());
+		LOGGER.error(e.what());
 	}
 	
 	return 0;

@@ -49,7 +49,7 @@ int Server::onSocketCreate(SOCKET socket) {
 		}
 	}
 
-	LOG_ERROR("ERROR: Server::OnSocketCreate()");
+	LOGGER.error("ERROR: Server::OnSocketCreate()");
 	return -1;
 }
 
@@ -99,7 +99,7 @@ int Server::doService(void) {
 	/*************************************************************/
 	listener = socket(AF_INET, SOCK_STREAM, 0);
 	if (INVALID_SOCKET == listener) {
-		LOG_ERROR("socket() failed: %d\n", errno);
+		LOGGER.error("socket() failed: %d\n", errno);
 		return 2;
 	}
 
@@ -109,7 +109,7 @@ int Server::doService(void) {
 	int yes = 1;
 	result = setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 	if (SOCKET_ERROR == result) {
-		LOG_ERROR("setsockopt() failed: %d", errno);
+		LOGGER.error("setsockopt() failed: %d", errno);
 		close(listener);
 		return 3;
 	}
@@ -124,7 +124,7 @@ int Server::doService(void) {
 
 	result = bind(listener, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == result) {
-		LOG_ERROR("bind() failed: %d", errno);
+		LOGGER.error("bind() failed: %d", errno);
 		close(listener);
 		return 4;
 	}
@@ -134,7 +134,7 @@ int Server::doService(void) {
 	/*************************************************************/
 	result = listen(listener, 1);
 	if (SOCKET_ERROR == result) {
-		LOG_ERROR("listen() failed: %d", errno);
+		LOGGER.error("listen() failed: %d", errno);
 		close(listener);
 		return 5;
 	}
@@ -175,7 +175,7 @@ int Server::doService(void) {
 		/* Check to see if the select call failed.                */
 		/**********************************************************/
 		if ( SOCKET_ERROR == result) {
-			LOG_ERROR("select() failed: %d", errno);
+			LOGGER.error("select() failed: %d", errno);
 			terminate = true;
 			continue;
 		}
@@ -206,7 +206,7 @@ int Server::doService(void) {
 			// TODO le kellene kezelni, ha több mint MAX_SOCKET socket van
 			newfd = accept(listener, (struct sockaddr*)&clientaddr, &addrlen);
 			if (SOCKET_ERROR == newfd) {
-				LOG_ERROR("accept() failed: %d", errno);
+				LOGGER.error("accept() failed: %d", errno);
 				break;
 			}
 
@@ -215,7 +215,7 @@ int Server::doService(void) {
 			/* master_fd read set                            */
 			/**********************************************/
 
-			LOG_DEBUG("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
+			LOGGER.debug("New connection from %s on socket %d", inet_ntoa(clientaddr.sin_addr), newfd);
 
 			if (0 <= onSocketCreate(newfd)) {
 				FD_SET(newfd, &master_fd);
@@ -262,9 +262,9 @@ int Server::doService(void) {
 					/* closed by the client                       */
 					/**********************************************/
 					if (0 == result) {
-						LOG_INFO("Connection closed");
+						LOGGER.info("Connection closed");
 					} else {
-						LOG_INFO("recv() failed: %d", errno);
+						LOGGER.info("recv() failed: %d", errno);
 					}
 
 					close(hSocket);
@@ -479,7 +479,7 @@ bool WebServer::sendAnswer(unsigned socketID, const Answer& answer) {
 
 	o << "\r\n";
 
-	LOG_DEBUG("answer: %s", o.str().c_str());
+	LOGGER.debug("answer: %s", o.str().c_str());
 
 	int sendResult;
 	sendResult = send(socketID, o.str().c_str(), o.str().length());
@@ -491,7 +491,7 @@ bool WebServer::sendAnswer(unsigned socketID, const Answer& answer) {
 	}
 
 	if ( SOCKET_ERROR == sendResult) {
-		LOG_ERROR("ERROR: WebServer::SendAnswer()");
+		LOGGER.error("ERROR: WebServer::SendAnswer()");
 		result = false;
 	}
 
@@ -637,9 +637,9 @@ bool WebServer::onSocketReceive(unsigned socketID, const void* buffer, unsigned 
 bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 	Answer answer;
 
-	LOG_TRACE( "*******************************************************" );
+	LOGGER.trace( "*******************************************************" );
 	for( Request::const_iterator it = request.begin(); request.end() != it; ++it ) {
-		LOG_TRACE("%s", it->c_str());
+		LOGGER.trace("%s", it->c_str());
 	}
 
 	if (!request.empty()) {
@@ -675,7 +675,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 				}
 
 				if (methodFound) {
-					LOG_DEBUG("File request: %s", fileName.c_str());
+					LOGGER.debug("File request: %s", fileName.c_str());
 
 					if (getFile(fileName, getParameters, postParameters, answer)) {
 						if (CONTTYPE_UNKNOWN == answer.contentType) {
@@ -686,7 +686,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 						}
 					} else {
 						answer.stausCode = HTTP_NOT_FOUND;
-						LOG_WARNING("WebServer: File not found: \"%s\"", fileName.c_str());
+						LOGGER.warning("WebServer: File not found: \"%s\"", fileName.c_str());
 					}
 				} else {
 					answer.stausCode = HTTP_METHOD_NOT_ALLOWED;
@@ -694,7 +694,7 @@ bool WebServer::onRequestReceive(unsigned socketID, const Request& request) {
 			}
 		}
 	} else {
-		LOG_ERROR("ERROR: WebServer::OnRequestReceive()");
+		LOGGER.error("ERROR: WebServer::OnRequestReceive()");
 	}
 
 	return sendAnswer(socketID, answer);

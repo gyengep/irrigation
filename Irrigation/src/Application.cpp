@@ -24,7 +24,7 @@ Application::~Application() {
 }
 
 void Application::init() {
-	LOG_INFO("Application::Init()");
+	LOGGER.info("Application::Init()");
 	Valve::init();
 	
 	document = new Document();
@@ -32,23 +32,23 @@ void Application::init() {
 }
 
 void Application::run() {
-	LOG_INFO("Application::run __BEGIN__");
+	LOGGER.info("Application::run __BEGIN__");
 	
 	while (!isTerminated) {
 		document->doTask();
 		usleep(50000);
 	}
 	
-	LOG_INFO("Application::run __END__");
+	LOGGER.info("Application::run __END__");
 }
 
 void Application::uninit() {
-	LOG_INFO("Application::Uninit");
+	LOGGER.info("Application::Uninit");
 	delete document;
 }
 
 void Application::terminate() { 
-	LOG_INFO("Application::Terminated");
+	LOGGER.info("Application::Terminated");
 	isTerminated = true; 
 }
 
