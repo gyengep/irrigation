@@ -12,14 +12,28 @@
 #ifndef IRRIGATION_TEST
 
 #include "WebServer.h"
+/*
+#include <teng.h>
+// include writer
+#include <tengwriter.h>
+// include errorlog
+#include <tengerror.h>
 
+using namespace Teng;
+*/
 int main() {
-	Application application;
+
+	LOGGER.setFile(NULL);
+	LOGGER.setLevel(Logger::INFO);
+
+	// create Teng engine
+	//Teng_t teng("", Teng_t::LM_LOG_TO_OUTPUT | Teng_t::LM_ERROR_FRAGMENT);
+
 	
 	//IrrigationWebServer server("c:/Temp/html/", 80);
 	//server.doService();
 
-	LOGGER.setLevel(Logger::INFO);
+	Application application;
 
 	try {
 		application.init();
@@ -28,7 +42,7 @@ int main() {
 	} catch(std::exception& e) {
 		LOGGER.error(e.what());
 	}
-	
+
 	return 0;
 }
 
