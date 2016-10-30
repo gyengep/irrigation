@@ -22,7 +22,7 @@ TEST(Program, name) {
 	EXPECT_EQ(name, program.getName());
 }
 
-TEST(Program, isScheduled) {
+TEST(DISABLED_Program, isScheduled) {
 	Program program;
 	std::time_t t;
 	bool requestedResult;

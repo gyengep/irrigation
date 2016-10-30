@@ -109,7 +109,7 @@ void checkDay(Scheduler& scheduler, bool requestedResult, int day) {
 	}
 }
 
-TEST(SpecifiedScheduler, isScheduled) {
+TEST(DISABLED_SpecifiedScheduler, isScheduled) {
 	SpecifiedScheduler scheduler;
 
 	scheduler.enableDay(WEDNESDAY, true);
