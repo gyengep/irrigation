@@ -22,16 +22,13 @@ class CommandLineView : public CommandExecutor, View, CommandCallback {
 
 	void workerFunc();
 
-	virtual void onExecutionFailed(const CommandLineException& e);
-	virtual void onError(const std::exception& e);
-
 	virtual void onHelpSuccess();
-	virtual void onStarttimeListSuccess(const Program& program);
+	virtual void onStarttimeListSuccess(const StartTimeContainer& startTimes);
 	virtual void onStarttimeSetSuccess();
 	virtual void onStarttimeGetSuccess(IdType startTimeId, unsigned startTime);
 	virtual void onStarttimeAddSuccess();
 	virtual void onStarttimeDeleteSuccess();
-	virtual void onRuntimeListSuccess(const Program& program);
+	virtual void onRuntimeListSuccess(const RunTimeContainer& runTimes);
 	virtual void onRuntimeSetSuccess();
 	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime);
 	virtual void onProgramListSuccess(const Document::Programs& programs);

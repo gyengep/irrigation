@@ -15,20 +15,21 @@ CommandExecutor::CommandExecutor() {
 }
 
 CommandExecutor::~CommandExecutor() {
+	std::lock_guard<std::mutex> lock(mtx);
+
+	for (auto it = commands.begin(); commands.end() != it; ++it) {
+		delete *it;
+	}
+
+	commands.clear();
 }
 
-void CommandExecutor::execute(Tokens& tokens) {
-	if (!tokens.empty()) {
-		try {
-			std::lock_guard<std::mutex> lock(mtx);
-			Command& cmd = getCommand(tokens);
-			cmd.execute(tokens);
-
-		} catch (CommandLineException& e) {
-			onExecutionFailed(e);
-		} catch (std::exception& e) {
-			onError(e);
-		}
+void CommandExecutor::execute(const Tokens& tokens) {
+	Tokens tokensCopy(tokens);
+	if (!tokensCopy.empty()) {
+		std::lock_guard<std::mutex> lock(mtx);
+		Command& cmd = getCommand(tokensCopy);
+		cmd.execute(tokensCopy);
 	}
 }
 
@@ -37,7 +38,7 @@ void CommandExecutor::addCommand(Command* command) {
 	commands.push_back(command);
 }
 
-Command& CommandExecutor::getCommand(Tokens& tokens) {
+Command& CommandExecutor::getCommand(Tokens& tokens) const {
 	bool commandFound = false;
 	std::string command = tokens.front();
 	tokens.erase(tokens.begin());
@@ -54,6 +55,10 @@ Command& CommandExecutor::getCommand(Tokens& tokens) {
 			if ((*it)->getSubCommand().empty()) {
 				return **it;
 			} else {
+				if (subCommand.empty()) {
+					throw SubcommandMissingException();
+				}
+
 				if (subCommand == (*it)->getSubCommand()) {
 					tokens.erase(tokens.begin());
 					return **it;
@@ -63,7 +68,7 @@ Command& CommandExecutor::getCommand(Tokens& tokens) {
 	}
 
 	if (commandFound) {
-		throw UnknownSubcommandException();
+		throw UnknownSubcommandException(subCommand);
 	} else {
 		throw UnknownCommandException(command);
 	}

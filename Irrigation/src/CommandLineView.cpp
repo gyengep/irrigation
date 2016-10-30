@@ -20,9 +20,8 @@
 #define PRINT_RUNTIME(id, runTime)												\
 	std::cout << id << " - " << runTime << " min" << std::endl;
 
-#define PRINT_RUNTIMES(program)													\
+#define PRINT_RUNTIMES(runTimes)												\
 {																				\
-	const Program::RunTimes& runTimes = (program).runTimes().container();		\
 	std::cout << "Run times:" << std::endl;										\
 	for (auto it = runTimes.cbegin(); runTimes.cend() != it; ++it) {			\
 		PRINT_RUNTIME(it->first, it->second);									\
@@ -32,9 +31,8 @@
 #define PRINT_STARTTIME(id, startTime)											\
 	std::cout << id << " - " << startTime << " min" << std::endl;
 
-#define PRINT_STARTTIMES(program)												\
+#define PRINT_STARTTIMES(startTimes)											\
 {																				\
-	const Program::StartTimes& startTimes = (program).startTimes().container();	\
 	std::cout << "Start times:" << std::endl;									\
 	for (auto it = startTimes.cbegin(); startTimes.cend() != it; ++it) {		\
 		PRINT_STARTTIME(it->first, it->second);									\
@@ -108,7 +106,14 @@ void CommandLineView::workerFunc() {
 		std::getline(std::cin, line);
 		tokenize(line, tokens);
 
-		execute(tokens);
+		try {
+			execute(tokens);
+		} catch (CommandLineException& e) {
+			std::cout << "Error: " << e.what() << std::endl;
+		} catch (std::exception& e) {
+			std::cout << "Exception occured: " << e.what() << std::endl;
+		}
+
 		std::cout << std::endl;
 	}
 
@@ -210,16 +215,6 @@ int main(void) {
 */
 }
 
-
-void CommandLineView::onExecutionFailed(const CommandLineException& e) {
-	std::cout << "Error: " << e.what() << std::endl;
-}
-
-void CommandLineView::onError(const std::exception& e) {
-	std::cout << "Exception occured: " << e.what() << std::endl;
-}
-
-
 void CommandLineView::onHelpSuccess() {
 	std::cout << "exit" << std::endl;
 	std::cout << "help" << std::endl;
@@ -254,8 +249,8 @@ void CommandLineView::onHelpSuccess() {
 	std::cout << "time set" << std::endl;
 }
 
-void CommandLineView::onStarttimeListSuccess(const Program& program) {
-	PRINT_STARTTIMES(program);
+void CommandLineView::onStarttimeListSuccess(const StartTimeContainer& startTimes) {
+	PRINT_STARTTIMES(startTimes.container());
 }
 
 void CommandLineView::onStarttimeSetSuccess() {
@@ -271,8 +266,8 @@ void CommandLineView::onStarttimeAddSuccess() {
 void CommandLineView::onStarttimeDeleteSuccess() {
 }
 
-void CommandLineView::onRuntimeListSuccess(const Program& program) {
-	PRINT_RUNTIMES(program);
+void CommandLineView::onRuntimeListSuccess(const RunTimeContainer& runTimes) {
+	PRINT_RUNTIMES(runTimes.container());
 }
 
 void CommandLineView::onRuntimeSetSuccess() {
@@ -294,8 +289,8 @@ void CommandLineView::onProgramListSuccess(const Document::Programs& programs) {
 void CommandLineView::onProgramShowSuccess(const Program& program) {
 	std::cout << "Name: " << program.getName() << std::endl;
 
-	PRINT_RUNTIMES(program);
-	PRINT_STARTTIMES(program);
+	PRINT_RUNTIMES(program.runTimes().container());
+	PRINT_STARTTIMES(program.startTimes().container());
 }
 
 void CommandLineView::onProgramAddSuccess() {

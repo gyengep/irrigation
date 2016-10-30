@@ -39,7 +39,7 @@ namespace command {
 		AUTO_LOCK_PROGRAMS();
 		const Program& program = document->programs().get(programId);
 
-		callback->onStarttimeListSuccess(program);
+		callback->onStarttimeListSuccess(program.startTimes());
 	}
 
 	void StarttimeSet::execute(const Tokens& parameters) {
@@ -99,7 +99,7 @@ namespace command {
 		AUTO_LOCK_PROGRAMS();
 		const Program& program = document->programs().get(programId);
 
-		callback->onRuntimeListSuccess(program);
+		callback->onRuntimeListSuccess(program.runTimes());
 	}
 
 	void RuntimeSet::execute(const Tokens& parameters) {

@@ -14,7 +14,6 @@
 
 #include "Document.h"
 
-class Document;
 class Program;
 
 
@@ -39,7 +38,16 @@ public:
 
 class UnknownSubcommandException : public CommandLineException {
 public:
-	UnknownSubcommandException() : CommandLineException("Unknown subcommand") {}
+	UnknownSubcommandException(const std::string& subCommand) {
+		message = "Unknown subcommand" + subCommand + "'";
+	}
+};
+
+class SubcommandMissingException : public CommandLineException {
+public:
+	SubcommandMissingException() {
+		message = "Subcommand missing";
+	}
 };
 
 class CommandCallback {
@@ -47,12 +55,12 @@ public:
 	virtual ~CommandCallback() {}
 
 	virtual void onHelpSuccess() = 0;
-	virtual void onStarttimeListSuccess(const Program& program) = 0;
+	virtual void onStarttimeListSuccess(const StartTimeContainer& startTimes) = 0;
 	virtual void onStarttimeSetSuccess() = 0;
 	virtual void onStarttimeGetSuccess(IdType startTimeId, unsigned startTime) = 0;
 	virtual void onStarttimeAddSuccess() = 0;
 	virtual void onStarttimeDeleteSuccess() = 0;
-	virtual void onRuntimeListSuccess(const Program& program) = 0;
+	virtual void onRuntimeListSuccess(const RunTimeContainer& runTimes) = 0;
 	virtual void onRuntimeSetSuccess() = 0;
 	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime) = 0;
 	virtual void onProgramListSuccess(const Document::Programs& programs) = 0;
@@ -96,17 +104,14 @@ class CommandExecutor {
 	std::list<Command*> commands;
 	std::mutex mtx;
 
-	Command& getCommand(Tokens& tokens);
+	Command& getCommand(Tokens& tokens) const;
 
 public:
 	CommandExecutor();
 	virtual ~CommandExecutor();
 
 	void addCommand(Command* command);
-	void execute(Tokens& tokens);
-
-	virtual void onExecutionFailed(const CommandLineException& e) = 0;
-	virtual void onError(const std::exception& e) = 0;
+	void execute(const Tokens& tokens);
 
 	static IdType parseId(const std::string& text, const char* errorMessage);
 	static unsigned parseUInt(const std::string& text, const char* errorMessage);
