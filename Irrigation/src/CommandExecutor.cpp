@@ -24,7 +24,7 @@ CommandExecutor::~CommandExecutor() {
 	commands.clear();
 }
 
-void CommandExecutor::execute(const Tokens& tokens) {
+void CommandExecutor::execute(const Tokens& tokens) const {
 	Tokens tokensCopy(tokens);
 	if (!tokensCopy.empty()) {
 		std::lock_guard<std::mutex> lock(mtx);
@@ -38,7 +38,7 @@ void CommandExecutor::addCommand(Command* command) {
 	commands.push_back(command);
 }
 
-Command& CommandExecutor::getCommand(Tokens& tokens) const {
+Command& CommandExecutor::getCommand(const Tokens& tokens) const {
 	bool commandFound = false;
 	std::string command = tokens.front();
 	tokens.erase(tokens.begin());
@@ -74,11 +74,11 @@ Command& CommandExecutor::getCommand(Tokens& tokens) const {
 	}
 }
 
-IdType CommandExecutor::parseId(const std::string& text, const char* errorMessage) {
-	return static_cast<IdType>(CommandExecutor::parseUInt(text, errorMessage));
+IdType Command::parseId(const std::string& text, const char* errorMessage) {
+	return static_cast<IdType>(parseUInt(text, errorMessage));
 }
 
-unsigned CommandExecutor::parseUInt(const std::string& text, const char* errorMessage) {
+unsigned Command::parseUInt(const std::string& text, const char* errorMessage) {
 	std::size_t pos;
 	unsigned long result =std::stoul(text, &pos, 10);
 	if (text.length() != pos || result > UINT_MAX) {
@@ -87,7 +87,7 @@ unsigned CommandExecutor::parseUInt(const std::string& text, const char* errorMe
 	return result;
 }
 
-bool CommandExecutor::parseOnOff(const std::string& text, const char* errorMessage) {
+bool Command::parseOnOff(const std::string& text, const char* errorMessage) {
 	bool result;
 
 	if (text == "on") {

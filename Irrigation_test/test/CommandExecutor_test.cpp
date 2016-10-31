@@ -122,6 +122,20 @@ TEST_F(CommandExecutorTest, executeSuccess) {
 	}
 }
 
+TEST_F(CommandExecutorTest, parameters) {
+	Tokens tokens;
+	tokens.push_back("command1");
+
+	execute(tokens);
+	EXPECT_EQ(0, command1->getTokens().size());
+
+	tokens.push_back("P1");
+	execute(tokens);
+	EXPECT_EQ(1, command1->getTokens().size());
+	EXPECT_STREQ("P1", command1->getTokens().front().c_str());
+}
+
+
 TEST_F(CommandExecutorTest, unknownCommand) {
 	Tokens tokens;
 

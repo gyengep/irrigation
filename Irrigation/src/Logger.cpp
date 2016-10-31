@@ -51,7 +51,7 @@ Logger::~Logger() {
 	}
 }
 
-void Logger::setFile(const char* fileName) {
+void Logger::setFile(const char* fileName /*= NULL*/) {
 	if (logFile.is_open()) {
 		logFile.close();
 	}
