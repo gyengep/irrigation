@@ -43,8 +43,6 @@ private:
 
 public:
 	virtual ~Logger();
-	static void createInstance();
-	static void deleteInstance();
 	static Logger& getInstance();
 
 	void setLevel(Level level);

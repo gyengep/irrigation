@@ -41,33 +41,32 @@
 
 
 CommandLineView::CommandLineView(Document* document) :
-	CommandExecutor(),
 	View(document),
 	isTerminated(false)
 {
-	addCommand(new command::Help(this, getDocument()));
-	addCommand(new command::Exit(this, getDocument()));
+	commandExecutor.addCommand(new command::Help(this, getDocument()));
+	commandExecutor.addCommand(new command::Exit(this, getDocument()));
 
-	addCommand(new command::ProgramList(this, getDocument()));
-	addCommand(new command::ProgramShow(this, getDocument()));
-	addCommand(new command::ProgramAdd(this, getDocument()));
-	addCommand(new command::ProgramDelete(this, getDocument()));
-	addCommand(new command::ProgramRename(this, getDocument()));
-	addCommand(new command::ProgramMove(this, getDocument()));
+	commandExecutor.addCommand(new command::ProgramList(this, getDocument()));
+	commandExecutor.addCommand(new command::ProgramShow(this, getDocument()));
+	commandExecutor.addCommand(new command::ProgramAdd(this, getDocument()));
+	commandExecutor.addCommand(new command::ProgramDelete(this, getDocument()));
+	commandExecutor.addCommand(new command::ProgramRename(this, getDocument()));
+	commandExecutor.addCommand(new command::ProgramMove(this, getDocument()));
 
-	addCommand(new command::StarttimeList(this, getDocument()));
-	addCommand(new command::StarttimeAdd(this, getDocument()));
-	addCommand(new command::StarttimeDelete(this, getDocument()));
-	addCommand(new command::StarttimeSet(this, getDocument()));
-	addCommand(new command::StarttimeGet(this, getDocument()));
+	commandExecutor.addCommand(new command::StarttimeList(this, getDocument()));
+	commandExecutor.addCommand(new command::StarttimeAdd(this, getDocument()));
+	commandExecutor.addCommand(new command::StarttimeDelete(this, getDocument()));
+	commandExecutor.addCommand(new command::StarttimeSet(this, getDocument()));
+	commandExecutor.addCommand(new command::StarttimeGet(this, getDocument()));
 
-	addCommand(new command::RuntimeList(this, getDocument()));
-	addCommand(new command::RuntimeSet(this, getDocument()));
-	addCommand(new command::RuntimeGet(this, getDocument()));
+	commandExecutor.addCommand(new command::RuntimeList(this, getDocument()));
+	commandExecutor.addCommand(new command::RuntimeSet(this, getDocument()));
+	commandExecutor.addCommand(new command::RuntimeGet(this, getDocument()));
 
-	addCommand(new command::Valve(this, getDocument()));
-	addCommand(new command::Zone(this, getDocument()));
-	addCommand(new command::ResetValves(this, getDocument()));
+	commandExecutor.addCommand(new command::Valve(this, getDocument()));
+	commandExecutor.addCommand(new command::Zone(this, getDocument()));
+	commandExecutor.addCommand(new command::ResetValves(this, getDocument()));
 
 	workerThread = new std::thread(&CommandLineView::workerFunc, this);
 }
@@ -107,7 +106,7 @@ void CommandLineView::workerFunc() {
 		tokenize(line, tokens);
 
 		try {
-			execute(tokens);
+			commandExecutor.execute(tokens);
 		} catch (CommandLineException& e) {
 			std::cout << "Error: " << e.what() << std::endl;
 		} catch (std::exception& e) {

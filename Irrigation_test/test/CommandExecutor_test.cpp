@@ -8,7 +8,9 @@ class CommandTest : public Command {
 
 public:
 
-	CommandTest(const char* command, const char* subCommand) : Command(NULL, NULL, command, subCommand)
+	CommandTest(const char* command, const char* subCommand) :
+		Command(NULL, NULL, command, subCommand),
+		executeCounter(0)
 	{
 	}
 
@@ -46,80 +48,54 @@ public:
 	}
 };
 
-TEST_F(CommandExecutorTest, executeSuccess) {
+TEST_F(CommandExecutorTest, executeSuccess1) {
+	Tokens tokens;
+	tokens.push_back("command1");
 
-	int executeCounter[4];
+	execute(tokens);
 
-	{
-		Tokens tokens;
-		tokens.push_back("command1");
+	EXPECT_EQ(1, command1->getExecuteCounter());
+	EXPECT_EQ(0, command2->getExecuteCounter());
+	EXPECT_EQ(0, command3_subcommand1->getExecuteCounter());
+	EXPECT_EQ(0, command3_subcommand2->getExecuteCounter());
+}
 
-		executeCounter[0] = command1->getExecuteCounter();
-		executeCounter[1] = command2->getExecuteCounter();
-		executeCounter[2] = command3_subcommand1->getExecuteCounter();
-		executeCounter[3] = command3_subcommand2->getExecuteCounter();
+TEST_F(CommandExecutorTest, executeSuccess2) {
+	Tokens tokens;
+	tokens.push_back("command2");
 
-		execute(tokens);
+	execute(tokens);
 
-		EXPECT_EQ(executeCounter[0] + 1, command1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[1], command2->getExecuteCounter());
-		EXPECT_EQ(executeCounter[2], command3_subcommand1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[3], command3_subcommand2->getExecuteCounter());
-	}
+	EXPECT_EQ(0, command1->getExecuteCounter());
+	EXPECT_EQ(1, command2->getExecuteCounter());
+	EXPECT_EQ(0, command3_subcommand1->getExecuteCounter());
+	EXPECT_EQ(0, command3_subcommand2->getExecuteCounter());
+}
 
-	{
-		Tokens tokens;
-		tokens.push_back("command2");
+TEST_F(CommandExecutorTest, executeSuccess3) {
+	Tokens tokens;
+	tokens.push_back("command3");
+	tokens.push_back("subcommand1");
 
-		executeCounter[0] = command1->getExecuteCounter();
-		executeCounter[1] = command2->getExecuteCounter();
-		executeCounter[2] = command3_subcommand1->getExecuteCounter();
-		executeCounter[3] = command3_subcommand2->getExecuteCounter();
+	execute(tokens);
 
-		execute(tokens);
+	EXPECT_EQ(0, command1->getExecuteCounter());
+	EXPECT_EQ(0, command2->getExecuteCounter());
+	EXPECT_EQ(1, command3_subcommand1->getExecuteCounter());
+	EXPECT_EQ(0, command3_subcommand2->getExecuteCounter());
+}
 
-		EXPECT_EQ(executeCounter[0], command1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[1] + 1, command2->getExecuteCounter());
-		EXPECT_EQ(executeCounter[2], command3_subcommand1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[3], command3_subcommand2->getExecuteCounter());
-	}
+TEST_F(CommandExecutorTest, executeSuccess4) {
+	Tokens tokens;
+	tokens.push_back("command3");
+	tokens.push_back("subcommand2");
 
-	{
-		Tokens tokens;
+	execute(tokens);
 
-		tokens.push_back("command3");
-		tokens.push_back("subcommand1");
-
-		executeCounter[0] = command1->getExecuteCounter();
-		executeCounter[1] = command2->getExecuteCounter();
-		executeCounter[2] = command3_subcommand1->getExecuteCounter();
-		executeCounter[3] = command3_subcommand2->getExecuteCounter();
-
-		execute(tokens);
-
-		EXPECT_EQ(executeCounter[0], command1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[1], command2->getExecuteCounter());
-		EXPECT_EQ(executeCounter[2] + 1, command3_subcommand1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[3], command3_subcommand2->getExecuteCounter());
-	}
-
-	{
-		Tokens tokens;
-		tokens.push_back("command3");
-		tokens.push_back("subcommand2");
-
-		executeCounter[0] = command1->getExecuteCounter();
-		executeCounter[1] = command2->getExecuteCounter();
-		executeCounter[2] = command3_subcommand1->getExecuteCounter();
-		executeCounter[3] = command3_subcommand2->getExecuteCounter();
-
-		execute(tokens);
-
-		EXPECT_EQ(executeCounter[0], command1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[1], command2->getExecuteCounter());
-		EXPECT_EQ(executeCounter[2], command3_subcommand1->getExecuteCounter());
-		EXPECT_EQ(executeCounter[3] + 1, command3_subcommand2->getExecuteCounter());
-	}
+	EXPECT_EQ(0, command1->getExecuteCounter());
+	EXPECT_EQ(0, command2->getExecuteCounter());
+	EXPECT_EQ(0, command3_subcommand1->getExecuteCounter());
+	EXPECT_EQ(1, command3_subcommand2->getExecuteCounter());
 }
 
 TEST_F(CommandExecutorTest, parameters) {
@@ -147,7 +123,6 @@ TEST_F(CommandExecutorTest, unknownCommand) {
 
 	tokens.push_back("P2");
 	EXPECT_THROW(execute(tokens), UnknownCommandException);
-
 }
 
 TEST_F(CommandExecutorTest, unknownSubCommand) {
@@ -169,3 +144,46 @@ TEST_F(CommandExecutorTest, subCommandMissing) {
 	EXPECT_THROW(execute(tokens), SubcommandMissingException);
 }
 
+TEST(Command, parseUID) {
+	EXPECT_EQ(0, Command::parseId("0", "0"));
+	EXPECT_EQ(10, Command::parseId("10", "10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseId("4294967295", "4294967295"));
+}
+
+TEST(Command, parseUIDFailed) {
+	EXPECT_THROW(Command::parseId("-1", ""), CommandLineException);
+	EXPECT_THROW(Command::parseId("4294967296", ""), CommandLineException);
+	EXPECT_THROW(Command::parseId("4294 67296", ""), CommandLineException);
+	EXPECT_THROW(Command::parseId("1B2", ""), CommandLineException);
+	EXPECT_THROW(Command::parseId("abc", ""), CommandLineException);
+}
+
+TEST(Command, parseUINT) {
+	EXPECT_EQ(0, Command::parseUInt("0", "0"));
+	EXPECT_EQ(10, Command::parseUInt("10", "10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseUInt("4294967295", "4294967295"));
+}
+
+TEST(Command, parseUINTFailed) {
+	EXPECT_THROW(Command::parseUInt("-1", ""), CommandLineException);
+	EXPECT_THROW(Command::parseUInt("4294967296", ""), CommandLineException);
+	EXPECT_THROW(Command::parseUInt("4294 67296", ""), CommandLineException);
+	EXPECT_THROW(Command::parseUInt("1B2", ""), CommandLineException);
+	EXPECT_THROW(Command::parseUInt("abc", ""), CommandLineException);
+}
+
+TEST(Command, parseOnOff) {
+	EXPECT_EQ(true, Command::parseOnOff("on", "on"));
+	EXPECT_EQ(false, Command::parseOnOff("off", "off"));
+}
+
+TEST(Command, parseOnOffFailed) {
+	EXPECT_THROW(Command::parseOnOff("on ", "on_"), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff(" on", "_on"), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("on1", "on1"), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("-1", ""), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("4294967296", ""), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("4294 67296", ""), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("1B2", ""), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("abc", ""), CommandLineException);
+}

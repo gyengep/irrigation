@@ -98,24 +98,24 @@ public:
 	const std::string& getCommand() const { return command; }
 	const std::string& getSubCommand() const { return subCommand; }
 
-	static IdType parseId(const std::string& text, const char* errorMessage);
-	static unsigned parseUInt(const std::string& text, const char* errorMessage);
-	static bool parseOnOff(const std::string& text, const char* errorMessage);
+	static IdType parseId(const std::string& text, const char* errorMessage) throw (CommandLineException);
+	static unsigned parseUInt(const std::string& text, const char* errorMessage) throw (CommandLineException);
+	static bool parseOnOff(const std::string& text, const char* errorMessage) throw (CommandLineException);
 };
 
 
 class CommandExecutor {
 	std::list<Command*> commands;
-	std::mutex mtx;
+	mutable std::mutex mtx;
 
-	Command& getCommand(const Tokens& tokens) const;
+	Command& getCommand(Tokens& tokens) const;
 
 public:
 	CommandExecutor();
 	virtual ~CommandExecutor();
 
 	void addCommand(Command* command);
-	void execute(const Tokens& tokens) const;
+	void execute(const Tokens& tokens) const throw (CommandLineException);
 };
 
 #endif /* COMMANDEXECUTOR_H_ */

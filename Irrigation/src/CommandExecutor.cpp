@@ -24,7 +24,7 @@ CommandExecutor::~CommandExecutor() {
 	commands.clear();
 }
 
-void CommandExecutor::execute(const Tokens& tokens) const {
+void CommandExecutor::execute(const Tokens& tokens) const throw (CommandLineException) {
 	Tokens tokensCopy(tokens);
 	if (!tokensCopy.empty()) {
 		std::lock_guard<std::mutex> lock(mtx);
@@ -38,7 +38,7 @@ void CommandExecutor::addCommand(Command* command) {
 	commands.push_back(command);
 }
 
-Command& CommandExecutor::getCommand(const Tokens& tokens) const {
+Command& CommandExecutor::getCommand(Tokens& tokens) const {
 	bool commandFound = false;
 	std::string command = tokens.front();
 	tokens.erase(tokens.begin());
@@ -74,20 +74,26 @@ Command& CommandExecutor::getCommand(const Tokens& tokens) const {
 	}
 }
 
-IdType Command::parseId(const std::string& text, const char* errorMessage) {
+IdType Command::parseId(const std::string& text, const char* errorMessage) throw (CommandLineException) {
 	return static_cast<IdType>(parseUInt(text, errorMessage));
 }
 
-unsigned Command::parseUInt(const std::string& text, const char* errorMessage) {
+unsigned Command::parseUInt(const std::string& text, const char* errorMessage) throw (CommandLineException) {
 	std::size_t pos;
-	unsigned long result =std::stoul(text, &pos, 10);
+	unsigned long result;
+	try {
+		result = std::stoul(text, &pos, 10);
+	} catch (std::invalid_argument& e) {
+		throw CommandLineException(errorMessage);
+	}
+
 	if (text.length() != pos || result > UINT_MAX) {
 		throw CommandLineException(errorMessage);
 	}
 	return result;
 }
 
-bool Command::parseOnOff(const std::string& text, const char* errorMessage) {
+bool Command::parseOnOff(const std::string& text, const char* errorMessage) throw (CommandLineException) {
 	bool result;
 
 	if (text == "on") {

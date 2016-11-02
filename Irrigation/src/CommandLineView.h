@@ -16,9 +16,10 @@
 #include "View.h"
 
 
-class CommandLineView : public CommandExecutor, View, CommandCallback {
+class CommandLineView : public View, CommandCallback {
 	std::thread* workerThread;
 	std::atomic_bool isTerminated;
+	CommandExecutor commandExecutor;
 
 	void workerFunc();
 
