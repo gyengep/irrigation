@@ -28,7 +28,7 @@ void CommandExecutor::execute(const Tokens& tokens) const throw (CommandLineExce
 	Tokens tokensCopy(tokens);
 	if (!tokensCopy.empty()) {
 		std::lock_guard<std::mutex> lock(mtx);
-		Command& cmd = getCommand(tokensCopy);
+		Command& cmd = getMatchingCommand(tokensCopy);
 		cmd.execute(tokensCopy);
 	}
 }
@@ -38,28 +38,24 @@ void CommandExecutor::addCommand(Command* command) {
 	commands.push_back(command);
 }
 
-Command& CommandExecutor::getCommand(Tokens& tokens) const {
+Command& CommandExecutor::getMatchingCommand(Tokens& tokens) const {
 	bool commandFound = false;
-	std::string command = tokens.front();
+	std::string commandText = tokens.front();
 	tokens.erase(tokens.begin());
 
-	std::string subCommand;
+	std::string subCommandText;
 
 	if (!tokens.empty()) {
-		subCommand = tokens.front();
+		subCommandText = tokens.front();
 	}
 
 	for (auto it = commands.begin(); commands.end() != it; ++it) {
-		if ((*it)->getCommand() == command) {
+		if ((*it)->getCommand() == commandText) {
 			commandFound = true;
 			if ((*it)->getSubCommand().empty()) {
 				return **it;
 			} else {
-				if (subCommand.empty()) {
-					throw SubcommandMissingException();
-				}
-
-				if (subCommand == (*it)->getSubCommand()) {
+				if (subCommandText == (*it)->getSubCommand()) {
 					tokens.erase(tokens.begin());
 					return **it;
 				}
@@ -68,9 +64,13 @@ Command& CommandExecutor::getCommand(Tokens& tokens) const {
 	}
 
 	if (commandFound) {
-		throw UnknownSubcommandException(subCommand);
+		if (subCommandText.empty()) {
+			throw SubcommandMissingException();
+		} else {
+			throw UnknownSubcommandException(subCommandText);
+		}
 	} else {
-		throw UnknownCommandException(command);
+		throw UnknownCommandException(commandText);
 	}
 }
 

@@ -108,7 +108,7 @@ class CommandExecutor {
 	std::list<Command*> commands;
 	mutable std::mutex mtx;
 
-	Command& getCommand(Tokens& tokens) const;
+	Command& getMatchingCommand(Tokens& tokens) const;
 
 public:
 	CommandExecutor();
