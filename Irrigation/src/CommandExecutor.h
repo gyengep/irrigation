@@ -8,6 +8,7 @@
 #ifndef COMMANDEXECUTOR_H_
 #define COMMANDEXECUTOR_H_
 
+#include <climits>
 #include <list>
 #include <mutex>
 #include <vector>
@@ -19,36 +20,7 @@ class Program;
 
 typedef std::vector<std::string> Tokens;
 
-class CommandLineException : public std::exception {
-protected:
-	std::string message;
 
-	CommandLineException() : message() {}
-public:
-	CommandLineException(const char* message) : message(message) {}
-	virtual const char* what() const throw() { return message.c_str(); }
-};
-
-class UnknownCommandException : public CommandLineException {
-public:
-	UnknownCommandException(const std::string& command) {
-		message = "Unknown command - '" + command + "'";
-	}
-};
-
-class UnknownSubcommandException : public CommandLineException {
-public:
-	UnknownSubcommandException(const std::string& subCommand) {
-		message = "Unknown subcommand" + subCommand + "'";
-	}
-};
-
-class SubcommandMissingException : public CommandLineException {
-public:
-	SubcommandMissingException() {
-		message = "Subcommand missing";
-	}
-};
 
 class CommandCallback {
 public:
@@ -77,6 +49,22 @@ public:
 
 
 class Command {
+
+	template<class T> static unsigned parse(const std::string& text) {
+		std::size_t pos;
+		unsigned long result;
+		try {
+			result = std::stoul(text, &pos, 10);
+		} catch (std::invalid_argument& e) {
+			throw T();
+		}
+
+		if (text.length() != pos || result > UINT_MAX) {
+			throw T();
+		}
+		return result;
+	}
+
 protected:
 	CommandCallback* const callback;
 	Document* const document;
@@ -98,9 +86,13 @@ public:
 	const std::string& getCommand() const { return command; }
 	const std::string& getSubCommand() const { return subCommand; }
 
-	static IdType parseId(const std::string& text, const char* errorMessage) throw (CommandLineException);
-	static unsigned parseUInt(const std::string& text, const char* errorMessage) throw (CommandLineException);
-	static bool parseOnOff(const std::string& text, const char* errorMessage) throw (CommandLineException);
+	static IdType parseProgramId(const std::string& text) throw (InvalidProgramIdException);
+	static IdType parseRunTimeId(const std::string& text) throw (InvalidRunTimeIdException);
+	static IdType parseStartTimeId(const std::string& text) throw (InvalidStartTimeIdException);
+	static IdType parseValveId(const std::string& text) throw (InvalidValveIdException);
+	static IdType parseZoneId(const std::string& text) throw (InvalidZoneIdException);
+	static unsigned parseUnsigned(const std::string& text) throw (InvalidParameterException);
+	static bool parseOnOff(const std::string& text) throw (InvalidParameterException);
 };
 
 
@@ -115,7 +107,7 @@ public:
 	virtual ~CommandExecutor();
 
 	void addCommand(Command* command);
-	void execute(const Tokens& tokens) const throw (CommandLineException);
+	void execute(const Tokens& tokens) const throw (CommandException);
 };
 
 #endif /* COMMANDEXECUTOR_H_ */

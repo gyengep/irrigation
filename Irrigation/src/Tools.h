@@ -31,7 +31,7 @@ V erase(std::list<std::pair<K, V>>& container, const K& uid) {
 		}
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 template <typename K, typename V>
@@ -42,7 +42,7 @@ V& get(std::list<std::pair<K, V>>& container, const K& uid) {
 		}
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 template <typename K, typename V>
@@ -53,7 +53,7 @@ const V& get(const std::list<std::pair<K, V>>& container, const K& uid) {
 		}
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 template <typename K, typename V>
@@ -65,7 +65,7 @@ void set(std::list<std::pair<K, V>>& container, const K& uid, const V& value) {
 		}
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ void set(std::array<std::pair<K, V>, S>& container, const K& uid, const V& value
 		return;
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 template <typename K, typename V, std::size_t S>
@@ -88,7 +88,7 @@ V get(std::array<std::pair<K, V>, S>& container, const K& uid) {
 		return container[uid].second;
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 template <typename K, typename V, std::size_t S>
@@ -98,7 +98,7 @@ V get(const std::array<std::pair<K, V>, S>& container, const K& uid) {
 		return container[uid].second;
 	}
 
-	throw invalid_id();
+	throw std::out_of_range("");
 }
 
 

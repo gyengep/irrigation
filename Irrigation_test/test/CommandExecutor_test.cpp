@@ -144,46 +144,102 @@ TEST_F(CommandExecutorTest, subCommandMissing) {
 	EXPECT_THROW(execute(tokens), SubcommandMissingException);
 }
 
-TEST(Command, parseUID) {
-	EXPECT_EQ(0, Command::parseId("0", "0"));
-	EXPECT_EQ(10, Command::parseId("10", "10"));
-	EXPECT_EQ(0xFFFFFFFF, Command::parseId("4294967295", "4294967295"));
+TEST(Command, parseProgramId) {
+	EXPECT_EQ(0, Command::parseProgramId("0"));
+	EXPECT_EQ(10, Command::parseProgramId("10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseProgramId("4294967295"));
 }
 
-TEST(Command, parseUIDFailed) {
-	EXPECT_THROW(Command::parseId("-1", ""), CommandLineException);
-	EXPECT_THROW(Command::parseId("4294967296", ""), CommandLineException);
-	EXPECT_THROW(Command::parseId("4294 67296", ""), CommandLineException);
-	EXPECT_THROW(Command::parseId("1B2", ""), CommandLineException);
-	EXPECT_THROW(Command::parseId("abc", ""), CommandLineException);
+TEST(Command, parseProgramIdFailed) {
+	EXPECT_THROW(Command::parseProgramId("-1"), InvalidProgramIdException);
+	EXPECT_THROW(Command::parseProgramId("4294967296"), InvalidProgramIdException);
+	EXPECT_THROW(Command::parseProgramId("4294 67296"), InvalidProgramIdException);
+	EXPECT_THROW(Command::parseProgramId("1B2"), InvalidProgramIdException);
+	EXPECT_THROW(Command::parseProgramId("abc"), InvalidProgramIdException);
 }
 
-TEST(Command, parseUINT) {
-	EXPECT_EQ(0, Command::parseUInt("0", "0"));
-	EXPECT_EQ(10, Command::parseUInt("10", "10"));
-	EXPECT_EQ(0xFFFFFFFF, Command::parseUInt("4294967295", "4294967295"));
+TEST(Command, parseStartTimeId) {
+	EXPECT_EQ(0, Command::parseStartTimeId("0"));
+	EXPECT_EQ(10, Command::parseStartTimeId("10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseStartTimeId("4294967295"));
 }
 
-TEST(Command, parseUINTFailed) {
-	EXPECT_THROW(Command::parseUInt("-1", ""), CommandLineException);
-	EXPECT_THROW(Command::parseUInt("4294967296", ""), CommandLineException);
-	EXPECT_THROW(Command::parseUInt("4294 67296", ""), CommandLineException);
-	EXPECT_THROW(Command::parseUInt("1B2", ""), CommandLineException);
-	EXPECT_THROW(Command::parseUInt("abc", ""), CommandLineException);
+TEST(Command, parseStartTimeIdFailed) {
+	EXPECT_THROW(Command::parseStartTimeId("-1"), InvalidStartTimeIdException);
+	EXPECT_THROW(Command::parseStartTimeId("4294967296"), InvalidStartTimeIdException);
+	EXPECT_THROW(Command::parseStartTimeId("4294 67296"), InvalidStartTimeIdException);
+	EXPECT_THROW(Command::parseStartTimeId("1B2"), InvalidStartTimeIdException);
+	EXPECT_THROW(Command::parseStartTimeId("abc"), InvalidStartTimeIdException);
+}
+
+TEST(Command, parseRunTimeId) {
+	EXPECT_EQ(0, Command::parseRunTimeId("0"));
+	EXPECT_EQ(10, Command::parseRunTimeId("10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseRunTimeId("4294967295"));
+}
+
+TEST(Command, parseRunTimeIdFailed) {
+	EXPECT_THROW(Command::parseRunTimeId("-1"), InvalidRunTimeIdException);
+	EXPECT_THROW(Command::parseRunTimeId("4294967296"), InvalidRunTimeIdException);
+	EXPECT_THROW(Command::parseRunTimeId("4294 67296"), InvalidRunTimeIdException);
+	EXPECT_THROW(Command::parseRunTimeId("1B2"), InvalidRunTimeIdException);
+	EXPECT_THROW(Command::parseRunTimeId("abc"), InvalidRunTimeIdException);
+}
+
+TEST(Command, parseUnsigned) {
+	EXPECT_EQ(0, Command::parseUnsigned("0"));
+	EXPECT_EQ(10, Command::parseUnsigned("10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseUnsigned("4294967295"));
+}
+
+TEST(Command, parseUnsignedFailed) {
+	EXPECT_THROW(Command::parseUnsigned("-1"), InvalidParameterException);
+	EXPECT_THROW(Command::parseUnsigned("4294967296"), InvalidParameterException);
+	EXPECT_THROW(Command::parseUnsigned("4294 67296"), InvalidParameterException);
+	EXPECT_THROW(Command::parseUnsigned("1B2"), InvalidParameterException);
+	EXPECT_THROW(Command::parseUnsigned("abc"), InvalidParameterException);
+}
+
+TEST(Command, parseZoneId) {
+	EXPECT_EQ(0, Command::parseZoneId("0"));
+	EXPECT_EQ(10, Command::parseZoneId("10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseZoneId("4294967295"));
+}
+
+TEST(Command, parseZoneIdFailed) {
+	EXPECT_THROW(Command::parseZoneId("-1"), InvalidZoneIdException);
+	EXPECT_THROW(Command::parseZoneId("4294967296"), InvalidZoneIdException);
+	EXPECT_THROW(Command::parseZoneId("4294 67296"), InvalidZoneIdException);
+	EXPECT_THROW(Command::parseZoneId("1B2"), InvalidZoneIdException);
+	EXPECT_THROW(Command::parseZoneId("abc"), InvalidZoneIdException);
+}
+
+TEST(Command, parseValveId) {
+	EXPECT_EQ(0, Command::parseValveId("0"));
+	EXPECT_EQ(10, Command::parseValveId("10"));
+	EXPECT_EQ(0xFFFFFFFF, Command::parseValveId("4294967295"));
+}
+
+TEST(Command, parseValveIdFailed) {
+	EXPECT_THROW(Command::parseValveId("-1"), InvalidValveIdException);
+	EXPECT_THROW(Command::parseValveId("4294967296"), InvalidValveIdException);
+	EXPECT_THROW(Command::parseValveId("4294 67296"), InvalidValveIdException);
+	EXPECT_THROW(Command::parseValveId("1B2"), InvalidValveIdException);
+	EXPECT_THROW(Command::parseValveId("abc"), InvalidValveIdException);
 }
 
 TEST(Command, parseOnOff) {
-	EXPECT_EQ(true, Command::parseOnOff("on", "on"));
-	EXPECT_EQ(false, Command::parseOnOff("off", "off"));
+	EXPECT_EQ(true, Command::parseOnOff("on"));
+	EXPECT_EQ(false, Command::parseOnOff("off"));
 }
 
 TEST(Command, parseOnOffFailed) {
-	EXPECT_THROW(Command::parseOnOff("on ", "on_"), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff(" on", "_on"), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff("on1", "on1"), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff("-1", ""), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff("4294967296", ""), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff("4294 67296", ""), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff("1B2", ""), CommandLineException);
-	EXPECT_THROW(Command::parseOnOff("abc", ""), CommandLineException);
+	EXPECT_THROW(Command::parseOnOff("on "), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff(" on"), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff("on1"), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff("-1"), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff("4294967296"), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff("4294 67296"), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff("1B2"), InvalidParameterException);
+	EXPECT_THROW(Command::parseOnOff("abc"), InvalidParameterException);
 }

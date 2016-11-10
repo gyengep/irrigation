@@ -107,7 +107,7 @@ void CommandLineView::workerFunc() {
 
 		try {
 			commandExecutor.execute(tokens);
-		} catch (CommandLineException& e) {
+		} catch (const IrrigationException& e) {
 			std::cout << "Error: " << e.what() << std::endl;
 		} catch (std::exception& e) {
 			std::cout << "Exception occured: " << e.what() << std::endl;

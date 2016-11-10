@@ -30,8 +30,8 @@ const RunTimeContainer::RunTimes& RunTimeContainer::container() const {
 void RunTimeContainer::set(IdType id, unsigned minutes) {
 	try {
 		tools::set(runTimes, id, minutes);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_RUNTIMEID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidRunTimeIdException();
 	}
 }
 
@@ -40,8 +40,8 @@ unsigned RunTimeContainer::get(IdType id) const {
 
 	try {
 		result = tools::get(runTimes, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_RUNTIMEID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidRunTimeIdException();
 	}
 
 	return result;
@@ -69,16 +69,16 @@ IdType StartTimeContainer::add(unsigned minutes) {
 void StartTimeContainer::del(IdType id) {
 	try {
 		tools::erase(startTimes, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_STARTTIMEID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidStartTimeIdException();
 	}
 }
 
 void StartTimeContainer::set(IdType id, unsigned minutes) {
 	try {
 		tools::set(startTimes, id, minutes);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_STARTTIMEID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidStartTimeIdException();
 	}
 }
 
@@ -87,8 +87,8 @@ unsigned StartTimeContainer::get(IdType id) const {
 
 	try {
 		result = tools::get(startTimes, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_STARTTIMEID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidStartTimeIdException();
 	}
 
 	return result;
@@ -123,7 +123,7 @@ ProgramContainer::~ProgramContainer() {
 
 const ProgramContainer::Programs& ProgramContainer::container() const {
 	if (mutex.try_lock()) {
-		throw not_locked("Programs are not locked");
+		throw std::runtime_error("Programs are not locked");
 	}
 
 	return programs;
@@ -131,7 +131,7 @@ const ProgramContainer::Programs& ProgramContainer::container() const {
 
 Program& ProgramContainer::add() {
 	if (mutex.try_lock()) {
-		throw not_locked("Programs are not locked");
+		throw std::runtime_error("Programs are not locked");
 	}
 
 	Program* program = new Program();
@@ -142,15 +142,15 @@ Program& ProgramContainer::add() {
 
 void ProgramContainer::del(IdType id) {
 	if (mutex.try_lock()) {
-		throw not_locked("Programs are not locked");
+		throw std::runtime_error("Programs are not locked");
 	}
 
 	Program* program = NULL;
 
 	try {
 		program = tools::erase(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidProgramIdException();
 	}
 
 	delete program;
@@ -158,7 +158,7 @@ void ProgramContainer::del(IdType id) {
 
 void ProgramContainer::move(IdType id, unsigned newPosition) {
 	if (mutex.try_lock()) {
-		throw not_locked("Programs are not locked");
+		throw std::runtime_error("Programs are not locked");
 	}
 
 	if (programs.size() <= newPosition) {
@@ -169,8 +169,8 @@ void ProgramContainer::move(IdType id, unsigned newPosition) {
 
 	try {
 		program = tools::erase(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidProgramIdException();
 	}
 
 	unsigned count = 0;
@@ -185,14 +185,14 @@ void ProgramContainer::move(IdType id, unsigned newPosition) {
 
 Program& ProgramContainer::get(IdType id) {
 	if (mutex.try_lock()) {
-		throw not_locked("Programs are not locked");
+		throw std::runtime_error("Programs are not locked");
 	}
 
 	Program* program = NULL;
 	try {
 		program = tools::get(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidProgramIdException();
 	}
 
 	return *program;
@@ -200,14 +200,14 @@ Program& ProgramContainer::get(IdType id) {
 
 const Program& ProgramContainer::get(IdType id) const {
 	if (mutex.try_lock()) {
-		throw not_locked("Programs are not locked");
+		throw std::runtime_error("Programs are not locked");
 	}
 
 	const Program* program = NULL;
 	try {
 		program = tools::get(programs, id);
-	} catch(invalid_id& e) {
-		throw invalid_id(INVALID_PROGRAMID);
+	} catch(const std::out_of_range& e) {
+		throw InvalidProgramIdException();
 	}
 
 	return *program;

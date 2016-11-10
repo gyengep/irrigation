@@ -20,7 +20,7 @@ TEST(SpecifiedScheduler, enableDay) {
 		EXPECT_TRUE(scheduler.days[i]);
 	}
 
-	EXPECT_THROW(scheduler.enableDay(7, true), invalid_id);
+	EXPECT_THROW(scheduler.enableDay(7, true), InvalidIdException);
 }
 
 TEST(SpecifiedScheduler, isDayEnabled) {
@@ -34,7 +34,7 @@ TEST(SpecifiedScheduler, isDayEnabled) {
 		EXPECT_FALSE(scheduler.isDayEnabled(i));
 	}
 
-	EXPECT_THROW(scheduler.isDayEnabled(7), invalid_id);
+	EXPECT_THROW(scheduler.isDayEnabled(7), InvalidIdException);
 }
 
 std::time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {

@@ -19,17 +19,6 @@
 	};
 
 
-class TooFewArgumentsException : public CommandLineException {
-public:
-	TooFewArgumentsException() : CommandLineException("Too few arguments") {}
-};
-
-class TooMuchArgumentsException : public CommandLineException {
-public:
-	TooMuchArgumentsException() : CommandLineException("Too much arguments") {}
-};
-
-
 namespace command {
 
 	DECLARE_COMMAND(Help, "help", NULL);

@@ -18,7 +18,7 @@ SpecifiedScheduler::~SpecifiedScheduler() {
 
 void SpecifiedScheduler::enableDay(IdType id, bool enable) {
 	if (DAY_COUNT <= id) {
-		throw invalid_id(INVALID_DAYID);
+		throw InvalidDayException();
 	}
 
 	days[id] = enable;
@@ -26,7 +26,7 @@ void SpecifiedScheduler::enableDay(IdType id, bool enable) {
 
 bool SpecifiedScheduler::isDayEnabled(IdType id) const {
 	if (DAY_COUNT <= id) {
-		throw invalid_id(INVALID_DAYID);
+		throw InvalidDayException();
 	}
 
 	return days[id];

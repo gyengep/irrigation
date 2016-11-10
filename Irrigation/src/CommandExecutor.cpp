@@ -8,8 +8,6 @@
 #include "common.h"
 #include "CommandExecutor.h"
 
-#include <climits>
-
 
 CommandExecutor::CommandExecutor() {
 }
@@ -24,7 +22,7 @@ CommandExecutor::~CommandExecutor() {
 	commands.clear();
 }
 
-void CommandExecutor::execute(const Tokens& tokens) const throw (CommandLineException) {
+void CommandExecutor::execute(const Tokens& tokens) const throw (CommandException) {
 	Tokens tokensCopy(tokens);
 	if (!tokensCopy.empty()) {
 		std::lock_guard<std::mutex> lock(mtx);
@@ -74,26 +72,36 @@ Command& CommandExecutor::getMatchingCommand(Tokens& tokens) const {
 	}
 }
 
-IdType Command::parseId(const std::string& text, const char* errorMessage) throw (CommandLineException) {
-	return static_cast<IdType>(parseUInt(text, errorMessage));
+IdType Command::parseProgramId(const std::string& text) throw (InvalidProgramIdException) {
+	unsigned result = parse<InvalidProgramIdException>(text);
+	return static_cast<IdType>(result);
 }
 
-unsigned Command::parseUInt(const std::string& text, const char* errorMessage) throw (CommandLineException) {
-	std::size_t pos;
-	unsigned long result;
-	try {
-		result = std::stoul(text, &pos, 10);
-	} catch (std::invalid_argument& e) {
-		throw CommandLineException(errorMessage);
-	}
-
-	if (text.length() != pos || result > UINT_MAX) {
-		throw CommandLineException(errorMessage);
-	}
-	return result;
+IdType Command::parseStartTimeId(const std::string& text) throw (InvalidStartTimeIdException) {
+	unsigned result = parse<InvalidStartTimeIdException>(text);
+	return static_cast<IdType>(result);
 }
 
-bool Command::parseOnOff(const std::string& text, const char* errorMessage) throw (CommandLineException) {
+IdType Command::parseRunTimeId(const std::string& text) throw (InvalidRunTimeIdException) {
+	unsigned result = parse<InvalidRunTimeIdException>(text);
+	return static_cast<IdType>(result);
+}
+
+IdType Command::parseValveId(const std::string& text) throw (InvalidValveIdException) {
+	unsigned result = parse<InvalidValveIdException>(text);
+	return static_cast<IdType>(result);
+}
+
+IdType Command::parseZoneId(const std::string& text) throw (InvalidZoneIdException) {
+	unsigned result = parse<InvalidZoneIdException>(text);
+	return static_cast<IdType>(result);
+}
+
+unsigned Command::parseUnsigned(const std::string& text) throw (InvalidParameterException) {
+	return parse<InvalidParameterException>(text);
+}
+
+bool Command::parseOnOff(const std::string& text) throw (InvalidParameterException) {
 	bool result;
 
 	if (text == "on") {
@@ -101,7 +109,7 @@ bool Command::parseOnOff(const std::string& text, const char* errorMessage) thro
 	} else if (text == "off") {
 		result = false;
 	} else {
-		throw CommandLineException(errorMessage);
+		throw InvalidParameterException();
 	}
 
 	return result;

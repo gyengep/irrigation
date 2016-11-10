@@ -34,7 +34,7 @@ namespace command {
 	void StarttimeList::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType programId = parseProgramId(parameters[0]);
 
 		AUTO_LOCK_PROGRAMS();
 		const Program& program = document->programs().get(programId);
@@ -45,9 +45,9 @@ namespace command {
 	void StarttimeSet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(3);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
-		unsigned startTime = parseUInt(parameters[2], "Invalid starttime");
+		IdType programId = parseProgramId(parameters[0]);
+		IdType startTimeId = parseStartTimeId(parameters[1]);
+		unsigned startTime = parseUnsigned(parameters[2]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().get(programId).startTimes().set(startTimeId, startTime);
@@ -58,8 +58,8 @@ namespace command {
 	void StarttimeGet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
+		IdType programId = parseProgramId(parameters[0]);
+		IdType startTimeId = parseStartTimeId(parameters[1]);
 
 		AUTO_LOCK_PROGRAMS();
 		unsigned startTime = document->programs().get(programId).startTimes().get(startTimeId);
@@ -70,8 +70,8 @@ namespace command {
 	void StarttimeAdd::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		unsigned startTime = parseUInt(parameters[1], "Invalid starttime");
+		IdType programId = parseProgramId(parameters[0]);
+		unsigned startTime = parseUnsigned(parameters[1]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().get(programId).startTimes().add(startTime);
@@ -82,8 +82,8 @@ namespace command {
 	void StarttimeDelete::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		IdType startTimeId = parseId(parameters[1], INVALID_STARTTIMEID);
+		IdType programId = parseProgramId(parameters[0]);
+		IdType startTimeId = parseStartTimeId(parameters[1]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().get(programId).startTimes().del(startTimeId);
@@ -94,7 +94,7 @@ namespace command {
 	void RuntimeList::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType programId = parseProgramId(parameters[0]);
 
 		AUTO_LOCK_PROGRAMS();
 		const Program& program = document->programs().get(programId);
@@ -105,9 +105,9 @@ namespace command {
 	void RuntimeSet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(3);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
-		unsigned runTime = parseUInt(parameters[2], "Invalid runtime");
+		IdType programId = parseProgramId(parameters[0]);
+		IdType runTimeId = parseRunTimeId(parameters[1]);
+		unsigned runTime = parseUnsigned(parameters[2]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().get(programId).runTimes().set(runTimeId, runTime);
@@ -118,8 +118,8 @@ namespace command {
 	void RuntimeGet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		IdType runTimeId = parseId(parameters[1], INVALID_RUNTIMEID);
+		IdType programId = parseProgramId(parameters[0]);
+		IdType runTimeId = parseRunTimeId(parameters[1]);
 
 		AUTO_LOCK_PROGRAMS();
 		unsigned runTime = document->programs().get(programId).runTimes().get(runTimeId);
@@ -139,7 +139,7 @@ namespace command {
 	void ProgramShow::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType programId = parseProgramId(parameters[0]);
 
 		AUTO_LOCK_PROGRAMS();
 		const Program& program = document->programs().get(programId);
@@ -160,7 +160,7 @@ namespace command {
 	void ProgramDelete::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType programId = parseProgramId(parameters[0]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().del(programId);
@@ -171,7 +171,7 @@ namespace command {
 	void ProgramRename::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
+		IdType programId = parseProgramId(parameters[0]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().get(programId).setName(parameters[1]);
@@ -182,8 +182,8 @@ namespace command {
 	void ProgramMove::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType programId = parseId(parameters[0], INVALID_PROGRAMID);
-		unsigned position = parseUInt(parameters[1], "Invalid position");
+		IdType programId = parseProgramId(parameters[0]);
+		unsigned position = parseUnsigned(parameters[1]);
 
 		AUTO_LOCK_PROGRAMS();
 		document->programs().move(programId, position);
@@ -194,8 +194,8 @@ namespace command {
 	void Valve::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType valveId = parseId(parameters[0], INVALID_VALVEID);
-		bool open = parseOnOff(parameters[1], "Invalid parameter");
+		IdType valveId = parseValveId(parameters[0]);
+		bool open = parseOnOff(parameters[1]);
 		document->openValve(valveId, open);
 
 		callback->onValveSuccess();
@@ -204,8 +204,8 @@ namespace command {
 	void Zone::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
-		IdType zoneId = parseId(parameters[0], INVALID_ZONEID);
-		bool open = parseOnOff(parameters[1], "Invalid parameter");
+		IdType zoneId = parseZoneId(parameters[0]);
+		bool open = parseOnOff(parameters[1]);
 		document->openZone(zoneId, open);
 
 		callback->onZoneSuccess();

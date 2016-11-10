@@ -26,7 +26,7 @@ Program::~Program() {
 
 void Program::setSchedulerType(SchedulerType schedulerType) {
 	if (schedulerType >= LAST) {
-		throw invalid_id(INVALID_SCHEDULER);
+		throw InvalidSchedulerException();
 	}
 
 	this->schedulerType = schedulerType;
