@@ -865,6 +865,8 @@ void IrrigationWebServer::updateTemplateEngine() {
 bool IrrigationWebServer::getFile(const std::string& fileName, const Parameters& getParameters, const Parameters& postParameters, Answer& answer) {
 	std::string strFullPath = rootDirectory + fileName;
 
+	LOGGER.info("WebServer: file requested: %s", strFullPath.c_str());
+
 	FILE* f = fopen(strFullPath.c_str(), "rb");
 	if (NULL == f) {
 		return false;

@@ -32,6 +32,8 @@ void Application::init() {
 	new CommandLineView(document);
 	new WebServerView(document);
 
+	document->programs().getMutex().lock();
+
 	{
 		Program& program = document->programs().add();
 		program.setName("fulocsolas");
@@ -54,6 +56,8 @@ void Application::init() {
 		program.runTimes().set(4, 3);
 		program.startTimes().add(480);
 	}
+
+	document->programs().getMutex().unlock();
 }
 
 void Application::run() {

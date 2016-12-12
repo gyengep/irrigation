@@ -1,8 +1,13 @@
 /*
  * WebServerView.h
  *
+<<<<<<< HEAD
  *  Created on: 2016.11.10.
  *      Author: 502664609
+=======
+ *  Created on: 2016. nov. 15.
+ *      Author: Rendszergazda
+>>>>>>> 3a2eba7f6c3df431d940e1543f50c2bb710afb74
  */
 
 #ifndef WEBSERVERVIEW_H_
