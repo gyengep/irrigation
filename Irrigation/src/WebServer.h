@@ -7,6 +7,9 @@
 #include <vector>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <teng.h>
+
+#include "Containers.h"
 
 
 
@@ -145,9 +148,16 @@ class IrrigationWebServer : public WebServer {
 	//GetFileMap_t			m_theGetFileMap;
 
 	const std::string rootDirectory;
+	const Document* document;
+
+	void updateTemplateEngine();
+
+	void addPrograms(const ProgramContainer& programs, Teng::FragmentList_t& programsFragment);
+	void addRunTimes(const RunTimeContainer& runTime, Teng::FragmentList_t& runTimesFragment);
+	void addStartTimes(const StartTimeContainer& startTime, Teng::FragmentList_t& startTimesFragment);
 
 public:
-	IrrigationWebServer(const char* rootDirectory, unsigned short port);
+	IrrigationWebServer(const char* rootDirectory, unsigned short port, const Document* document);
 	virtual ~IrrigationWebServer();
 
 	virtual bool getFile(const std::string& fileName, const Parameters& getParameters, const Parameters& postParameters, Answer& answer);
