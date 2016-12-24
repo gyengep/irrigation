@@ -6,14 +6,13 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include "Commons/common.h"
+#include "common.h"
 #include "Model/Application.h"
 
 #ifndef IRRIGATION_TEST
 
 
 int main() {
-
 	LOGGER.setFile(NULL);
 	LOGGER.setLevel(Logger::INFO);
 	

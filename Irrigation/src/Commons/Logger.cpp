@@ -5,8 +5,8 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Commons/Logger.h"
+#include "Common.h"
+#include "Logger.h"
 
 #include <cstdio>
 #include <thread>

@@ -5,9 +5,11 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Model/View.h"
-#include "Model/Document.h"
+#include "Common.h"
+#include "View.h"
+#include "Document.h"
+
+
 
 View::View(Document* document) : document(document) {
 	document->addView(this);

@@ -10,6 +10,7 @@
 
 #include "CommandExecutor.h"
 
+
 #define DECLARE_COMMAND(CLASS_NAME, COMMAND, SUBCOMMAND)		\
 	class CLASS_NAME : public Command {							\
 	public:														\

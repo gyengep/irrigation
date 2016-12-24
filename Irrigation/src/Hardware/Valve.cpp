@@ -5,8 +5,8 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Hardware/Valve.h"
+#include "Common.h"
+#include "Valve.h"
 
 
 #ifdef __arm__

@@ -5,8 +5,9 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Logic/Scheduler.h"
+#include "Common.h"
+#include "Scheduler.h"
+
 
 
 SpecifiedScheduler::SpecifiedScheduler() {

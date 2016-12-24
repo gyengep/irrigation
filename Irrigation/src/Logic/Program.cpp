@@ -5,10 +5,12 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Logic/Program.h"
-#include "Logic/Scheduler.h"
+#include "common.h"
+#include "Program.h"
+#include "Scheduler.h"
+
 #include "Utils/Tools.h"
+
 
 
 Program::Program() {

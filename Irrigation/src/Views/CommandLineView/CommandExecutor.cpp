@@ -5,8 +5,10 @@
  *      Author: 502664609
  */
 
-#include "Commons/common.h"
-#include "Views/CommandExecutor.h"
+#include "Common.h"
+#include "CommandExecutor.h"
+
+#include <string>
 
 
 CommandExecutor::CommandExecutor() {

@@ -1,7 +1,9 @@
 
-#include "Commons/common.h"
-#include "Views/IrrigationWebServer.h"
+#include "Common.h"
+#include "IrrigationWebServer.h"
 
+#include "WebServer/Answer.h"
+#include "WebServer/Request.h"
 
 
 IrrigationWebServer::IrrigationWebServer(const char* rootDirectory, unsigned short port, const Document* document) :
@@ -14,7 +16,7 @@ IrrigationWebServer::IrrigationWebServer(const char* rootDirectory, unsigned sho
 
 IrrigationWebServer::~IrrigationWebServer() {
 }
-
+/*
 
 void IrrigationWebServer::addPrograms(const ProgramContainer& programs, Teng::FragmentList_t& programsFragment) {
     for (auto it = programs.container().begin(); programs.container().end() != it; ++it) {
@@ -55,8 +57,22 @@ void IrrigationWebServer::updateTemplateEngine() {
 
     addPrograms(document->programs(), root.addFragmentList("programs"));
 }
+*/
+void IrrigationWebServer::onRequest(const Request& request) {
+	static int a = 0;
+	std::string text = std::to_string(a++);
 
-bool IrrigationWebServer::getFile(const std::string& fileName, const Parameters& getParameters, const Parameters& postParameters, Answer& answer) {
+	Answer answer(request, MHD_HTTP_OK, (void*)text.c_str(), text.length());
+	send(answer);
+
+
+	LOGGER.info("connection: %p", request.getConnection());
+	LOGGER.info("url: %s", request.getUrl());
+	LOGGER.info("method: %s", request.getMethod());
+	LOGGER.info("version: %s", request.getVersion());
+	LOGGER.info("size: %u", *request.getUploadDataSize());
+
+/*
 	std::string strFullPath = rootDirectory + fileName;
 
 	LOGGER.info("WebServer: file requested: %s", strFullPath.c_str());
@@ -79,7 +95,7 @@ bool IrrigationWebServer::getFile(const std::string& fileName, const Parameters&
 	answer.replace(messageBody, messageLength);
 
 	return true;
-
+*/
 /*
 	GetFileMap_t::iterator it = m_theGetFileMap.find(fileName);
 	bool fileFound;
@@ -92,5 +108,7 @@ bool IrrigationWebServer::getFile(const std::string& fileName, const Parameters&
 
 	return fileFound;
 */
+
 }
+
 

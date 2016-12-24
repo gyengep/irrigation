@@ -5,11 +5,15 @@
  *      Author: 502664609
  */
 
-#include "Commons/common.h"
-#include "Views/Commands.h"
+#include "Common.h"
+#include "CommandExecutor.h"
+#include "Commands.h"
 
+#include <vector>
+
+#include "Hardware/Valve.h"
 #include "Model/Application.h"
-#include "Model/Document.h"
+
 
 
 #define AUTO_LOCK_PROGRAMS() std::lock_guard<std::mutex> lock(document->programs().getMutex())

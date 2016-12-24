@@ -1,12 +1,17 @@
 
+#include "Common.h"
+#include "Application.h"
 
-#include "Commons/common.h"
-#include "Model/Application.h"
+#include <mutex>
+#include <sys/unistd.h>
 
 #include "Hardware/Valve.h"
+#include "Logic/Containers.h"
+#include "Logic/Program.h"
 #include "Model/Document.h"
-#include "Views/CommandLineView.h"
-#include "Views/WebServerView.h"
+#include "Views/CommandLineView/CommandLineView.h"
+#include "Views/WebServerView/WebServerView.h"
+
 
 
 Application* theApplication = NULL;

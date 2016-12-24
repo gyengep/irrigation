@@ -5,10 +5,12 @@
  *      Author: 502664609
  */
 
-#include "Commons/common.h"
-#include "Logic/Containers.h"
-#include "Logic/Program.h"
+#include "Common.h"
+#include "Containers.h"
+#include "Program.h"
+
 #include "Utils/Tools.h"
+
 
 
 ////////////////////////////////////////////////////////////////

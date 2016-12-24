@@ -5,9 +5,10 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Model/Document.h"
-#include "Model/Application.h"
+#include "common.h"
+#include "Document.h"
+#include "Application.h"
+
 #include "Logic/Program.h"
 #include "Hardware/Valve.h"
 #include "Model/View.h"

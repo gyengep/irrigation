@@ -5,7 +5,8 @@
  *      Author: 502664609
  */
 
-#include "Utils/Tokenizer.h"
+#include "Common.h"
+#include "Tokenizer.h"
 
 
 void Tokenizer::tokenize(const std::string& text, StringArray& result, const char* delimeters, bool includeEmpty) {

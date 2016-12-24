@@ -5,16 +5,21 @@
  *      Author: Rendszergazda
  */
 
-#include "Commons/common.h"
-#include "Views/CommandLineView.h"
+#include "Common.h"
+#include "CommandLineView.h"
+#include "Commands.h"
 
+#include <array>
 #include <cstring>
-#include <sstream>
+#include <iostream>
+#include <list>
+#include <utility>
+#include <vector>
 
-#include "Model/Application.h"
-#include "Model/Document.h"
+#include "Logic/Containers.h"
 #include "Logic/Program.h"
-#include "Views/Commands.h"
+#include "Model/Document.h"
+
 
 
 #define PRINT_RUNTIME(id, runTime)												\

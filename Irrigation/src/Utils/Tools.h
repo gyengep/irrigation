@@ -9,9 +9,11 @@
 #define TOOLS_H_
 
 #include <array>
-#include <atomic>
+#include <cstddef>
 #include <list>
+#include <stdexcept>
 #include <utility>
+
 
 
 namespace tools {

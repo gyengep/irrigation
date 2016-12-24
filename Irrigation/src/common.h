@@ -13,8 +13,8 @@
 #define FRIEND_TEST(test_case_name, test_name)
 #endif // IRRIGATION_TEST
 
-#include "exception.h"
-#include "Logger.h"
+#include "Commons/exception.h"
+#include "Commons/Logger.h"
 
 const unsigned ZONE_COUNT = 6;
 const unsigned VALVE_COUNT = 7;
