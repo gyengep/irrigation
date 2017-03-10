@@ -14,7 +14,6 @@
 
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
-#include "Utils/Tools.h"
 
 
 class Valve;
@@ -22,11 +21,6 @@ class View;
 
 
 class Document {
-
-public:
-	typedef ProgramContainer::Programs Programs;
-
-private:
 
 	typedef std::array<unsigned, ZONE_COUNT> WateringTimes;
 
@@ -39,7 +33,7 @@ private:
 	std::array<Valve*, VALVE_COUNT> valves;
 
 	// Programs
-	ProgramContainer programContainer;
+	ProgramContainer programs;
 
 	// Watering
 	mutable std::mutex wateringMutex;
@@ -67,8 +61,8 @@ public:
 	void stopWatering();
 
 	// Program
-	const ProgramContainer& programs() const { return programContainer; }
-	ProgramContainer& programs() { return programContainer; }
+	const ProgramContainer& getPrograms() const { return programs; }
+	ProgramContainer& getPrograms() { return programs; }
 
 	// Zone, Valve
 	void openZone(IdType id, bool open);

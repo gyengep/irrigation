@@ -61,6 +61,7 @@
 								<option id="gnu.cpp.link.option.libs.1889400143" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gtest"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="teng"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="microhttpd"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.935814652" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -70,7 +71,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/sample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="test/Logic/Program_test.cpp|src/sample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -133,7 +134,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/sample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="test/Logic/Program_test.cpp|src/sample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

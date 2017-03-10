@@ -1,17 +1,15 @@
-/*
- * Containers.h
- *
- *  Created on: 2016.09.19.
- *      Author: 502664609
- */
-
-#ifndef CONTAINERS_H_
-#define CONTAINERS_H_
+#pragma once
 
 #include <array>
 #include <list>
+#include <map>
+#include <memory>
 #include <mutex>
 #include <utility>
+
+#include "Logic/StartTime.h"
+#include "Utils/LockedObject.h"
+
 
 class Program;
 
@@ -19,68 +17,109 @@ class Program;
 ////////////////////////////////////////////////////////////////
 
 class RunTimeContainer {
+
+	typedef std::array<std::pair<IdType, unsigned>, ZONE_COUNT> ContainerType;
+
 public:
-	typedef std::array<std::pair<IdType, unsigned>, ZONE_COUNT> RunTimes;
+
+	typedef unsigned value_type;
+	typedef ContainerType::const_iterator const_iterator;
 
 private:
-	RunTimes runTimes;
+
+	RunTimeContainer(const RunTimeContainer&);
+	RunTimeContainer& operator= (const RunTimeContainer&);
+
+	ContainerType container;
 
 public:
 	RunTimeContainer();
 	virtual ~RunTimeContainer();
 
-	const RunTimes& container() const;
-	void set(IdType id, unsigned minutes);
-	unsigned get(IdType id) const;
+	const_iterator begin() const { return container.begin(); }
+	const_iterator end() const { return container.end(); }
+	value_type& operator[] (IdType id) { return at(id); }
+	const value_type& operator[] (IdType id) const { return at(id); }
+	value_type& at(IdType id);
+	const value_type& at(IdType id) const;
+	size_t size() const { return container.size(); }
 };
 
 ////////////////////////////////////////////////////////////////
 
 class StartTimeContainer {
+
+	typedef std::list<std::pair<IdType, StartTime>> ContainerType;
+
 public:
-	typedef std::list<std::pair<IdType, unsigned>> StartTimes;
+
+	typedef StartTime value_type;
+	typedef ContainerType::const_iterator const_iterator;
 
 private:
-	StartTimes startTimes;
-	IdType nextStartTimeId;
+
+	StartTimeContainer(const StartTimeContainer&);
+	StartTimeContainer& operator= (const StartTimeContainer&);
+
+	ContainerType::iterator find(IdType id);
+	void insert(IdType id, const value_type& value);
+
+	ContainerType container;
 
 public:
 	StartTimeContainer();
 	virtual ~StartTimeContainer();
 
-	const StartTimes& container() const;
-	IdType add(unsigned minutes);
-	void del(IdType id);
-	void set(IdType id, unsigned minutes);
-	unsigned get(IdType id) const;
+	IdType insert(const value_type& newItem);
+	void erase(IdType id);
+	void modify(IdType, const value_type& newItem);
 
-	static unsigned hourMin2StartTime(unsigned hour, unsigned min);
-	static void startTime2HourMin(unsigned startTime, unsigned& hour, unsigned& min);
+	const_iterator begin() const { return container.begin(); }
+	const_iterator end() const { return container.end(); }
+	const value_type& operator[] (IdType id) const { return at(id); }
+	const value_type& at(IdType id) const;
+	size_t size() const;
 };
 
 ////////////////////////////////////////////////////////////////
 
+
+typedef LockedObject<Program> LockedProgram;
+
 class ProgramContainer {
 
+	typedef std::list<std::pair<IdType, Program*>> ProgramContainerType;
+	typedef std::map<IdType, std::mutex*> MutexContainerType;
+
 public:
-	typedef std::list<std::pair<IdType, Program*>> Programs;
+
+	typedef Program* value_type;
+	typedef std::function<void(IdType, LockedProgram)> CallbackType;
 
 private:
+
+	// Disable copy constructor and operator
+	ProgramContainer(const ProgramContainer&);
+	ProgramContainer& operator= (const ProgramContainer&);
+
+	ProgramContainerType::iterator findProgram(IdType id);
+	MutexContainerType::iterator findMutex(IdType id);
+
 	mutable std::mutex mutex;
-	IdType nextProgramId;
-	Programs programs;
+	ProgramContainerType programContainer;
+	MutexContainerType mutexContainer;
 
 public:
+
 	ProgramContainer();
 	virtual ~ProgramContainer();
 
-	std::mutex& getMutex() const { return mutex; }
-	const Programs& container() const;
-	Program& add();
-	void del(IdType id);
-	void move(IdType id, unsigned newPosition);
-	Program& get(IdType id);
-	const Program& get(IdType id) const;
-};
+	IdType insert(const value_type& newItem);
+	void erase(IdType id);
+	void move(IdType id, size_t newPosition);
 
-#endif /* CONTAINERS_H_ */
+	void iterate(CallbackType f) const;
+	const LockedProgram operator[] (IdType id) const { return at(id); }
+	const LockedProgram at(IdType id) const;
+	size_t size() const;
+};

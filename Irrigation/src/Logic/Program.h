@@ -18,15 +18,13 @@
 class Scheduler;
 class SpecifiedScheduler;
 
+
 class Program {
+
 	Program(const Program&);
 	void operator= (const Program&);
 
 public:
-
-	typedef RunTimeContainer::RunTimes RunTimes;
-	typedef StartTimeContainer::StartTimes StartTimes;
-
 
 	enum SchedulerType {
 		SPECIFIED_DAYS,
@@ -36,18 +34,15 @@ public:
 
 private:
 
-	// Name
 	std::string name;
-
-	// Watering day
 	SchedulerType schedulerType;
 	std::array<Scheduler*, SchedulerType::LAST> schedulers;
-
-	RunTimeContainer runTimeContainer;
-	StartTimeContainer startTimeContainer;
+	RunTimeContainer runTimes;
+	StartTimeContainer startTimes;
 
 public:
 	Program();
+	Program(const std::string& name);
 	~Program();
 
 	std::string getName() const;
@@ -61,10 +56,10 @@ public:
 
 	bool isScheduled(const std::time_t& rawTime) const;
 
-	const RunTimeContainer& runTimes() const { return runTimeContainer; }
-	RunTimeContainer& runTimes() { return runTimeContainer; }
-	const StartTimeContainer& startTimes() const { return startTimeContainer; }
-	StartTimeContainer& startTimes() { return startTimeContainer; }
+	const RunTimeContainer& getRunTimes() const { return runTimes; }
+	RunTimeContainer& getRunTimes() { return runTimes; }
+	const StartTimeContainer& getStartTimes() const { return startTimes; }
+	StartTimeContainer& getStartTimes() { return startTimes; }
 };
 
 #endif /* PROGRAM_H_ */

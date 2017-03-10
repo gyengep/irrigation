@@ -1,218 +1,206 @@
-/*
- * Containers.cpp
- *
- *  Created on: 2016.09.19.
- *      Author: 502664609
- */
-
 #include "Common.h"
 #include "Containers.h"
 #include "Program.h"
 
-#include "Utils/Tools.h"
 
+static std::atomic<IdType> nextId(0);
 
 
 ////////////////////////////////////////////////////////////////
 // RUN TIME
 
+
 RunTimeContainer::RunTimeContainer() {
-	for (IdType i = 0; i < runTimes.size(); i++) {
-		runTimes[i] = std::make_pair(i, 0);
+	for (size_t i = 0; i < container.size(); i++) {
+		container[i] = std::make_pair(i, 0);
 	}
 }
 
 RunTimeContainer::~RunTimeContainer() {
 }
 
-const RunTimeContainer::RunTimes& RunTimeContainer::container() const {
-	return runTimes;
-}
-
-void RunTimeContainer::set(IdType id, unsigned minutes) {
-	try {
-		tools::set(runTimes, id, minutes);
-	} catch(const std::out_of_range& e) {
-		throw InvalidRunTimeIdException();
-	}
-}
-
-unsigned RunTimeContainer::get(IdType id) const {
-	unsigned result;
-
-	try {
-		result = tools::get(runTimes, id);
-	} catch(const std::out_of_range& e) {
+RunTimeContainer::value_type& RunTimeContainer::at(IdType id) {
+	if (container.size() <= id) {
 		throw InvalidRunTimeIdException();
 	}
 
-	return result;
+	return container[id].second;
+}
+
+const RunTimeContainer::value_type& RunTimeContainer::at(IdType id) const {
+	return const_cast<RunTimeContainer*>(this)->at(id);
 }
 
 ////////////////////////////////////////////////////////////////
 // START TIME
 
-StartTimeContainer::StartTimeContainer() : nextStartTimeId(0) {
+StartTimeContainer::StartTimeContainer() {
 }
 
 StartTimeContainer::~StartTimeContainer() {
 }
 
-const StartTimeContainer::StartTimes& StartTimeContainer::container() const {
-	return startTimes;
+StartTimeContainer::ContainerType::iterator StartTimeContainer::find(IdType id) {
+	for (auto it = container.begin(); it != container.end(); ++it) {
+		if (it->first == id) {
+			return it;
+		}
+	}
+
+	throw InvalidStartTimeIdException();
 }
 
-IdType StartTimeContainer::add(unsigned minutes) {
-	IdType startTimeId = nextStartTimeId++;
-	tools::push_back(startTimes, startTimeId, minutes);
+void StartTimeContainer::insert(IdType id, const StartTimeContainer::value_type& value) {
+	for (auto it = container.begin(); it != container.end(); ++it) {
+		if (value < it->second) {
+			container.insert(it, std::make_pair(id, value));
+			return;
+		}
+	}
+
+	container.push_back(std::make_pair(id, value));
+}
+
+const StartTimeContainer::value_type& StartTimeContainer::at(IdType id) const {
+	return const_cast<StartTimeContainer*>(this)->find(id)->second;
+}
+
+IdType StartTimeContainer::insert(const value_type& newItem) {
+	IdType startTimeId = nextId++;
+	insert(startTimeId, newItem);
 	return startTimeId;
 }
 
-void StartTimeContainer::del(IdType id) {
-	try {
-		tools::erase(startTimes, id);
-	} catch(const std::out_of_range& e) {
-		throw InvalidStartTimeIdException();
-	}
+void StartTimeContainer::modify(IdType id, const value_type& newItem) {
+	ContainerType::iterator it = find(id);
+	container.erase(it);
+	insert(id, newItem);
 }
 
-void StartTimeContainer::set(IdType id, unsigned minutes) {
-	try {
-		tools::set(startTimes, id, minutes);
-	} catch(const std::out_of_range& e) {
-		throw InvalidStartTimeIdException();
-	}
-}
-
-unsigned StartTimeContainer::get(IdType id) const {
-	unsigned result;
-
-	try {
-		result = tools::get(startTimes, id);
-	} catch(const std::out_of_range& e) {
-		throw InvalidStartTimeIdException();
-	}
-
-	return result;
-}
-
-unsigned StartTimeContainer::hourMin2StartTime(unsigned hour, unsigned min) {
-	return 60 * hour + min;
-}
-
-void StartTimeContainer::startTime2HourMin(unsigned startTime, unsigned& hour, unsigned& min) {
-	hour = startTime / 60;
-	min = startTime % 60;
+void StartTimeContainer::erase(IdType id) {
+	ContainerType::iterator it = find(id);
+	container.erase(it);
 }
 
 /////////////////////////////////////////////////////
 // Program
 
-ProgramContainer::ProgramContainer() : nextProgramId(0) {
+ProgramContainer::ProgramContainer() {
 }
 
 ProgramContainer::~ProgramContainer() {
-
 	std::lock_guard<std::mutex> lock(mutex);
 
-	for (auto it = programs.begin(); programs.end() != it; ++it) {
-		Program* program = it->second;
+	for (auto programIt = programContainer.begin(); programContainer.end() != programIt; ++programIt) {
+		IdType id = programIt->first;
+		auto mutexIt = findMutex(id);
+
+		std::mutex* programMutex = mutexIt->second;
+		Program* program = programIt->second;
+
+		programMutex->lock();
+		programMutex->unlock();
+
 		delete program;
+		delete programMutex;
 	}
 
-	programs.clear();
+	mutexContainer.clear();
+	programContainer.clear();
 }
 
-const ProgramContainer::Programs& ProgramContainer::container() const {
-	if (mutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+ProgramContainer::ProgramContainerType::iterator ProgramContainer::findProgram(IdType id) {
+	ProgramContainerType::iterator it;
+
+	for (it = programContainer.begin(); it != programContainer.end(); ++it) {
+		if (it->first == id) {
+			return it;
+		}
 	}
 
-	return programs;
+	throw InvalidProgramIdException();
 }
 
-Program& ProgramContainer::add() {
-	if (mutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
+ProgramContainer::MutexContainerType::iterator ProgramContainer::findMutex(IdType id) {
+	MutexContainerType::iterator it = mutexContainer.find(id);
+
+	if (mutexContainer.end() != it) {
+		return it;
 	}
 
-	Program* program = new Program();
-	tools::push_back(programs, nextProgramId, program);
-	nextProgramId++;
-	return *program;
+	throw InvalidProgramIdException();
 }
 
-void ProgramContainer::del(IdType id) {
-	if (mutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
-	}
+size_t ProgramContainer::size() const {
+	std::lock_guard<std::mutex> lock(mutex);
+	return programContainer.size();
+}
 
-	Program* program = NULL;
+void ProgramContainer::iterate(CallbackType f) const {
+	std::lock_guard<std::mutex> lock(mutex);
 
-	try {
-		program = tools::erase(programs, id);
-	} catch(const std::out_of_range& e) {
-		throw InvalidProgramIdException();
+	for (auto programIt = programContainer.begin(); programIt != programContainer.end(); ++programIt) {
+		auto mutexesIt = mutexContainer.find(programIt->first);
+		if (mutexContainer.end() == mutexesIt) {
+			throw std::runtime_error("Internal error! Mutex not found");
+		}
+
+		f(programIt->first, LockedProgram(programIt->second, mutexesIt->second));
 	}
+}
+
+const LockedProgram ProgramContainer::at(IdType id) const {
+	std::lock_guard<std::mutex> lock(mutex);
+
+	auto mutexIt = const_cast<ProgramContainer*>(this)->findMutex(id);
+	auto programIt = const_cast<ProgramContainer*>(this)->findProgram(id);
+	return LockedProgram(programIt->second, mutexIt->second);
+}
+
+IdType ProgramContainer::insert(const value_type& newItem) {
+	std::lock_guard<std::mutex> lock(mutex);
+
+	IdType programId = nextId++;
+	mutexContainer.insert(std::make_pair(programId, new std::mutex()));
+	programContainer.push_back(std::make_pair(programId, newItem));
+	return programId;
+}
+
+
+void ProgramContainer::erase(IdType id) {
+	std::lock_guard<std::mutex> lock(mutex);
+
+	auto mutexIt = findMutex(id);
+	auto programIt = findProgram(id);
+
+	std::mutex* programMutex = mutexIt->second;
+	Program* program = programIt->second;
+
+	programMutex->lock();
+	mutexContainer.erase(mutexIt);
+	programContainer.erase(programIt);
+	programMutex->unlock();
 
 	delete program;
+	delete programMutex;
 }
 
-void ProgramContainer::move(IdType id, unsigned newPosition) {
-	if (mutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
-	}
+void ProgramContainer::move(IdType id, size_t newPosition) {
+	std::lock_guard<std::mutex> lock(mutex);
 
-	if (programs.size() <= newPosition) {
+	if (programContainer.size() <= newPosition) {
 		throw std::out_of_range("Invalid position");
 	}
 
-	Program* program;
+	auto programIt = findProgram(id);
+	Program* value = programIt->second;
 
-	try {
-		program = tools::erase(programs, id);
-	} catch(const std::out_of_range& e) {
-		throw InvalidProgramIdException();
-	}
+	programContainer.erase(programIt);
 
-	unsigned count = 0;
-	auto it = programs.begin();
-	while (count < newPosition) {
+	auto it = programContainer.begin();
+	for (size_t count = 0; count < newPosition; ++count) {
 		++it;
-		++count;
 	}
 
-	programs.insert(it, std::make_pair(id, program));
+	programContainer.insert(it, std::make_pair(id, value));
 }
-
-Program& ProgramContainer::get(IdType id) {
-	if (mutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
-	}
-
-	Program* program = NULL;
-	try {
-		program = tools::get(programs, id);
-	} catch(const std::out_of_range& e) {
-		throw InvalidProgramIdException();
-	}
-
-	return *program;
-}
-
-const Program& ProgramContainer::get(IdType id) const {
-	if (mutex.try_lock()) {
-		throw std::runtime_error("Programs are not locked");
-	}
-
-	const Program* program = NULL;
-	try {
-		program = tools::get(programs, id);
-	} catch(const std::out_of_range& e) {
-		throw InvalidProgramIdException();
-	}
-
-	return *program;
-}
-
-

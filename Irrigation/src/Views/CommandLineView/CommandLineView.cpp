@@ -254,14 +254,14 @@ void CommandLineView::onHelpSuccess() {
 }
 
 void CommandLineView::onStarttimeListSuccess(const StartTimeContainer& startTimes) {
-	PRINT_STARTTIMES(startTimes.container());
+	//PRINT_STARTTIMES(startTimes.container());
 }
 
 void CommandLineView::onStarttimeSetSuccess() {
 }
 
 void CommandLineView::onStarttimeGetSuccess(IdType startTimeId, unsigned startTime) {
-	PRINT_STARTTIME(startTimeId, startTime);
+	//PRINT_STARTTIME(startTimeId, startTime);
 }
 
 void CommandLineView::onStarttimeAddSuccess() {
@@ -271,30 +271,32 @@ void CommandLineView::onStarttimeDeleteSuccess() {
 }
 
 void CommandLineView::onRuntimeListSuccess(const RunTimeContainer& runTimes) {
-	PRINT_RUNTIMES(runTimes.container());
+	//PRINT_RUNTIMES(runTimes.container());
 }
 
 void CommandLineView::onRuntimeSetSuccess() {
 }
 
 void CommandLineView::onRuntimeGetSuccess(IdType runTimeId, unsigned runTime) {
-	PRINT_RUNTIME(runTimeId, runTime);
+//	PRINT_RUNTIME(runTimeId, runTime);
 }
 
-void CommandLineView::onProgramListSuccess(const Document::Programs& programs) {
+void CommandLineView::onProgramListSuccess(const ProgramContainer& programs) {
+/*
 	std::cout << "Programs:" << std::endl;
 	for (auto it = programs.cbegin(); programs.cend() != it; ++it) {
 		IdType id = it->first;
 		const Program* program = it->second;
 		std::cout << id << " - " << program->getName() << std::endl;
 	}
+*/
 }
 
 void CommandLineView::onProgramShowSuccess(const Program& program) {
 	std::cout << "Name: " << program.getName() << std::endl;
 
-	PRINT_RUNTIMES(program.runTimes().container());
-	PRINT_STARTTIMES(program.startTimes().container());
+	//PRINT_RUNTIMES(program.runTimes().container());
+	//PRINT_STARTTIMES(program.startTimes().container());
 }
 
 void CommandLineView::onProgramAddSuccess() {

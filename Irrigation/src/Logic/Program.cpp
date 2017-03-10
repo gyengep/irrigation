@@ -9,9 +9,11 @@
 #include "Program.h"
 #include "Scheduler.h"
 
-#include "Utils/Tools.h"
 
-
+Program::Program(const std::string& name) : name(name) {
+	schedulerType = SPECIFIED_DAYS;
+	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
+}
 
 Program::Program() {
 	schedulerType = SPECIFIED_DAYS;
@@ -42,9 +44,9 @@ bool Program::isScheduled(const std::time_t& rawTime) const {
 	std::tm timeinfo = *std::localtime(&rawTime);
 
 	if (0 == timeinfo.tm_sec && schedulers[schedulerType]->isScheduled(timeinfo)) {
-		unsigned startTime = StartTimeContainer::hourMin2StartTime(timeinfo.tm_hour, timeinfo.tm_min);
+		StartTime startTime(timeinfo.tm_hour, timeinfo.tm_min);
 
-		for (auto it = startTimeContainer.container().begin(); startTimeContainer.container().end() != it; ++it) {
+		for (auto it = startTimes.begin(); startTimes.end() != it; ++it) {
 			if (it->second == startTime) {
 				return true;
 			}

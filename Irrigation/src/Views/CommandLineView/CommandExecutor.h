@@ -35,7 +35,7 @@ public:
 	virtual void onRuntimeListSuccess(const RunTimeContainer& runTimes) = 0;
 	virtual void onRuntimeSetSuccess() = 0;
 	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime) = 0;
-	virtual void onProgramListSuccess(const Document::Programs& programs) = 0;
+	virtual void onProgramListSuccess(const ProgramContainer& programs) = 0;
 	virtual void onProgramShowSuccess(const Program& program) = 0;
 	virtual void onProgramAddSuccess() = 0;
 	virtual void onProgramDeleteSuccess() = 0;

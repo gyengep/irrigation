@@ -8,9 +8,6 @@
 
 
 class Document;
-class ProgramContainer;
-class RunTimeContainer;
-class StartTimeContainer;
 namespace Teng {
 class FragmentList_t;
 } /* namespace Teng */

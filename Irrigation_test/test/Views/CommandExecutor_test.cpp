@@ -1,6 +1,6 @@
 
-#include "Commons/common.h"
-#include "Views/CommandExecutor.h"
+#include "common.h"
+#include "Views/CommandLineView/CommandExecutor.h"
 
 
 class CommandTest : public Command {

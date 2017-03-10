@@ -13,10 +13,7 @@
 
 #include "Hardware/Valve.h"
 #include "Model/Application.h"
-
-
-
-#define AUTO_LOCK_PROGRAMS() std::lock_guard<std::mutex> lock(document->programs().getMutex())
+#include "Model/Application.h"
 
 
 #define CHECK_PARAMETERS(req)				\
@@ -25,7 +22,6 @@ if (parameters.size() < req) {				\
 } else if (parameters.size() > req) {		\
 	throw TooMuchArgumentsException();		\
 }
-
 
 
 namespace command {
@@ -40,47 +36,50 @@ namespace command {
 
 		IdType programId = parseProgramId(parameters[0]);
 
-		AUTO_LOCK_PROGRAMS();
-		const Program& program = document->programs().get(programId);
+		LockedProgram program = document->getPrograms().at(programId);
 
-		callback->onStarttimeListSuccess(program.startTimes());
+		callback->onStarttimeListSuccess(program->getStartTimes());
 	}
 
 	void StarttimeSet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(3);
-
+/*
 		IdType programId = parseProgramId(parameters[0]);
 		IdType startTimeId = parseStartTimeId(parameters[1]);
 		unsigned startTime = parseUnsigned(parameters[2]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().get(programId).startTimes().set(startTimeId, startTime);
+		LockedProgram program = document->getPrograms().at(programId);
+
+		program->getStartTimes().at(startTimeId) = startTime;
 
 		callback->onStarttimeSetSuccess();
+*/
 	}
 
 	void StarttimeGet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
-
+/*
 		IdType programId = parseProgramId(parameters[0]);
 		IdType startTimeId = parseStartTimeId(parameters[1]);
 
-		AUTO_LOCK_PROGRAMS();
-		unsigned startTime = document->programs().get(programId).startTimes().get(startTimeId);
+		LockedProgram program = document->getPrograms().at(programId);
 
-		callback->onStarttimeGetSuccess(startTimeId, startTime);
+		callback->onStarttimeGetSuccess(startTimeId, program->getStartTimes().at(startTimeId));
+*/
 	}
 
 	void StarttimeAdd::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
-
+/*
 		IdType programId = parseProgramId(parameters[0]);
 		unsigned startTime = parseUnsigned(parameters[1]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().get(programId).startTimes().add(startTime);
+		LockedProgram program = document->getPrograms().at(programId);
+
+		program->getStartTimes().insert(startTime);
 
 		callback->onStarttimeAddSuccess();
+*/
 	}
 
 	void StarttimeDelete::execute(const Tokens& parameters) {
@@ -89,8 +88,9 @@ namespace command {
 		IdType programId = parseProgramId(parameters[0]);
 		IdType startTimeId = parseStartTimeId(parameters[1]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().get(programId).startTimes().del(startTimeId);
+		LockedProgram program = document->getPrograms().at(programId);
+
+		program->getStartTimes().erase(startTimeId);
 
 		callback->onStarttimeDeleteSuccess();
 	}
@@ -100,10 +100,9 @@ namespace command {
 
 		IdType programId = parseProgramId(parameters[0]);
 
-		AUTO_LOCK_PROGRAMS();
-		const Program& program = document->programs().get(programId);
+		LockedProgram program = document->getPrograms().at(programId);
 
-		callback->onRuntimeListSuccess(program.runTimes());
+		callback->onRuntimeListSuccess(program->getRunTimes());
 	}
 
 	void RuntimeSet::execute(const Tokens& parameters) {
@@ -113,8 +112,9 @@ namespace command {
 		IdType runTimeId = parseRunTimeId(parameters[1]);
 		unsigned runTime = parseUnsigned(parameters[2]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().get(programId).runTimes().set(runTimeId, runTime);
+		LockedProgram program = document->getPrograms().at(programId);
+
+		program->getRunTimes().at(runTimeId) = runTime;
 
 		callback->onRuntimeSetSuccess();
 	}
@@ -125,19 +125,15 @@ namespace command {
 		IdType programId = parseProgramId(parameters[0]);
 		IdType runTimeId = parseRunTimeId(parameters[1]);
 
-		AUTO_LOCK_PROGRAMS();
-		unsigned runTime = document->programs().get(programId).runTimes().get(runTimeId);
+		LockedProgram program = document->getPrograms().at(programId);
 
-		callback->onRuntimeGetSuccess(runTimeId, runTime);
+		callback->onRuntimeGetSuccess(runTimeId, program->getRunTimes().at(runTimeId));
 	}
 
 	void ProgramList::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(0);
 
-		AUTO_LOCK_PROGRAMS();
-		const Document::Programs& programs = document->programs().container();
-
-		callback->onProgramListSuccess(programs);
+		callback->onProgramListSuccess(document->getPrograms());
 	}
 
 	void ProgramShow::execute(const Tokens& parameters) {
@@ -145,19 +141,15 @@ namespace command {
 
 		IdType programId = parseProgramId(parameters[0]);
 
-		AUTO_LOCK_PROGRAMS();
-		const Program& program = document->programs().get(programId);
+		LockedProgram program = document->getPrograms().at(programId);
 
-		callback->onProgramShowSuccess(program);
+		callback->onProgramShowSuccess(*program);
 	}
 
 	void ProgramAdd::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
-		AUTO_LOCK_PROGRAMS();
-		Program& program = document->programs().add();
-		program.setName(parameters[0]);
-
+		document->getPrograms().insert(new Program());
 		callback->onProgramAddSuccess();
 	}
 
@@ -166,9 +158,7 @@ namespace command {
 
 		IdType programId = parseProgramId(parameters[0]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().del(programId);
-
+		document->getPrograms().erase(programId);
 		callback->onProgramDeleteSuccess();
 	}
 
@@ -177,8 +167,9 @@ namespace command {
 
 		IdType programId = parseProgramId(parameters[0]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().get(programId).setName(parameters[1]);
+		LockedProgram program = document->getPrograms().at(programId);
+
+		program->setName(parameters[1]);
 
 		callback->onProgramRenameSuccess();
 	}
@@ -189,9 +180,7 @@ namespace command {
 		IdType programId = parseProgramId(parameters[0]);
 		unsigned position = parseUnsigned(parameters[1]);
 
-		AUTO_LOCK_PROGRAMS();
-		document->programs().move(programId, position);
-
+		document->getPrograms().move(programId, position);
 		callback->onProgramMoveSuccess();
 	}
 

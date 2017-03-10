@@ -6,11 +6,11 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include "Commons/common.h"
+#include "common.h"
 
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
-	::testing::GTEST_FLAG(filter) = "WebServer*";
+	//::testing::GTEST_FLAG(filter) = "*Container";
 	return RUN_ALL_TESTS();
 }

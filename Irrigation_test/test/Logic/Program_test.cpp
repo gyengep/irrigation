@@ -5,7 +5,7 @@
  *      Author: pgyenge
  */
 
-#include "Commons/common.h"
+#include "common.h"
 #include "Logic/Program.h"
 #include "Logic/Scheduler.h"
 

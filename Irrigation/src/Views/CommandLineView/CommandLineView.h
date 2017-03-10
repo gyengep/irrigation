@@ -32,7 +32,7 @@ class CommandLineView : public View, CommandCallback {
 	virtual void onRuntimeListSuccess(const RunTimeContainer& runTimes);
 	virtual void onRuntimeSetSuccess();
 	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime);
-	virtual void onProgramListSuccess(const Document::Programs& programs);
+	virtual void onProgramListSuccess(const ProgramContainer& programs);
 	virtual void onProgramShowSuccess(const Program& program);
 	virtual void onProgramAddSuccess();
 	virtual void onProgramDeleteSuccess();

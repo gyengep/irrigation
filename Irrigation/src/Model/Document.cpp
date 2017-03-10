@@ -16,7 +16,6 @@
 
 #define AUTO_LOCK_VIEW() std::lock_guard<std::mutex> lockView(viewMutex)
 #define AUTO_LOCK_VALVE() std::lock_guard<std::mutex> lockValve(valveMutex)
-#define AUTO_LOCK_PROGRAMS() std::lock_guard<std::mutex> lockProgram(programContainer.getMutex())
 #define AUTO_LOCK_WATERING() std::lock_guard<std::mutex> lockValve(wateringMutex)
 
 Document::Document() {
@@ -50,6 +49,7 @@ Document::~Document() {
 }
 
 void Document::doTask() {
+	/*
 	std::time_t rawTime = getApplication()->getTime();
 
 	AUTO_LOCK_WATERING();
@@ -86,6 +86,7 @@ void Document::doTask() {
 			}
 		}
 	}
+	*/
 }
 
 /////////////////////////////////////////////////////
@@ -97,10 +98,12 @@ bool Document::isWateringActive() const {
 }
 
 void Document::startWatering(IdType programId) {
+/*
 	AUTO_LOCK_WATERING();
 	AUTO_LOCK_PROGRAMS();
 	Program& program = programs().get(programId);
 	startWatering_notSafe(program, getApplication()->getTime());
+*/
 }
 
 void Document::stopWatering() {
@@ -113,6 +116,7 @@ bool Document::isWateringActive_notSafe() const {
 }
 
 bool Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
+/*
 	const Program::RunTimes& runTimes = program.runTimes().container();
 
 	if (runTimes.size() != wateringTimes.size()) {
@@ -130,7 +134,7 @@ bool Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
 			openZone(wateringZone, true);
 		}
 	}
-
+*/
 	return (ZONE_COUNT > wateringZone);
 }
 

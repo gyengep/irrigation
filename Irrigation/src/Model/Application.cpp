@@ -37,7 +37,7 @@ void Application::init() {
 	document = new Document();
 	new CommandLineView(document);
 	new WebServerView(document);
-
+/*
 	document->programs().getMutex().lock();
 
 	{
@@ -64,6 +64,7 @@ void Application::init() {
 	}
 
 	document->programs().getMutex().unlock();
+	*/
 }
 
 void Application::run() {
