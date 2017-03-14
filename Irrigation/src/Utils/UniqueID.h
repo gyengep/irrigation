@@ -1,9 +1,9 @@
 #pragma once
 
 class UniqueID {
-	static UniqueID* instance;
+	static std::unique_ptr<UniqueID> instance;
 
-	IdType nextId;
+	std::atomic<IdType> nextId;
 
 	UniqueID();
 

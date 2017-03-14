@@ -84,12 +84,63 @@ public:
 ////////////////////////////////////////////////////////////////
 
 
-typedef LockedObject<Program> LockedProgram;
+//typedef LockedObject<Program> LockedProgram;
+
+struct ProgramWithMutex {
+	std::unique_ptr<Program> program;
+	std::unique_ptr<std::mutex> mutex;
+
+	ProgramWithMutex(Program* program, std::mutex* mutex) :
+		program(program),
+		mutex(mutex)
+	{}
+};
+
+typedef std::shared_ptr<ProgramWithMutex> ProgramWithMutexPtr;
+
+class LockedProgram {
+	std::shared_ptr<std::lock_guard<std::mutex>> lockGuard;
+	ProgramWithMutexPtr programWithMutex;
+
+	LockedProgram& operator= (const LockedProgram&);
+
+public:
+	LockedProgram(ProgramWithMutexPtr programWithMutex) :
+		lockGuard(new std::lock_guard<std::mutex>(*programWithMutex->mutex)),
+		programWithMutex(programWithMutex)
+	{
+	}
+
+	LockedProgram(const LockedProgram& other) :
+		lockGuard(other.lockGuard),
+		programWithMutex(other.programWithMutex)
+	{
+	}
+
+	~LockedProgram() {
+	}
+
+	Program* operator-> () {
+		return programWithMutex->program.get();
+	}
+
+	const Program* operator-> () const {
+		return programWithMutex->program.get();
+	}
+
+	Program& operator* () {
+		return *programWithMutex->program.get();
+	}
+
+	const Program& operator* () const {
+		return *programWithMutex->program.get();
+	}
+};
+
 
 class ProgramContainer {
 
-	typedef std::list<std::pair<IdType, Program*>> ProgramContainerType;
-	typedef std::map<IdType, std::mutex*> MutexContainerType;
+	typedef std::list<std::pair<IdType, ProgramWithMutexPtr>> ProgramContainerType;
 
 public:
 
@@ -102,12 +153,10 @@ private:
 	ProgramContainer(const ProgramContainer&);
 	ProgramContainer& operator= (const ProgramContainer&);
 
-	ProgramContainerType::iterator findProgram(IdType id);
-	MutexContainerType::iterator findMutex(IdType id);
+	ProgramContainerType::iterator find(IdType id);
 
 	mutable std::mutex mutex;
 	ProgramContainerType programContainer;
-	MutexContainerType mutexContainer;
 
 public:
 

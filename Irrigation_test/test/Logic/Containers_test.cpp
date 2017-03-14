@@ -1,6 +1,8 @@
 #include "common.h"
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
+#include "Utils/UniqueID.h"
+
 
 TEST(RunTimeContainer, size) {
 	RunTimeContainer runTimes;
@@ -147,7 +149,11 @@ TEST(StartTimeContainer, erase) {
 
 TEST(StartTimeContainer, eraseInvalid) {
 	StartTimeContainer startTimes;
-	EXPECT_THROW(startTimes.erase(0), InvalidStartTimeIdException);
+	startTimes.insert(StartTime(10, 10));
+
+	IdType invalidId = UniqueID::getInstance().getNextId();
+
+	EXPECT_THROW(startTimes.erase(invalidId), InvalidStartTimeIdException);
 }
 
 TEST(StartTimeContainer, modify) {
@@ -187,7 +193,11 @@ TEST(StartTimeContainer, modify) {
 
 TEST(StartTimeContainer, modifyInvalid) {
 	StartTimeContainer startTimes;
-	EXPECT_THROW(startTimes.modify(0, StartTime(13, 31)), InvalidStartTimeIdException);
+	startTimes.insert(StartTime(10, 10));
+
+	IdType invalidId = UniqueID::getInstance().getNextId();
+
+	EXPECT_THROW(startTimes.modify(invalidId, StartTime(13, 31)), InvalidStartTimeIdException);
 }
 
 TEST(StartTimeContainer, get) {
@@ -207,8 +217,16 @@ TEST(StartTimeContainer, get) {
 	EXPECT_EQ(StartTime(13, 40), startTimes[id2]);
 	EXPECT_EQ(StartTime(11, 20), startTimes[id3]);
 	EXPECT_EQ(StartTime(12, 30), startTimes[id4]);
+}
 
-	EXPECT_THROW(startTimes.at(id4 + 1), InvalidStartTimeIdException);
+TEST(StartTimeContainer, getInvalid) {
+	StartTimeContainer startTimes;
+	startTimes.insert(StartTime(10, 10));
+
+	IdType invalidId = UniqueID::getInstance().getNextId();
+
+	EXPECT_THROW(startTimes.at(invalidId), InvalidStartTimeIdException);
+	EXPECT_THROW(startTimes[invalidId], InvalidStartTimeIdException);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -303,7 +321,11 @@ TEST(ProgramContainer, erase) {
 
 TEST(ProgramContainer, eraseInvalid) {
 	ProgramContainer programs;
-	EXPECT_THROW(programs.erase(0), InvalidProgramIdException);
+	programs.insert(new Program());
+
+	IdType invalidId = UniqueID::getInstance().getNextId();
+
+	EXPECT_THROW(programs.erase(invalidId), InvalidProgramIdException);
 }
 
 TEST(ProgramContainer, moveFirstFirst) {
@@ -525,14 +547,11 @@ TEST(ProgramContainer, moveLastLast) {
 TEST(ProgramContainer, moveInvalid) {
 	ProgramContainer programs;
 
-	Program* program1 = new Program();
-	Program* program2 = new Program();
+	IdType id1 = programs.insert(new Program());
+	IdType invalidId = UniqueID::getInstance().getNextId();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-
-	EXPECT_THROW(programs.move(id1, 2), std::out_of_range);
-	EXPECT_THROW(programs.move(id2 + 1, 0), InvalidProgramIdException);
+	EXPECT_THROW(programs.move(id1, programs.size()), std::out_of_range);
+	EXPECT_THROW(programs.move(invalidId, 0), InvalidProgramIdException);
 }
 
 TEST(ProgramContainer, get) {
@@ -550,16 +569,15 @@ TEST(ProgramContainer, get) {
 
 TEST(ProgramContainer, getInvalid) {
 	ProgramContainer programs;
+	programs.insert(new Program());
 
-	Program* program1 = new Program();
-
-	IdType id1 = programs.insert(program1);
+	IdType invalidId = UniqueID::getInstance().getNextId();
 
 	EXPECT_THROW({
-		LockedProgram program = programs.at(id1 + 1);
+		LockedProgram program = programs.at(invalidId);
 	}, InvalidProgramIdException);
 
 	EXPECT_THROW({
-		LockedProgram program = programs[id1 + 1];
+		LockedProgram program = programs[invalidId];
 	}, InvalidProgramIdException);
 }

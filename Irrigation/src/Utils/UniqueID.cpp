@@ -1,7 +1,7 @@
 #include "Common.h"
 #include "UniqueID.h"
 
-UniqueID* UniqueID::instance = NULL;
+std::unique_ptr<UniqueID> UniqueID::instance;
 
 UniqueID::UniqueID() :
 	nextId(0)
@@ -9,13 +9,16 @@ UniqueID::UniqueID() :
 }
 
 UniqueID::~UniqueID() {
-	delete instance;
-	instance = NULL;
 }
 
 UniqueID& UniqueID::getInstance() {
-	if (NULL == instance) {
-		instance = new UniqueID();
+	if (nullptr == instance) {
+		static std::mutex mutex;
+		std::lock_guard<std::mutex> lock(mutex);
+
+		if (nullptr == instance) {
+			instance.reset(new UniqueID());
+		}
 	}
 
 	return *instance;

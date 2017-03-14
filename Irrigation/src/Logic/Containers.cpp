@@ -91,41 +91,21 @@ ProgramContainer::ProgramContainer() {
 ProgramContainer::~ProgramContainer() {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	for (auto programIt = programContainer.begin(); programContainer.end() != programIt; ++programIt) {
-		IdType id = programIt->first;
-		auto mutexIt = findMutex(id);
-
-		std::mutex* programMutex = mutexIt->second;
-		Program* program = programIt->second;
-
-		programMutex->lock();
-		programMutex->unlock();
-
-		delete program;
-		delete programMutex;
+	for (auto it = programContainer.begin(); programContainer.end() != it; ++it) {
+		it->second->mutex->lock();
+		it->second->mutex->unlock();
 	}
 
-	mutexContainer.clear();
 	programContainer.clear();
 }
 
-ProgramContainer::ProgramContainerType::iterator ProgramContainer::findProgram(IdType id) {
+ProgramContainer::ProgramContainerType::iterator ProgramContainer::find(IdType id) {
 	ProgramContainerType::iterator it;
 
 	for (it = programContainer.begin(); it != programContainer.end(); ++it) {
 		if (it->first == id) {
 			return it;
 		}
-	}
-
-	throw InvalidProgramIdException();
-}
-
-ProgramContainer::MutexContainerType::iterator ProgramContainer::findMutex(IdType id) {
-	MutexContainerType::iterator it = mutexContainer.find(id);
-
-	if (mutexContainer.end() != it) {
-		return it;
 	}
 
 	throw InvalidProgramIdException();
@@ -139,30 +119,24 @@ size_t ProgramContainer::size() const {
 void ProgramContainer::iterate(CallbackType f) const {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	for (auto programIt = programContainer.begin(); programIt != programContainer.end(); ++programIt) {
-		auto mutexesIt = mutexContainer.find(programIt->first);
-		if (mutexContainer.end() == mutexesIt) {
-			throw std::runtime_error("Internal error! Mutex not found");
-		}
-
-		f(programIt->first, LockedProgram(programIt->second, mutexesIt->second));
+	for (auto it = programContainer.begin(); it != programContainer.end(); ++it) {
+		f(it->first, LockedProgram(it->second));
 	}
 }
 
 const LockedProgram ProgramContainer::at(IdType id) const {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	auto mutexIt = const_cast<ProgramContainer*>(this)->findMutex(id);
-	auto programIt = const_cast<ProgramContainer*>(this)->findProgram(id);
-	return LockedProgram(programIt->second, mutexIt->second);
+	auto it = const_cast<ProgramContainer*>(this)->find(id);
+	return LockedProgram(it->second);
 }
 
 IdType ProgramContainer::insert(const value_type& newItem) {
 	std::lock_guard<std::mutex> lock(mutex);
 
 	IdType programId = nextId++;
-	mutexContainer.insert(std::make_pair(programId, new std::mutex()));
-	programContainer.push_back(std::make_pair(programId, newItem));
+	ProgramWithMutexPtr programWithMutexPtr(new ProgramWithMutex(newItem, new std::mutex()));
+	programContainer.push_back(std::make_pair(programId, programWithMutexPtr));
 	return programId;
 }
 
@@ -170,19 +144,12 @@ IdType ProgramContainer::insert(const value_type& newItem) {
 void ProgramContainer::erase(IdType id) {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	auto mutexIt = findMutex(id);
-	auto programIt = findProgram(id);
+	auto it = find(id);
 
-	std::mutex* programMutex = mutexIt->second;
-	Program* program = programIt->second;
+	it->second->mutex->lock();
+	it->second->mutex->unlock();
 
-	programMutex->lock();
-	mutexContainer.erase(mutexIt);
-	programContainer.erase(programIt);
-	programMutex->unlock();
-
-	delete program;
-	delete programMutex;
+	programContainer.erase(it);
 }
 
 void ProgramContainer::move(IdType id, size_t newPosition) {
@@ -192,15 +159,14 @@ void ProgramContainer::move(IdType id, size_t newPosition) {
 		throw std::out_of_range("Invalid position");
 	}
 
-	auto programIt = findProgram(id);
-	Program* value = programIt->second;
+	auto it = find(id);
+	ProgramContainerType::value_type listItem = *it;
+	programContainer.erase(it);
 
-	programContainer.erase(programIt);
-
-	auto it = programContainer.begin();
+	it = programContainer.begin();
 	for (size_t count = 0; count < newPosition; ++count) {
 		++it;
 	}
 
-	programContainer.insert(it, std::make_pair(id, value));
+	programContainer.insert(it, listItem);
 }
