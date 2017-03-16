@@ -14,6 +14,7 @@
 
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
+#include "Logic/Zones.h"
 
 
 class Valve;
@@ -28,12 +29,8 @@ class Document {
 	mutable std::mutex viewMutex;
 	std::list<View*> views;
 
-	// Valves
-	mutable std::mutex valveMutex;
-	std::array<Valve*, VALVE_COUNT> valves;
-
-	// Programs
 	ProgramContainer programs;
+	Zones zones;
 
 	// Watering
 	mutable std::mutex wateringMutex;
@@ -64,9 +61,9 @@ public:
 	const ProgramContainer& getPrograms() const { return programs; }
 	ProgramContainer& getPrograms() { return programs; }
 
-	// Zone, Valve
-	void openZone(IdType id, bool open);
-	void openValve(IdType id, bool open);
+	// Zones
+	const Zones& getZones() const { return zones; }
+	Zones& getZones() { return zones; }
 
 	// View
 	void addView(View* view);

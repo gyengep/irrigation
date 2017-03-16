@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include "Hardware/Valve.h"
+#include "Hardware/Valves.h"
 #include "Model/Application.h"
 #include "Model/Application.h"
 
@@ -188,8 +188,8 @@ namespace command {
 		CHECK_PARAMETERS(2);
 
 		IdType valveId = parseValveId(parameters[0]);
-		bool open = parseOnOff(parameters[1]);
-		document->openValve(valveId, open);
+		bool active = parseOnOff(parameters[1]);
+		Valves::getInstance().activate(valveId, active);
 
 		callback->onValveSuccess();
 	}
@@ -198,8 +198,8 @@ namespace command {
 		CHECK_PARAMETERS(2);
 
 		IdType zoneId = parseZoneId(parameters[0]);
-		bool open = parseOnOff(parameters[1]);
-		document->openZone(zoneId, open);
+		bool active = parseOnOff(parameters[1]);
+		document->getZones().activate(zoneId, active);
 
 		callback->onZoneSuccess();
 	}
@@ -207,8 +207,8 @@ namespace command {
 	void ResetValves::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(0);
 
-		for (unsigned i = 0; i < VALVE_COUNT; i++) {
-			document->openValve(i, false);
+		for (size_t i = 0; i < VALVE_COUNT; i++) {
+			Valves::getInstance().activate(i, false);
 		}
 
 		callback->onResetValvesSuccess();

@@ -5,7 +5,7 @@
 #include <mutex>
 #include <sys/unistd.h>
 
-#include "Hardware/Valve.h"
+#include "Hardware/Valves.h"
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
 #include "Model/Document.h"
@@ -32,7 +32,7 @@ Application::~Application() {
 
 void Application::init() {
 	LOGGER.info("Application::Init()");
-	Valve::init();
+	Valves::init();
 	
 	document = new Document();
 	new CommandLineView(document);
