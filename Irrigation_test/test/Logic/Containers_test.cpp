@@ -3,6 +3,8 @@
 #include "Logic/Program.h"
 #include "Utils/UniqueID.h"
 
+#include <chrono>
+#include <thread>
 
 TEST(RunTimeContainer, size) {
 	RunTimeContainer runTimes;
@@ -341,15 +343,9 @@ TEST(ProgramContainer, moveFirstFirst) {
 
 	programs.move(id1, 0);
 
-	{
-		ProgramList expectedPrograms {
-			{ id1, program1 },
-			{ id2, program2 },
-			{ id3, program3 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveFirstMiddle) {
@@ -365,15 +361,9 @@ TEST(ProgramContainer, moveFirstMiddle) {
 
 	programs.move(id1, 1);
 
-	{
-		ProgramList expectedPrograms {
-			{ id2, program2 },
-			{ id1, program1 },
-			{ id3, program3 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id2, program2 }, { id1, program1 }, { id3, program3 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveFirstLast) {
@@ -389,15 +379,9 @@ TEST(ProgramContainer, moveFirstLast) {
 
 	programs.move(id1, 2);
 
-	{
-		ProgramList expectedPrograms {
-			{ id2, program2 },
-			{ id3, program3 },
-			{ id1, program1 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id2, program2 }, { id3, program3 }, { id1, program1 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveMiddleFirst) {
@@ -413,15 +397,9 @@ TEST(ProgramContainer, moveMiddleFirst) {
 
 	programs.move(id2, 0);
 
-	{
-		ProgramList expectedPrograms {
-			{ id2, program2 },
-			{ id1, program1 },
-			{ id3, program3 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id2, program2 }, { id1, program1 }, { id3, program3 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveMiddleMiddle) {
@@ -437,15 +415,9 @@ TEST(ProgramContainer, moveMiddleMiddle) {
 
 	programs.move(id2, 1);
 
-	{
-		ProgramList expectedPrograms {
-			{ id1, program1 },
-			{ id2, program2 },
-			{ id3, program3 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveMiddleLast) {
@@ -461,15 +433,9 @@ TEST(ProgramContainer, moveMiddleLast) {
 
 	programs.move(id2, 2);
 
-	{
-		ProgramList expectedPrograms {
-			{ id1, program1 },
-			{ id3, program3 },
-			{ id2, program2 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id1, program1 }, { id3, program3 }, { id2, program2 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveLastFirst) {
@@ -485,15 +451,9 @@ TEST(ProgramContainer, moveLastFirst) {
 
 	programs.move(id3, 0);
 
-	{
-		ProgramList expectedPrograms {
-			{ id3, program3 },
-			{ id1, program1 },
-			{ id2, program2 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id3, program3 }, { id1, program1 }, { id2, program2 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveLastMiddle) {
@@ -509,15 +469,9 @@ TEST(ProgramContainer, moveLastMiddle) {
 
 	programs.move(id3, 1);
 
-	{
-		ProgramList expectedPrograms {
-			{ id1, program1 },
-			{ id3, program3 },
-			{ id2, program2 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id1, program1 }, { id3, program3 }, { id2, program2 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveLastLast) {
@@ -533,15 +487,9 @@ TEST(ProgramContainer, moveLastLast) {
 
 	programs.move(id3, 2);
 
-	{
-		ProgramList expectedPrograms {
-			{ id1, program1 },
-			{ id2, program2 },
-			{ id3, program3 }
-		};
-
-		EXPECT_EQ(expectedPrograms, createCopy(programs));
-	}
+	EXPECT_EQ(
+			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
+			createCopy(programs));
 }
 
 TEST(ProgramContainer, moveInvalid) {
@@ -580,4 +528,100 @@ TEST(ProgramContainer, getInvalid) {
 	EXPECT_THROW({
 		LockedProgram program = programs[invalidId];
 	}, InvalidProgramIdException);
+}
+
+void insertPrograms(ProgramContainer* programs, size_t count, std::vector<IdType>* result) {
+	for(size_t i = 0; i < count; ++i) {
+		result->at(i) = programs->insert(new Program());
+	}
+}
+
+TEST(ProgramContainer, concurentInsert) {
+	ProgramContainer programs;
+
+	const size_t threadCount = 5;
+	const size_t addCount = 10000;
+
+	std::vector<IdType> results[threadCount];
+    std::thread threads[threadCount];
+
+    for (size_t i = 0; i < threadCount; ++i) {
+    	results[i].resize(addCount);
+    }
+
+    for (size_t i = 0; i < threadCount; ++i) {
+    	threads[i] = std::thread(insertPrograms, &programs, addCount, &results[i]);
+    }
+
+    for (size_t i = 0; i < threadCount; ++i) {
+    	threads[i].join();
+    }
+
+    EXPECT_EQ(threadCount * addCount, programs.size());
+}
+
+void erasePrograms(ProgramContainer* programs, std::vector<IdType>* ids) {
+	for(size_t i = 0; i < ids->size(); ++i) {
+		programs->erase(ids->at(i));
+	}
+}
+
+TEST(ProgramContainer, concurentErase) {
+	ProgramContainer programs;
+
+	const size_t threadCount = 5;
+	const size_t addCount = 3000;
+
+	std::vector<IdType> ids[threadCount];
+    std::thread threads[threadCount];
+
+    for (size_t i = 0; i < threadCount; ++i) {
+    	ids[i].resize(addCount);
+
+    	for (size_t t = 0; t < addCount; ++t) {
+    		ids[i].at(t) = programs.insert(new Program());
+    	}
+    }
+
+    for (size_t i = 0; i < threadCount; ++i) {
+    	threads[i] = std::thread(erasePrograms, &programs, &ids[i]);
+    }
+
+    for (size_t i = 0; i < threadCount; ++i) {
+    	threads[i].join();
+    }
+
+    EXPECT_EQ(0, programs.size());
+}
+
+void getProgramAndWait(ProgramContainer* programs, IdType id, int ms) {
+	LockedProgram program = programs->at(id);
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+TEST(ProgramContainer, programLock) {
+	const int waitMs = 100;
+
+	ProgramContainer programs;
+	IdType id1 = programs.insert(new Program());
+	IdType id2 = programs.insert(new Program());
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	std::thread thread(getProgramAndWait, &programs, id2, waitMs);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+	LockedProgram program1 = programs.at(id1);
+	auto finish1 = std::chrono::high_resolution_clock::now();
+
+	LockedProgram program2 = programs.at(id2);
+	auto finish2 = std::chrono::high_resolution_clock::now();
+
+	thread.join();
+
+	auto elapsed1 = std::chrono::duration_cast<std::chrono::milliseconds>(finish1 - start);
+    EXPECT_LT(elapsed1.count(), waitMs);
+
+	auto elapsed2 = std::chrono::duration_cast<std::chrono::milliseconds>(finish2 - start);
+    EXPECT_GE(elapsed2.count(), waitMs);
 }

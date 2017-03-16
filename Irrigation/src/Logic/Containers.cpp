@@ -2,8 +2,7 @@
 #include "Containers.h"
 #include "Program.h"
 
-
-static std::atomic<IdType> nextId(0);
+#include "Utils/UniqueID.h"
 
 
 ////////////////////////////////////////////////////////////////
@@ -66,7 +65,7 @@ const StartTimeContainer::value_type& StartTimeContainer::at(IdType id) const {
 }
 
 IdType StartTimeContainer::insert(const value_type& newItem) {
-	IdType startTimeId = nextId++;
+	IdType startTimeId = UniqueID::getInstance().getNextId();
 	insert(startTimeId, newItem);
 	return startTimeId;
 }
@@ -134,7 +133,7 @@ const LockedProgram ProgramContainer::at(IdType id) const {
 IdType ProgramContainer::insert(const value_type& newItem) {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	IdType programId = nextId++;
+	IdType programId = UniqueID::getInstance().getNextId();
 	ProgramWithMutexPtr programWithMutexPtr(new ProgramWithMutex(newItem, new std::mutex()));
 	programContainer.push_back(std::make_pair(programId, programWithMutexPtr));
 	return programId;

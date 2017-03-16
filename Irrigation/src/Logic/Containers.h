@@ -99,6 +99,7 @@ struct ProgramWithMutex {
 typedef std::shared_ptr<ProgramWithMutex> ProgramWithMutexPtr;
 
 class LockedProgram {
+
 	std::shared_ptr<std::lock_guard<std::mutex>> lockGuard;
 	ProgramWithMutexPtr programWithMutex;
 

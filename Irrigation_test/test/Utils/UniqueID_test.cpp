@@ -5,7 +5,6 @@
 
 
 void getInstances(size_t count, std::vector<IdType>* ids) {
-	ids->resize(count);
 	for(size_t i = 0; i < count; ++i) {
 		ids->at(i) = UniqueID::getInstance().getNextId();
 	}
@@ -17,14 +16,15 @@ TEST(UniqueID, concurent) {
 	const size_t getInstanceCount = 10000;
 
 	std::vector<IdType> idVectors[threadCount];
+    std::thread getInstancesThread[threadCount];
 
-    std::thread getInstancesThread[] = {
-    		{ std::thread(getInstances, getInstanceCount, &idVectors[0]) },
-    		{ std::thread(getInstances, getInstanceCount, &idVectors[1]) },
-    		{ std::thread(getInstances, getInstanceCount, &idVectors[2]) },
-    		{ std::thread(getInstances, getInstanceCount, &idVectors[3]) },
-    		{ std::thread(getInstances, getInstanceCount, &idVectors[4]) }
-    };
+    for (size_t i = 0; i < threadCount; ++i) {
+    	idVectors[i].resize(getInstanceCount);
+    }
+
+    for (size_t i = 0; i < threadCount; ++i) {
+        getInstancesThread[i] = std::thread(getInstances, getInstanceCount, &idVectors[i]);
+    }
 
     for (size_t i = 0; i < threadCount; ++i) {
         getInstancesThread[i].join();
