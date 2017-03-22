@@ -38,34 +38,7 @@ void Application::init() {
 	document->addView(new CommandLineView());
 	document->addView(new WebServerView());
 
-/*
-	document->programs().getMutex().lock();
-
-	{
-		Program& program = document->programs().add();
-		program.setName("fulocsolas");
-		program.runTimes().set(0, 25);
-		program.runTimes().set(1, 35);
-		program.runTimes().set(2, 25);
-		program.startTimes().add(240);
-	}
-
-	{
-		Program& program = document->programs().add();
-		program.setName("buxus");
-		program.runTimes().set(3, 20);
-		program.startTimes().add(360);
-	}
-
-	{
-		Program& program = document->programs().add();
-		program.setName("paradicsom");
-		program.runTimes().set(4, 3);
-		program.startTimes().add(480);
-	}
-
-	document->programs().getMutex().unlock();
-	*/
+	document->load();
 }
 
 void Application::run() {

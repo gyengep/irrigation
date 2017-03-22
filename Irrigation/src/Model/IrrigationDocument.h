@@ -46,4 +46,6 @@ public:
 	// Zones
 	const Zones& getZones() const { return zones; }
 	Zones& getZones() { return zones; }
+
+	virtual void load();
 };

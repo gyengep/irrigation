@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 
 class UniqueID {
 	static std::unique_ptr<UniqueID> instance;

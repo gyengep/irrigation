@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <memory>
+
 
 class Valves {
 	static const int PIN_COUNT = 7;
