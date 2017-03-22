@@ -1,21 +1,13 @@
-/*
- * Application.h
- *
- *  Created on: 2016. máj. 15.
- *      Author: Rendszergazda
- */
-
-#ifndef APPLICATION_H_
-#define APPLICATION_H_
-
+#pragma once
 
 #include <atomic>
 #include <ctime>
 
-class Document;
+class IrrigationDocument;
+
 
 class Application {
-	Document* document;
+	IrrigationDocument* document;
 	std::atomic_bool isTerminated;
 
 public:
@@ -31,5 +23,3 @@ public:
 };
 
 Application* getApplication();
-
-#endif /* APPLICATION_H_ */

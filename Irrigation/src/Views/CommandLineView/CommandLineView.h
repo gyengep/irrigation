@@ -13,7 +13,7 @@
 #include <thread>
 
 #include "CommandExecutor.h"
-#include "Model/View.h"
+#include "DocumentView/View.h"
 
 
 class CommandLineView : public View, CommandCallback {
@@ -44,8 +44,10 @@ class CommandLineView : public View, CommandCallback {
 	virtual void onExitSuccess();
 
 public:
-	CommandLineView(Document* document);
+	CommandLineView();
 	virtual ~CommandLineView();
+
+	IrrigationDocument* getDocument();
 
 	static void tokenize(const std::string& text, Tokens& tokens);
 };

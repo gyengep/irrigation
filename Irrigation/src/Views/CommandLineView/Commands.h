@@ -14,7 +14,7 @@
 #define DECLARE_COMMAND(CLASS_NAME, COMMAND, SUBCOMMAND)		\
 	class CLASS_NAME : public Command {							\
 	public:														\
-		CLASS_NAME(CommandCallback* callback, Document* doc) :	\
+		CLASS_NAME(CommandCallback* callback, IrrigationDocument* doc) :	\
 			Command(callback, doc, COMMAND, SUBCOMMAND) {}		\
 		virtual void execute(const Tokens& parameters);			\
 	};

@@ -8,7 +8,7 @@
 #ifndef WEBSERVERVIEW_H_
 #define WEBSERVERVIEW_H_
 
-#include "Model/View.h"
+#include "DocumentView/View.h"
 
 
 class IrrigationWebServer;
@@ -18,7 +18,7 @@ class WebServerView: public View {
 	IrrigationWebServer* webServer;
 
 public:
-	WebServerView(Document* document);
+	WebServerView();
 	virtual ~WebServerView();
 };
 

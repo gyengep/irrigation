@@ -13,7 +13,7 @@
 #include <mutex>
 #include <vector>
 
-#include "Model/Document.h"
+#include "Model/IrrigationDocument.h"
 
 class Program;
 
@@ -67,12 +67,12 @@ class Command {
 
 protected:
 	CommandCallback* const callback;
-	Document* const document;
+	IrrigationDocument* const document;
 	const std::string command;
 	const std::string subCommand;
 
 public:
-	Command(CommandCallback* callback, Document* document, const char* command, const char* subCommand = NULL) :
+	Command(CommandCallback* callback, IrrigationDocument* document, const char* command, const char* subCommand = NULL) :
 		callback(callback),
 		document(document),
 		command(command),

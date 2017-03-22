@@ -18,8 +18,7 @@
 
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
-#include "Model/Document.h"
-
+#include "Model/IrrigationDocument.h"
 
 
 #define PRINT_RUNTIME(id, runTime)												\
@@ -45,8 +44,7 @@
 }
 
 
-CommandLineView::CommandLineView(Document* document) :
-	View(document),
+CommandLineView::CommandLineView() :
 	isTerminated(false)
 {
 	commandExecutor.addCommand(new command::Help(this, getDocument()));
@@ -82,6 +80,10 @@ CommandLineView::~CommandLineView() {
 	workerThread->join();
 	delete workerThread;
 	workerThread = NULL;
+}
+
+IrrigationDocument* CommandLineView::getDocument() {
+	return dynamic_cast<IrrigationDocument*>(View::getDocument());
 }
 
 void CommandLineView::tokenize(const std::string& text, Tokens& tokens) {

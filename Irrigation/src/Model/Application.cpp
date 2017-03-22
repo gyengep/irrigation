@@ -1,5 +1,4 @@
-
-#include "Common.h"
+#include "common.h"
 #include "Application.h"
 
 #include <mutex>
@@ -8,7 +7,7 @@
 #include "Hardware/Valves.h"
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
-#include "Model/Document.h"
+#include "Model/IrrigationDocument.h"
 #include "Views/CommandLineView/CommandLineView.h"
 #include "Views/WebServerView/WebServerView.h"
 
@@ -21,8 +20,9 @@ Application* getApplication() {
 }
 
 Application::Application() :
-		document(NULL),
-		isTerminated(false)	{
+	document(NULL),
+	isTerminated(false)
+{
 	theApplication = this;
 }
 
@@ -34,9 +34,10 @@ void Application::init() {
 	LOGGER.info("Application::Init()");
 	Valves::init();
 	
-	document = new Document();
-	new CommandLineView(document);
-	new WebServerView(document);
+	document = new IrrigationDocument();
+	document->addView(new CommandLineView());
+	document->addView(new WebServerView());
+
 /*
 	document->programs().getMutex().lock();
 

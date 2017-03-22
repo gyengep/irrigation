@@ -1,42 +1,24 @@
-/*
- * Document.cpp
- *
- *  Created on: 2016. máj. 15.
- *      Author: Rendszergazda
- */
-
 #include "common.h"
-#include "Document.h"
-#include "Application.h"
+#include "IrrigationDocument.h"
 
-#include "Logic/Program.h"
 #include "Hardware/Valves.h"
-#include "Model/View.h"
+#include "Logic/Program.h"
+#include "Model/Application.h"
 
 
-#define AUTO_LOCK_VIEW() std::lock_guard<std::mutex> lockView(viewMutex)
 #define AUTO_LOCK_WATERING() std::lock_guard<std::mutex> lockValve(wateringMutex)
 
-Document::Document() :
+IrrigationDocument::IrrigationDocument() :
 	zones(MASTER_VALVE_ID, ZONE_VALVE_IDS)
 {
-
 	wateringZone = ZONE_COUNT;
 	wateringStart = 0;
 }
 
-Document::~Document() {
-	if (true) {
-		AUTO_LOCK_VIEW();
-		for (auto it = views.begin(); views.end() != it; ++it) {
-			delete (*it);
-		}
-		views.clear();
-	}
-
+IrrigationDocument::~IrrigationDocument() {
 }
 
-void Document::doTask() {
+void IrrigationDocument::doTask() {
 	/*
 	std::time_t rawTime = getApplication()->getTime();
 
@@ -80,12 +62,12 @@ void Document::doTask() {
 /////////////////////////////////////////////////////
 // Watering
 
-bool Document::isWateringActive() const {
+bool IrrigationDocument::isWateringActive() const {
 	AUTO_LOCK_WATERING();
 	return isWateringActive_notSafe();
 }
 
-void Document::startWatering(IdType programId) {
+void IrrigationDocument::startWatering(IdType programId) {
 /*
 	AUTO_LOCK_WATERING();
 	AUTO_LOCK_PROGRAMS();
@@ -94,16 +76,16 @@ void Document::startWatering(IdType programId) {
 */
 }
 
-void Document::stopWatering() {
+void IrrigationDocument::stopWatering() {
 	AUTO_LOCK_WATERING();
 	stopWatering_notSafe();
 }
 
-bool Document::isWateringActive_notSafe() const {
+bool IrrigationDocument::isWateringActive_notSafe() const {
 	return (ZONE_COUNT > wateringZone);
 }
 
-bool Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
+bool IrrigationDocument::startWatering_notSafe(Program& program, std::time_t rawTime) {
 /*
 	const Program::RunTimes& runTimes = program.runTimes().container();
 
@@ -126,7 +108,7 @@ bool Document::startWatering_notSafe(Program& program, std::time_t rawTime) {
 	return (ZONE_COUNT > wateringZone);
 }
 
-void Document::stopWatering_notSafe() {
+void IrrigationDocument::stopWatering_notSafe() {
 /*
 	if (ZONE_COUNT > wateringZone) {
 		openZone(wateringZone, false);
@@ -137,7 +119,7 @@ void Document::stopWatering_notSafe() {
 */
 }
 
-IdType Document::getWateringZone_notSafe(std::time_t rawTime) const {
+IdType IrrigationDocument::getWateringZone_notSafe(std::time_t rawTime) const {
 	if (0 == wateringStart) {
 		throw std::runtime_error("Watering doesn't started");
 	}
@@ -156,19 +138,4 @@ IdType Document::getWateringZone_notSafe(std::time_t rawTime) const {
 	}
 
 	return ZONE_COUNT;
-}
-
-/////////////////////////////////////////////////////
-// View
-
-void Document::addView(View* view) {
-	AUTO_LOCK_VIEW();
-	views.push_back(view);
-}
-
-void Document::updateViews() {
-	AUTO_LOCK_VIEW();
-	for (auto it = views.begin(); views.end() != it; ++it) {
-		(*it)->update();
-	}
 }

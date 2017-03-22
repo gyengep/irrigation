@@ -1,4 +1,6 @@
-#include <Logic/StartTime.h>
+#include "common.h"
+#include "StartTime.h"
+
 
 StartTime::StartTime(int hour, int min) :
 	hour(hour),

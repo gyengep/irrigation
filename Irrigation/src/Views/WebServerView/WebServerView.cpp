@@ -13,9 +13,7 @@
 class Document;
 
 
-WebServerView::WebServerView(Document* document) :
-	View(document)
-{
+WebServerView::WebServerView() {
 	webServer = new IrrigationWebServer("", 80, NULL);
 }
 

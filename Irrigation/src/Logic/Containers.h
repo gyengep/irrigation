@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "Logic/StartTime.h"
-#include "Utils/LockedObject.h"
 
 
 class Program;
@@ -83,8 +82,6 @@ public:
 
 ////////////////////////////////////////////////////////////////
 
-
-//typedef LockedObject<Program> LockedProgram;
 
 struct ProgramWithMutex {
 	std::unique_ptr<Program> program;

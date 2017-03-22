@@ -1,5 +1,6 @@
 #pragma once
 
+
 class StartTime {
 	int hour;
 	int min;

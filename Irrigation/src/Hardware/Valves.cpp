@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "common.h"
 #include "Valves.h"
 
 
@@ -10,7 +10,8 @@ const std::array<int, Valves::PIN_COUNT> Valves::pins {
 	VALVE3_PIN,
 	VALVE4_PIN,
 	VALVE5_PIN,
-	VALVE6_PIN};
+	VALVE6_PIN
+};
 
 Valves& Valves::getInstance() {
 	if (nullptr == instance) {
