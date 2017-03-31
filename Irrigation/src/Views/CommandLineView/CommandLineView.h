@@ -1,55 +1,43 @@
-/*
- * CommandLineView.h
- *
- *  Created on: 2016. máj. 15.
- *      Author: Rendszergazda
- */
-
-#ifndef COMMANDLINEVIEW_H_
-#define COMMANDLINEVIEW_H_
+#pragma once
 
 #include <atomic>
 #include <string>
 #include <thread>
 
-#include "CommandExecutor.h"
+#include "Command/CommandExecutor.h"
 #include "DocumentView/View.h"
 
 
-class CommandLineView : public View, CommandCallback {
+class CommandLineView : public View {
+
+	class ReadStdin {
+		fd_set rfds;
+		timeval tv;
+		char* buffer;
+		size_t bufferSize;
+
+	public:
+		ReadStdin();
+		~ReadStdin();
+		const char* readLine();
+	};
+
+
 	std::thread* workerThread;
 	std::atomic_bool isTerminated;
 	CommandExecutor commandExecutor;
+	ReadStdin readStdin;
 
 	void workerFunc();
-
-	virtual void onHelpSuccess();
-	virtual void onStarttimeListSuccess(const StartTimeContainer& startTimes);
-	virtual void onStarttimeSetSuccess();
-	virtual void onStarttimeGetSuccess(IdType startTimeId, unsigned startTime);
-	virtual void onStarttimeAddSuccess();
-	virtual void onStarttimeDeleteSuccess();
-	virtual void onRuntimeListSuccess(const RunTimeContainer& runTimes);
-	virtual void onRuntimeSetSuccess();
-	virtual void onRuntimeGetSuccess(IdType runTimeId, unsigned runTime);
-	virtual void onProgramListSuccess(const ProgramContainer& programs);
-	virtual void onProgramShowSuccess(const Program& program);
-	virtual void onProgramAddSuccess();
-	virtual void onProgramDeleteSuccess();
-	virtual void onProgramRenameSuccess();
-	virtual void onProgramMoveSuccess();
-	virtual void onValveSuccess();
-	virtual void onZoneSuccess();
-	virtual void onResetValvesSuccess();
-	virtual void onExitSuccess();
 
 public:
 	CommandLineView();
 	virtual ~CommandLineView();
 
+	virtual void init();
+	virtual void terminate();
+
 	IrrigationDocument* getDocument();
 
 	static void tokenize(const std::string& text, Tokens& tokens);
 };
-
-#endif /* COMMANDLINEVIEW_H_ */

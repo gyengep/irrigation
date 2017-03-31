@@ -48,7 +48,6 @@ DECLARE_EXCEPTION(InvalidSchedulerException, InvalidIdException, "Invalid schedu
 DECLARE_EXCEPTION(InvalidDayException, InvalidIdException, "Invalid day");
 
 
-DECLARE_EXCEPTION(SubcommandMissingException, CommandException, "Subcommand missing");
 DECLARE_EXCEPTION(TooFewArgumentsException, CommandException, "Too few arguments");
 DECLARE_EXCEPTION(TooMuchArgumentsException, CommandException, "Too much arguments");
 DECLARE_EXCEPTION(InvalidParameterException, CommandException, "Invalid parameter");
@@ -60,11 +59,5 @@ public:
 		CommandException(std::string("Unknown command: '") + command + "'") {}
 };
 
-
-class UnknownSubcommandException : public CommandException {
-public:
-	UnknownSubcommandException(const std::string& subCommand) :
-		CommandException(std::string("Unknown subcommand: '") + subCommand + "'") {}
-};
 
 #endif /* EXCEPTION_H_ */

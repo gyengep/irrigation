@@ -17,7 +17,6 @@ public:
 
 	void addView(View* view);
 	void removeView(View* view);
-	void updateViews();
 
 	virtual void save() {}
 	virtual void load() {}

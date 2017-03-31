@@ -27,7 +27,6 @@ Application::Application() :
 }
 
 Application::~Application() {
-	// TODO Auto-generated destructor stub
 }
 
 void Application::init() {
@@ -36,7 +35,7 @@ void Application::init() {
 	
 	document = new IrrigationDocument();
 	document->addView(new CommandLineView());
-	document->addView(new WebServerView());
+	//document->addView(new WebServerView());
 
 	document->load();
 }

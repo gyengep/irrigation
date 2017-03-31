@@ -11,6 +11,6 @@
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
-	//::testing::GTEST_FLAG(filter) = "Zones*";
+	//::testing::GTEST_FLAG(filter) = "CommandExecutorTest*";
 	return RUN_ALL_TESTS();
 }

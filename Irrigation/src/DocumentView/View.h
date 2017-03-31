@@ -12,10 +12,8 @@ public:
 	View() {}
 	virtual ~View() {}
 
-	virtual void start() {}
-	virtual void stop(bool waitForFinish) {}
-	virtual void update() {}
-
+	virtual void init() {}
+	virtual void terminate() {}
 
 	Document* getDocument() { return document; }
 	const Document* getDocument() const { return document; }
