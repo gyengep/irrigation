@@ -4,11 +4,13 @@
 #include "Model/IrrigationDocument.h"
 
 
-#define DECLARE_COMMAND(CLASS_NAME, COMMAND)					\
-	class CLASS_NAME : public Command {				\
+class CommandLineView;
+
+#define DECLARE_COMMAND(CLASS_NAME, COMMAND, PARAMETERS)		\
+	class CLASS_NAME : public Command {							\
 	public:														\
 		CLASS_NAME(IrrigationDocument* document) :				\
-			Command(document, COMMAND) {}				\
+			Command(document, COMMAND, PARAMETERS) {}			\
 		virtual void execute(const Tokens& parameters);			\
 	}
 
@@ -16,30 +18,43 @@
 
 namespace CommandLine {
 
-	DECLARE_COMMAND(Help, "help");
-	DECLARE_COMMAND(Exit, "exit");
-	DECLARE_COMMAND(Valve, "valve");
-	DECLARE_COMMAND(Zone, "zone");
-	DECLARE_COMMAND(ProgramShow, "program_show");
-	DECLARE_COMMAND(ProgramAdd, "program_add");
-	DECLARE_COMMAND(ProgramDelete, "program_delete");
-	DECLARE_COMMAND(ProgramRename, "program_rename");
-	DECLARE_COMMAND(ProgramMove, "program_move");
-	DECLARE_COMMAND(StarttimeList, "starttime_list");
-	DECLARE_COMMAND(StarttimeAdd, "starttime_add");
-	DECLARE_COMMAND(StarttimeDelete, "starttime_delete");
-	DECLARE_COMMAND(StarttimeSet, "starttime_set");
-	DECLARE_COMMAND(StarttimeGet, "starttime_get");
-	DECLARE_COMMAND(RuntimeList, "runtime_list");
-	DECLARE_COMMAND(RuntimeSet, "runtime_set");
-	DECLARE_COMMAND(RuntimeGet, "runtime_get");
-	DECLARE_COMMAND(ResetValves, "reset_valves");
+	DECLARE_COMMAND(Exit, "exit", "");
+	DECLARE_COMMAND(Valve, "valve", "<ValveId> on|off");
+	DECLARE_COMMAND(Zone, "zone", "<ZoneId> on|off");
+	DECLARE_COMMAND(ProgramShow, "showprogram", "<ProgramId>");
+	DECLARE_COMMAND(ProgramAdd, "addprogram", "");
+	DECLARE_COMMAND(ProgramDelete, "delprogram", "<ProgramId>");
+	DECLARE_COMMAND(ProgramRename, "renprogram", "<ProgramId> name");
+	DECLARE_COMMAND(ProgramMove, "moveprogram", "<ProgramId> position");
+	DECLARE_COMMAND(StarttimeList, "liststarttime", "<ProgramId>");
+	DECLARE_COMMAND(StarttimeAdd, "addstarttime", "<ProgramId> hour min");
+	DECLARE_COMMAND(StarttimeDelete, "delstarttime", "<ProgramId> <StartTimeId>");
+	DECLARE_COMMAND(StarttimeSet, "setstarttime", "<ProgramId> <StartTimeId> hour min");
+	DECLARE_COMMAND(StarttimeGet, "getstarttime", "<ProgramId> <StartTimeId>");
+	DECLARE_COMMAND(RuntimeList, "listruntime", "<ProgramId>");
+	DECLARE_COMMAND(RuntimeSet, "setruntime", "<ProgramId> <RunTimeId> min");
+	DECLARE_COMMAND(RuntimeGet, "getruntime", "<ProgramId> <RunTimeId>");
+	DECLARE_COMMAND(ResetValves, "resetvalves", "");
 
+
+	class Help : public Command {
+		const CommandLineView* const view;
+	public:
+		Help(CommandLineView* const view, IrrigationDocument* document) : Command(document, "help", ""), view(view) {}
+		virtual void execute(const Tokens& parameters);
+	};
 
 	class ProgramList : public Command {
 		void onIterate(IdType, LockedProgram);
 	public:
-		ProgramList(IrrigationDocument* document) : Command(document, "program_list") {}
+		ProgramList(IrrigationDocument* document) : Command(document, "listprogram", "") {}
 		virtual void execute(const Tokens& parameters);
 	};
+
+	class SpaceHolder : public Command {
+	public:
+		SpaceHolder() : Command(NULL, "", "") {}
+		virtual void execute(const Tokens& parameters) {}
+	};
+
 }

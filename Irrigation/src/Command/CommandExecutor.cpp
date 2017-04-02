@@ -22,7 +22,7 @@ void CommandExecutor::addCommand(Command* command) {
 
 Command* CommandExecutor::getMatchingCommand(const std::string& commandText) const {
 	for (auto it = commands.begin(); commands.end() != it; ++it) {
-		if ((*it)->getCommand() == commandText) {
+		if (!(*it)->getCommand().empty() && (*it)->getCommand() == commandText) {
 			return *it;
 		}
 	}

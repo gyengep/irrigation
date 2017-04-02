@@ -7,26 +7,12 @@
 #include "Command/CommandExecutor.h"
 #include "DocumentView/View.h"
 
+#include <memory>
 
 class CommandLineView : public View {
-
-	class ReadStdin {
-		fd_set rfds;
-		timeval tv;
-		char* buffer;
-		size_t bufferSize;
-
-	public:
-		ReadStdin();
-		~ReadStdin();
-		const char* readLine();
-	};
-
-
 	std::thread* workerThread;
 	std::atomic_bool isTerminated;
 	CommandExecutor commandExecutor;
-	ReadStdin readStdin;
 
 	void workerFunc();
 
@@ -38,6 +24,7 @@ public:
 	virtual void terminate();
 
 	IrrigationDocument* getDocument();
+	const CommandExecutor& getCommandExecutor() const { return commandExecutor; }
 
 	static void tokenize(const std::string& text, Tokens& tokens);
 };

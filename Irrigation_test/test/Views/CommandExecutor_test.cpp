@@ -10,7 +10,7 @@ class CommandTest : public Command {
 public:
 
 	CommandTest(const char* command) :
-		Command(NULL, command),
+		Command(NULL, command, ""),
 		executeCounter(0)
 	{
 	}

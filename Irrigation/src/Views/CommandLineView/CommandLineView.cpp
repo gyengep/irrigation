@@ -4,7 +4,6 @@
 
 #include <array>
 #include <cstring>
-#include <iostream>
 #include <list>
 #include <utility>
 #include <vector>
@@ -12,13 +11,12 @@
 #include "Logic/Containers.h"
 #include "Logic/Program.h"
 #include "Model/IrrigationDocument.h"
-
+#include "Utils/Stdin.h"
 
 
 CommandLineView::CommandLineView() :
 	workerThread(NULL),
-	isTerminated(false),
-	readStdin()
+	isTerminated(false)
 {
 }
 
@@ -37,29 +35,33 @@ IrrigationDocument* CommandLineView::getDocument() {
 }
 
 void CommandLineView::init() {
-	commandExecutor.addCommand(new CommandLine::Help(getDocument()));
-	commandExecutor.addCommand(new CommandLine::Exit(getDocument()));
-
 	commandExecutor.addCommand(new CommandLine::ProgramList(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramShow(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramAdd(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramDelete(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramRename(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramMove(getDocument()));
+	commandExecutor.addCommand(new CommandLine::SpaceHolder());
 
 	commandExecutor.addCommand(new CommandLine::StarttimeList(getDocument()));
 	commandExecutor.addCommand(new CommandLine::StarttimeAdd(getDocument()));
 	commandExecutor.addCommand(new CommandLine::StarttimeDelete(getDocument()));
 	commandExecutor.addCommand(new CommandLine::StarttimeSet(getDocument()));
 	commandExecutor.addCommand(new CommandLine::StarttimeGet(getDocument()));
+	commandExecutor.addCommand(new CommandLine::SpaceHolder());
 
 	commandExecutor.addCommand(new CommandLine::RuntimeList(getDocument()));
 	commandExecutor.addCommand(new CommandLine::RuntimeSet(getDocument()));
 	commandExecutor.addCommand(new CommandLine::RuntimeGet(getDocument()));
+	commandExecutor.addCommand(new CommandLine::SpaceHolder());
 
 	commandExecutor.addCommand(new CommandLine::Valve(getDocument()));
 	commandExecutor.addCommand(new CommandLine::Zone(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ResetValves(getDocument()));
+	commandExecutor.addCommand(new CommandLine::SpaceHolder());
+
+	commandExecutor.addCommand(new CommandLine::Exit(getDocument()));
+	commandExecutor.addCommand(new CommandLine::Help(this, getDocument()));
 
 	workerThread = new std::thread(&CommandLineView::workerFunc, this);
 }
@@ -84,39 +86,13 @@ void CommandLineView::tokenize(const std::string& text, Tokens& tokens) {
 	delete[] text_copy;
 }
 
-CommandLineView::ReadStdin::ReadStdin() {
-	buffer = NULL;
-	bufferSize = 0;
-
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000; // 0.1 sec
-}
-
-CommandLineView::ReadStdin::~ReadStdin() {
-	free(buffer);
-}
-
-const char* CommandLineView::ReadStdin::readLine() {
-	FD_ZERO(&rfds);
-	FD_SET(fileno(stdin), &rfds);
-
-	int retval = select(fileno(stdin) + 1, &rfds, NULL, NULL, &tv);
-
-	if (retval > 0) {
-		getline(&buffer, &bufferSize, stdin);
-		return buffer;
-	}
-
-	return NULL;
-}
-
 void CommandLineView::workerFunc() {
 
 	std::cout << "> " << std::flush;
 
 	while (!isTerminated) {
 
-		const char* line = readStdin.readLine();
+		const char* line = Stdin::getInstance().readLine();
 
 		if (NULL != line) {
 			Tokens tokens;

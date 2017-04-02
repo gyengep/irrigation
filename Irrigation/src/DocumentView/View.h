@@ -5,11 +5,10 @@ class Document;
 
 class View {
 	friend Document;
-
 	Document* document;
 
 public:
-	View() {}
+	View() : document(NULL) {}
 	virtual ~View() {}
 
 	virtual void init() {}

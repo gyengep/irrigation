@@ -8,6 +8,7 @@
 #include "Model/Application.h"
 #include "Model/Application.h"
 #include "Utils/Parse.h"
+#include "Views/CommandLineView/CommandLineView.h"
 
 
 #define CHECK_PARAMETERS(req)													\
@@ -44,37 +45,13 @@ namespace CommandLine {
 	void Help::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(0);
 
-		std::cout << "exit" << std::endl;
-		std::cout << "help" << std::endl;
+		std::cout << std::endl;
 
-		std::cout << "program list" << std::endl;
-		std::cout << "program show <programID>" << std::endl;
-		std::cout << "program add <name>" << std::endl;
-		std::cout << "program delete <programID>" << std::endl;
-		std::cout << "program rename <programID> <name>" << std::endl;
-		std::cout << "program move <programID> <newPosition>" << std::endl;
+		const std::list<Command*>& commands = view->getCommandExecutor().getCommands();
 
-		std::cout << "reset valves" << std::endl;
-
-		std::cout << "runtime list <programID>" << std::endl;
-		std::cout << "runtime set <programID> <runtimeID> <runtime>" << std::endl;
-		std::cout << "runtime get <programID> <runtimeID>" << std::endl;
-
-		std::cout << "startime list <programID>" << std::endl;
-		std::cout << "startime add <programID> <starttime>" << std::endl;
-		std::cout << "startime delete <programID> <starttimeID>" << std::endl;
-		std::cout << "startime set <programID> <starttimeID> <starttime>" << std::endl;
-		std::cout << "startime get <programID> <starttimeID>" << std::endl;
-
-		std::cout << "valve <valveID> {on|off}" << std::endl;
-		std::cout << "zone <zoneID> {on|off}" << std::endl;
-
-		std::cout << "startprog <programID>" << std::endl;
-		std::cout << "startzone <programID> <zoneID>" << std::endl;
-		std::cout << "stop" << std::endl;
-
-		std::cout << "time get" << std::endl;
-		std::cout << "time set" << std::endl;
+		for (auto it = commands.begin(); it != commands.end(); ++it) {
+			std::cout << (*it)->getCommand() << " " << (*it)->getComment() << std::endl;
+		}
 	}
 
 	void StarttimeList::execute(const Tokens& parameters) {
@@ -192,7 +169,7 @@ namespace CommandLine {
 	}
 
 	void ProgramAdd::execute(const Tokens& parameters) {
-		CHECK_PARAMETERS(1);
+		CHECK_PARAMETERS(0);
 
 		document->getPrograms().insert(new Program());
 	}
