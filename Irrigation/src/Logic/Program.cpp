@@ -1,21 +1,23 @@
-/*
- * Program.cpp
- *
- *  Created on: 2016. máj. 19.
- *      Author: Rendszergazda
- */
-
 #include "common.h"
 #include "Program.h"
-#include "Scheduler.h"
+
+#include "Logic/ContainerFactories.h"
+#include "Logic/Scheduler.h"
 
 
-Program::Program(const std::string& name) : name(name) {
+Program::Program(const std::string& name) :
+	name(name),
+	runTimes(RunTimeContainerFactoryHolder::create()),
+	startTimes(StartTimeContainerFactoryHolder::create())
+{
 	schedulerType = SPECIFIED_DAYS;
 	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
 }
 
-Program::Program() {
+Program::Program() :
+	runTimes(RunTimeContainerFactoryHolder::create()),
+	startTimes(StartTimeContainerFactoryHolder::create())
+{
 	schedulerType = SPECIFIED_DAYS;
 	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
 }
@@ -46,7 +48,7 @@ bool Program::isScheduled(const std::time_t& rawTime) const {
 	if (0 == timeinfo.tm_sec && schedulers[schedulerType]->isScheduled(timeinfo)) {
 		StartTime startTime(timeinfo.tm_hour, timeinfo.tm_min);
 
-		for (auto it = startTimes.begin(); startTimes.end() != it; ++it) {
+		for (auto it = startTimes->begin(); startTimes->end() != it; ++it) {
 			if (it->second == startTime) {
 				return true;
 			}

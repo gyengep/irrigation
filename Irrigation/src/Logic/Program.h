@@ -1,12 +1,4 @@
-/*
- * Program.h
- *
- *  Created on: 2016. máj. 19.
- *      Author: Rendszergazda
- */
-
-#ifndef PROGRAM_H_
-#define PROGRAM_H_
+#pragma once
 
 #include <array>
 #include <ctime>
@@ -37,8 +29,8 @@ private:
 	std::string name;
 	SchedulerType schedulerType;
 	std::array<Scheduler*, SchedulerType::LAST> schedulers;
-	RunTimeContainer runTimes;
-	StartTimeContainer startTimes;
+	std::unique_ptr<RunTimeContainer> runTimes;
+	std::unique_ptr<StartTimeContainer> startTimes;
 
 public:
 	Program();
@@ -56,10 +48,8 @@ public:
 
 	bool isScheduled(const std::time_t& rawTime) const;
 
-	const RunTimeContainer& getRunTimes() const { return runTimes; }
-	RunTimeContainer& getRunTimes() { return runTimes; }
-	const StartTimeContainer& getStartTimes() const { return startTimes; }
-	StartTimeContainer& getStartTimes() { return startTimes; }
+	const RunTimeContainer& getRunTimes() const { return *runTimes; }
+	RunTimeContainer& getRunTimes() { return *runTimes; }
+	const StartTimeContainer& getStartTimes() const { return *startTimes; }
+	StartTimeContainer& getStartTimes() { return *startTimes; }
 };
-
-#endif /* PROGRAM_H_ */

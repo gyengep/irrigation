@@ -2,6 +2,7 @@
 #include "IrrigationDocument.h"
 
 #include "Hardware/Valves.h"
+#include "Logic/ContainerFactories.h"
 #include "Logic/Program.h"
 #include "Model/Application.h"
 
@@ -9,6 +10,7 @@
 #define AUTO_LOCK_WATERING() std::lock_guard<std::mutex> lockValve(wateringMutex)
 
 IrrigationDocument::IrrigationDocument() :
+	programs(ProgramContainerFactoryHolder::create()),
 	zones(MASTER_VALVE_ID, ZONE_VALVE_IDS)
 {
 	wateringZone = ZONE_COUNT;

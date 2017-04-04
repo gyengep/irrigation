@@ -8,14 +8,19 @@
 #include <utility>
 
 #include "Logic/StartTime.h"
+#include "Utils/Factory.h"
 
 
 class Program;
+class RunTimeContainerFactory;
+class StartTimeContainerFactory;
+class ProgramContainerFactory;
 
 
 ////////////////////////////////////////////////////////////////
 
 class RunTimeContainer {
+	friend RunTimeContainerFactory;
 
 	typedef std::array<std::pair<IdType, unsigned>, ZONE_COUNT> ContainerType;
 
@@ -26,27 +31,31 @@ public:
 
 private:
 
+	// Accessible only for ContainerFactory
+	RunTimeContainer();
+
+	// Disable copy constructor and operator
 	RunTimeContainer(const RunTimeContainer&);
 	RunTimeContainer& operator= (const RunTimeContainer&);
 
 	ContainerType container;
 
 public:
-	RunTimeContainer();
 	virtual ~RunTimeContainer();
 
 	const_iterator begin() const { return container.begin(); }
 	const_iterator end() const { return container.end(); }
-	value_type& operator[] (IdType id) { return at(id); }
-	const value_type& operator[] (IdType id) const { return at(id); }
 	value_type& at(IdType id);
 	const value_type& at(IdType id) const;
 	size_t size() const { return container.size(); }
 };
 
+
 ////////////////////////////////////////////////////////////////
 
+
 class StartTimeContainer {
+	friend StartTimeContainerFactory;
 
 	typedef std::list<std::pair<IdType, StartTime>> ContainerType;
 
@@ -57,6 +66,10 @@ public:
 
 private:
 
+	// Accessible only for ContainerFactory
+	StartTimeContainer();
+
+	// Disable copy constructor and operator
 	StartTimeContainer(const StartTimeContainer&);
 	StartTimeContainer& operator= (const StartTimeContainer&);
 
@@ -66,7 +79,6 @@ private:
 	ContainerType container;
 
 public:
-	StartTimeContainer();
 	virtual ~StartTimeContainer();
 
 	IdType insert(const value_type& newItem);
@@ -75,10 +87,10 @@ public:
 
 	const_iterator begin() const { return container.begin(); }
 	const_iterator end() const { return container.end(); }
-	const value_type& operator[] (IdType id) const { return at(id); }
 	const value_type& at(IdType id) const;
 	size_t size() const;
 };
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -87,10 +99,7 @@ struct ProgramWithMutex {
 	std::unique_ptr<Program> program;
 	std::unique_ptr<std::mutex> mutex;
 
-	ProgramWithMutex(Program* program, std::mutex* mutex) :
-		program(program),
-		mutex(mutex)
-	{}
+	ProgramWithMutex(Program* program, std::mutex* mutex);
 };
 
 typedef std::shared_ptr<ProgramWithMutex> ProgramWithMutexPtr;
@@ -103,40 +112,19 @@ class LockedProgram {
 	LockedProgram& operator= (const LockedProgram&);
 
 public:
-	LockedProgram(ProgramWithMutexPtr programWithMutex) :
-		lockGuard(new std::lock_guard<std::mutex>(*programWithMutex->mutex)),
-		programWithMutex(programWithMutex)
-	{
-	}
+	LockedProgram(ProgramWithMutexPtr programWithMutex);
+	LockedProgram(const LockedProgram& other);
+	~LockedProgram();
 
-	LockedProgram(const LockedProgram& other) :
-		lockGuard(other.lockGuard),
-		programWithMutex(other.programWithMutex)
-	{
-	}
-
-	~LockedProgram() {
-	}
-
-	Program* operator-> () {
-		return programWithMutex->program.get();
-	}
-
-	const Program* operator-> () const {
-		return programWithMutex->program.get();
-	}
-
-	Program& operator* () {
-		return *programWithMutex->program.get();
-	}
-
-	const Program& operator* () const {
-		return *programWithMutex->program.get();
-	}
+	Program* operator-> ();
+	const Program* operator-> () const;
+	Program& operator* ();
+	const Program& operator* () const;
 };
 
 
 class ProgramContainer {
+	friend ProgramContainerFactory;
 
 	typedef std::list<std::pair<IdType, ProgramWithMutexPtr>> ProgramContainerType;
 
@@ -146,6 +134,9 @@ public:
 	typedef std::function<void(IdType, LockedProgram)> CallbackType;
 
 private:
+
+	// Accessible only for ContainerFactory
+	ProgramContainer();
 
 	// Disable copy constructor and operator
 	ProgramContainer(const ProgramContainer&);
@@ -158,7 +149,6 @@ private:
 
 public:
 
-	ProgramContainer();
 	virtual ~ProgramContainer();
 
 	IdType insert(const value_type& newItem);
@@ -166,7 +156,6 @@ public:
 	void move(IdType id, size_t newPosition);
 
 	void iterate(CallbackType f) const;
-	const LockedProgram operator[] (IdType id) const { return at(id); }
 	const LockedProgram at(IdType id) const;
 	size_t size() const;
 };

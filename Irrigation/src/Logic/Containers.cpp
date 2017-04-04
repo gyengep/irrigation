@@ -33,6 +33,7 @@ const RunTimeContainer::value_type& RunTimeContainer::at(IdType id) const {
 ////////////////////////////////////////////////////////////////
 // START TIME
 
+
 StartTimeContainer::StartTimeContainer() {
 }
 
@@ -83,6 +84,45 @@ void StartTimeContainer::erase(IdType id) {
 
 /////////////////////////////////////////////////////
 // Program
+
+
+ProgramWithMutex::ProgramWithMutex(Program* program, std::mutex* mutex) :
+	program(program),
+	mutex(mutex)
+{}
+
+
+LockedProgram::LockedProgram(ProgramWithMutexPtr programWithMutex) :
+	lockGuard(new std::lock_guard<std::mutex>(*programWithMutex->mutex)),
+	programWithMutex(programWithMutex)
+{
+}
+
+LockedProgram::LockedProgram(const LockedProgram& other) :
+	lockGuard(other.lockGuard),
+	programWithMutex(other.programWithMutex)
+{
+}
+
+LockedProgram::~LockedProgram() {
+}
+
+Program* LockedProgram::operator-> () {
+	return programWithMutex->program.get();
+}
+
+const Program* LockedProgram::operator-> () const {
+	return programWithMutex->program.get();
+}
+
+Program& LockedProgram::operator* () {
+	return *programWithMutex->program.get();
+}
+
+const Program& LockedProgram::operator* () const {
+	return *programWithMutex->program.get();
+}
+
 
 ProgramContainer::ProgramContainer() {
 }

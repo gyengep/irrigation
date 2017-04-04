@@ -13,7 +13,7 @@ class IrrigationDocument : public Document {
 
 	typedef std::array<unsigned, ZONE_COUNT> WateringTimes;
 
-	ProgramContainer programs;
+	std::unique_ptr<ProgramContainer> programs;
 	Zones zones;
 
 	// Watering
@@ -40,8 +40,8 @@ public:
 	void stopWatering();
 
 	// Program
-	const ProgramContainer& getPrograms() const { return programs; }
-	ProgramContainer& getPrograms() { return programs; }
+	const ProgramContainer& getPrograms() const { return *programs; }
+	ProgramContainer& getPrograms() { return *programs; }
 
 	// Zones
 	const Zones& getZones() const { return zones; }

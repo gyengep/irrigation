@@ -1,172 +1,150 @@
 #include "common.h"
-#include "Logic/Containers.h"
+#include "Containers_test.h"
+
 #include "Logic/Program.h"
 #include "Utils/UniqueID.h"
 
 #include <chrono>
 #include <thread>
 
-TEST(RunTimeContainer, size) {
-	RunTimeContainer runTimes;
-	EXPECT_EQ(ZONE_COUNT, runTimes.size());
+
+TEST_F(RunTimeContainerTest, size) {
+	EXPECT_EQ(ZONE_COUNT, runTimes->size());
 }
 
-TEST(RunTimeContainer, set) {
-	RunTimeContainer runTimes;
+TEST_F(RunTimeContainerTest, set) {
 	unsigned i;
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		runTimes.at(i) = i * 10;
+		runTimes->at(i) = i * 10;
 	}
 
 	i = 0;
-	for (auto it = runTimes.begin(); runTimes.end() != it; ++it, ++i) {
+	for (auto it = runTimes->begin(); runTimes->end() != it; ++it, ++i) {
 		EXPECT_EQ(i, it->first);
 		EXPECT_EQ(i * 10, it->second);
 	}
 }
 
-TEST(RunTimeContainer, setInvalid) {
-	RunTimeContainer runTimes;
-	EXPECT_THROW(runTimes.at(runTimes.size()), InvalidRunTimeIdException);
+TEST_F(RunTimeContainerTest, setInvalid) {
+	EXPECT_THROW(runTimes->at(runTimes->size()), InvalidRunTimeIdException);
 }
 
-TEST(RunTimeContainer, setAt) {
-	RunTimeContainer runTimes;
+TEST_F(RunTimeContainerTest, setAt) {
 	unsigned i;
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		runTimes.at(i) = i * 10;
+		runTimes->at(i) = i * 10;
 	}
 
 	i = 0;
-	for (auto it = runTimes.begin(); runTimes.end() != it; ++it, ++i) {
+	for (auto it = runTimes->begin(); runTimes->end() != it; ++it, ++i) {
 		EXPECT_EQ(i, it->first);
 		EXPECT_EQ(i * 10, it->second);
 	}
 }
 
-TEST(RunTimeContainer, setAtInvalid) {
-	RunTimeContainer runTimes;
-	EXPECT_THROW(runTimes.at(runTimes.size()), InvalidRunTimeIdException);
+TEST_F(RunTimeContainerTest, setAtInvalid) {
+	EXPECT_THROW(runTimes->at(runTimes->size()), InvalidRunTimeIdException);
 }
 
-TEST(RunTimeContainer, get) {
-	RunTimeContainer runTimes;
+TEST_F(RunTimeContainerTest, get) {
 	unsigned i;
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_NO_THROW(runTimes[i]);
-		EXPECT_EQ(0, runTimes[i]);
+		runTimes->at(i) = i * 10;
 	}
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		runTimes.at(i) = i * 10;
-	}
-
-	for (i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_EQ(i * 10, runTimes.at(i));
+		EXPECT_EQ(i * 10, runTimes->at(i));
 	}
 }
 
-TEST(RunTimeContainer, getInvalid) {
-	RunTimeContainer runTimes;
-
+TEST_F(RunTimeContainerTest, getInvalid) {
 	EXPECT_THROW({
-		unsigned a = runTimes[runTimes.size()];
-		a = a;
-	}, InvalidRunTimeIdException);
-
-	EXPECT_THROW({
-		unsigned a = runTimes.at(runTimes.size());
+		unsigned a = runTimes->at(runTimes->size());
 		a = a;
 	}, InvalidRunTimeIdException);
 }
 
 //////////////////////////////////////////////////////////////////////
 
+
 typedef std::list<std::pair<IdType, StartTime>> StartTimeList;
 
-StartTimeList createCopy(const StartTimeContainer& startTimes) {
+StartTimeList createCopy(std::shared_ptr<StartTimeContainer> startTimes) {
 	StartTimeList startTimeCopy;
 
-	for (auto it = startTimes.begin(); startTimes.end() != it; ++it) {
+	for (auto it = startTimes->begin(); startTimes->end() != it; ++it) {
 		startTimeCopy.push_back(*it);
 	}
 
 	return startTimeCopy;
 }
 
-TEST(StartTimeContainer, insert) {
-	StartTimeContainer startTimes;
-
-	IdType id1 = startTimes.insert(StartTime(12, 20));
+TEST_F(StartTimeContainerTest, insert) {
+	IdType id1 = startTimes->insert(StartTime(12, 20));
 	EXPECT_EQ(
 		StartTimeList({ { id1, StartTime(12, 20) } }),
 		createCopy(startTimes));
 
-	IdType id2 = startTimes.insert(StartTime(10, 10));
+	IdType id2 = startTimes->insert(StartTime(10, 10));
 	EXPECT_EQ(
 		StartTimeList({ { id2, StartTime(10, 10) }, { id1, StartTime(12, 20) } }),
 		createCopy(startTimes));
 
-	IdType id3 = startTimes.insert(StartTime(10, 15));
+	IdType id3 = startTimes->insert(StartTime(10, 15));
 	EXPECT_EQ(
 		StartTimeList({ { id2, StartTime(10, 10) }, { id3, StartTime(10, 15) }, { id1, StartTime(12, 20) } }),
 		createCopy(startTimes));
 }
 
-TEST(StartTimeContainer, erase) {
-	StartTimeContainer startTimes;
-
-	IdType id1 = startTimes.insert(StartTime(10, 10));
-	IdType id2 = startTimes.insert(StartTime(13, 40));
-	IdType id3 = startTimes.insert(StartTime(11, 20));
-	IdType id4 = startTimes.insert(StartTime(12, 30));
+TEST_F(StartTimeContainerTest, erase) {
+	IdType id1 = startTimes->insert(StartTime(10, 10));
+	IdType id2 = startTimes->insert(StartTime(13, 40));
+	IdType id3 = startTimes->insert(StartTime(11, 20));
+	IdType id4 = startTimes->insert(StartTime(12, 30));
 
 	// Delete from middle
-	startTimes.erase(id2);
+	startTimes->erase(id2);
 	EXPECT_EQ(
 		StartTimeList({ { id1, StartTime(10, 10) }, { id3, StartTime(11, 20) }, { id4, StartTime(12, 30) } }),
 		createCopy(startTimes));
 
 	// Delete first
-	startTimes.erase(id1);
+	startTimes->erase(id1);
 	EXPECT_EQ(
 		StartTimeList({ { id3, StartTime(11, 20) }, { id4, StartTime(12, 30) } }),
 		createCopy(startTimes));
 
 	// Delete last
-	startTimes.erase(id3);
+	startTimes->erase(id3);
 	EXPECT_EQ(
 		StartTimeList({ { id4, StartTime(12, 30) } }),
 		createCopy(startTimes));
 
 	// Delete last
-	startTimes.erase(id4);
+	startTimes->erase(id4);
 	EXPECT_EQ(
 		StartTimeList(),
 		createCopy(startTimes));
 }
 
-TEST(StartTimeContainer, eraseInvalid) {
-	StartTimeContainer startTimes;
-	startTimes.insert(StartTime(10, 10));
+TEST_F(StartTimeContainerTest, eraseInvalid) {
+	startTimes->insert(StartTime(10, 10));
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
-	EXPECT_THROW(startTimes.erase(invalidId), InvalidStartTimeIdException);
+	EXPECT_THROW(startTimes->erase(invalidId), InvalidStartTimeIdException);
 }
 
-TEST(StartTimeContainer, modify) {
-	StartTimeContainer startTimes;
+TEST_F(StartTimeContainerTest, modify) {
+	IdType id1 = startTimes->insert(StartTime(10, 10));
+	IdType id2 = startTimes->insert(StartTime(13, 40));
+	IdType id3 = startTimes->insert(StartTime(11, 20));
+	IdType id4 = startTimes->insert(StartTime(12, 30));
 
-	IdType id1 = startTimes.insert(StartTime(10, 10));
-	IdType id2 = startTimes.insert(StartTime(13, 40));
-	IdType id3 = startTimes.insert(StartTime(11, 20));
-	IdType id4 = startTimes.insert(StartTime(12, 30));
-
-	startTimes.modify(id2, StartTime(13, 31));
+	startTimes->modify(id2, StartTime(13, 31));
 
 	{
 		StartTimeList expectedStartTimes {
@@ -179,7 +157,7 @@ TEST(StartTimeContainer, modify) {
 		EXPECT_EQ(expectedStartTimes, createCopy(startTimes));
 	}
 
-	startTimes.modify(id3, StartTime(23, 32));
+	startTimes->modify(id3, StartTime(23, 32));
 
 	{
 		StartTimeList expectedStartTimes {
@@ -193,45 +171,36 @@ TEST(StartTimeContainer, modify) {
 	}
 }
 
-TEST(StartTimeContainer, modifyInvalid) {
-	StartTimeContainer startTimes;
-	startTimes.insert(StartTime(10, 10));
+TEST_F(StartTimeContainerTest, modifyInvalid) {
+	startTimes->insert(StartTime(10, 10));
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
-	EXPECT_THROW(startTimes.modify(invalidId, StartTime(13, 31)), InvalidStartTimeIdException);
+	EXPECT_THROW(startTimes->modify(invalidId, StartTime(13, 31)), InvalidStartTimeIdException);
 }
 
-TEST(StartTimeContainer, get) {
-	StartTimeContainer startTimes;
+TEST_F(StartTimeContainerTest, get) {
+	IdType id1 = startTimes->insert(StartTime(10, 10));
+	IdType id2 = startTimes->insert(StartTime(13, 40));
+	IdType id3 = startTimes->insert(StartTime(11, 20));
+	IdType id4 = startTimes->insert(StartTime(12, 30));
 
-	IdType id1 = startTimes.insert(StartTime(10, 10));
-	IdType id2 = startTimes.insert(StartTime(13, 40));
-	IdType id3 = startTimes.insert(StartTime(11, 20));
-	IdType id4 = startTimes.insert(StartTime(12, 30));
-
-	EXPECT_EQ(StartTime(10, 10), startTimes.at(id1));
-	EXPECT_EQ(StartTime(13, 40), startTimes.at(id2));
-	EXPECT_EQ(StartTime(11, 20), startTimes.at(id3));
-	EXPECT_EQ(StartTime(12, 30), startTimes.at(id4));
-
-	EXPECT_EQ(StartTime(10, 10), startTimes[id1]);
-	EXPECT_EQ(StartTime(13, 40), startTimes[id2]);
-	EXPECT_EQ(StartTime(11, 20), startTimes[id3]);
-	EXPECT_EQ(StartTime(12, 30), startTimes[id4]);
+	EXPECT_EQ(StartTime(10, 10), startTimes->at(id1));
+	EXPECT_EQ(StartTime(13, 40), startTimes->at(id2));
+	EXPECT_EQ(StartTime(11, 20), startTimes->at(id3));
+	EXPECT_EQ(StartTime(12, 30), startTimes->at(id4));
 }
 
-TEST(StartTimeContainer, getInvalid) {
-	StartTimeContainer startTimes;
-	startTimes.insert(StartTime(10, 10));
+TEST_F(StartTimeContainerTest, getInvalid) {
+	startTimes->insert(StartTime(10, 10));
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
-	EXPECT_THROW(startTimes.at(invalidId), InvalidStartTimeIdException);
-	EXPECT_THROW(startTimes[invalidId], InvalidStartTimeIdException);
+	EXPECT_THROW(startTimes->at(invalidId), InvalidStartTimeIdException);
 }
 
 //////////////////////////////////////////////////////////////////////
+
 
 typedef std::list<std::pair<IdType, Program*>> ProgramList;
 
@@ -248,297 +217,263 @@ public:
 	}
 };
 
-ProgramList createCopy(const ProgramContainer& programs) {
+ProgramList createCopy(const std::shared_ptr<ProgramContainer> programs) {
 	ProgramContainerCallback programContainerCallback;
 	auto f = std::bind(&ProgramContainerCallback::callback, &programContainerCallback, std::placeholders::_1, std::placeholders::_2);
-	programs.iterate(f);
+	programs->iterate(f);
 
 	return programContainerCallback.getProgramList();
 }
 
-TEST(ProgramContainer, insert) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, insert) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 
-	IdType id1 = programs.insert(program1);
+	IdType id1 = programs->insert(program1);
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 } }),
 		createCopy(programs));
 
-	IdType id2 = programs.insert(program2);
+	IdType id2 = programs->insert(program2);
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 }, { id2, program2 } }),
 		createCopy(programs));
 }
 
-TEST(ProgramContainer, erase) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, erase) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 	Program* program4 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
-	IdType id4 = programs.insert(program4);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
+	IdType id4 = programs->insert(program4);
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 }, { id4, program4 } }),
 		createCopy(programs));
 
 	// Erase from middle
-	programs.erase(id2);
+	programs->erase(id2);
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 }, { id3, program3 }, { id4, program4 } }),
 		createCopy(programs));
 
 	// Erase first
-	programs.erase(id1);
+	programs->erase(id1);
 
 	EXPECT_EQ(
 		ProgramList({ { id3, program3 }, { id4, program4 } }),
 		createCopy(programs));
 
 	// Erase last
-	programs.erase(id4);
+	programs->erase(id4);
 
 	EXPECT_EQ(
 		ProgramList({ { id3, program3 } }),
 		createCopy(programs));
 
 	// Erase last
-	programs.erase(id3);
+	programs->erase(id3);
 
 	EXPECT_EQ(
 		ProgramList(),
 		createCopy(programs));
 }
 
-TEST(ProgramContainer, eraseInvalid) {
-	ProgramContainer programs;
-	programs.insert(new Program());
+TEST_F(ProgramContainerTest, eraseInvalid) {
+	programs->insert(new Program());
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
-	EXPECT_THROW(programs.erase(invalidId), InvalidProgramIdException);
+	EXPECT_THROW(programs->erase(invalidId), InvalidProgramIdException);
 }
 
-TEST(ProgramContainer, moveFirstFirst) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveFirstFirst) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id1, 0);
+	programs->move(id1, 0);
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveFirstMiddle) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveFirstMiddle) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id1, 1);
+	programs->move(id1, 1);
 
 	EXPECT_EQ(
 			ProgramList({ { id2, program2 }, { id1, program1 }, { id3, program3 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveFirstLast) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveFirstLast) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id1, 2);
+	programs->move(id1, 2);
 
 	EXPECT_EQ(
 			ProgramList({ { id2, program2 }, { id3, program3 }, { id1, program1 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveMiddleFirst) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveMiddleFirst) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id2, 0);
+	programs->move(id2, 0);
 
 	EXPECT_EQ(
 			ProgramList({ { id2, program2 }, { id1, program1 }, { id3, program3 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveMiddleMiddle) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveMiddleMiddle) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id2, 1);
+	programs->move(id2, 1);
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveMiddleLast) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveMiddleLast) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id2, 2);
+	programs->move(id2, 2);
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id3, program3 }, { id2, program2 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveLastFirst) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveLastFirst) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id3, 0);
+	programs->move(id3, 0);
 
 	EXPECT_EQ(
 			ProgramList({ { id3, program3 }, { id1, program1 }, { id2, program2 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveLastMiddle) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveLastMiddle) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id3, 1);
+	programs->move(id3, 1);
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id3, program3 }, { id2, program2 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveLastLast) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, moveLastLast) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 	Program* program3 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
-	IdType id3 = programs.insert(program3);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
+	IdType id3 = programs->insert(program3);
 
-	programs.move(id3, 2);
+	programs->move(id3, 2);
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
 			createCopy(programs));
 }
 
-TEST(ProgramContainer, moveInvalid) {
-	ProgramContainer programs;
-
-	IdType id1 = programs.insert(new Program());
+TEST_F(ProgramContainerTest, moveInvalid) {
+	IdType id1 = programs->insert(new Program());
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
-	EXPECT_THROW(programs.move(id1, programs.size()), std::out_of_range);
-	EXPECT_THROW(programs.move(invalidId, 0), InvalidProgramIdException);
+	EXPECT_THROW(programs->move(id1, programs->size()), std::out_of_range);
+	EXPECT_THROW(programs->move(invalidId, 0), InvalidProgramIdException);
 }
 
-TEST(ProgramContainer, get) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, get) {
 	Program* program1 = new Program();
 	Program* program2 = new Program();
 
-	IdType id1 = programs.insert(program1);
-	IdType id2 = programs.insert(program2);
+	IdType id1 = programs->insert(program1);
+	IdType id2 = programs->insert(program2);
 
-	EXPECT_EQ(program1, &(*programs[id1]));
-	EXPECT_EQ(program2, &(*programs[id2]));
+	EXPECT_EQ(program1, &(*programs->at(id1)));
+	EXPECT_EQ(program2, &(*programs->at(id2)));
 }
 
-TEST(ProgramContainer, getInvalid) {
-	ProgramContainer programs;
-	programs.insert(new Program());
+TEST_F(ProgramContainerTest, getInvalid) {
+	programs->insert(new Program());
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
 	EXPECT_THROW({
-		LockedProgram program = programs.at(invalidId);
-	}, InvalidProgramIdException);
-
-	EXPECT_THROW({
-		LockedProgram program = programs[invalidId];
+		LockedProgram program = programs->at(invalidId);
 	}, InvalidProgramIdException);
 }
 
-void insertPrograms(ProgramContainer* programs, size_t count, std::vector<IdType>* result) {
+void insertPrograms(std::shared_ptr<ProgramContainer> programs, size_t count, std::vector<IdType>* result) {
 	for(size_t i = 0; i < count; ++i) {
 		result->at(i) = programs->insert(new Program());
 	}
 }
 
-TEST(ProgramContainer, concurentInsert) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, concurrentInsert) {
 	const size_t threadCount = 5;
 	const size_t addCount = 10000;
 
@@ -550,25 +485,23 @@ TEST(ProgramContainer, concurentInsert) {
     }
 
     for (size_t i = 0; i < threadCount; ++i) {
-    	threads[i] = std::thread(insertPrograms, &programs, addCount, &results[i]);
+    	threads[i] = std::thread(insertPrograms, programs, addCount, &results[i]);
     }
 
     for (size_t i = 0; i < threadCount; ++i) {
     	threads[i].join();
     }
 
-    EXPECT_EQ(threadCount * addCount, programs.size());
+    EXPECT_EQ(threadCount * addCount, programs->size());
 }
 
-void erasePrograms(ProgramContainer* programs, std::vector<IdType>* ids) {
+void erasePrograms(std::shared_ptr<ProgramContainer> programs, std::vector<IdType>* ids) {
 	for(size_t i = 0; i < ids->size(); ++i) {
 		programs->erase(ids->at(i));
 	}
 }
 
-TEST(ProgramContainer, concurentErase) {
-	ProgramContainer programs;
-
+TEST_F(ProgramContainerTest, concurentErase) {
 	const size_t threadCount = 5;
 	const size_t addCount = 3000;
 
@@ -579,42 +512,41 @@ TEST(ProgramContainer, concurentErase) {
     	ids[i].resize(addCount);
 
     	for (size_t t = 0; t < addCount; ++t) {
-    		ids[i].at(t) = programs.insert(new Program());
+    		ids[i].at(t) = programs->insert(new Program());
     	}
     }
 
     for (size_t i = 0; i < threadCount; ++i) {
-    	threads[i] = std::thread(erasePrograms, &programs, &ids[i]);
+    	threads[i] = std::thread(erasePrograms, programs, &ids[i]);
     }
 
     for (size_t i = 0; i < threadCount; ++i) {
     	threads[i].join();
     }
 
-    EXPECT_EQ(0, programs.size());
+    EXPECT_EQ(0, programs->size());
 }
 
-void getProgramAndWait(ProgramContainer* programs, IdType id, int ms) {
+void getProgramAndWait(std::shared_ptr<ProgramContainer> programs, IdType id, int ms) {
 	LockedProgram program = programs->at(id);
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-TEST(ProgramContainer, programLock) {
+TEST_F(ProgramContainerTest, programLock) {
 	const int waitMs = 100;
 
-	ProgramContainer programs;
-	IdType id1 = programs.insert(new Program());
-	IdType id2 = programs.insert(new Program());
+	IdType id1 = programs->insert(new Program());
+	IdType id2 = programs->insert(new Program());
 
 	auto start = std::chrono::high_resolution_clock::now();
 
-	std::thread thread(getProgramAndWait, &programs, id2, waitMs);
+	std::thread thread(getProgramAndWait, programs, id2, waitMs);
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-	LockedProgram program1 = programs.at(id1);
+	LockedProgram program1 = programs->at(id1);
 	auto finish1 = std::chrono::high_resolution_clock::now();
 
-	LockedProgram program2 = programs.at(id2);
+	LockedProgram program2 = programs->at(id2);
 	auto finish2 = std::chrono::high_resolution_clock::now();
 
 	thread.join();
