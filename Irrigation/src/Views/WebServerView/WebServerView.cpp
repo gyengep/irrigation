@@ -1,23 +1,28 @@
-/*
- * WebServerView.cpp
- *
- *  Created on: 2016.12.20.
- *      Author: 502664609
- */
-
-#include "Common.h"
+#include "common.h"
 #include "WebServerView.h"
 #include "IrrigationWebServer.h"
 
 
-class Document;
-
-
 WebServerView::WebServerView() {
-	webServer = new IrrigationWebServer("", 80, NULL);
 }
 
 WebServerView::~WebServerView() {
-	delete webServer;
 }
 
+IrrigationDocument* WebServerView::getDocument() {
+	return dynamic_cast<IrrigationDocument*>(View::getDocument());
+}
+
+void WebServerView::init() {
+	LOGGER.trace("WebServerView starting");
+	templateEngine.reset(new TemplateEngine(getDocument()));
+	commandExecutor.reset(new CommandExecutor());
+	webServer.reset(new IrrigationWebServer("./html/", 80, *templateEngine, *commandExecutor));
+	LOGGER.debug("WebServerView started");
+}
+
+void WebServerView::terminate() {
+	LOGGER.trace("WebServerView stoping");
+	webServer.reset(nullptr);
+	LOGGER.debug("WebServerView stopped");
+}

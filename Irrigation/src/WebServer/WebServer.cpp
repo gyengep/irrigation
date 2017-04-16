@@ -1,20 +1,20 @@
-/*
- * WebServer.cpp
- *
- *  Created on: 2016. nov. 15.
- *      Author: Rendszergazda
- */
-
 #include "Common.h"
-#include "Answer.h"
+#include "Response.h"
 #include "Request.h"
 #include "WebServer.h"
 #include "WebServerException.h"
 
 #include <cstring>
+#include <sstream>
 
 
 std::set<WebServer*> WebServer::instances;
+std::map<int, std::string> WebServer::errorMessages {
+	{ MHD_HTTP_INTERNAL_SERVER_ERROR, "Internal Server Error" },
+	{ MHD_HTTP_NOT_FOUND, "Not Found" },
+	{ MHD_HTTP_NOT_IMPLEMENTED, "Not Implemented"},
+	{ MHD_HTTP_HTTP_VERSION_NOT_SUPPORTED, "HTTP Version Not Supported" },
+};
 
 
 WebServer::WebServer(uint16_t port)
@@ -30,13 +30,15 @@ WebServer::WebServer(uint16_t port)
 	daemon = MHD_start_daemon(
 			MHD_USE_SELECT_INTERNALLY, port,
 			NULL, NULL,
-			WebServer::answer_to_connection, this,
+			WebServer::accessHandlerCallback, this,
 			MHD_OPTION_ARRAY, ops, MHD_OPTION_END);
 
 	if (NULL == daemon) {
 		instances.erase(this);
-		throw WebServerException("Can not create webserver");
+		throw std::runtime_error("Can not create webserver");
 	}
+
+	LOGGER.info("WebServer started on port: %hd", port);
 }
 
 WebServer::~WebServer() {
@@ -48,43 +50,65 @@ WebServer::~WebServer() {
 	} else {
 		LOGGER.warning("WebServer already deleted: 0x%08X", this);
 	}
+
+	LOGGER.info("WebServer stopped");
 }
 
-void WebServer::send(const Answer& answer) {
 
-	struct MHD_Response *response = MHD_create_response_from_buffer(answer.getDataLength(), (void*)answer.getData(), MHD_RESPMEM_MUST_COPY);
-	int ret = MHD_queue_response(static_cast<MHD_Connection*>(answer.getConnection()), answer.getStatusCode(), response);
-	MHD_destroy_response(response);
-
-	if (MHD_YES != ret) {
-		throw WebServerException("Can not create response");
-	}
-}
-
-int WebServer::answer_to_connection(void *cls,
+int WebServer::accessHandlerCallback(void *cls,
 		struct MHD_Connection* connection, const char* url, const char* method, const char* version,
 		const char* upload_data, size_t* upload_data_size, void** con_cls) {
 
-	if (NULL == cls) {
-		LOGGER.warning("WebServer callback must not be NULL _1_");
-		return MHD_NO;
-	}
-
-	WebServer* webServer = static_cast<WebServer*>(cls);
-
-	if (WebServer::instances.end() == WebServer::instances.find(webServer)) {
-		LOGGER.warning("Invalid WebServer callback");
-		return MHD_NO;
-	}
 
 	try {
 		Request request(connection, url, method, version, upload_data, upload_data_size);
-		webServer->onRequest(request);
+		std::shared_ptr<Response> response;
 
-	} catch (WebServerException& e) {
+		try {
+			WebServer* webServer = static_cast<WebServer*>(cls);
+			if (WebServer::instances.end() == WebServer::instances.find(webServer)) {
+				LOGGER.warning("Invalid WebServer callback");
+				throw WebServerException(MHD_HTTP_INTERNAL_SERVER_ERROR);
+			}
+
+			response.reset(webServer->onRequest(request));
+
+		} catch (WebServerException& e) {
+			LOGGER.debug("HTTP error: %d - %s", e.getStatusCode(), getErrorMessage(e.getStatusCode()).c_str());
+			response.reset(new Response(request, getErrorPage(e.getStatusCode()), e.getStatusCode()));
+		} catch (std::exception& e) {
+			LOGGER.warning(e.what());
+			response.reset(new Response(request, getErrorPage(MHD_HTTP_INTERNAL_SERVER_ERROR), MHD_HTTP_INTERNAL_SERVER_ERROR));
+		}
+
+		response->send();
+		return MHD_YES;
+
+	} catch (std::exception& e) {
 		LOGGER.warning(e.what());
 		return MHD_NO;
 	}
+}
 
-	return MHD_YES;
+std::string WebServer::getErrorMessage(int errorCode) {
+	std::ostringstream o;
+	std::string errorMessage;
+	auto it = errorMessages.find(errorCode);
+
+	if (errorMessages.end() == it) {
+		errorMessage = "HTTP error";
+		LOGGER.warning("HTTP error code not found: %d", errorCode);
+	} else {
+		errorMessage = it->second;
+	}
+
+	return errorMessage;
+}
+
+std::string WebServer::getErrorPage(int errorCode) {
+	std::ostringstream o;
+	std::string errorMessage = getErrorMessage(errorCode);
+
+	o << "<html><head><title>" << errorMessage << "</title></head><body><h1>" << errorCode << " - " << errorMessage << "</h1></body></html>";
+	return o.str();
 }

@@ -14,7 +14,7 @@
 
 int main() {
 	LOGGER.setFile(NULL);
-	LOGGER.setLevel(Logger::INFO);
+	LOGGER.setLevel(Logger::TRACE);
 	
 	Application application;
 

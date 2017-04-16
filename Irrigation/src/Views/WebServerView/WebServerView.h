@@ -1,25 +1,27 @@
-/*
- * WebServerView.h
- *
- *  Created on: 2016.12.20.
- *      Author: 502664609
- */
+#pragma once
 
-#ifndef WEBSERVERVIEW_H_
-#define WEBSERVERVIEW_H_
+#include <memory>
 
+#include "Command/CommandExecutor.h"
 #include "DocumentView/View.h"
+#include "Model/IrrigationDocument.h"
+#include "Views/WebServerView/TemplateEngine.h"
 
 
 class IrrigationWebServer;
 
 
 class WebServerView: public View {
-	IrrigationWebServer* webServer;
+	std::unique_ptr<TemplateEngine> templateEngine;
+	std::unique_ptr<CommandExecutor> commandExecutor;
+	std::unique_ptr<IrrigationWebServer> webServer;
 
 public:
 	WebServerView();
 	virtual ~WebServerView();
-};
 
-#endif /* WEBSERVERVIEW_H_ */
+	virtual void init();
+	virtual void terminate();
+
+	IrrigationDocument* getDocument();
+};

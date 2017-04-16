@@ -35,6 +35,8 @@ IrrigationDocument* CommandLineView::getDocument() {
 }
 
 void CommandLineView::init() {
+	LOGGER.debug("CommandLineView started");
+
 	commandExecutor.addCommand(new CommandLine::ProgramList(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramShow(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramAdd(getDocument()));
@@ -67,6 +69,7 @@ void CommandLineView::init() {
 }
 
 void CommandLineView::terminate() {
+	LOGGER.debug("CommandLineView stopped");
 	isTerminated = true;
 }
 

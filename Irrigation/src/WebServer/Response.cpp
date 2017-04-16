@@ -1,38 +1,32 @@
-/*
- * Answer.cpp
- *
- *  Created on: 2016.12.16.
- *      Author: 502664609
- */
-
 #include "Common.h"
-#include "Answer.h"
+#include "Response.h"
 #include "Request.h"
 
+#include <cstring>
 
-Answer::Answer(const Request& request, unsigned statusCode, const void* data, size_t dataLength) :
-	request(request),
-	statusCode(statusCode),
-	data(data),
-	dataLength(dataLength)
+
+Response::Response(const Request& request, const std::string& message, int statusCode/* = MHD_HTTP_OK*/) :
+	response(NULL),
+	connection(request.getConnection()),
+	statusCode(statusCode)
 {
+	response = MHD_create_response_from_buffer(message.length(), const_cast<char*>(message.c_str()), MHD_RESPMEM_MUST_COPY);
 }
 
-Answer::~Answer() {
+Response::~Response() {
+	if (response) {
+		MHD_destroy_response(response);
+	}
 }
 
-size_t Answer::getDataLength() const {
-	return dataLength;
-}
+void Response::send() {
+	if (NULL == response) {
+		throw std::runtime_error("Can not create response");
+	}
 
-const void* Answer::getData() const {
-	return data;
-}
+	int ret = MHD_queue_response(connection, statusCode, response);
 
-void* Answer::getConnection() const {
-	return request.getConnection();
-}
-
-unsigned Answer::getStatusCode() const {
-	return statusCode;
+	if (MHD_YES != ret) {
+		throw std::runtime_error("Can not send response");
+	}
 }

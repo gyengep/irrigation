@@ -1,19 +1,16 @@
-/*
- * WebServerException.h
- *
- *  Created on: 2016.12.16.
- *      Author: 502664609
- */
-
-#ifndef WEBSERVEREXCEPTION_H_
-#define WEBSERVEREXCEPTION_H_
+#pragma once
 
 #include <stdexcept>
 
 
 class WebServerException : public std::runtime_error {
-public:
-	WebServerException(const char* what_arg) : std::runtime_error(what_arg) {}
-};
+	int statusCode;
 
-#endif /* WEBSERVEREXCEPTION_H_ */
+public:
+	WebServerException(int statusCode) :
+		std::runtime_error(""),
+		statusCode(statusCode)
+	{}
+
+	int getStatusCode() const { return statusCode; }
+};

@@ -30,25 +30,25 @@ Application::~Application() {
 }
 
 void Application::init() {
-	LOGGER.info("Application::Init()");
+	LOGGER.info("Application initializing");
 	Valves::init();
 	
 	document = new IrrigationDocument();
 	document->addView(new CommandLineView());
-	//document->addView(new WebServerView());
+	document->addView(new WebServerView());
 
 	document->load();
 }
 
 void Application::run() {
-	LOGGER.info("Application::run __BEGIN__");
+	LOGGER.info("Application running started");
 	
 	while (!isTerminated) {
 		document->doTask();
 		usleep(50000);
 	}
 	
-	LOGGER.info("Application::run __END__");
+	LOGGER.info("Application running stopped");
 }
 
 void Application::uninit() {
@@ -57,7 +57,7 @@ void Application::uninit() {
 }
 
 void Application::terminate() { 
-	LOGGER.info("Application::Terminated");
+	LOGGER.info("Application terminate");
 	isTerminated = true; 
 }
 
