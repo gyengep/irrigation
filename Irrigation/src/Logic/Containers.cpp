@@ -18,7 +18,7 @@ RunTimeContainer::RunTimeContainer() {
 RunTimeContainer::~RunTimeContainer() {
 }
 
-RunTimeContainer::value_type& RunTimeContainer::at(IdType id) {
+const RunTimeContainer::value_type& RunTimeContainer::at(IdType id) const {
 	if (container.size() <= id) {
 		throw InvalidRunTimeIdException();
 	}
@@ -26,8 +26,14 @@ RunTimeContainer::value_type& RunTimeContainer::at(IdType id) {
 	return container[id].second;
 }
 
-const RunTimeContainer::value_type& RunTimeContainer::at(IdType id) const {
-	return const_cast<RunTimeContainer*>(this)->at(id);
+void RunTimeContainer::modify(IdType id, const value_type& newItem) {
+	if (container.size() <= id) {
+		throw InvalidRunTimeIdException();
+	}
+
+	container[id].second = newItem;
+	LOGGER.info("RunTime %u modified to %u", id, newItem);
+
 }
 
 ////////////////////////////////////////////////////////////////
@@ -68,6 +74,7 @@ const StartTimeContainer::value_type& StartTimeContainer::at(IdType id) const {
 IdType StartTimeContainer::insert(const value_type& newItem) {
 	IdType startTimeId = UniqueID::getInstance().getNextId();
 	insert(startTimeId, newItem);
+	LOGGER.info("StartTime %u added", startTimeId);
 	return startTimeId;
 }
 
@@ -75,11 +82,13 @@ void StartTimeContainer::modify(IdType id, const value_type& newItem) {
 	ContainerType::iterator it = find(id);
 	container.erase(it);
 	insert(id, newItem);
+	LOGGER.info("StartTime %u modified to %02u:%02u", id, newItem.getHour(), newItem.getMin());
 }
 
 void StartTimeContainer::erase(IdType id) {
 	ContainerType::iterator it = find(id);
 	container.erase(it);
+	LOGGER.info("StartTime %u deleted", id);
 }
 
 /////////////////////////////////////////////////////
@@ -176,6 +185,7 @@ IdType ProgramContainer::insert(const value_type& newItem) {
 	IdType programId = UniqueID::getInstance().getNextId();
 	ProgramWithMutexPtr programWithMutexPtr(new ProgramWithMutex(newItem, new std::mutex()));
 	programContainer.push_back(std::make_pair(programId, programWithMutexPtr));
+	LOGGER.info("Program %u added", programId);
 	return programId;
 }
 
@@ -187,6 +197,7 @@ void ProgramContainer::erase(IdType id) {
 	it->second->mutex->lock();
 	it->second->mutex->unlock();
 
+	LOGGER.info("Program %u deleted", id);
 	programContainer.erase(it);
 }
 
@@ -206,5 +217,6 @@ void ProgramContainer::move(IdType id, size_t newPosition) {
 		++it;
 	}
 
+	LOGGER.info("Program %u moved to %u", id, newPosition);
 	programContainer.insert(it, listItem);
 }

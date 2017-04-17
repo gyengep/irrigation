@@ -24,9 +24,11 @@ CommandLineView::~CommandLineView() {
 	isTerminated = true;
 
 	if (workerThread) {
+		LOGGER.debug("Waiting for commandLine to finish...");
 		workerThread->join();
 		delete workerThread;
 		workerThread = NULL;
+		LOGGER.debug("CommandLine finished");
 	}
 }
 
@@ -35,6 +37,7 @@ IrrigationDocument* CommandLineView::getDocument() {
 }
 
 void CommandLineView::init() {
+	LOGGER.debug("CommandLineView starting");
 	commandExecutor.addCommand(new CommandLine::ProgramList(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramShow(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramAdd(getDocument()));
@@ -69,6 +72,7 @@ void CommandLineView::init() {
 }
 
 void CommandLineView::terminate() {
+	LOGGER.debug("CommandLineView stopping");
 	isTerminated = true;
 	LOGGER.debug("CommandLineView stopped");
 }

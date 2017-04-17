@@ -43,9 +43,10 @@ private:
 public:
 	virtual ~RunTimeContainer();
 
+	void modify(IdType, const value_type& newItem);
+
 	const_iterator begin() const { return container.begin(); }
 	const_iterator end() const { return container.end(); }
-	value_type& at(IdType id);
 	const value_type& at(IdType id) const;
 	size_t size() const { return container.size(); }
 };

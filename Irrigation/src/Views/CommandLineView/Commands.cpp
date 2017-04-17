@@ -126,7 +126,7 @@ namespace CommandLine {
 
 		LockedProgram program = document->getPrograms().at(programId);
 
-		program->getRunTimes().at(runTimeId) = runTime;
+		program->getRunTimes().modify(runTimeId, runTime);
 	}
 
 	void RuntimeGet::execute(const Tokens& parameters) {

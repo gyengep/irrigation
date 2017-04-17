@@ -21,7 +21,7 @@ TemplateEngine::~TemplateEngine() {
 
 const std::string& TemplateEngine::generate(const std::string& source) {
 
-	LOGGER.trace("TamplateEngine generating page");
+	LOGGER.debug("TamplateEngine generating page");
 
 	result.clear();
 

@@ -12,11 +12,11 @@ TEST_F(RunTimeContainerTest, size) {
 	EXPECT_EQ(ZONE_COUNT, runTimes->size());
 }
 
-TEST_F(RunTimeContainerTest, set) {
+TEST_F(RunTimeContainerTest, modify) {
 	unsigned i;
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		runTimes->at(i) = i * 10;
+		runTimes->modify(i, i * 10);
 	}
 
 	i = 0;
@@ -34,7 +34,7 @@ TEST_F(RunTimeContainerTest, setAt) {
 	unsigned i;
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		runTimes->at(i) = i * 10;
+		runTimes->modify(i, i * 10);
 	}
 
 	i = 0;
@@ -52,7 +52,7 @@ TEST_F(RunTimeContainerTest, get) {
 	unsigned i;
 
 	for (i = 0; i < ZONE_COUNT; i++) {
-		runTimes->at(i) = i * 10;
+		runTimes->modify(i, i * 10);
 	}
 
 	for (i = 0; i < ZONE_COUNT; i++) {

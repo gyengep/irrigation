@@ -14,14 +14,14 @@ IrrigationDocument* WebServerView::getDocument() {
 }
 
 void WebServerView::init() {
-	LOGGER.trace("WebServerView starting");
+	LOGGER.debug("WebServerView starting");
 	templateEngine.reset(new TemplateEngine(getDocument()));
 	webServer.reset(new IrrigationWebServer("./html/", 80, *templateEngine));
 	LOGGER.debug("WebServerView started");
 }
 
 void WebServerView::terminate() {
-	LOGGER.trace("WebServerView stoping");
+	LOGGER.debug("WebServerView stopping");
 	webServer.reset(nullptr);
 	LOGGER.debug("WebServerView stopped");
 }

@@ -30,7 +30,7 @@ Application::~Application() {
 }
 
 void Application::init() {
-	LOGGER.info("Application initializing");
+	LOGGER.debug("Application initializing");
 	Valves::init();
 	
 	document = new IrrigationDocument();
@@ -42,22 +42,23 @@ void Application::init() {
 
 void Application::run() {
 	LOGGER.info("Application started");
+	LOGGER.debug("Application main loop start");
 	
 	while (!isTerminated) {
 		document->doTask();
 		usleep(50000);
 	}
 	
-	LOGGER.info("Application terminated");
+	LOGGER.debug("Application main loop finish");
 }
 
 void Application::uninit() {
-	LOGGER.info("Application::Uninit");
 	delete document;
+	LOGGER.info("Application terminated");
 }
 
 void Application::terminate() { 
-	LOGGER.info("Terminate");
+	LOGGER.debug("Terminate");
 	isTerminated = true; 
 }
 
