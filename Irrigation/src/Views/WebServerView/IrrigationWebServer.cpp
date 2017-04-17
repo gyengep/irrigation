@@ -10,11 +10,10 @@
 #include "WebServer/WebserverException.h"
 
 
-IrrigationWebServer::IrrigationWebServer(const std::string& rootDirectory, uint16_t port, TemplateEngine& templateEngine, CommandExecutor& commandExecutor) :
+IrrigationWebServer::IrrigationWebServer(const std::string& rootDirectory, uint16_t port, TemplateEngine& templateEngine) :
 	WebServer(port),
 	rootDirectory(rootDirectory),
-	templateEngine(templateEngine),
-	commandExecutor(commandExecutor)
+	templateEngine(templateEngine)
 {
 }
 

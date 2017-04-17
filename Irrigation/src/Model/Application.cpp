@@ -41,14 +41,14 @@ void Application::init() {
 }
 
 void Application::run() {
-	LOGGER.info("Application running started");
+	LOGGER.info("Application started");
 	
 	while (!isTerminated) {
 		document->doTask();
 		usleep(50000);
 	}
 	
-	LOGGER.info("Application running stopped");
+	LOGGER.info("Application terminated");
 }
 
 void Application::uninit() {
@@ -57,7 +57,7 @@ void Application::uninit() {
 }
 
 void Application::terminate() { 
-	LOGGER.info("Application terminate");
+	LOGGER.info("Terminate");
 	isTerminated = true; 
 }
 

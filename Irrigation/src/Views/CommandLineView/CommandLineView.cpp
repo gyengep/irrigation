@@ -35,8 +35,6 @@ IrrigationDocument* CommandLineView::getDocument() {
 }
 
 void CommandLineView::init() {
-	LOGGER.debug("CommandLineView started");
-
 	commandExecutor.addCommand(new CommandLine::ProgramList(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramShow(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramAdd(getDocument()));
@@ -66,11 +64,13 @@ void CommandLineView::init() {
 	commandExecutor.addCommand(new CommandLine::Help(this, getDocument()));
 
 	workerThread = new std::thread(&CommandLineView::workerFunc, this);
+
+	LOGGER.debug("CommandLineView started");
 }
 
 void CommandLineView::terminate() {
-	LOGGER.debug("CommandLineView stopped");
 	isTerminated = true;
+	LOGGER.debug("CommandLineView stopped");
 }
 
 void CommandLineView::tokenize(const std::string& text, Tokens& tokens) {

@@ -16,8 +16,7 @@ IrrigationDocument* WebServerView::getDocument() {
 void WebServerView::init() {
 	LOGGER.trace("WebServerView starting");
 	templateEngine.reset(new TemplateEngine(getDocument()));
-	commandExecutor.reset(new CommandExecutor());
-	webServer.reset(new IrrigationWebServer("./html/", 80, *templateEngine, *commandExecutor));
+	webServer.reset(new IrrigationWebServer("./html/", 80, *templateEngine));
 	LOGGER.debug("WebServerView started");
 }
 
