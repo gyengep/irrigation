@@ -1,12 +1,4 @@
-/*
- * Logger.h
- *
- *  Created on: 2016. okt. 10.
- *      Author: Rendszergazda
- */
-
-#ifndef LOGGER_H_
-#define LOGGER_H_
+#pragma once
 
 #include <atomic>
 #include <fstream>
@@ -48,11 +40,11 @@ public:
 	void setLevel(Level level);
 	void setFile(const char* fileName = NULL);
 
+	bool isLoggable(Level level) const;
+
 	void error(const char * format, ...);
 	void warning(const char * format, ...);
 	void info(const char * format, ...);
 	void debug(const char * format, ...);
 	void trace(const char * format, ...);
 };
-
-#endif /* LOGGER_H_ */

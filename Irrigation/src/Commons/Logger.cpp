@@ -1,11 +1,4 @@
-/*
- * Logger.cpp
- *
- *  Created on: 2016. okt. 10.
- *      Author: Rendszergazda
- */
-
-#include "Common.h"
+#include "common.h"
 #include "Logger.h"
 
 #include <cstdio>
@@ -13,7 +6,7 @@
 
 
 #define LOGGER_FUNCTION(LEVEL)		\
-	if (LEVEL <= level) {			\
+	if (isLoggable(LEVEL)) {		\
 		va_list args;				\
 		va_start(args, format);		\
 		log(LEVEL, format, args);	\
@@ -79,6 +72,10 @@ const char* Logger::getLevelText(Level level) {
 	};
 
 	return levelTexts[level];
+}
+
+bool Logger::isLoggable(Level level) const {
+	return (level <= this->level);
 }
 
 void Logger::log(Level level, const char * format, va_list args) {
