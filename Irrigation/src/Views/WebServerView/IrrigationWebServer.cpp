@@ -22,20 +22,14 @@ IrrigationWebServer::~IrrigationWebServer() {
 
 Response* IrrigationWebServer::onRequest(const Request& request) {
 
-	if (0 != strcmp(request.getVersion(), MHD_HTTP_VERSION_1_1)) {
+	if (request.getVersion() != MHD_HTTP_VERSION_1_1) {
 		throw WebServerException(MHD_HTTP_HTTP_VERSION_NOT_SUPPORTED);
 	}
 
-	if (0 != strcmp(request.getMethod(), MHD_HTTP_METHOD_GET)) {
+	if (request.getMethod() != MHD_HTTP_METHOD_GET &&
+		request.getMethod() != MHD_HTTP_METHOD_POST) {
 		throw WebServerException(MHD_HTTP_NOT_IMPLEMENTED);
 	}
-
-	LOGGER.debug("HTTP request received");
-	LOGGER.trace("connection: %p", request.getConnection());
-	LOGGER.trace("url: %s", request.getUrl());
-	LOGGER.trace("method: %s", request.getMethod());
-	LOGGER.trace("version: %s", request.getVersion());
-	LOGGER.trace("size: %u", *request.getUploadDataSize());
 
 	std::string relativePath(rootDirectory + request.getUrl());
 	LOGGER.trace("relativePath: %s", relativePath.c_str());
@@ -56,7 +50,7 @@ Response* IrrigationWebServer::onRequest(const Request& request) {
 	std::stringstream fileContent;
 	fileContent << ifs.rdbuf();
 
-	const std::string& result = templateEngine.generate(fileContent.str());
+	const std::string& result = templateEngine.generate(fileContent.str(), request.getParameters());
 	return new Response(request, result);
 
 	//std::string fileContent;

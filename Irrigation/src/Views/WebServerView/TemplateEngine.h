@@ -9,15 +9,15 @@ class IrrigationDocument;
 
 class TemplateEngine {
 	const IrrigationDocument* const document;
-	Teng::Teng_t teng;
-	std::string result;
+	std::string generated;
 
 	void onIterate(Teng::FragmentList_t* programList, IdType id, LockedProgram program);
-	void initData(Teng::Fragment_t& root);
+	void addDatas(Teng::Fragment_t& root);
+	void addParameters(Teng::Fragment_t& root, const std::map<std::string, std::string>& parameters);
 
 public:
 	TemplateEngine(IrrigationDocument* const document);
 	~TemplateEngine();
 
-	const std::string& generate(const std::string& source);
+	const std::string& generate(const std::string& source, const std::map<std::string, std::string>& parameters);
 };

@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>Parameters</title>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<th>Parameters:</th>
+			</tr>
+			<tr>
+				<td>
+					1. <?teng frag parameter?> ${parameter.selected_id} <?teng endfrag?><br/> 
+					2. parameter: ${exist(parameter)}<br/>
+					3. len(abc): ${len("abc")}<br/>
+					4. 123: ${123}<br/>
+					5. 123: <?teng expr 123 ?><br/>
+					6. <?teng frag program?> ${program._number} <?teng endfrag?><br/>
+					7. <?teng frag program?> ${program._count} <?teng endfrag?><br/>
+					8. <?teng frag program?> ${program.name}(${.program.id}) <?teng endfrag?><br/>
+					9. 	<?teng frag .program?>
+							<?teng frag .parameter?>
+								<?teng if $.parameter.selected_id == $.program.id ?>
+									selected program: ${.program.name}<br/>
+								<?teng endif?>
+							<?teng endfrag?>
+						<?teng endfrag?><br/>
+				</td>
+			</tr>
+		<table>
+	</body>
+</html>

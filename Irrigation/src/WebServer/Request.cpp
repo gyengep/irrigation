@@ -3,13 +3,14 @@
 
 
 Request::Request(MHD_Connection* connection, const char* url, const char* method, const char* version,
-		const char* upload_data, size_t* upload_data_size) :
+		const char* uploadData, size_t* uploadDataSize, const Parameters& parameters) :
 	connection(connection),
 	url(url),
 	method(method),
 	version(version),
-	upload_data(upload_data),
-	upload_data_size(upload_data_size)
+	uploadData(uploadData),
+	uploadDataSize(uploadDataSize),
+	parameters(parameters)
 {
 }
 
@@ -17,22 +18,26 @@ MHD_Connection* Request::getConnection() const {
 	return connection;
 }
 
-const char* Request::getUrl() const {
+const std::string& Request::getUrl() const {
 	return url;
 }
 
-const char* Request::getMethod() const {
+const std::string& Request::getMethod() const {
 	return method;
 }
 
-const char* Request::getVersion() const {
+const std::string& Request::getVersion() const {
 	return version;
 }
 
 const char* Request::getUploadData() const {
-	return upload_data;
+	return uploadData;
 }
 
 size_t* Request::getUploadDataSize() const {
-	return upload_data_size;
+	return uploadDataSize;
+}
+
+const std::map<std::string, std::string> Request::getParameters() const {
+	return parameters;
 }

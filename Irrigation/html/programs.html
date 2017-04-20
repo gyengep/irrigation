@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<title>Program list</title>
+	</head>
+	<body>
+		<table>
+			<tr><th>Programs:</th></tr>
+				<?teng frag program?>
+					<tr><td>
+					Name: ${name} ID: ${id} 
+					RunTimes: 
+					<?teng frag runTime?>
+						${minutes}, 
+					<?teng endfrag?>
+					StartTimes: 
+					<?teng frag startTime?>
+						${hours}:${minutes}, 
+					<?teng endfrag?>
+					</td></tr>
+				<?teng endfrag?>
+		<table>
+	</body>
+</html>

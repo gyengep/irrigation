@@ -14,6 +14,9 @@ class WebServer {
 		const char *url, const char *method, const char *version,
 		const char *upload_data, size_t *upload_data_size, void **con_cls);
 
+	static int iterateOnGetParameters(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
+	static void onFatalError(void *cls, const char *file, unsigned int line, const char *reason);
+
 	static std::set<WebServer*> instances;
 	static std::map<int, std::string> errorMessages;
 

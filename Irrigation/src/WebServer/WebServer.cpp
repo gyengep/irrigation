@@ -33,6 +33,8 @@ WebServer::WebServer(uint16_t port)
 			WebServer::accessHandlerCallback, this,
 			MHD_OPTION_ARRAY, ops, MHD_OPTION_END);
 
+	MHD_set_panic_func(onFatalError, NULL);
+
 	if (NULL == daemon) {
 		instances.erase(this);
 		throw std::runtime_error("Can not create webserver");
@@ -54,15 +56,37 @@ WebServer::~WebServer() {
 	LOGGER.info("WebServer stopped");
 }
 
+void WebServer::onFatalError(void *cls, const char *file, unsigned int line, const char *reason) {
+	LOGGER.error("WebServer stopped working (%s:%u)! reason: %s", file, line, (reason ? reason : "<null>"));
+}
+
+int WebServer::iterateOnGetParameters(void *cls, enum MHD_ValueKind kind, const char *key, const char *value) {
+	LOGGER.trace("GET parameter: \"%s\" - \"%s\"", key, value);
+
+	Request::Parameters* requestParameters = static_cast<Request::Parameters*>(cls);
+	requestParameters->insert(std::make_pair(std::string(key), std::string(value)));
+	return MHD_YES;
+}
 
 int WebServer::accessHandlerCallback(void *cls,
 		struct MHD_Connection* connection, const char* url, const char* method, const char* version,
 		const char* upload_data, size_t* upload_data_size, void** con_cls) {
 
+	LOGGER.debug("HTTP request received");
+
+	LOGGER.trace("connection: %p", connection);
+	LOGGER.trace("url: %s", url);
+	LOGGER.trace("method: %s", method);
+	LOGGER.trace("version: %s", version);
+	LOGGER.trace("upload data size: %u", *upload_data_size);
 
 	try {
-		Request request(connection, url, method, version, upload_data, upload_data_size);
-		std::shared_ptr<Response> response;
+
+		Request::Parameters requestParameters;
+		MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, iterateOnGetParameters, &requestParameters);
+
+		Request request(connection, url, method, version, upload_data, upload_data_size, requestParameters);
+		std::unique_ptr<Response> response;
 
 		try {
 			WebServer* webServer = static_cast<WebServer*>(cls);
@@ -71,7 +95,9 @@ int WebServer::accessHandlerCallback(void *cls,
 				throw WebServerException(MHD_HTTP_INTERNAL_SERVER_ERROR);
 			}
 
+
 			response.reset(webServer->onRequest(request));
+			LOGGER.debug("sending HTTP response");
 
 		} catch (WebServerException& e) {
 			LOGGER.debug("HTTP error: %d - %s", e.getStatusCode(), getErrorMessage(e.getStatusCode()).c_str());
@@ -86,6 +112,7 @@ int WebServer::accessHandlerCallback(void *cls,
 
 	} catch (std::exception& e) {
 		LOGGER.warning(e.what());
+		LOGGER.debug("connection closed");
 		return MHD_NO;
 	}
 }

@@ -14,6 +14,10 @@ class Response {
 
 	void send();
 
+	// disable copy constructor and operator
+	Response(const Response&);
+	const Response& operator= (const Response&);
+
 public:
 	Response(const Request& request, const std::string& message, int statusCode = MHD_HTTP_OK);
 	~Response();
