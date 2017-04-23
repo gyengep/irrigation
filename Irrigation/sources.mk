@@ -24,4 +24,14 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 src \
+src/WebServer \
+src/Views/WebServerView \
+src/Views/CommandLineView \
+src/Utils \
+src/Model \
+src/Logic \
+src/Hardware \
+src/DocumentView \
+src/Commons \
+src/Command \
 

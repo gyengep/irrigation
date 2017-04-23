@@ -5,11 +5,19 @@
 -include ../makefile.init
 
 RM := rm -rf
-MKDIR_P = mkdir -p bin/src
-
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/WebServer/subdir.mk
+-include src/Views/WebServerView/subdir.mk
+-include src/Views/CommandLineView/subdir.mk
+-include src/Utils/subdir.mk
+-include src/Model/subdir.mk
+-include src/Logic/subdir.mk
+-include src/Hardware/subdir.mk
+-include src/DocumentView/subdir.mk
+-include src/Commons/subdir.mk
+-include src/Command/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -40,13 +48,13 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: directories Irrigation.exe
+all: Irrigation.exe
 
 # Tool invocations
 Irrigation.exe: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cygwin C++ Linker'
-	g++  -o "bin/Irrigation.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/usr/local/lib/ -o "Irrigation.exe" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -54,14 +62,8 @@ Irrigation.exe: $(OBJS) $(USER_OBJS)
 clean:
 	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(CPP_DEPS)$(C_DEPS) Irrigation.exe
 	-@echo ' '
-	
-directories: 
-	-$(MKDIR_P)
-	-@echo ' '
-	
+
 .PHONY: all clean dependents
 .SECONDARY:
 
 -include ../makefile.targets
-
-
