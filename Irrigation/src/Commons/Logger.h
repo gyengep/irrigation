@@ -11,6 +11,7 @@ class Logger {
 public:
 
 	enum Level {
+		OFF,
 		ERROR,
 		WARNING,
 		INFO,

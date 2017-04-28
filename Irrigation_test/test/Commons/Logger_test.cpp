@@ -2,6 +2,15 @@
 #include "Commons/Logger.h"
 
 
+TEST(LoggerTest, isLoggableOFF) {
+	LOGGER.setLevel(Logger::OFF);
+	EXPECT_FALSE(LOGGER.isLoggable(Logger::ERROR));
+	EXPECT_FALSE(LOGGER.isLoggable(Logger::WARNING));
+	EXPECT_FALSE(LOGGER.isLoggable(Logger::INFO));
+	EXPECT_FALSE(LOGGER.isLoggable(Logger::DEBUG));
+	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
+}
+
 TEST(LoggerTest, isLoggableError) {
 	LOGGER.setLevel(Logger::ERROR);
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
