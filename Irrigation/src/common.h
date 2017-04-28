@@ -8,7 +8,8 @@
 #include <unistd.h>
 
 #ifdef IRRIGATION_TEST
-#include <gtest/gtest.h>
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #else
 #define FRIEND_TEST(test_case_name, test_name)
 #endif // IRRIGATION_TEST

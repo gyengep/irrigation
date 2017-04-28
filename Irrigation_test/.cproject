@@ -41,6 +41,7 @@
 								<option id="gnu.cpp.compiler.option.dialect.flags.1709102893" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++0x" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1234358719" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="C:/Work/irrigation/Irrigation/src"/>
+									<listOptionValue builtIn="false" value="C:/Work/irrigation/Irrigation_test/test"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.613937209" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="IRRIGATION_TEST"/>
@@ -64,7 +65,6 @@
 								<option id="gnu.cpp.link.option.libs.1889400143" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="teng"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="microhttpd"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gtest"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.588620588" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/local/lib/"/>

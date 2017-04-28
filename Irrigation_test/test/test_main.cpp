@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv) {
 	LOGGER.setLevel(Logger::OFF);
-	::testing::InitGoogleTest(&argc, argv);
-	//::testing::GTEST_FLAG(filter) = "CommandExecutorTest*";
+	::testing::InitGoogleMock(&argc, argv);
+	//::testing::GTEST_FLAG(filter) = "ProgramTest*";
 	return RUN_ALL_TESTS();
 }
