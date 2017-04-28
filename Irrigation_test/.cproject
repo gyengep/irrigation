@@ -41,7 +41,7 @@
 								<option id="gnu.cpp.compiler.option.dialect.flags.1709102893" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++0x" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1234358719" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="C:/Work/irrigation/Irrigation/src"/>
-									<listOptionValue builtIn="false" value="C:/Work/irrigation/Irrigation_test/test"/>
+									<listOptionValue builtIn="false" value="C:/Work/irrigation/Irrigation_test/3p"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.613937209" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="IRRIGATION_TEST"/>
@@ -77,7 +77,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="test/Logic/Program_test.cpp|DocumentView|src/sample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="3p|test/Logic/Program_test.cpp|DocumentView|src/sample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="3p"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
