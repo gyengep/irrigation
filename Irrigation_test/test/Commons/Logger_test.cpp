@@ -1,8 +1,26 @@
 #include "common.h"
-#include "Commons/Logger.h"
+#include "Logger_test.h"
 
 
-TEST(LoggerTest, isLoggableOFF) {
+void LoggerTest::SetUp() {
+	levelSave = LOGGER.getLevel();
+}
+
+void LoggerTest::TearDown() {
+	LOGGER.setLevel(levelSave);
+}
+
+
+TEST_F(LoggerTest, getLevelText) {
+	EXPECT_STREQ("OFF", Logger::getLevelText(Logger::OFF));
+	EXPECT_STREQ("ERROR", Logger::getLevelText(Logger::ERROR));
+	EXPECT_STREQ("WARNING", Logger::getLevelText(Logger::WARNING));
+	EXPECT_STREQ("INFO", Logger::getLevelText(Logger::INFO));
+	EXPECT_STREQ("DEBUG", Logger::getLevelText(Logger::DEBUG));
+	EXPECT_STREQ("TRACE", Logger::getLevelText(Logger::TRACE));
+}
+
+TEST_F(LoggerTest, isLoggableOFF) {
 	LOGGER.setLevel(Logger::OFF);
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::ERROR));
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::WARNING));
@@ -11,7 +29,7 @@ TEST(LoggerTest, isLoggableOFF) {
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
 }
 
-TEST(LoggerTest, isLoggableError) {
+TEST_F(LoggerTest, isLoggableError) {
 	LOGGER.setLevel(Logger::ERROR);
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::WARNING));
@@ -20,7 +38,7 @@ TEST(LoggerTest, isLoggableError) {
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
 }
 
-TEST(LoggerTest, isLoggableWarning) {
+TEST_F(LoggerTest, isLoggableWarning) {
 	LOGGER.setLevel(Logger::WARNING);
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
@@ -29,7 +47,7 @@ TEST(LoggerTest, isLoggableWarning) {
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
 }
 
-TEST(LoggerTest, isLoggableInfo) {
+TEST_F(LoggerTest, isLoggableInfo) {
 	LOGGER.setLevel(Logger::INFO);
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
@@ -38,7 +56,7 @@ TEST(LoggerTest, isLoggableInfo) {
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
 }
 
-TEST(LoggerTest, isLoggableDebug) {
+TEST_F(LoggerTest, isLoggableDebug) {
 	LOGGER.setLevel(Logger::DEBUG);
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
@@ -47,7 +65,7 @@ TEST(LoggerTest, isLoggableDebug) {
 	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
 }
 
-TEST(LoggerTest, isLoggableTrace) {
+TEST_F(LoggerTest, isLoggableTrace) {
 	LOGGER.setLevel(Logger::TRACE);
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
 	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));

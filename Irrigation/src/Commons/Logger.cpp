@@ -64,6 +64,7 @@ void Logger::setLevel(Level level) {
 
 const char* Logger::getLevelText(Level level) {
 	const static char* levelTexts[] = {
+		"OFF",
 		"ERROR",
 		"WARNING",
 		"INFO",
@@ -89,14 +90,15 @@ void Logger::log(Level level, const char * format, va_list args) {
 
 	strftime(buffer, bufferSize, "%Y.%m.%d %H:%M:%S", timeinfo);
 	logOutput << buffer << " ";
-
 	logOutput << std::this_thread::get_id() << " ";
-
 	logOutput << getLevelText(level) << ": ";
 
 	vsnprintf(buffer, bufferSize, format, args);
-	logOutput << buffer << std::endl;
+	logOutput << buffer;
 
+	logOutput << " current level: " << getLevelText(this->level);
+
+	logOutput << std::endl;
 	logOutput.flush();
 }
 

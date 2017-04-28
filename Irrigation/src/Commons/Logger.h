@@ -32,8 +32,6 @@ private:
 	Logger();
 	void log(Level level, const char * format, va_list args);
 
-	static const char* getLevelText(Level level);
-
 public:
 	virtual ~Logger();
 	static Logger& getInstance();
@@ -41,11 +39,14 @@ public:
 	void setLevel(Level level);
 	void setFile(const char* fileName = NULL);
 
-	bool isLoggable(Level level) const;
+	bool  isLoggable(Level level) const;
+	Level getLevel() const { return level; }
 
 	void error(const char * format, ...);
 	void warning(const char * format, ...);
 	void info(const char * format, ...);
 	void debug(const char * format, ...);
 	void trace(const char * format, ...);
+
+	static const char* getLevelText(Level level);
 };
