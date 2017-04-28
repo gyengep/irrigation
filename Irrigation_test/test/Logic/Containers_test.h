@@ -11,32 +11,42 @@ protected:
 
 	std::shared_ptr<RunTimeContainer> runTimes;
 
-	RunTimeContainerTest() : runTimes(RunTimeContainerFactoryHolder::create()) {}
-    virtual ~RunTimeContainerTest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    virtual void SetUp();
+    virtual void TearDown();
 };
 
 
 class StartTimeContainerTest : public ::testing::Test {
 protected:
 
+	typedef std::list<std::pair<IdType, StartTime>> StartTimeList;
+
 	std::shared_ptr<StartTimeContainer> startTimes;
 
-	StartTimeContainerTest() : startTimes(StartTimeContainerFactoryHolder::create()) {}
-    virtual ~StartTimeContainerTest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    virtual void SetUp();
+    virtual void TearDown();
+
+    static StartTimeList getAsStartTimeList(std::shared_ptr<StartTimeContainer> startTimes);
 };
 
 
 class ProgramContainerTest : public ::testing::Test {
 protected:
 
+	typedef std::list<std::pair<IdType, Program*>> ProgramList;
+
+	class ProgramContainerCallback {
+		ProgramList programList;
+
+	public:
+		void callback(IdType id, LockedProgram program);
+		const ProgramList& getProgramList() const;
+	};
+
 	std::shared_ptr<ProgramContainer> programs;
 
-	ProgramContainerTest() : programs(ProgramContainerFactoryHolder::create()) {}
-    virtual ~ProgramContainerTest() {}
-    virtual void SetUp() {}
-    virtual void TearDown() {}
+    virtual void SetUp();
+    virtual void TearDown();
+
+    static ProgramList getAsProgramList(const std::shared_ptr<ProgramContainer> programs);
 };

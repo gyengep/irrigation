@@ -8,6 +8,15 @@
 #include <thread>
 
 
+void RunTimeContainerTest::SetUp() {
+	runTimes.reset(RunTimeContainerFactoryHolder::create());
+}
+
+void RunTimeContainerTest::TearDown() {
+
+}
+
+
 TEST_F(RunTimeContainerTest, size) {
 	EXPECT_EQ(ZONE_COUNT, runTimes->size());
 }
@@ -70,9 +79,15 @@ TEST_F(RunTimeContainerTest, getInvalid) {
 //////////////////////////////////////////////////////////////////////
 
 
-typedef std::list<std::pair<IdType, StartTime>> StartTimeList;
+void StartTimeContainerTest::SetUp() {
+	startTimes.reset(StartTimeContainerFactoryHolder::create());
+}
 
-StartTimeList createCopy(std::shared_ptr<StartTimeContainer> startTimes) {
+void StartTimeContainerTest::TearDown() {
+
+}
+
+StartTimeContainerTest::StartTimeList StartTimeContainerTest::getAsStartTimeList(std::shared_ptr<StartTimeContainer> startTimes) {
 	StartTimeList startTimeCopy;
 
 	for (auto it = startTimes->begin(); startTimes->end() != it; ++it) {
@@ -82,21 +97,22 @@ StartTimeList createCopy(std::shared_ptr<StartTimeContainer> startTimes) {
 	return startTimeCopy;
 }
 
+
 TEST_F(StartTimeContainerTest, insert) {
 	IdType id1 = startTimes->insert(StartTime(12, 20));
 	EXPECT_EQ(
 		StartTimeList({ { id1, StartTime(12, 20) } }),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 
 	IdType id2 = startTimes->insert(StartTime(10, 10));
 	EXPECT_EQ(
 		StartTimeList({ { id2, StartTime(10, 10) }, { id1, StartTime(12, 20) } }),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 
 	IdType id3 = startTimes->insert(StartTime(10, 15));
 	EXPECT_EQ(
 		StartTimeList({ { id2, StartTime(10, 10) }, { id3, StartTime(10, 15) }, { id1, StartTime(12, 20) } }),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 }
 
 TEST_F(StartTimeContainerTest, erase) {
@@ -109,25 +125,25 @@ TEST_F(StartTimeContainerTest, erase) {
 	startTimes->erase(id2);
 	EXPECT_EQ(
 		StartTimeList({ { id1, StartTime(10, 10) }, { id3, StartTime(11, 20) }, { id4, StartTime(12, 30) } }),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 
 	// Delete first
 	startTimes->erase(id1);
 	EXPECT_EQ(
 		StartTimeList({ { id3, StartTime(11, 20) }, { id4, StartTime(12, 30) } }),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 
 	// Delete last
 	startTimes->erase(id3);
 	EXPECT_EQ(
 		StartTimeList({ { id4, StartTime(12, 30) } }),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 
 	// Delete last
 	startTimes->erase(id4);
 	EXPECT_EQ(
 		StartTimeList(),
-		createCopy(startTimes));
+		getAsStartTimeList(startTimes));
 }
 
 TEST_F(StartTimeContainerTest, eraseInvalid) {
@@ -154,7 +170,7 @@ TEST_F(StartTimeContainerTest, modify) {
 			{ id2, StartTime(13, 31) }
 		};
 
-		EXPECT_EQ(expectedStartTimes, createCopy(startTimes));
+		EXPECT_EQ(expectedStartTimes, getAsStartTimeList(startTimes));
 	}
 
 	startTimes->modify(id3, StartTime(23, 32));
@@ -167,7 +183,7 @@ TEST_F(StartTimeContainerTest, modify) {
 			{ id3, StartTime(23, 32) }
 		};
 
-		EXPECT_EQ(expectedStartTimes, createCopy(startTimes));
+		EXPECT_EQ(expectedStartTimes, getAsStartTimeList(startTimes));
 	}
 }
 
@@ -202,28 +218,30 @@ TEST_F(StartTimeContainerTest, getInvalid) {
 //////////////////////////////////////////////////////////////////////
 
 
-typedef std::list<std::pair<IdType, Program*>> ProgramList;
+void ProgramContainerTest::SetUp() {
+	programs.reset(ProgramContainerFactoryHolder::create());
+}
 
-class ProgramContainerCallback {
-	ProgramList programList;
-public:
+void ProgramContainerTest::TearDown() {
 
-	void callback(IdType id, LockedProgram program) {
-		programList.push_back(std::make_pair(id, &(*program)));
-	}
+}
 
-	const ProgramList& getProgramList() const {
-		return programList;
-	}
-};
+void ProgramContainerTest::ProgramContainerCallback::callback(IdType id, LockedProgram program) {
+	programList.push_back(std::make_pair(id, &(*program)));
+}
 
-ProgramList createCopy(const std::shared_ptr<ProgramContainer> programs) {
+const ProgramContainerTest::ProgramList& ProgramContainerTest::ProgramContainerCallback::getProgramList() const {
+	return programList;
+}
+
+ProgramContainerTest::ProgramList ProgramContainerTest::getAsProgramList(const std::shared_ptr<ProgramContainer> programs) {
 	ProgramContainerCallback programContainerCallback;
 	auto f = std::bind(&ProgramContainerCallback::callback, &programContainerCallback, std::placeholders::_1, std::placeholders::_2);
 	programs->iterate(f);
 
 	return programContainerCallback.getProgramList();
 }
+
 
 TEST_F(ProgramContainerTest, insert) {
 	Program* program1 = new Program();
@@ -233,13 +251,13 @@ TEST_F(ProgramContainerTest, insert) {
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 } }),
-		createCopy(programs));
+		getAsProgramList(programs));
 
 	IdType id2 = programs->insert(program2);
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 }, { id2, program2 } }),
-		createCopy(programs));
+		getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, erase) {
@@ -255,35 +273,35 @@ TEST_F(ProgramContainerTest, erase) {
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 }, { id4, program4 } }),
-		createCopy(programs));
+		getAsProgramList(programs));
 
 	// Erase from middle
 	programs->erase(id2);
 
 	EXPECT_EQ(
 		ProgramList({ { id1, program1 }, { id3, program3 }, { id4, program4 } }),
-		createCopy(programs));
+		getAsProgramList(programs));
 
 	// Erase first
 	programs->erase(id1);
 
 	EXPECT_EQ(
 		ProgramList({ { id3, program3 }, { id4, program4 } }),
-		createCopy(programs));
+		getAsProgramList(programs));
 
 	// Erase last
 	programs->erase(id4);
 
 	EXPECT_EQ(
 		ProgramList({ { id3, program3 } }),
-		createCopy(programs));
+		getAsProgramList(programs));
 
 	// Erase last
 	programs->erase(id3);
 
 	EXPECT_EQ(
 		ProgramList(),
-		createCopy(programs));
+		getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, eraseInvalid) {
@@ -307,7 +325,7 @@ TEST_F(ProgramContainerTest, moveFirstFirst) {
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveFirstMiddle) {
@@ -323,7 +341,7 @@ TEST_F(ProgramContainerTest, moveFirstMiddle) {
 
 	EXPECT_EQ(
 			ProgramList({ { id2, program2 }, { id1, program1 }, { id3, program3 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveFirstLast) {
@@ -339,7 +357,7 @@ TEST_F(ProgramContainerTest, moveFirstLast) {
 
 	EXPECT_EQ(
 			ProgramList({ { id2, program2 }, { id3, program3 }, { id1, program1 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveMiddleFirst) {
@@ -355,7 +373,7 @@ TEST_F(ProgramContainerTest, moveMiddleFirst) {
 
 	EXPECT_EQ(
 			ProgramList({ { id2, program2 }, { id1, program1 }, { id3, program3 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveMiddleMiddle) {
@@ -371,7 +389,7 @@ TEST_F(ProgramContainerTest, moveMiddleMiddle) {
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveMiddleLast) {
@@ -387,7 +405,7 @@ TEST_F(ProgramContainerTest, moveMiddleLast) {
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id3, program3 }, { id2, program2 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveLastFirst) {
@@ -403,7 +421,7 @@ TEST_F(ProgramContainerTest, moveLastFirst) {
 
 	EXPECT_EQ(
 			ProgramList({ { id3, program3 }, { id1, program1 }, { id2, program2 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveLastMiddle) {
@@ -419,7 +437,7 @@ TEST_F(ProgramContainerTest, moveLastMiddle) {
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id3, program3 }, { id2, program2 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveLastLast) {
@@ -435,7 +453,7 @@ TEST_F(ProgramContainerTest, moveLastLast) {
 
 	EXPECT_EQ(
 			ProgramList({ { id1, program1 }, { id2, program2 }, { id3, program3 } }),
-			createCopy(programs));
+			getAsProgramList(programs));
 }
 
 TEST_F(ProgramContainerTest, moveInvalid) {
