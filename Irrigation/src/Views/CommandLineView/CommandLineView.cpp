@@ -108,10 +108,13 @@ void CommandLineView::workerFunc() {
 			try {
 				commandExecutor.execute(tokens);
 			} catch (const IrrigationException& e) {
+				LOGGER.debug(e.what());
 				std::cout << "Error: " << e.what() << std::endl;
 			} catch (const std::exception& e) {
+				LOGGER.warning(e.what());
 				std::cout << "Exception occured: " << e.what() << std::endl;
 			} catch (...) {
+				LOGGER.warning("CommandLineView Unknown error!");
 				std::cout << "Unknown error!" << std::endl;
 			}
 

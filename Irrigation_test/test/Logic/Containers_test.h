@@ -48,5 +48,8 @@ protected:
     virtual void SetUp();
     virtual void TearDown();
 
-    static ProgramList getAsProgramList(const std::shared_ptr<ProgramContainer> programs);
+    static ProgramList getAsProgramList(const ProgramContainer* programs);
+    static void insertPrograms(ProgramContainer* programs, size_t count, std::vector<IdType>* result);
+    static void erasePrograms(ProgramContainer* programs, std::vector<IdType>* ids);
+    static void getProgramAndWait(ProgramContainer* programs, IdType id, int ms);
 };

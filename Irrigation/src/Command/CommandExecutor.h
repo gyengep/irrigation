@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "Model/IrrigationDocument.h"
 
-class IrrigationDocument;
 
 typedef std::vector<std::string> Tokens;
 

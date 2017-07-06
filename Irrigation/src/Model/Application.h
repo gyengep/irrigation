@@ -3,7 +3,7 @@
 #include <atomic>
 #include <ctime>
 
-class IrrigationDocument;
+#include <model/IrrigationDocument.h>
 
 
 class Application {

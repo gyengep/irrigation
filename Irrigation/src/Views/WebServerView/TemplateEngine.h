@@ -3,8 +3,7 @@
 #include <teng.h>
 
 #include "Logic/Containers.h"
-
-class IrrigationDocument;
+#include "Model/IrrigationDocument.h"
 
 
 class TemplateEngine {

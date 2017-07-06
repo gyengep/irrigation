@@ -50,11 +50,4 @@ namespace CommandLine {
 		ProgramList(IrrigationDocument* document) : Command(document, "listprogram", "") {}
 		virtual void execute(const Tokens& parameters);
 	};
-
-	class SpaceHolder : public Command {
-	public:
-		SpaceHolder() : Command(NULL, "", "") {}
-		virtual void execute(const Tokens& parameters) {}
-	};
-
 }
