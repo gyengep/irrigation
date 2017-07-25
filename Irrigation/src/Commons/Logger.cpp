@@ -96,8 +96,6 @@ void Logger::log(Level level, const char * format, va_list args) {
 	vsnprintf(buffer, bufferSize, format, args);
 	logOutput << buffer;
 
-	logOutput << " current level: " << getLevelText(this->level);
-
 	logOutput << std::endl;
 	logOutput.flush();
 }

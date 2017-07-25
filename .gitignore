@@ -11,4 +11,8 @@
 .metadata/*
 RemoteSystemsTempFiles/*
 Irrigation/.settings/*
+Irrigation/Debug/*
+Irrigation/Release/*
 Irrigation_test/.settings/
+Irrigation_test/Debug/*
+Irrigation_test/Release/*

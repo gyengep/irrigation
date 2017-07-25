@@ -95,13 +95,13 @@ void StartTimeContainer::erase(IdType id) {
 // Program
 
 
-ProgramWithMutex::ProgramWithMutex(Program* program, std::mutex* mutex) :
+ProgramContainer::ProgramWithMutex::ProgramWithMutex(Program* program, std::mutex* mutex) :
 	program(program),
 	mutex(mutex)
 {}
 
 
-LockedProgram::LockedProgram(ProgramWithMutexPtr programWithMutex) :
+LockedProgram::LockedProgram(ProgramContainer::ProgramWithMutexPtr programWithMutex) :
 	lockGuard(new std::lock_guard<std::mutex>(*programWithMutex->mutex)),
 	programWithMutex(programWithMutex)
 {
@@ -183,7 +183,7 @@ IdType ProgramContainer::insert(const value_type& newItem) {
 	std::lock_guard<std::mutex> lock(mutex);
 
 	IdType programId = UniqueID::getInstance().getNextId();
-	ProgramWithMutexPtr programWithMutexPtr(new ProgramWithMutex(newItem, new std::mutex()));
+	ProgramContainer::ProgramWithMutexPtr programWithMutexPtr(new ProgramContainer::ProgramWithMutex(newItem, new std::mutex()));
 	programContainer.push_back(std::make_pair(programId, programWithMutexPtr));
 	LOGGER.info("Program %u added", programId);
 	return programId;

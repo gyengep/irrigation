@@ -95,42 +95,21 @@ public:
 
 ////////////////////////////////////////////////////////////////
 
-
-struct ProgramWithMutex {
-	std::unique_ptr<Program> program;
-	std::unique_ptr<std::mutex> mutex;
-
-	ProgramWithMutex(Program* program, std::mutex* mutex);
-};
-
-typedef std::shared_ptr<ProgramWithMutex> ProgramWithMutexPtr;
-
-class LockedProgram {
-
-	std::shared_ptr<std::lock_guard<std::mutex>> lockGuard;
-	ProgramWithMutexPtr programWithMutex;
-
-	LockedProgram& operator= (const LockedProgram&);
-
-public:
-	LockedProgram(ProgramWithMutexPtr programWithMutex);
-	LockedProgram(const LockedProgram& other);
-	~LockedProgram();
-
-	Program* operator-> ();
-	const Program* operator-> () const;
-	Program& operator* ();
-	const Program& operator* () const;
-};
-
+class LockedProgram;
 
 class ProgramContainer {
 	friend ProgramContainerFactory;
-
-	typedef std::list<std::pair<IdType, ProgramWithMutexPtr>> ProgramContainerType;
-
 public:
 
+	struct ProgramWithMutex {
+		std::unique_ptr<Program> program;
+		std::unique_ptr<std::mutex> mutex;
+
+		ProgramWithMutex(Program* program, std::mutex* mutex);
+	};
+
+	typedef std::shared_ptr<ProgramWithMutex> ProgramWithMutexPtr;
+	typedef std::list<std::pair<IdType, ProgramWithMutexPtr>> ProgramContainerType;
 	typedef Program* value_type;
 	typedef std::function<void(IdType, LockedProgram)> CallbackType;
 
@@ -160,3 +139,23 @@ public:
 	const LockedProgram at(IdType id) const;
 	size_t size() const;
 };
+
+
+class LockedProgram {
+
+	std::shared_ptr<std::lock_guard<std::mutex>> lockGuard;
+	ProgramContainer::ProgramWithMutexPtr programWithMutex;
+
+	LockedProgram& operator= (const LockedProgram&);
+
+public:
+	LockedProgram(ProgramContainer::ProgramWithMutexPtr programWithMutex);
+	LockedProgram(const LockedProgram& other);
+	~LockedProgram();
+
+	Program* operator-> ();
+	const Program* operator-> () const;
+	Program& operator* ();
+	const Program& operator* () const;
+};
+

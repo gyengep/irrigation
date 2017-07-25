@@ -18,9 +18,6 @@ class CommandLineView;
 
 namespace CommandLine {
 
-	DECLARE_COMMAND(Exit, "exit", "");
-	DECLARE_COMMAND(Valve, "valve", "<ValveId> on|off");
-	DECLARE_COMMAND(Zone, "zone", "<ZoneId> on|off");
 	DECLARE_COMMAND(ProgramShow, "showprogram", "<ProgramId>");
 	DECLARE_COMMAND(ProgramAdd, "addprogram", "");
 	DECLARE_COMMAND(ProgramDelete, "delprogram", "<ProgramId>");
@@ -30,11 +27,13 @@ namespace CommandLine {
 	DECLARE_COMMAND(StarttimeAdd, "addstarttime", "<ProgramId> hour min");
 	DECLARE_COMMAND(StarttimeDelete, "delstarttime", "<ProgramId> <StartTimeId>");
 	DECLARE_COMMAND(StarttimeSet, "setstarttime", "<ProgramId> <StartTimeId> hour min");
-	DECLARE_COMMAND(StarttimeGet, "getstarttime", "<ProgramId> <StartTimeId>");
 	DECLARE_COMMAND(RuntimeList, "listruntime", "<ProgramId>");
 	DECLARE_COMMAND(RuntimeSet, "setruntime", "<ProgramId> <RunTimeId> min");
-	DECLARE_COMMAND(RuntimeGet, "getruntime", "<ProgramId> <RunTimeId>");
 	DECLARE_COMMAND(ResetValves, "resetvalves", "");
+	DECLARE_COMMAND(Exit, "exit", "");
+	DECLARE_COMMAND(Valve, "valve", "<ValveId> on|off");
+	DECLARE_COMMAND(Zone, "zone", "<ZoneId> on|off");
+
 
 
 	class Help : public Command {

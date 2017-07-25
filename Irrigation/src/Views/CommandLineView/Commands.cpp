@@ -18,25 +18,18 @@ if (parameters.size() < req) {													\
 	throw TooMuchArgumentsException();											\
 }
 
-
-#define PRINT_RUNTIME(id, runTime)												\
-	std::cout << "  " << id << " - "; 											\
-	std::cout << std::setfill('0') << std::setw(2) << runTime;					\
-	std::cout << " min" << std::endl
-
 #define PRINT_RUNTIMES(runTimes)												\
-	std::cout << "Run times:" << std::endl;										\
+	std::cout << "Run times (min):" << std::endl;								\
 	for (auto it = runTimes.begin(); runTimes.end() != it; ++it) {				\
-		PRINT_RUNTIME(it->first, it->second);									\
+		std::cout << "  " << it->first << " - "; 								\
+		std::cout << std::setfill('0') << std::setw(2) << it->second;			\
+		std::cout << std::endl;													\
 	}
-
-#define PRINT_STARTTIME(id, startTime)											\
-	std::cout << "  " << id << " - " << startTime << std::endl
 
 #define PRINT_STARTTIMES(startTimes)											\
 	std::cout << "Start times:" << std::endl;									\
 	for (auto it = startTimes.begin(); startTimes.end() != it; ++it) {			\
-		PRINT_STARTTIME(it->first, it->second);									\
+		std::cout << "  " << it->first << " - " << it->second << std::endl;		\
 	}
 
 
@@ -73,18 +66,6 @@ namespace CommandLine {
 
 		LockedProgram program = document->getPrograms().at(programId);
 		program->getStartTimes().modify(startTimeId, StartTime(hour, min));
-	}
-
-	void StarttimeGet::execute(const Tokens& parameters) {
-		CHECK_PARAMETERS(2);
-
-		IdType programId = Parser::parseProgramId(parameters[0]);
-		IdType startTimeId = Parser::parseStartTimeId(parameters[1]);
-
-		LockedProgram program = document->getPrograms().at(programId);
-		StartTime startTime = program->getStartTimes().at(startTimeId);
-
-		PRINT_STARTTIME(startTimeId, startTime);
 	}
 
 	void StarttimeAdd::execute(const Tokens& parameters) {
@@ -127,18 +108,6 @@ namespace CommandLine {
 		LockedProgram program = document->getPrograms().at(programId);
 
 		program->getRunTimes().modify(runTimeId, runTime);
-	}
-
-	void RuntimeGet::execute(const Tokens& parameters) {
-		CHECK_PARAMETERS(2);
-
-		IdType programId = Parser::parseProgramId(parameters[0]);
-		IdType runTimeId = Parser::parseRunTimeId(parameters[1]);
-
-		LockedProgram program = document->getPrograms().at(programId);
-		unsigned runTime = program->getRunTimes().at(runTimeId);
-
-		PRINT_RUNTIME(runTimeId, runTime);
 	}
 
 	void ProgramList::onIterate(IdType id, LockedProgram program) {

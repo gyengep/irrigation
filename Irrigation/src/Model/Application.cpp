@@ -45,7 +45,7 @@ void Application::run() {
 	LOGGER.debug("Application main loop start");
 	
 	while (!isTerminated) {
-		document->doTask();
+		//document->doTask();
 		usleep(50000);
 	}
 	
