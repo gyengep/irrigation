@@ -19,7 +19,7 @@ class CommandLineView;
 namespace CommandLine {
 
 	DECLARE_COMMAND(ProgramShow, "showprogram", "<ProgramId>");
-	DECLARE_COMMAND(ProgramAdd, "addprogram", "");
+	DECLARE_COMMAND(ProgramAdd, "addprogram", "name");
 	DECLARE_COMMAND(ProgramDelete, "delprogram", "<ProgramId>");
 	DECLARE_COMMAND(ProgramRename, "renprogram", "<ProgramId> name");
 	DECLARE_COMMAND(ProgramMove, "moveprogram", "<ProgramId> position");

@@ -3,7 +3,7 @@
 #include "Model/IrrigationDocument.h"
 #include "Logic/Containers.h"
 
-
+/*
 class ProgramContainerMock {
 public:
 	typedef ProgramContainer::value_type value_type;
@@ -27,3 +27,4 @@ protected:
     virtual void SetUp();
     virtual void TearDown();
 };
+*/

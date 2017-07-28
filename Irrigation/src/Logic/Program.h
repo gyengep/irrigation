@@ -33,7 +33,6 @@ private:
 	std::unique_ptr<StartTimeContainer> startTimes;
 
 public:
-	Program();
 	Program(const std::string& name);
 	~Program();
 

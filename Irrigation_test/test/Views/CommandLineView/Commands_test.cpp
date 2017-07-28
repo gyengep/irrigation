@@ -7,7 +7,7 @@
 using namespace CommandLine;
 using ::testing::_;
 
-
+/*
 
 void ProgramTest::SetUp() {
 }
@@ -40,3 +40,4 @@ TEST_F(ProgramTest, move) {
 	ProgramMove<IrrigationDocumentMock> command(&document);
 	command.execute(Tokens({std::to_string(id), std::to_string(position)}));
 }
+*/

@@ -138,9 +138,9 @@ namespace CommandLine {
 	}
 
 	void ProgramAdd::execute(const Tokens& parameters) {
-		CHECK_PARAMETERS(0);
+		CHECK_PARAMETERS(1);
 
-		document->getPrograms().insert(new Program());
+		document->getPrograms().insert(new Program(parameters[0]));
 	}
 
 	void ProgramDelete::execute(const Tokens& parameters) {
