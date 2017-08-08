@@ -16,12 +16,10 @@ int main() {
 	LOGGER.setFile(NULL);
 	LOGGER.setLevel(Logger::TRACE);
 	
-	Application application;
-
 	try {
-		application.init();
-		application.run();
-		application.uninit();
+		Application::getInstance().init();
+		Application::getInstance().run();
+		Application::getInstance().uninit();
 	} catch(std::exception& e) {
 		LOGGER.error(e.what());
 	}
