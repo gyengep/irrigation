@@ -34,10 +34,10 @@ private:
 
 public:
 	Program(const std::string& name);
-	~Program();
+	virtual ~Program();
 
 	std::string getName() const;
-	void setName(const std::string& name);
+	virtual void setName(const std::string& name);
 
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType(void) const;

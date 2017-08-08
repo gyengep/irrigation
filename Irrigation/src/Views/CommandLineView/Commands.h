@@ -23,17 +23,16 @@ namespace CommandLine {
 	DECLARE_COMMAND(ProgramDelete, "delprogram", "<ProgramId>");
 	DECLARE_COMMAND(ProgramRename, "renprogram", "<ProgramId> name");
 	DECLARE_COMMAND(ProgramMove, "moveprogram", "<ProgramId> position");
-	DECLARE_COMMAND(StarttimeList, "liststarttime", "<ProgramId>");
-	DECLARE_COMMAND(StarttimeAdd, "addstarttime", "<ProgramId> hour min");
-	DECLARE_COMMAND(StarttimeDelete, "delstarttime", "<ProgramId> <StartTimeId>");
-	DECLARE_COMMAND(StarttimeSet, "setstarttime", "<ProgramId> <StartTimeId> hour min");
-	DECLARE_COMMAND(RuntimeList, "listruntime", "<ProgramId>");
-	DECLARE_COMMAND(RuntimeSet, "setruntime", "<ProgramId> <RunTimeId> min");
+	DECLARE_COMMAND(StartTimeList, "liststarttime", "<ProgramId>");
+	DECLARE_COMMAND(StartTimeAdd, "addstarttime", "<ProgramId> hour min");
+	DECLARE_COMMAND(StartTimeDelete, "delstarttime", "<ProgramId> <StartTimeId>");
+	DECLARE_COMMAND(StartTimeSet, "setstarttime", "<ProgramId> <StartTimeId> hour min");
+	DECLARE_COMMAND(RunTimeList, "listruntime", "<ProgramId>");
+	DECLARE_COMMAND(RunTimeSet, "setruntime", "<ProgramId> <RunTimeId> min");
 	DECLARE_COMMAND(ResetValves, "resetvalves", "");
-	DECLARE_COMMAND(Exit, "exit", "");
 	DECLARE_COMMAND(Valve, "valve", "<ValveId> on|off");
 	DECLARE_COMMAND(Zone, "zone", "<ZoneId> on|off");
-
+	DECLARE_COMMAND(Exit, "exit", "");
 
 
 	class Help : public Command {
