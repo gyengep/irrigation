@@ -31,19 +31,21 @@ public:
 
 private:
 
-	// Accessible only for ContainerFactory
-	RunTimeContainer();
-
 	// Disable copy constructor and operator
 	RunTimeContainer(const RunTimeContainer&);
 	RunTimeContainer& operator= (const RunTimeContainer&);
 
 	ContainerType container;
 
+protected:
+
+	// Accessible only for ContainerFactory and RunTimeContainerMock
+	RunTimeContainer();
+
 public:
 	virtual ~RunTimeContainer();
 
-	void modify(IdType, const value_type& newItem);
+	virtual void modify(IdType, const value_type& newItem);
 
 	const_iterator begin() const { return container.begin(); }
 	const_iterator end() const { return container.end(); }
@@ -67,9 +69,6 @@ public:
 
 private:
 
-	// Accessible only for ContainerFactory
-	StartTimeContainer();
-
 	// Disable copy constructor and operator
 	StartTimeContainer(const StartTimeContainer&);
 	StartTimeContainer& operator= (const StartTimeContainer&);
@@ -79,12 +78,17 @@ private:
 
 	ContainerType container;
 
+protected:
+
+	// Accessible only for ContainerFactory and StartTimeContainerMock
+	StartTimeContainer();
+
 public:
 	virtual ~StartTimeContainer();
 
-	IdType insert(const value_type& newItem);
-	void erase(IdType id);
-	void modify(IdType, const value_type& newItem);
+	virtual IdType insert(const value_type& newItem);
+	virtual void erase(IdType id);
+	virtual void modify(IdType, const value_type& newItem);
 
 	const_iterator begin() const { return container.begin(); }
 	const_iterator end() const { return container.end(); }
@@ -113,11 +117,12 @@ public:
 	typedef Program* value_type;
 	typedef std::function<void(IdType, LockedProgram)> CallbackType;
 
-private:
+protected:
 
-	// Accessible only for ContainerFactory
+	// Accessible only for ContainerFactory and ProgramContainerMock
 	ProgramContainer();
 
+private:
 	// Disable copy constructor and operator
 	ProgramContainer(const ProgramContainer&);
 	ProgramContainer& operator= (const ProgramContainer&);
@@ -131,12 +136,13 @@ public:
 
 	virtual ~ProgramContainer();
 
-	IdType insert(const value_type& newItem);
-	void erase(IdType id);
-	void move(IdType id, size_t newPosition);
+	virtual IdType insert(const value_type& newItem);
+	virtual void erase(IdType id);
+	virtual void move(IdType id, size_t newPosition);
 
 	void iterate(CallbackType f) const;
 	const LockedProgram at(IdType id) const;
+	LockedProgram at(IdType id);
 	size_t size() const;
 };
 
