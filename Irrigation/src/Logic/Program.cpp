@@ -14,14 +14,6 @@ Program::Program(const std::string& name) :
 	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
 }
 
-Program::Program() :
-	runTimes(RunTimeContainerFactoryHolder::create()),
-	startTimes(StartTimeContainerFactoryHolder::create())
-{
-	schedulerType = SPECIFIED_DAYS;
-	schedulers[SPECIFIED_DAYS] = new SpecifiedScheduler();
-}
-
 Program::~Program() {
 	for (auto it = schedulers.begin(); schedulers.end() != it; ++it) {
 		delete *it;

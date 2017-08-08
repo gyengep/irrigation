@@ -1,29 +1,134 @@
 #pragma once
 
+#include <memory>
+
 #include "Model/IrrigationDocument.h"
 #include "Logic/Containers.h"
+#include "Views/CommandLineView/Commands.h"
 
+namespace CommandLine {
 
-class ProgramContainerMock {
-public:
-	typedef ProgramContainer::value_type value_type;
-
-	MOCK_METHOD1(insert, IdType(const value_type& newItem));
-	MOCK_METHOD1(erase, void(IdType id));
-	MOCK_METHOD2(move, void(IdType id, size_t newPosition));
-};
-
-class IrrigationDocumentMock : public IrrigationDocument<ProgramContainerMock> {
-public:
-	IrrigationDocumentMock() : IrrigationDocument<ProgramContainerMock>() {}
-};
-
-
-class ProgramTest : public ::testing::Test {
+template<typename CommandType>
+class CommandsTest : public ::testing::Test {
 protected:
 
-	IrrigationDocumentMock document;
+	std::unique_ptr<IrrigationDocument> document;
+	std::unique_ptr<CommandType> command;
+
+    virtual void SetUp() {
+    	document.reset(new IrrigationDocument());
+    	command.reset(new CommandType(document.get()));
+    }
+
+    virtual void TearDown() {
+    }
+};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+class ListProgramTest : public CommandsTest<ProgramList> {
+};
+
+class ShowProgramTest : public CommandsTest<ProgramShow> {
+};
+
+class AddProgramTest : public CommandsTest<ProgramAdd> {
+protected:
 
     virtual void SetUp();
     virtual void TearDown();
 };
+
+class DelProgramTest : public CommandsTest<ProgramDelete> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+class RenProgramTest : public CommandsTest<ProgramRename> {
+};
+
+class MoveProgramTest : public CommandsTest<ProgramMove> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+class ListStartTimeTest : public CommandsTest<StartTimeList> {
+};
+
+class AddStartTimeTest : public CommandsTest<StartTimeAdd> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+class DelStartTimeTest : public CommandsTest<StartTimeDelete> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+class SetStartTimeTest : public CommandsTest<StartTimeSet> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+class ListRunTimeTest : public CommandsTest<RunTimeList> {
+};
+
+class SetRunTimeTest : public CommandsTest<RunTimeSet> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+class ResetValvesTest : public CommandsTest<ResetValves> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+class ValveTest : public CommandsTest<Valve> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+class ZoneTest : public CommandsTest<Zone> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
+};
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+class ExitTest : public CommandsTest<Exit> {
+};
+
+class HelpTest : public CommandsTest<Help> {
+};
+
+}

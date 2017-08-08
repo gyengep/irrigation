@@ -244,8 +244,8 @@ ProgramContainerTest::ProgramList ProgramContainerTest::getAsProgramList(const s
 
 
 TEST_F(ProgramContainerTest, insert) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 
@@ -261,10 +261,10 @@ TEST_F(ProgramContainerTest, insert) {
 }
 
 TEST_F(ProgramContainerTest, erase) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
-	Program* program4 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
+	Program* program4 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -305,7 +305,7 @@ TEST_F(ProgramContainerTest, erase) {
 }
 
 TEST_F(ProgramContainerTest, eraseInvalid) {
-	programs->insert(new Program());
+	programs->insert(new Program(""));
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
@@ -313,9 +313,9 @@ TEST_F(ProgramContainerTest, eraseInvalid) {
 }
 
 TEST_F(ProgramContainerTest, moveFirstFirst) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -329,9 +329,9 @@ TEST_F(ProgramContainerTest, moveFirstFirst) {
 }
 
 TEST_F(ProgramContainerTest, moveFirstMiddle) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -345,9 +345,9 @@ TEST_F(ProgramContainerTest, moveFirstMiddle) {
 }
 
 TEST_F(ProgramContainerTest, moveFirstLast) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -361,9 +361,9 @@ TEST_F(ProgramContainerTest, moveFirstLast) {
 }
 
 TEST_F(ProgramContainerTest, moveMiddleFirst) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -377,9 +377,9 @@ TEST_F(ProgramContainerTest, moveMiddleFirst) {
 }
 
 TEST_F(ProgramContainerTest, moveMiddleMiddle) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -393,9 +393,9 @@ TEST_F(ProgramContainerTest, moveMiddleMiddle) {
 }
 
 TEST_F(ProgramContainerTest, moveMiddleLast) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -409,9 +409,9 @@ TEST_F(ProgramContainerTest, moveMiddleLast) {
 }
 
 TEST_F(ProgramContainerTest, moveLastFirst) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -425,9 +425,9 @@ TEST_F(ProgramContainerTest, moveLastFirst) {
 }
 
 TEST_F(ProgramContainerTest, moveLastMiddle) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -441,9 +441,9 @@ TEST_F(ProgramContainerTest, moveLastMiddle) {
 }
 
 TEST_F(ProgramContainerTest, moveLastLast) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
+	Program* program3 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -457,7 +457,7 @@ TEST_F(ProgramContainerTest, moveLastLast) {
 }
 
 TEST_F(ProgramContainerTest, moveInvalid) {
-	IdType id1 = programs->insert(new Program());
+	IdType id1 = programs->insert(new Program(""));
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
 	EXPECT_THROW(programs->move(id1, programs->size()), std::out_of_range);
@@ -465,8 +465,8 @@ TEST_F(ProgramContainerTest, moveInvalid) {
 }
 
 TEST_F(ProgramContainerTest, get) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
+	Program* program1 = new Program("");
+	Program* program2 = new Program("");
 
 	IdType id1 = programs->insert(program1);
 	IdType id2 = programs->insert(program2);
@@ -476,7 +476,7 @@ TEST_F(ProgramContainerTest, get) {
 }
 
 TEST_F(ProgramContainerTest, getInvalid) {
-	programs->insert(new Program());
+	programs->insert(new Program(""));
 
 	IdType invalidId = UniqueID::getInstance().getNextId();
 
@@ -487,7 +487,7 @@ TEST_F(ProgramContainerTest, getInvalid) {
 
 void insertPrograms(std::shared_ptr<ProgramContainer> programs, size_t count, std::vector<IdType>* result) {
 	for(size_t i = 0; i < count; ++i) {
-		result->at(i) = programs->insert(new Program());
+		result->at(i) = programs->insert(new Program(""));
 	}
 }
 
@@ -530,7 +530,7 @@ TEST_F(ProgramContainerTest, concurentErase) {
     	ids[i].resize(addCount);
 
     	for (size_t t = 0; t < addCount; ++t) {
-    		ids[i].at(t) = programs->insert(new Program());
+    		ids[i].at(t) = programs->insert(new Program(""));
     	}
     }
 
@@ -553,8 +553,8 @@ void getProgramAndWait(std::shared_ptr<ProgramContainer> programs, IdType id, in
 TEST_F(ProgramContainerTest, programLock) {
 	const int waitMs = 100;
 
-	IdType id1 = programs->insert(new Program());
-	IdType id2 = programs->insert(new Program());
+	IdType id1 = programs->insert(new Program(""));
+	IdType id2 = programs->insert(new Program(""));
 
 	auto start = std::chrono::high_resolution_clock::now();
 

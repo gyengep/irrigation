@@ -179,6 +179,13 @@ const LockedProgram ProgramContainer::at(IdType id) const {
 	return LockedProgram(it->second);
 }
 
+LockedProgram ProgramContainer::at(IdType id) {
+	std::lock_guard<std::mutex> lock(mutex);
+
+	auto it = this->find(id);
+	return LockedProgram(it->second);
+}
+
 IdType ProgramContainer::insert(const value_type& newItem) {
 	std::lock_guard<std::mutex> lock(mutex);
 

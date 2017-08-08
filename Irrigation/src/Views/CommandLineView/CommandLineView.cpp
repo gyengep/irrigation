@@ -44,17 +44,12 @@ void CommandLineView::init() {
 	commandExecutor.addCommand(new CommandLine::ProgramDelete(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramRename(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ProgramMove(getDocument()));
-
-	commandExecutor.addCommand(new CommandLine::StarttimeList(getDocument()));
-	commandExecutor.addCommand(new CommandLine::StarttimeAdd(getDocument()));
-	commandExecutor.addCommand(new CommandLine::StarttimeDelete(getDocument()));
-	commandExecutor.addCommand(new CommandLine::StarttimeSet(getDocument()));
-
-
-	commandExecutor.addCommand(new CommandLine::RuntimeList(getDocument()));
-	commandExecutor.addCommand(new CommandLine::RuntimeSet(getDocument()));
-
-
+	commandExecutor.addCommand(new CommandLine::StartTimeList(getDocument()));
+	commandExecutor.addCommand(new CommandLine::StartTimeAdd(getDocument()));
+	commandExecutor.addCommand(new CommandLine::StartTimeDelete(getDocument()));
+	commandExecutor.addCommand(new CommandLine::StartTimeSet(getDocument()));
+	commandExecutor.addCommand(new CommandLine::RunTimeList(getDocument()));
+	commandExecutor.addCommand(new CommandLine::RunTimeSet(getDocument()));
 	commandExecutor.addCommand(new CommandLine::Valve(getDocument()));
 	commandExecutor.addCommand(new CommandLine::Zone(getDocument()));
 	commandExecutor.addCommand(new CommandLine::ResetValves(getDocument()));
