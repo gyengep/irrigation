@@ -76,18 +76,18 @@ TEST_F(SetRunTimeTest, invalidProgramID) {
 	EXPECT_THROW(command->execute(Tokens({programID, runTimeID, min})), InvalidProgramIdException);
 }
 
-TEST_F(SetRunTimeTest, invalidStartTimeID) {
+TEST_F(SetRunTimeTest, invalidRunTimeID) {
 	const std::string programID("0");
 	const std::string runTimeID("A");
 	const std::string min("20");
-	EXPECT_THROW(command->execute(Tokens({programID, runTimeID, min})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, runTimeID, min})), InvalidRunTimeIdException);
 }
 
 TEST_F(SetRunTimeTest, invalidMin) {
 	const std::string programID("0");
 	const std::string runTimeID("0");
 	const std::string min("bb");
-	EXPECT_THROW(command->execute(Tokens({programID, runTimeID, min})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, runTimeID, min})), InvalidParameterException);
 }
 
 TEST_F(SetRunTimeTest, success) {

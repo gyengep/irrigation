@@ -128,7 +128,7 @@ TEST_F(DelStartTimeTest, invalidProgramID) {
 TEST_F(DelStartTimeTest, invalidStartTimeID) {
 	const std::string programID("0");
 	const std::string startTimeID("abc");
-	EXPECT_THROW(command->execute(Tokens({programID, startTimeID})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, startTimeID})), InvalidStartTimeIdException);
 }
 
 TEST_F(DelStartTimeTest, success) {
@@ -175,7 +175,7 @@ TEST_F(SetStartTimeTest, invalidStartTimeID) {
 	const std::string startTimeID("A");
 	const std::string hour("1");
 	const std::string min("20");
-	EXPECT_THROW(command->execute(Tokens({programID, startTimeID, hour, min})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, startTimeID, hour, min})), InvalidStartTimeIdException);
 }
 
 TEST_F(SetStartTimeTest, invalidHour) {
@@ -183,7 +183,7 @@ TEST_F(SetStartTimeTest, invalidHour) {
 	const std::string startTimeID("0");
 	const std::string hour("aa");
 	const std::string min("20");
-	EXPECT_THROW(command->execute(Tokens({programID, startTimeID, hour, min})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, startTimeID, hour, min})), InvalidParameterException);
 }
 
 TEST_F(SetStartTimeTest, invalidMin) {
@@ -191,7 +191,7 @@ TEST_F(SetStartTimeTest, invalidMin) {
 	const std::string startTimeID("0");
 	const std::string hour("1");
 	const std::string min("bb");
-	EXPECT_THROW(command->execute(Tokens({programID, startTimeID, hour, min})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, startTimeID, hour, min})), InvalidParameterException);
 }
 
 TEST_F(SetStartTimeTest, success) {

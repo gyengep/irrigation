@@ -185,7 +185,7 @@ TEST_F(MoveProgramTest, invalidProgramID) {
 TEST_F(MoveProgramTest, invalidPosition) {
 	const std::string programID("0");
 	const std::string position("abc");
-	EXPECT_THROW(command->execute(Tokens({programID, position})), InvalidProgramIdException);
+	EXPECT_THROW(command->execute(Tokens({programID, position})), InvalidParameterException);
 }
 
 TEST_F(MoveProgramTest, success) {

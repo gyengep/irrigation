@@ -6,6 +6,9 @@
 #include "Logic/Containers.h"
 #include "Views/CommandLineView/Commands.h"
 
+
+class CommandLineView;
+
 namespace CommandLine {
 
 template<typename CommandType>
@@ -126,9 +129,21 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 
 class ExitTest : public CommandsTest<Exit> {
+protected:
+
+    virtual void SetUp();
+    virtual void TearDown();
 };
 
-class HelpTest : public CommandsTest<Help> {
+class HelpTest : public ::testing::Test {
+protected:
+
+	std::unique_ptr<CommandLineView> view;
+	std::unique_ptr<Help> command;
+
+    virtual void SetUp();
+    virtual void TearDown();
 };
+
 
 }
