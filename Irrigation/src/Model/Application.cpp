@@ -12,18 +12,34 @@
 #include "Views/WebServerView/WebServerView.h"
 
 
+std::mutex Application::createMutex;
+std::unique_ptr<Factory<Application>> Application::factory(new ApplicationFactory());
+std::unique_ptr<Application> Application::instance;
 
-Application* theApplication = NULL;
 
-Application* getApplication() {
-	return theApplication;
+Application& Application::getInstance() {
+	if (nullptr == instance) {
+		std::lock_guard<std::mutex> lock(createMutex);
+
+		if (nullptr == instance) {
+			instance.reset(factory->create());
+		}
+	}
+
+	return *instance;
+}
+
+void Application::setFactory(Factory<Application>* applicationFactory) {
+	std::lock_guard<std::mutex> lock(createMutex);
+
+	instance.reset(nullptr);
+	factory.reset(applicationFactory);
 }
 
 Application::Application() :
 	document(NULL),
 	isTerminated(false)
 {
-	theApplication = this;
 }
 
 Application::~Application() {

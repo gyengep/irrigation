@@ -47,7 +47,7 @@ namespace CommandLine {
 		}
 	}
 
-	void StarttimeList::execute(const Tokens& parameters) {
+	void StartTimeList::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
 		IdType programId = Parser::parseProgramId(parameters[0]);
@@ -56,7 +56,7 @@ namespace CommandLine {
 		PRINT_STARTTIMES(program->getStartTimes());
 	}
 
-	void StarttimeSet::execute(const Tokens& parameters) {
+	void StartTimeSet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(4);
 
 		IdType programId = Parser::parseProgramId(parameters[0]);
@@ -68,7 +68,7 @@ namespace CommandLine {
 		program->getStartTimes().modify(startTimeId, StartTime(hour, min));
 	}
 
-	void StarttimeAdd::execute(const Tokens& parameters) {
+	void StartTimeAdd::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(3);
 
 		IdType programId = Parser::parseProgramId(parameters[0]);
@@ -79,7 +79,7 @@ namespace CommandLine {
 		program->getStartTimes().insert(StartTime(hour, min));
 	}
 
-	void StarttimeDelete::execute(const Tokens& parameters) {
+	void StartTimeDelete::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(2);
 
 		IdType programId = Parser::parseProgramId(parameters[0]);
@@ -89,7 +89,7 @@ namespace CommandLine {
 		program->getStartTimes().erase(startTimeId);
 	}
 
-	void RuntimeList::execute(const Tokens& parameters) {
+	void RunTimeList::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(1);
 
 		IdType programId = Parser::parseProgramId(parameters[0]);
@@ -98,7 +98,7 @@ namespace CommandLine {
 		PRINT_RUNTIMES(program->getRunTimes());
 	}
 
-	void RuntimeSet::execute(const Tokens& parameters) {
+	void RunTimeSet::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(3);
 
 		IdType programId = Parser::parseProgramId(parameters[0]);
@@ -197,6 +197,6 @@ namespace CommandLine {
 
 	void Exit::execute(const Tokens& parameters) {
 		CHECK_PARAMETERS(0);
-		getApplication()->terminate();
+		Application::getInstance().terminate();
 	}
 }
