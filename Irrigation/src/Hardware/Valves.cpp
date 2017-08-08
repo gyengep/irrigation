@@ -2,7 +2,10 @@
 #include "Valves.h"
 
 
+std::mutex Valves::createMutex;
+std::unique_ptr<Factory<Valves>> Valves::factory(new ValvesFactory());
 std::unique_ptr<Valves> Valves::instance;
+
 const std::array<int, Valves::PIN_COUNT> Valves::pins {
 	VALVE0_PIN,
 	VALVE1_PIN,
@@ -15,15 +18,21 @@ const std::array<int, Valves::PIN_COUNT> Valves::pins {
 
 Valves& Valves::getInstance() {
 	if (nullptr == instance) {
-		static std::mutex mutex;
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(createMutex);
 
 		if (nullptr == instance) {
-			instance.reset(new Valves());
+			instance.reset(factory->create());
 		}
 	}
 
 	return *instance;
+}
+
+void Valves::setFactory(Factory<Valves>* valvesFactory) {
+	std::lock_guard<std::mutex> lock(createMutex);
+
+	instance.reset(nullptr);
+	factory.reset(valvesFactory);
 }
 
 Valves::Valves() {
@@ -37,9 +46,11 @@ void Valves::activate_notSafe(size_t valveID, bool active) {
 		throw std::out_of_range("Invalid valveID: " + std::to_string(valveID));
 	}
 
+#if not defined(IRRIGATION_TEST)
 #ifdef __arm__
 	digitalWrite(pins[idx], active ? 1 : 0);
 #endif // __arm__
+#endif
 }
 
 void Valves::activate(size_t valveID, bool active) {
