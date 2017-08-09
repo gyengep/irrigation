@@ -32,7 +32,7 @@ Application& Application::getInstance() {
 void Application::setFactory(Factory<Application>* applicationFactory) {
 	std::lock_guard<std::mutex> lock(createMutex);
 
-	instance.reset(nullptr);
+	instance.release();
 	factory.reset(applicationFactory);
 }
 

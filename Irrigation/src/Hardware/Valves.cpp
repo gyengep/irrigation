@@ -31,7 +31,7 @@ Valves& Valves::getInstance() {
 void Valves::setFactory(Factory<Valves>* valvesFactory) {
 	std::lock_guard<std::mutex> lock(createMutex);
 
-	instance.reset(nullptr);
+	instance.release();
 	factory.reset(valvesFactory);
 }
 
