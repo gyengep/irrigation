@@ -2,26 +2,16 @@
 #include "Common.h"
 #include "Command/CommandExecutor.h"
 
+using ::testing::_;
+
 
 class CommandTest : public Command {
-	Tokens tokens;
-	int executeCounter;
-
 public:
 
-	CommandTest(const char* command) :
-		Command(NULL, command, ""),
-		executeCounter(0)
-	{
+	CommandTest(const char* command) : Command(NULL, command, "") {
 	}
 
-	virtual void execute(const Tokens& parameters) {
-		tokens = parameters;
-		executeCounter++;
-	}
-
-	const Tokens& getTokens() const { return tokens; }
-	int getExecuteCounter() const { return executeCounter; }
+	MOCK_METHOD1(execute, void(const Tokens& parameters));
 };
 
 
@@ -45,35 +35,28 @@ public:
 };
 
 TEST_F(CommandExecutorTest, executeSuccess1) {
-	Tokens tokens;
-	tokens.push_back("command1");
+	Tokens tokens({"command1"});
 
-	commandExecutor.execute(tokens);
-
-	EXPECT_EQ(1, command1->getExecuteCounter());
-	EXPECT_EQ(0, command2->getExecuteCounter());
+	EXPECT_CALL(*command1, execute(Tokens())).Times(1);
+	EXPECT_CALL(*command2, execute(_)).Times(0);
+	EXPECT_NO_THROW(commandExecutor.execute(tokens));
 }
 
 TEST_F(CommandExecutorTest, executeSuccess2) {
-	Tokens tokens;
-	tokens.push_back("command2");
+	Tokens tokens({"command2"});
 
-	commandExecutor.execute(tokens);
-
-	EXPECT_EQ(0, command1->getExecuteCounter());
-	EXPECT_EQ(1, command2->getExecuteCounter());
+	EXPECT_CALL(*command1, execute(_)).Times(0);
+	EXPECT_CALL(*command2, execute(Tokens())).Times(1);
+	EXPECT_NO_THROW(commandExecutor.execute(tokens));
 }
 
 TEST_F(CommandExecutorTest, parameters) {
-	Tokens tokens;
-	tokens.push_back("command1");
-	tokens.push_back("P1");
+	const std::string p1("P1");
+	Tokens tokens({"command1", p1});
 
-	commandExecutor.execute(tokens);
-
-	EXPECT_EQ(1, command1->getExecuteCounter());
-	//EXPECT_EQ(1, command1->getTokens().size());
-	//EXPECT_STREQ("P1", command1->getTokens().front().c_str());
+	EXPECT_CALL(*command1, execute(Tokens({p1}))).Times(1);
+	EXPECT_CALL(*command2, execute(_)).Times(0);
+	EXPECT_NO_THROW(commandExecutor.execute(tokens));
 }
 
 
