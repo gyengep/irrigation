@@ -1,30 +1,29 @@
 
-TARGET_NAME     = WebServerView
+TARGET_NAME     = Hardware
 
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ../../..
+PROJECT_ROOT    = ../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/src/Views/$(TARGET_NAME)
-OBJECT_DIR      = $(PROJECT_ROOT)/build/src/Views/$(TARGET_NAME)
+SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build
-TEST_DIR        = $(PROJECT_ROOT)/test/Views/$(TARGET_NAME)
 
-TARGET          = $(TARGET_DIR)/lib$(TARGET_NAME).a
-SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
+TARGET          = $(TARGET_DIR)/$(TARGET_NAME)_test.exe
+SOURCES         = $(shell find $(SOURCE_DIR) -type f -name '*.$(SRC_EXT)')
 OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.o))
 
 ########################################################
 ########################################################
 
-INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Views/$(TARGET_NAME)
-LIBDIRS         = 
-LIBS            = 
+INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
+LIBDIRS         = -L$(TARGET_DIR)
+LIBS            = -lgmock -l$(TARGET_NAME) 
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0
-CPPFLAGS        = $(INCLUDE_PATH) 
+CPPFLAGS        = -isystem $(PROJECT_ROOT)/lib/gmock_gtest $(INCLUDE_PATH) 
 
 # DEBUG flags
 #CXXFLAGS        += -O0 -g3
@@ -33,7 +32,7 @@ CPPFLAGS        = $(INCLUDE_PATH)
 CXXFLAGS        += -O3
 
 
-all: $(TARGET)
+all: test
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
 	@mkdir -p $(OBJECT_DIR)
@@ -42,17 +41,15 @@ $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 	@echo 'Finished building: $<'
 	@echo ' '
-	
-$(TARGET):	$(OBJECTS)
-	@mkdir -p $(TARGET_DIR)
+
+$(TARGET): $(OBJECTS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: GCC Archiver'
-	$(AR) $(ARFLAGS) $@ $(OBJECTS)
+	@echo 'Invoking: Cygwin C++ Linker'
+	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-clean: 
-#	$(MAKE) -C $(TEST_DIR) clean
+clean:	
 	rm -f $(OBJECTS)
 	rm -f $(TARGET)
 
@@ -65,5 +62,9 @@ print:
 	@echo OBJECTS: $(OBJECTS)
 	@echo TARGET: $(TARGET)
 
-#test: $(TARGET)
-#	$(MAKE) -C $(TEST_DIR) test
+test: $(TARGET)
+	@echo 'Executing test: $(TARGET)'
+	@$(TARGET)
+	@echo 'Finished executing test: $(TARGET)'
+	@echo ' ' 
+
