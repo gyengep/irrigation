@@ -4,8 +4,6 @@ install microhttpd
  - make
  - make install
  
- in cygwin: rename the /usr/local/lib/libmicrohttpd.dll.a to libmicrohttpd.dll
-
  
 install teng
 ------------
@@ -17,6 +15,9 @@ install teng
  - make
  - make install
  
+
+ 
+ONLY FOR TESTING: 
  
 google test
 -----------
@@ -27,3 +28,9 @@ google test
   - gtest/gtest.h
   - gmock-gtest-all.cc
  
+
+curl
+-----
+ - ./configure
+ - make
+ - make install
