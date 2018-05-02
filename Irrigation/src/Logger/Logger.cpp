@@ -1,8 +1,8 @@
-#include "common.h"
 #include "Logger.h"
-
-#include <cstdio>
+#include <iostream>
+#include <fstream>
 #include <thread>
+
 
 
 #define LOGGER_FUNCTION(LEVEL)		\
@@ -14,16 +14,24 @@
 	}
 
 
-std::atomic<Logger*> Logger::instance(nullptr);
-std::mutex Logger::initMutex;
+unique_ptr<Logger> Logger::instance;
+mutex Logger::initMutex;
+const array<const char*, 6> Logger::levelTexts = {
+	"OFF",
+	"ERROR",
+	"WARNING",
+	"INFO",
+	"DEBUG",
+	"TRACE"
+};
 
 
 Logger& Logger::getInstance() {
-	if (nullptr == instance) {
-		std::lock_guard<std::mutex> lock(initMutex);
+	if (nullptr == instance.get()) {
+		lock_guard<mutex> lock(initMutex);
 
 		if (nullptr == instance) {
-			instance = new Logger();
+			instance.reset(new Logger());
 		}
 	}
 
@@ -32,30 +40,36 @@ Logger& Logger::getInstance() {
 
 Logger::Logger() :
 	logMutex(),
-	level(ERROR),
-	logFile()
+	level(OFF),
+	output(nullptr),
+	dynamicCreatedoutput()
 {
 	buffer[bufferSize] = '\0';
+	setOutput(cout);
 }
 
 Logger::~Logger() {
-	if (logFile.is_open()) {
-		logFile.close();
-	}
 }
 
-void Logger::setFile(const char* fileName /*= NULL*/) {
-	if (logFile.is_open()) {
-		logFile.close();
+void Logger::setFileName(const string& fileName) {
+	ofstream* file = new ofstream(fileName, ios::out | ios::app);
+
+	if (!file->is_open()) {
+		delete file;
+		runtime_error("Could not open file: " + fileName);
 	}
 
-	if (NULL != fileName) {
-		logFile.open(fileName, std::ios::out | std::ios::app);
+	lock_guard<mutex> lock(logMutex);
 
-		if (!logFile.is_open()) {
-			std::cerr << "Logfile create error!" << std::endl;
-		}
-	}
+	output = file;
+	dynamicCreatedoutput.reset(file);
+}
+
+void Logger::setOutput(ostream& o) {
+	lock_guard<mutex> lock(logMutex);
+
+	output = &o;
+	dynamicCreatedoutput.release();
 }
 
 void Logger::setLevel(Level level) {
@@ -63,19 +77,15 @@ void Logger::setLevel(Level level) {
 }
 
 const char* Logger::getLevelText(Level level) {
-	const static char* levelTexts[] = {
-		"OFF",
-		"ERROR",
-		"WARNING",
-		"INFO",
-		"DEBUG",
-		"TRACE"
-	};
-
-	return levelTexts[level];
+	try {
+		return levelTexts.at(level);
+	} catch (out_of_range& e) {
+		throw out_of_range("Invalid log level: " + to_string(level));
+	}
 }
 
 bool Logger::isLoggable(Level level) const {
+	lock_guard<mutex> lock(logMutex);
 	return (level <= this->level);
 }
 
@@ -84,20 +94,18 @@ void Logger::log(Level level, const char * format, va_list args) {
 	time_t rawtime = time(NULL);
 	struct tm * timeinfo = localtime(&rawtime);
 
-	std::lock_guard<std::mutex> lock(logMutex);
-
-	std::ostream& logOutput = (logFile.is_open() ? logFile : std::cout);
+	lock_guard<mutex> lock(logMutex);
 
 	strftime(buffer, bufferSize, "%Y.%m.%d %H:%M:%S", timeinfo);
-	logOutput << buffer << " ";
-	logOutput << std::this_thread::get_id() << " ";
-	logOutput << getLevelText(level) << ": ";
+	(*output) << buffer << " ";
+	(*output) << this_thread::get_id() << " ";
+	(*output) << getLevelText(level) << ": ";
 
 	vsnprintf(buffer, bufferSize, format, args);
-	logOutput << buffer;
+	(*output) << buffer;
 
-	logOutput << std::endl;
-	logOutput.flush();
+	(*output) << endl;
+	(*output).flush();
 }
 
 void Logger::error(const char * format, ...)  {

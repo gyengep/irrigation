@@ -1,11 +1,16 @@
 #pragma once
 
+#include <array>
 #include <atomic>
-#include <fstream>
+#include <memory>
 #include <mutex>
+#include <ostream>
 #include <stdarg.h>
 
 #define LOGGER Logger::getInstance()
+
+using namespace std;
+
 
 class Logger {
 public:
@@ -20,14 +25,16 @@ public:
 	};
 
 private:
-	static std::atomic<Logger*> instance;
-	static std::mutex initMutex;
+	static unique_ptr<Logger> instance;
+	static mutex initMutex;
+	static const array<const char*, 6> levelTexts;
 	static const unsigned bufferSize = 1000;
 
+	mutable mutex logMutex;
 	char buffer[bufferSize + 1];
-	std::mutex logMutex;
-	std::atomic<Level> level;
-	std::ofstream logFile;
+	atomic<Level> level;
+	ostream* output;
+	unique_ptr<ostream> dynamicCreatedoutput;
 
 	Logger();
 	void log(Level level, const char * format, va_list args);
@@ -37,7 +44,8 @@ public:
 	static Logger& getInstance();
 
 	void setLevel(Level level);
-	void setFile(const char* fileName = NULL);
+	void setFileName(const string& fileName);
+	void setOutput(ostream& output);
 
 	bool  isLoggable(Level level) const;
 	Level getLevel() const { return level; }
