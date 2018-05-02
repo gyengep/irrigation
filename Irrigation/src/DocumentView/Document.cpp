@@ -1,4 +1,3 @@
-#include "common.h"
 #include "Document.h"
 #include "View.h"
 
