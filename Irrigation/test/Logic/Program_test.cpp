@@ -8,12 +8,13 @@
 #include "common.h"
 #include "Logic/Program.h"
 #include "Logic/Scheduler.h"
+#include <gmock/gmock.h>
 
 
 extern std::time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst);
 
 TEST(Program, name) {
-	Program program;
+	Program program("");
 
 	EXPECT_TRUE(program.getName().empty());
 
@@ -21,9 +22,9 @@ TEST(Program, name) {
 	program.setName(name);
 	EXPECT_EQ(name, program.getName());
 }
-
+/*
 TEST(DISABLED_Program, isScheduled) {
-	Program program;
+	Program program("");
 	std::time_t t;
 	bool requestedResult;
 
@@ -64,3 +65,4 @@ TEST(DISABLED_Program, isScheduled) {
 		}
 	}
 }
+*/

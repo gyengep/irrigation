@@ -37,15 +37,17 @@ CXXFLAGS        += -O3
 
 all: $(TARGET)
 
+-include $(DEPENDS)
+
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
-	
+
 $(TARGET):	$(OBJECTS)
 	@mkdir -p $(TARGET_DIR)
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 
-clean: 
+clean:
 	rm -f $(OBJECTS)
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
@@ -61,9 +63,7 @@ print:
 	@echo TARGET: $(TARGET)
 
 test: $(TARGET)
-	@$(MAKE) -C $(TEST_DIR) test
+	@$(MAKE) -C $(TEST_DIR) all
 
 test-clean:
 	@$(MAKE) -C $(TEST_DIR) clean
-
--include $(DEPENDS)

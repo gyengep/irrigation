@@ -6,6 +6,7 @@
  */
 
 #include "common.h"
+#include <gmock/gmock.h>
 #include "Utils/Tokenizer.h"
 
 

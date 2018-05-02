@@ -81,27 +81,27 @@ dependencies:
 	@$(MAKE) -C WebServer all
 	
 test:
-	@$(MAKE) -C Command test
-	@$(MAKE) -C Commons test
-	@$(MAKE) -C DocumentView test
-	@$(MAKE) -C Hardware test
-	@$(MAKE) -C Logic test
-	@$(MAKE) -C Model test
-	@$(MAKE) -C Utils test
-	@$(MAKE) -C Views/CommandLineView test
-	@$(MAKE) -C Views/WebServerView test
-	@$(MAKE) -C WebServer test
+	@$(MAKE) -C ../test/Command all
+	@$(MAKE) -C ../test/Commons all
+	#@$(MAKE) -C ../test/DocumentView all
+	#@$(MAKE) -C ../test/Hardware all
+	@$(MAKE) -C ../test/Logic all
+	#@$(MAKE) -C ../test/Model all
+	@$(MAKE) -C ../test/Utils all
+	@$(MAKE) -C ../Views/test/CommandLineView all
+	#@$(MAKE) -C ../Views/test/WebServerView all
+	#@$(MAKE) -C ../test/WebServer all
 
 test-clean:
-	@$(MAKE) -C Command test-clean
-	@$(MAKE) -C Commons test-clean
-	@$(MAKE) -C DocumentView test-clean
-	@$(MAKE) -C Hardware test-clean
-	@$(MAKE) -C Logic test-clean
-	@$(MAKE) -C Model test-clean
-	@$(MAKE) -C Utils test-clean
-	@$(MAKE) -C Views/CommandLineView test-clean
-	@$(MAKE) -C Views/WebServerView test-clean
-	@$(MAKE) -C WebServer test-clean
+	@$(MAKE) -C ../test/Command clean
+	@$(MAKE) -C ../test/Commons clean
+	#@$(MAKE) -C ../test/DocumentView clean
+	#@$(MAKE) -C ../test/Hardware clean
+	@$(MAKE) -C ../test/Logic clean
+	#@$(MAKE) -C ../test/Model clean
+	@$(MAKE) -C ../test/Utils clean
+	@$(MAKE) -C ../test/Views/CommandLineView clean
+	#@$(MAKE) -C ../test/Views/WebServerView clean
+	#@$(MAKE) -C ../test/WebServer clean
 	
 -include $(DEPENDS)

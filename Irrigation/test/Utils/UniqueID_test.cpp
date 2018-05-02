@@ -1,7 +1,8 @@
 #include "common.h"
+#include <gmock/gmock.h>
+#include <thread>
 #include "Utils/UniqueID.h"
 
-#include <thread>
 
 
 void getInstances(size_t count, std::vector<IdType>* ids) {

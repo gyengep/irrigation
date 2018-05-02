@@ -1,5 +1,5 @@
 #include "common.h"
-#include "Logger_test.h"
+#include "LoggerTest.h"
 
 
 void LoggerTest::SetUp() {

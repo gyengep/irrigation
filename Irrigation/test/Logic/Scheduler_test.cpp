@@ -10,7 +10,7 @@
 
 #include <cstring>
 
-
+/*
 TEST(SpecifiedScheduler, enableDay) {
 	SpecifiedScheduler scheduler;
 
@@ -126,3 +126,4 @@ TEST(DISABLED_SpecifiedScheduler, isScheduled) {
 		checkDay(scheduler, 22 == day || 25 == day, day);
 	}
 }
+*/

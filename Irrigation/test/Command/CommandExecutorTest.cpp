@@ -1,38 +1,19 @@
-
-#include "Common.h"
-#include "Command/CommandExecutor.h"
+#include "CommandExecutorTest.h"
+#include "Commons/exception.h"
 
 using ::testing::_;
 
 
-class CommandTest : public Command {
-public:
+void CommandExecutorTest::SetUp() {
+	command1 = new CommandTest("command1");
+	command2 = new CommandTest("command2");
 
-	CommandTest(const char* command) : Command(NULL, command, "") {
-	}
+	commandExecutor.addCommand(command1);
+	commandExecutor.addCommand(command2);
+}
 
-	MOCK_METHOD1(execute, void(const Tokens& parameters));
-};
-
-
-class CommandExecutorTest : public testing::Test {
-protected:
-	CommandExecutor commandExecutor;
-	CommandTest* command1;
-	CommandTest* command2;
-
-public:
-	virtual void SetUp() {
-		command1 = new CommandTest("command1");
-		command2 = new CommandTest("command2");
-
-		commandExecutor.addCommand(command1);
-		commandExecutor.addCommand(command2);
-	}
-
-	virtual void TearDown() {
-	}
-};
+void CommandExecutorTest::TearDown() {
+}
 
 TEST_F(CommandExecutorTest, executeSuccess1) {
 	Tokens tokens({"command1"});
