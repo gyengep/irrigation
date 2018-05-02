@@ -1,18 +1,12 @@
 ###################
 # Compiled source #
 ###################
-*.exe
-*.o
-*.d
-*.a
+#*.exe
+#*.o
+#*.d
+#*.a
+
 ###############
 # Directories #
 ###############
-.metadata/*
-RemoteSystemsTempFiles/*
-Irrigation/.settings/*
-Irrigation/Debug/*
-Irrigation/Release/*
-Irrigation_test/.settings/
-Irrigation_test/Debug/*
-Irrigation_test/Release/*
+Irrigation/build

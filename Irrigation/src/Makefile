@@ -43,6 +43,18 @@ $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
 $(TARGET):	$(OBJECTS)
 	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)
 
+dependencies:
+	@$(MAKE) -C Command all
+	@$(MAKE) -C Commons all
+	@$(MAKE) -C DocumentView all
+	@$(MAKE) -C Hardware all
+	@$(MAKE) -C Logic all
+	@$(MAKE) -C Model all
+	@$(MAKE) -C Utils all
+	@$(MAKE) -C Views/CommandLineView all
+	@$(MAKE) -C Views/WebServerView all
+	@$(MAKE) -C WebServer all
+	
 clean: 
 	@$(MAKE) -C Command clean
 	@$(MAKE) -C Commons clean
@@ -58,6 +70,12 @@ clean:
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
 
+test:
+	@$(MAKE) -C $(PROJECT_ROOT)/test all
+
+test-clean:
+	@$(MAKE) -C $(PROJECT_ROOT)/test clean
+
 print:
 	@echo INCLUDE_DIR: $(INCLUDE_DIR)
 	@echo SOURCE_DIR: $(SOURCE_DIR)
@@ -68,40 +86,5 @@ print:
 	@echo DEPENDS: $(DEPENDS)
 	@echo TARGET: $(TARGET)
 
-dependencies:
-	@$(MAKE) -C Command all
-	@$(MAKE) -C Commons all
-	@$(MAKE) -C DocumentView all
-	@$(MAKE) -C Hardware all
-	@$(MAKE) -C Logic all
-	@$(MAKE) -C Model all
-	@$(MAKE) -C Utils all
-	@$(MAKE) -C Views/CommandLineView all
-	@$(MAKE) -C Views/WebServerView all
-	@$(MAKE) -C WebServer all
-	
-test:
-	@$(MAKE) -C ../test/Command all
-	@$(MAKE) -C ../test/Commons all
-	#@$(MAKE) -C ../test/DocumentView all
-	#@$(MAKE) -C ../test/Hardware all
-	@$(MAKE) -C ../test/Logic all
-	#@$(MAKE) -C ../test/Model all
-	@$(MAKE) -C ../test/Utils all
-	@$(MAKE) -C ../Views/test/CommandLineView all
-	#@$(MAKE) -C ../Views/test/WebServerView all
-	#@$(MAKE) -C ../test/WebServer all
 
-test-clean:
-	@$(MAKE) -C ../test/Command clean
-	@$(MAKE) -C ../test/Commons clean
-	#@$(MAKE) -C ../test/DocumentView clean
-	#@$(MAKE) -C ../test/Hardware clean
-	@$(MAKE) -C ../test/Logic clean
-	#@$(MAKE) -C ../test/Model clean
-	@$(MAKE) -C ../test/Utils clean
-	@$(MAKE) -C ../test/Views/CommandLineView clean
-	#@$(MAKE) -C ../test/Views/WebServerView clean
-	#@$(MAKE) -C ../test/WebServer clean
-	
 -include $(DEPENDS)
