@@ -6,7 +6,16 @@
 #*.d
 #*.a
 
+#################################
+# Eclipse directories and files #
+#################################
+/RemoteSystemsTempFiles/
+/.metadata/
+/Irrigation/.cproject
+/Irrigation/.project
+/Irrigation/.settings
+
 ###############
 # Directories #
 ###############
-Irrigation/build
+/Irrigation/build
