@@ -2,6 +2,7 @@
 #include <array>
 #include <memory>
 #include <mutex>
+#include <vector>
 #include "ValveConfig.h"
 
 
@@ -9,9 +10,7 @@ class Valves {
 	static std::mutex createMutex;
 	static std::unique_ptr<Valves> instance;
 
-	static const size_t VALVE_COUNT = 7;
-
-	const std::array<int, VALVE_COUNT> pins {{
+	const std::array<int, VALVE_COUNT> pins {
 		VALVE0_PIN,
 		VALVE1_PIN,
 		VALVE2_PIN,
@@ -19,7 +18,7 @@ class Valves {
 		VALVE4_PIN,
 		VALVE5_PIN,
 		VALVE6_PIN
-	}};
+	};
 
 	mutable std::mutex mutex;
 
@@ -31,12 +30,16 @@ protected:
 public:
 	virtual ~Valves();
 
+	virtual void resetAll();
 	virtual void activate(size_t valveID, bool active);
-	virtual void activate(const size_t* valveIDs, size_t size, bool active);
+	virtual void activate(const std::vector<size_t>& valveIDs, bool active);
 	
 	size_t getCount() const { return pins.size(); }
 
 	static void init();
 	static Valves& getInstance();
+
+	// for testing
+	static void setNewInstance(Valves* newInstance);
 };
 

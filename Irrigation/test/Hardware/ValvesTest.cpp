@@ -1,16 +1,27 @@
-#include <gmock/gmock.h>
+#include "ValvesTest.h"
 #include <memory>
 #include "Hardware/Valves.h"
 
+
 using namespace std;
+using ::testing::_;
 
 
 
-class MockValves : public Valves {
-public:
-	MOCK_METHOD2(setPin, void(int, int));
-};
+void ValvesTestWithMock::SetUp() {
+	mockValves = new MockValves();
+	Valves::setNewInstance(mockValves);
+}
 
+void ValvesTestWithMock::TearDown() {
+	Valves::setNewInstance(nullptr);
+}
+
+
+
+TEST(ValvesTest, getCount) {
+	EXPECT_EQ(7, Valves::getInstance().getCount());
+}
 
 TEST(ValvesTest, activate) {
 	for (size_t i = 0; i < Valves::getInstance().getCount(); i++) {
@@ -19,45 +30,50 @@ TEST(ValvesTest, activate) {
 }
 
 TEST(ValvesTest, invalid) {
-	EXPECT_THROW(Valves::getInstance().activate(Valves::getInstance().getCount(), true), out_of_range);
+	EXPECT_THROW(Valves::getInstance().activate(VALVE_COUNT, true), out_of_range);
 }
 
-TEST(ValvesTest, setPin_1pc1) {
-	unique_ptr<MockValves> valves(new MockValves());
-	EXPECT_CALL(*valves.get(), setPin(VALVE0_PIN, 1)).Times(1);
-	valves->activate(0, true);
+TEST_F(ValvesTestWithMock, setPin_1pc1) {
+	EXPECT_CALL(*mockValves, setPin(VALVE0_PIN, 1)).Times(1);
+	mockValves->activate(0, true);
 }
 
-TEST(ValvesTest, setPin_1pc2) {
-	unique_ptr<MockValves> valves(new MockValves());
-	EXPECT_CALL(*valves.get(), setPin(VALVE5_PIN, 0)).Times(1);
-	valves->activate(5, false);
+TEST_F(ValvesTestWithMock, setPin_1pc2) {
+	EXPECT_CALL(*mockValves, setPin(VALVE5_PIN, 0)).Times(1);
+	mockValves->activate(5, false);
 }
 
-TEST(ValvesTest, setPin_more_invalid) {
-	unique_ptr<MockValves> valves(new MockValves());
-
+TEST_F(ValvesTestWithMock, setPin_more_invalid) {
 	vector<size_t> pins {5, 2, 3, 7};
-	EXPECT_THROW(valves->activate(pins.data(), pins.size(), true), out_of_range);
+	EXPECT_THROW(Valves::getInstance().activate(pins, true), out_of_range);
 }
 
-TEST(ValvesTest, setPin_more_1) {
-	unique_ptr<MockValves> valves(new MockValves());
-
-	EXPECT_CALL(*valves.get(), setPin(VALVE5_PIN, 1)).Times(1);
-	EXPECT_CALL(*valves.get(), setPin(VALVE2_PIN, 1)).Times(1);
-	EXPECT_CALL(*valves.get(), setPin(VALVE3_PIN, 1)).Times(1);
+TEST_F(ValvesTestWithMock, setPin_more_1) {
+	EXPECT_CALL(*mockValves, setPin(VALVE5_PIN, 1)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE2_PIN, 1)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE3_PIN, 1)).Times(1);
 
 	vector<size_t> pins {5, 2, 3};
-	valves->activate(pins.data(), pins.size(), true);
+	Valves::getInstance().activate(pins, true);
 }
 
-TEST(ValvesTest, setPin_more_2) {
-	unique_ptr<MockValves> valves(new MockValves());
-
-	EXPECT_CALL(*valves.get(), setPin(VALVE0_PIN, 0)).Times(1);
-	EXPECT_CALL(*valves.get(), setPin(VALVE4_PIN, 0)).Times(1);
+TEST_F(ValvesTestWithMock, setPin_more_2) {
+	EXPECT_CALL(*mockValves, setPin(VALVE0_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE4_PIN, 0)).Times(1);
 
 	vector<size_t> pins {0, 4};
-	valves->activate(pins.data(), pins.size(), false);
+	Valves::getInstance().activate(pins, false);
+}
+
+
+TEST_F(ValvesTestWithMock, resetAll) {
+	EXPECT_CALL(*mockValves, setPin(VALVE0_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE1_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE2_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE3_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE4_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE5_PIN, 0)).Times(1);
+	EXPECT_CALL(*mockValves, setPin(VALVE6_PIN, 0)).Times(1);
+
+	Valves::getInstance().resetAll();
 }

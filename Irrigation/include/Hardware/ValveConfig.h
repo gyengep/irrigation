@@ -1,5 +1,7 @@
 #pragma once
 
+#define VALVE_COUNT 7
+
 #define VALVE0_PIN 4
 #define VALVE1_PIN 5
 #define VALVE2_PIN 6
