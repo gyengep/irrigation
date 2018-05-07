@@ -2,18 +2,21 @@
 
 
 class StartTime {
-	int hour;
-	int min;
+	static const unsigned maxSeconds = 60 * 60 * 24;
+
+	unsigned secOfDay;
+	bool enabled;
 
 public:
-	StartTime(int hour, int min);
+	StartTime();
+	virtual ~StartTime();
 
 	StartTime& operator= (const StartTime& other);
-	bool operator== (const StartTime& other) const;
 	bool operator< (const StartTime& other) const;
 
-	int getHour() const { return hour; }
-	int getMin() const { return min; }
-};
+	bool isEnabled() const { return enabled; }
+	void enable(bool enabled) { this->enabled = enabled; }
 
-std::ostream& operator<< (std::ostream& os, const StartTime& startTime);
+	virtual unsigned getValue() const;
+	virtual void setValue(unsigned secOfDay);
+};

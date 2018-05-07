@@ -1,36 +1,35 @@
-#include "common.h"
 #include "StartTime.h"
+#include <stdexcept>
 
-#include <iomanip>
 
 
-StartTime::StartTime(int hour, int min) :
-	hour(hour),
-	min(min)
+StartTime::StartTime() :
+	secOfDay(0),
+	enabled(false)
 {
 }
 
-StartTime& StartTime::operator= (const StartTime& other) {
-	hour = other.hour;
-	min = other.min;
+StartTime::~StartTime() {
+}
 
+unsigned StartTime::getValue() const {
+	return secOfDay;
+}
+
+void StartTime::setValue(unsigned secOfDay) {
+	if (secOfDay > maxSeconds) {
+		throw std::domain_error("Starttime is out of range");
+	}
+
+	this->secOfDay = secOfDay;
+}
+
+
+StartTime& StartTime::operator= (const StartTime& other) {
+	secOfDay = other.secOfDay;
 	return *this;
 }
 
-bool StartTime::operator== (const StartTime& other) const {
-	return (hour == other.hour) && (min == other.min);
-}
-
 bool StartTime::operator< (const StartTime& other) const {
-	if (hour < other.hour) {
-		return true;
-	} else if (hour > other.hour) {
-		return false;
-	} else {
-		return (min < other.min);
-	}
-}
-
-std::ostream& operator<< (std::ostream& os, const StartTime& startTime) {
-    return os << std::setfill('0') << std::setw(2) << startTime.getHour() << ":" << std::setfill('0') << std::setw(2) << startTime.getMin();
+	return (getValue() < other.getValue());
 }
