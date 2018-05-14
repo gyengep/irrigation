@@ -22,7 +22,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(TARGET_DIR)
-LOCAL_LIB_NAMES = $(TARGET_NAME) Hardware Logger Schedulers
+LOCAL_LIB_NAMES = $(TARGET_NAME)
 LIBS            = -lgmock $(patsubst %,-l%,$(LOCAL_LIB_NAMES))
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 

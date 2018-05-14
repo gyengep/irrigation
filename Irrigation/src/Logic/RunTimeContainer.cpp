@@ -1,7 +1,17 @@
 #include "RunTimeContainer.h"
+#include "Exceptions.h"
+#include "RunTime.h"
+#include "ZoneConfig.h"
+
 #include <memory>
+
 #include "Logger/Logger.h"
 
+
+
+RunTime* RunTimeFactory::createRunTime() {
+	return new RunTime();
+}
 
 
 RunTimeContainer::RunTimeContainer() {

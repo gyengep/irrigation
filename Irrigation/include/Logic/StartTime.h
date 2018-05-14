@@ -4,15 +4,20 @@
 class StartTime {
 	static const unsigned maxSeconds = 60 * 60 * 24;
 
+	// disable copy constructor and copy operator
+	StartTime(const StartTime&);
+	StartTime& operator= (const StartTime&);
+
 	unsigned secOfDay;
 	bool enabled;
 
 public:
-	StartTime();
+	StartTime(unsigned hour, unsigned min, unsigned sec);
+	StartTime(unsigned seconds = 0);
 	virtual ~StartTime();
 
-	StartTime& operator= (const StartTime& other);
 	bool operator< (const StartTime& other) const;
+	bool operator== (const StartTime& other) const;
 
 	bool isEnabled() const { return enabled; }
 	void enable(bool enabled) { this->enabled = enabled; }

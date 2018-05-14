@@ -5,7 +5,6 @@
 #include "ZoneConfig.h"
 
 
-
 class ZoneHandler {
 public:
 	static const size_t invalidZoneId = std::numeric_limits<size_t>::max();

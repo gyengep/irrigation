@@ -1,46 +1,46 @@
 #pragma once
-
-#include <array>
 #include <ctime>
+#include <memory>
 #include <string>
-
-#include "Containers.h"
+#include <vector>
 
 
 class Scheduler;
 class SpecifiedScheduler;
+class RunTimeContainer;
+class StartTimeContainer;
+
 
 
 class Program {
-
-	Program(const Program&);
-	void operator= (const Program&);
-
 public:
 
 	enum SchedulerType {
 		SPECIFIED_DAYS,
-
-		LAST
 	};
 
 private:
 
+	// disable copy constructor and copy operator
+	Program(const Program&);
+	void operator= (const Program&);
+
 	std::string name;
 	SchedulerType schedulerType;
-	std::array<Scheduler*, SchedulerType::LAST> schedulers;
+	std::vector<std::unique_ptr<Scheduler>> schedulers;
 	std::unique_ptr<RunTimeContainer> runTimes;
 	std::unique_ptr<StartTimeContainer> startTimes;
 
 public:
-	Program(const std::string& name);
+	Program();
 	virtual ~Program();
 
 	std::string getName() const;
 	virtual void setName(const std::string& name);
 
 	void setSchedulerType(SchedulerType schedulerType);
-	SchedulerType getSchedulerType(void) const;
+	SchedulerType getSchedulerType() const;
+	Scheduler& getCurrentScheduler() const;
 
 	const SpecifiedScheduler& getSpecifiedScheduler() const;
 	SpecifiedScheduler& getSpecifiedScheduler();

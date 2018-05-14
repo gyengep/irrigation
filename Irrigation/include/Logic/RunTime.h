@@ -4,15 +4,15 @@
 class RunTime {
 	static const unsigned maxSeconds = 60 * 60 * 2;
 
+	// disable copy constructor and copy operator
+	RunTime(const RunTime&);
+	RunTime& operator= (const RunTime&);
+
 	unsigned seconds;
 
 public:
 	RunTime();
 	virtual ~RunTime();
-
-	RunTime& operator= (const RunTime& other);
-	bool operator== (const RunTime& other) const;
-	bool operator< (const RunTime& other) const;
 
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned seconds);

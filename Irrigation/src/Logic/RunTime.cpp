@@ -21,16 +21,3 @@ void RunTime::setValue(unsigned seconds) {
 
 	this->seconds = seconds;
 }
-
-RunTime& RunTime::operator= (const RunTime& other) {
-	seconds = other.seconds;
-	return *this;
-}
-
-bool RunTime::operator== (const RunTime& other) const {
-	return (seconds == other.seconds);
-}
-
-bool RunTime::operator< (const RunTime& other) const {
-	return (seconds < other.seconds);
-}

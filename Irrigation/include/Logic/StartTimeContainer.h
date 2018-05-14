@@ -1,20 +1,10 @@
 #pragma once
-#include <list>
 #include <cstddef>
-#include <stdexcept>
+#include <list>
 #include <utility>
-#include "StartTime.h"
+#include "IdType.h"
 
-
-typedef unsigned IdType;
-
-
-
-class InvalidStartTimeIdException : public std::runtime_error {
-public:
-	explicit InvalidStartTimeIdException(IdType id) : std::runtime_error("Invalid starttimeID" + std::to_string(id)) {}
-};
-
+class StartTime;
 
 
 class StartTimeContainer {

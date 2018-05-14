@@ -1,41 +1,6 @@
-/*
- * Document_test.cpp
- *
- *  Created on: 5 Jul 2016
- *      Author: pgyenge
- */
+#include <gmock/gmock.h>
+#include "Schedulers/Scheduler.h"
 
-#include "common.h"
-#include "Logic/Scheduler.h"
-
-#include <cstring>
-
-/*
-TEST(SpecifiedScheduler, enableDay) {
-	SpecifiedScheduler scheduler;
-
-	for (int i = 0; i < 7; i++) {
-		EXPECT_FALSE(scheduler.days[i]);
-		scheduler.enableDay(i, true);
-		EXPECT_TRUE(scheduler.days[i]);
-	}
-
-	EXPECT_THROW(scheduler.enableDay(7, true), InvalidIdException);
-}
-
-TEST(SpecifiedScheduler, isDayEnabled) {
-	SpecifiedScheduler scheduler;
-
-	for (int i = 0; i < 7; i++) {
-		EXPECT_FALSE(scheduler.isDayEnabled(i));
-		scheduler.enableDay(i, true);
-		EXPECT_TRUE(scheduler.isDayEnabled(i));
-		scheduler.enableDay(i, false);
-		EXPECT_FALSE(scheduler.isDayEnabled(i));
-	}
-
-	EXPECT_THROW(scheduler.isDayEnabled(7), InvalidIdException);
-}
 
 std::time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
 
@@ -65,13 +30,13 @@ std::tm toCalendarTime(int year, int month, int day, int hour, int min, int sec,
 	return *std::localtime(&t);
 }
 
-TEST(SpecifiedScheduler, Time) {
+TEST(Scheduler, Time) {
 	std::tm tm = toCalendarTime(2016, 9, 11, 20, 59, 33, true);
 
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
 	EXPECT_EQ(11, tm.tm_mday);
-	EXPECT_EQ(SUNDAY, tm.tm_wday);
+	EXPECT_EQ(0, tm.tm_wday);
 	EXPECT_EQ(20, tm.tm_hour);
 	EXPECT_EQ(59, tm.tm_min);
 	EXPECT_EQ(33, tm.tm_sec);
@@ -81,7 +46,7 @@ TEST(SpecifiedScheduler, Time) {
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
 	EXPECT_EQ(12, tm.tm_mday);
-	EXPECT_EQ(MONDAY, tm.tm_wday);
+	EXPECT_EQ(1, tm.tm_wday);
 	EXPECT_EQ(23, tm.tm_hour);
 	EXPECT_EQ(59, tm.tm_min);
 	EXPECT_EQ(33, tm.tm_sec);
@@ -91,39 +56,20 @@ TEST(SpecifiedScheduler, Time) {
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
 	EXPECT_EQ(17, tm.tm_mday);
-	EXPECT_EQ(SATURDAY, tm.tm_wday);
+	EXPECT_EQ(6, tm.tm_wday);
 	EXPECT_EQ(23, tm.tm_hour);
 	EXPECT_EQ(59, tm.tm_min);
 	EXPECT_EQ(33, tm.tm_sec);
 }
 
-void checkDay(Scheduler& scheduler, bool requestedResult, int day) {
+void checkDay(const Scheduler& scheduler, bool requestedResult, int day) {
 	std::tm tm;
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm = toCalendarTime(2016, 9, day, hour, min, sec, true);
-				EXPECT_EQ(requestedResult, scheduler.isScheduled(tm));
+				EXPECT_EQ(requestedResult, scheduler.isDayScheduled(tm));
 			}
 		}
 	}
 }
-
-TEST(DISABLED_SpecifiedScheduler, isScheduled) {
-	SpecifiedScheduler scheduler;
-
-	scheduler.enableDay(WEDNESDAY, true);
-
-	for (int day = 19; day < 26; day++) {
-		checkDay(scheduler, 21 == day, day);
-	}
-
-	scheduler.enableDay(SUNDAY, true);
-	scheduler.enableDay(WEDNESDAY, false);
-	scheduler.enableDay(THURSDAY, true);
-
-	for (int day = 19; day < 26; day++) {
-		checkDay(scheduler, 22 == day || 25 == day, day);
-	}
-}
-*/

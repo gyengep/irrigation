@@ -1,20 +1,11 @@
-/*
- * Program_test.cpp
- *
- *  Created on: 5 Jul 2016
- *      Author: pgyenge
- */
-
-#include "common.h"
-#include "Logic/Program.h"
-#include "Logic/Scheduler.h"
 #include <gmock/gmock.h>
+#include "Logic/Exceptions.h"
+#include "Logic/Program.h"
 
 
-extern std::time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst);
 
 TEST(Program, name) {
-	Program program("");
+	Program program;
 
 	EXPECT_TRUE(program.getName().empty());
 
@@ -22,6 +13,30 @@ TEST(Program, name) {
 	program.setName(name);
 	EXPECT_EQ(name, program.getName());
 }
+
+TEST(Program, setSchedulerTypeInvalid) {
+	Program program;
+
+	Program::SchedulerType invalidSchedulerType = (Program::SchedulerType)(Program::SchedulerType::SPECIFIED_DAYS + 1);
+	EXPECT_THROW(program.setSchedulerType(invalidSchedulerType), InvalidSchedulerException);
+}
+
+TEST(Program, getSchedulerType) {
+	Program program;
+	EXPECT_EQ(Program::SPECIFIED_DAYS, program.getSchedulerType());
+}
+
+TEST(Program, getSpecifiedScheduler) {
+	Program program;
+	EXPECT_NE(nullptr, &program.getSpecifiedScheduler());
+}
+
+
+/*
+SchedulerType getSchedulerType() const;
+Scheduler& getCurrentScheduler() const;
+*/
+
 /*
 TEST(DISABLED_Program, isScheduled) {
 	Program program("");
@@ -65,4 +80,4 @@ TEST(DISABLED_Program, isScheduled) {
 		}
 	}
 }
-*/
+ */

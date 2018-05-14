@@ -1,30 +1,17 @@
 #pragma once
 #include <cstddef>
-#include <stdexcept>
 #include <utility>
 #include <vector>
-#include "RunTime.h"
-#include "ZoneConfig.h"
+#include "IdType.h"
 
-
-typedef unsigned IdType;
-
-
-class InvalidRunTimeIdException : public std::runtime_error {
-public:
-	explicit InvalidRunTimeIdException(IdType id) : std::runtime_error("Invalid runtimeID" + std::to_string(id)) {}
-};
-
+class RunTime;
 
 
 class RunTimeFactory {
 public:
 	virtual ~RunTimeFactory() {}
-	virtual RunTime* createRunTime() {
-		return new RunTime();
-	}
+	virtual RunTime* createRunTime();
 };
-
 
 
 class RunTimeContainer {

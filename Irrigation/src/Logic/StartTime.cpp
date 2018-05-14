@@ -3,10 +3,16 @@
 
 
 
-StartTime::StartTime() :
-	secOfDay(0),
+StartTime::StartTime(unsigned hour, unsigned min, unsigned sec)  :
 	enabled(false)
 {
+	setValue(sec + 60 * (min + 60 * hour));
+}
+
+StartTime::StartTime(unsigned seconds) :
+	enabled(false)
+{
+	setValue(seconds);
 }
 
 StartTime::~StartTime() {
@@ -32,4 +38,9 @@ StartTime& StartTime::operator= (const StartTime& other) {
 
 bool StartTime::operator< (const StartTime& other) const {
 	return (getValue() < other.getValue());
+}
+
+bool StartTime::operator== (const StartTime& other) const {
+	return (getValue() == other.getValue());
+
 }
