@@ -23,6 +23,7 @@ test:
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Hardware test
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Logger test
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Logic test
+	#@$(MAKE) -C $(PROJECT_ROOT)/test/Model test
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Schedulers test
 	#@$(MAKE) -C $(PROJECT_ROOT)/test/Utils test
 	#@$(MAKE) -C $(PROJECT_ROOT)/test/Views/CommandLineView test
@@ -34,6 +35,7 @@ test-clean:
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Hardware test-clean
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Logger test-clean
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Logic test-clean
+	#@$(MAKE) -C $(PROJECT_ROOT)/test/Model test-clean
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Schedulers test-clean
 	#@$(MAKE) -C $(PROJECT_ROOT)/test/Utils test-clean
 	#@$(MAKE) -C $(PROJECT_ROOT)/test/Views/CommandLineView test-clean

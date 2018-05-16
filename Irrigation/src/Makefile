@@ -49,7 +49,7 @@ library:
 	@$(MAKE) -C Hardware library
 	@$(MAKE) -C Logger library
 	@$(MAKE) -C Logic library
-	#@$(MAKE) -C Model library
+	@$(MAKE) -C Model library
 	@$(MAKE) -C Schedulers library
 	#@$(MAKE) -C Utils library
 	#@$(MAKE) -C Views/CommandLineView library
@@ -63,7 +63,7 @@ library-clean:
 	@$(MAKE) -C Hardware library-clean
 	@$(MAKE) -C Logger library-clean
 	@$(MAKE) -C Logic library-clean
-	#@$(MAKE) -C Model library-clean
+	@$(MAKE) -C Model library-clean
 	@$(MAKE) -C Schedulers library-clean
 	#@$(MAKE) -C Utils library-clean
 	#@$(MAKE) -C Views/CommandLineView library-clean

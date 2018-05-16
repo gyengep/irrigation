@@ -1,30 +1,17 @@
-//============================================================================
-// Name        : Irrigation.cpp
-// Author      : 
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
-//============================================================================
-
-#include "common.h"
-#include "Model/Application.h"
-
-#ifndef IRRIGATION_TEST
+#include <iostream>
+#include "Logger/Logger.h"
+#include "Model/IrrigationApplication.h"
 
 
 int main() {
-	LOGGER.setFile(NULL);
+	LOGGER.setOutput(std::cout);
 	LOGGER.setLevel(Logger::TRACE);
 	
 	try {
-		Application::getInstance().init();
 		Application::getInstance().run();
-		Application::getInstance().uninit();
 	} catch(std::exception& e) {
 		LOGGER.error(e.what());
 	}
 
 	return 0;
 }
-
-#endif
