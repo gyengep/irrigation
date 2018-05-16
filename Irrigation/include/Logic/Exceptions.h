@@ -16,6 +16,12 @@ public:
 };
 
 
+class StartTimeIdExist : public std::runtime_error {
+public:
+	explicit StartTimeIdExist(IdType id) : std::runtime_error("StartTimeID already exists" + std::to_string(id)) {}
+};
+
+
 class InvalidSchedulerException : public std::runtime_error {
 public:
 	explicit InvalidSchedulerException() : std::runtime_error("Invalid scheduler type") {}

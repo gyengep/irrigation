@@ -44,6 +44,13 @@ StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) {
 }
 
 void StartTimeContainer::insert(const value_type& value) {
+
+	for (auto it = container.begin(); it != container.end(); ++it) {
+		if (it->first == value.first) {
+			throw StartTimeIdExist(value.first);
+		}
+	}
+
 	container.push_back(value);
 	LOGGER.info("StartTime %u added", value.first);
 }

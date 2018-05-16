@@ -41,6 +41,19 @@ TEST(StartTimeContainerTest, insert) {
 	expectStartTimes(startTimes, required);
 }
 
+TEST(StartTimeContainerTest, insertExisted) {
+	const std::vector<StartTimeContainer::value_type> required {
+		{10, new StartTime()},
+		{20, new StartTime()},
+		{15, new StartTime()},
+	};
+
+	StartTimeContainer startTimes;
+	insertToStartTimes(startTimes, required);
+
+	EXPECT_THROW(startTimes.insert(std::make_pair(20, new StartTime())), StartTimeIdExist);
+}
+
 TEST(StartTimeContainerTest, erase) {
 	const std::vector<StartTimeContainer::value_type> startTimesToAdd {
 		{10, new StartTime()},
