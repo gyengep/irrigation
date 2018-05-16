@@ -18,7 +18,7 @@ library-clean:
 	
 .PHONY: test
 test: 
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Command test
+	@$(MAKE) -C $(PROJECT_ROOT)/test/CommandExecutor test
 	@$(MAKE) -C $(PROJECT_ROOT)/test/DocumentView test
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Hardware test
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Logger test
@@ -29,7 +29,7 @@ test:
 
 .PHONY: test-clean
 test-clean:
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Command test-clean
+	@$(MAKE) -C $(PROJECT_ROOT)/test/CommandExecutor test-clean
 	@$(MAKE) -C $(PROJECT_ROOT)/test/DocumentView test-clean
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Hardware test-clean
 	@$(MAKE) -C $(PROJECT_ROOT)/test/Logger test-clean

@@ -44,7 +44,7 @@ clean: library-clean
 
 .PHONY: library
 library:
-	#@$(MAKE) -C Command library
+	@$(MAKE) -C CommandExecutor library
 	@$(MAKE) -C DocumentView library
 	@$(MAKE) -C Hardware library
 	@$(MAKE) -C Logger library
@@ -58,7 +58,7 @@ library:
 	
 .PHONY: library-clean
 library-clean:
-	#@$(MAKE) -C Command library-clean
+	@$(MAKE) -C CommandExecutor library-clean
 	@$(MAKE) -C DocumentView library-clean
 	@$(MAKE) -C Hardware library-clean
 	@$(MAKE) -C Logger library-clean

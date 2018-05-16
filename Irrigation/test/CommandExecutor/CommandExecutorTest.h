@@ -1,12 +1,13 @@
 #pragma once
 #include <gmock/gmock.h>
-#include "Command/CommandExecutor.h"
+#include "CommandExecutor/Command.h"
+#include "CommandExecutor/CommandExecutor.h"
 
 
 class CommandTest : public Command {
 public:
 
-	CommandTest(const char* command) : Command(NULL, command, "") {
+	CommandTest(const char* command) : Command(command, "") {
 	}
 
 	MOCK_METHOD1(execute, void(const Tokens& parameters));
