@@ -4,12 +4,13 @@ TARGET_NAME     = $(shell basename $(CURDIR))
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ../../..
+PROJECT_ROOT    = ../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/test/Views/$(TARGET_NAME)
-OBJECT_DIR      = $(PROJECT_ROOT)/build/test/Views/$(TARGET_NAME)
+SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build
+LIBRARY_DIR     = $(PROJECT_ROOT)/build
 
 TARGET          = $(TARGET_DIR)/$(TARGET_NAME)_test.exe
 SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
@@ -19,12 +20,13 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
+LOCAL_LIBS      = -l$(TARGET_NAME)
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
-LIBDIRS         = -L$(TARGET_DIR) -L/usr/local/lib
-LIBS            = -lgmock -l$(TARGET_NAME) -lModel -lLogic -lHardware -lCommons -lCommand -lDocumentView -lWebServerView -lWebServer -lteng -lmicrohttpd -lUtils
+LIBDIRS         = -L$(LIBRARY_DIR)
+LIBS            = -lgmock $(LOCAL_LIBS)
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
-CPPFLAGS        = -isystem $(PROJECT_ROOT)/lib/gmock_gtest $(INCLUDE_PATH) 
+CPPFLAGS        = -isystem $(PROJECT_ROOT)/3p/gmock_gtest $(INCLUDE_PATH) 
 
 # DEBUG flags
 #CXXFLAGS        += -O0 -g3
@@ -33,27 +35,40 @@ CPPFLAGS        = -isystem $(PROJECT_ROOT)/lib/gmock_gtest $(INCLUDE_PATH)
 CXXFLAGS        += -O3
 
 
-all:  $(TARGET)
+.PHONY: all
+all: $(TARGET)
 	@echo 'Executing test: $(TARGET)'
 	@$(TARGET)
 	@echo 'Finished executing test: $(TARGET)'
-	@echo ' ' 
+	@echo ' '
 
--include $(DEPENDS)
-
-$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
-	@mkdir -p $(OBJECT_DIR)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-$(TARGET):	$(OBJECTS)
-	@mkdir -p $(TARGET_DIR)
-	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)
-
-clean:
+.PHONY: clean
+clean: 
 	rm -f $(OBJECTS)
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
 
+.PHONY: test-deps
+test-deps: dependency-all all
+
+.PHONY: clean-deps
+clean-deps: dependency-clean clean
+	
+.PHONY: dependency-all
+dependency-all: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+
+.PHONY: dependency-clean
+dependency-clean: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+
+.PHONY: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+$(patsubst -l%,%-all,$(LOCAL_LIBS)):
+	@$(MAKE) -C $(PROJECT_ROOT)/lib $@
+
+.PHONY: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+$(patsubst -l%,%-clean,$(LOCAL_LIBS)):
+	@$(MAKE) -C $(PROJECT_ROOT)/lib $@
+	
+.PHONY: print
 print:
 	@echo INCLUDE_DIR: $(INCLUDE_DIR)
 	@echo SOURCE_DIR: $(SOURCE_DIR)
@@ -63,3 +78,14 @@ print:
 	@echo OBJECTS: $(OBJECTS)
 	@echo DEPENDS: $(DEPENDS)
 	@echo TARGET: $(TARGET)
+	@echo LIBS: $(LIBS)
+
+-include $(DEPENDS)
+	
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
+	@mkdir -p $(OBJECT_DIR)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+$(TARGET):	$(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS)) $(OBJECTS)
+	@mkdir -p $(TARGET_DIR)
+	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)

@@ -1,9 +1,8 @@
 #include "common.h"
-#include "Commands_test.h"
-
 #include "Command/CommandExecutor.h"
 #include "Logic/ContainerFactories.h"
 #include "Hardware/Valves.h"
+#include "CommandsTest.h"
 
 #define GET_VALVES_MOCK() dynamic_cast<ValvesMock&>(Valves::getInstance())
 

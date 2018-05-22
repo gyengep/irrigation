@@ -1,13 +1,14 @@
 #pragma once
-
 #include <atomic>
+#include <memory>
 #include <string>
 #include <thread>
-
-#include "Command/CommandExecutor.h"
+#include "CommandExecutor/CommandExecutor.h"
 #include "DocumentView/View.h"
 
-#include <memory>
+
+class IrrigationDocument;
+
 
 class CommandLineView : public View {
 	std::thread* workerThread;

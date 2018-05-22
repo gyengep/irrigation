@@ -1,10 +1,8 @@
-#include "common.h"
-#include "Commands_test.h"
-
 #include "Command/CommandExecutor.h"
 #include "Logic/ContainerFactories.h"
 #include "Model/Application.h"
 #include "Views/CommandLineView/CommandLineView.h"
+#include "CommandsTest.h"
 
 #define GET_APPLICATION_MOCK() dynamic_cast<ApplicationMock&>(Application::getInstance())
 

@@ -1,18 +1,34 @@
 
-all: 	irrigation test
+.PHONY: all
+all: library-all test-all src-all
 
-clean: 	irrigation-clean test-clean
+.PHONY: clean
+clean: library-clean test-clean src-clean
 
-.PHONY:	irrigation test
+.PHONY: library-all
+library-all:
+	@$(MAKE) -C lib all
+	
+.PHONY: library-clean
+library-clean:
+	@$(MAKE) -C lib clean
 
-irrigation:
-	@$(MAKE) -C src all
-
-irrigation-clean:
-	@$(MAKE) -C src clean
-
-test:
+.PHONY: test-all
+test-all:
 	@$(MAKE) -C test all
 	
+.PHONY: test-clean
 test-clean:
 	@$(MAKE) -C test clean
+
+.PHONY: src-all
+src-all:
+	@$(MAKE) -C src all
+	
+.PHONY: src-clean
+src-clean:
+	@$(MAKE) -C src clean
+
+.PHONY: gmock
+gmock:
+	@$(MAKE) -C 3p/gmock_gtest all
