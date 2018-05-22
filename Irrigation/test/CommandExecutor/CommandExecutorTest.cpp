@@ -1,6 +1,7 @@
 #include "CommandExecutorTest.h"
 #include "CommandExecutor/Exceptions.h"
 
+using namespace std;
 using ::testing::_;
 
 
@@ -32,13 +33,13 @@ TEST_F(CommandExecutorTest, executeSuccess2) {
 }
 
 TEST_F(CommandExecutorTest, invalidCommand) {
-	EXPECT_THROW(commandExecutor.addCommand(nullptr), std::invalid_argument);
-	EXPECT_THROW(commandExecutor.addCommand(new CommandTest(NULL)), std::invalid_argument);
-	EXPECT_THROW(commandExecutor.addCommand(new CommandTest("")), std::invalid_argument);
+	EXPECT_THROW(commandExecutor.addCommand(nullptr), invalid_argument);
+	EXPECT_THROW(commandExecutor.addCommand(new CommandTest(NULL)), invalid_argument);
+	EXPECT_THROW(commandExecutor.addCommand(new CommandTest("")), invalid_argument);
 }
 
 TEST_F(CommandExecutorTest, parameters) {
-	const std::string p1("P1");
+	const string p1("P1");
 	Tokens tokens({"command1", p1});
 
 	EXPECT_CALL(*command1, execute(Tokens({p1}))).Times(1);
@@ -61,6 +62,6 @@ TEST_F(CommandExecutorTest, unknownCommand) {
 }
 
 TEST_F(CommandExecutorTest, invalidToken) {
-	EXPECT_THROW(commandExecutor.execute(Tokens()), std::invalid_argument);
-	EXPECT_THROW(commandExecutor.execute(Tokens({""})), std::invalid_argument);
+	EXPECT_THROW(commandExecutor.execute(Tokens()), invalid_argument);
+	EXPECT_THROW(commandExecutor.execute(Tokens({""})), invalid_argument);
 }

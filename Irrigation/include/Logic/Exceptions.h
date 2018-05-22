@@ -4,15 +4,27 @@
 
 
 
+class ProgramIdExist : public std::runtime_error {
+public:
+	explicit ProgramIdExist(IdType id) : std::runtime_error("ProgramID already exists" + std::to_string(id)) {}
+};
+
+
+class InvalidProgramIdException : public std::runtime_error {
+public:
+	explicit InvalidProgramIdException(IdType id) : std::runtime_error("Invalid programID" + std::to_string(id)) {}
+};
+
+
 class InvalidRunTimeIdException : public std::runtime_error {
 public:
-	explicit InvalidRunTimeIdException(IdType id) : std::runtime_error("Invalid runtimeID" + std::to_string(id)) {}
+	explicit InvalidRunTimeIdException(IdType id) : std::runtime_error("Invalid runTimeID" + std::to_string(id)) {}
 };
 
 
 class InvalidStartTimeIdException : public std::runtime_error {
 public:
-	explicit InvalidStartTimeIdException(IdType id) : std::runtime_error("Invalid starttimeID" + std::to_string(id)) {}
+	explicit InvalidStartTimeIdException(IdType id) : std::runtime_error("Invalid startTimeID" + std::to_string(id)) {}
 };
 
 

@@ -21,13 +21,12 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 
 LOCAL_LIBS      = -l$(TARGET_NAME)
-LOCAL_LIB_FILES = $(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS))
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
 LIBS            = -lgmock $(LOCAL_LIBS)
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
-CPPFLAGS        = -isystem $(PROJECT_ROOT)/lib/gmock_gtest $(INCLUDE_PATH) 
+CPPFLAGS        = -isystem $(PROJECT_ROOT)/3p/gmock_gtest $(INCLUDE_PATH) 
 
 # DEBUG flags
 #CXXFLAGS        += -O0 -g3
@@ -37,32 +36,38 @@ CXXFLAGS        += -O3
 
 
 .PHONY: all
-all: library test
-
-.PHONY: clean
-clean: library-clean test-clean
-	
-.PHONY: library
-library:
-	@$(MAKE) -C $(PROJECT_ROOT)/src/$(TARGET_NAME) library
-	
-.PHONY: library-clean
-library-clean:
-	@$(MAKE) -C $(PROJECT_ROOT)/src/$(TARGET_NAME) library-clean
-	
-.PHONY: test
-test: $(TARGET)
+all: $(TARGET)
 	@echo 'Executing test: $(TARGET)'
 	@$(TARGET)
 	@echo 'Finished executing test: $(TARGET)'
-	@echo ' ' 
+	@echo ' '
 
-.PHONY: test-clean
-test-clean:
+.PHONY: clean
+clean: 
 	rm -f $(OBJECTS)
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
 
+.PHONY: test-deps
+test-deps: dependency-all all
+
+.PHONY: clean-deps
+clean-deps: dependency-clean clean
+	
+.PHONY: dependency-all
+dependency-all: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+
+.PHONY: dependency-clean
+dependency-clean: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+
+.PHONY: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+$(patsubst -l%,%-all,$(LOCAL_LIBS)):
+	@$(MAKE) -C $(PROJECT_ROOT)/lib $@
+
+.PHONY: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+$(patsubst -l%,%-clean,$(LOCAL_LIBS)):
+	@$(MAKE) -C $(PROJECT_ROOT)/lib $@
+	
 .PHONY: print
 print:
 	@echo INCLUDE_DIR: $(INCLUDE_DIR)
@@ -74,7 +79,6 @@ print:
 	@echo DEPENDS: $(DEPENDS)
 	@echo TARGET: $(TARGET)
 	@echo LIBS: $(LIBS)
-	@echo LOCAL_LIB_FILES: $(LOCAL_LIB_FILES)
 
 -include $(DEPENDS)
 	
@@ -82,6 +86,6 @@ $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
 	@mkdir -p $(OBJECT_DIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-$(TARGET):	$(LOCAL_LIB_FILES) $(OBJECTS)
+$(TARGET):	$(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS)) $(OBJECTS)
 	@mkdir -p $(TARGET_DIR)
 	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)

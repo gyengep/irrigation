@@ -16,7 +16,7 @@ public:
 
 private:
 	Commands commands;
-	mutable std::mutex mtx;
+	mutable std::mutex mutex;
 
 	Command* getMatchingCommand(const std::string& command) const;
 

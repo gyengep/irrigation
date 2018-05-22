@@ -1,8 +1,10 @@
 #include <gmock/gmock.h>
 #include "Schedulers/Scheduler.h"
 
+using namespace std;
 
-std::time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
+
+time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
 
 	EXPECT_TRUE(0 <= month && month < 12);
 	EXPECT_TRUE(1 <= day && day < 32);
@@ -10,7 +12,7 @@ std::time_t toTime(int year, int month, int day, int hour, int min, int sec, boo
 	EXPECT_TRUE(0 <= min && min < 60);
 	EXPECT_TRUE(0 <= sec && sec < 60);
 
-	std::tm tm;
+	tm tm;
 
 	memset(&tm, 0, sizeof(tm));
 
@@ -22,16 +24,16 @@ std::time_t toTime(int year, int month, int day, int hour, int min, int sec, boo
 	tm.tm_sec = sec;
 	tm.tm_isdst = dst ? 1 : 0;
 
-	return std::mktime(&tm);
+	return mktime(&tm);
 }
 
-std::tm toCalendarTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
-	std::time_t t = toTime(year, month, day, hour, min, sec, dst);
-	return *std::localtime(&t);
+tm toCalendarTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
+	time_t t = toTime(year, month, day, hour, min, sec, dst);
+	return *localtime(&t);
 }
 
 TEST(Scheduler, Time) {
-	std::tm tm = toCalendarTime(2016, 9, 11, 20, 59, 33, true);
+	tm tm = toCalendarTime(2016, 9, 11, 20, 59, 33, true);
 
 	EXPECT_EQ(2016, tm.tm_year + 1900);
 	EXPECT_EQ(9, tm.tm_mon + 1);
@@ -63,7 +65,7 @@ TEST(Scheduler, Time) {
 }
 
 void checkDay(const Scheduler& scheduler, bool requestedResult, int day) {
-	std::tm tm;
+	tm tm;
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {

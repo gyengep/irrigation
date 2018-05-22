@@ -12,8 +12,8 @@ public:
 	typedef IdType									key_type;
 	typedef StartTime*								mapped_type;
 	typedef std::pair<const key_type, mapped_type>	value_type;
-	typedef std::list<value_type>					ContainerType;
-	typedef typename ContainerType::const_iterator 	const_iterator;
+	typedef std::list<value_type>					container_type;
+	typedef typename container_type::const_iterator const_iterator;
 
 private:
 
@@ -21,19 +21,19 @@ private:
 	StartTimeContainer(const StartTimeContainer&);
 	StartTimeContainer& operator= (const StartTimeContainer&);
 
-	ContainerType::const_iterator find(const key_type& key) const;
-	ContainerType::iterator find(const key_type& key);
+	container_type::const_iterator find(const key_type& key) const;
+	container_type::iterator find(const key_type& key);
 
 	static bool compareStartTime(const value_type& first, const value_type& second);
 
-	ContainerType container;
+	container_type container;
 
 public:
 	StartTimeContainer();
 	virtual ~StartTimeContainer();
 
-	virtual void insert(const value_type& newItem);
-	virtual void erase(key_type key);
+	virtual void insert(const key_type& key, const mapped_type& value);
+	virtual void erase(const key_type& key);
 	virtual void sort();
 
 	const_iterator begin() const 		{ return container.begin(); }

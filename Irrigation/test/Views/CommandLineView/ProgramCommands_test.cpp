@@ -1,7 +1,6 @@
 #include "common.h"
-#include "Commands_test.h"
-
 #include "Command/CommandExecutor.h"
+#include "CommandsTest.h"
 #include "Logic/ContainerFactories.h"
 
 #define GET_PROGRAMCONTAINER_MOCK() dynamic_cast<ProgramContainerMock&>(document->getPrograms())

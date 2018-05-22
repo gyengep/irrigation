@@ -3,15 +3,16 @@
 #include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
 
+using namespace std;
 
 
-static void insertToStartTimes(StartTimeContainer& startTimes, const std::vector<StartTimeContainer::value_type>& values) {
+static void insertToStartTimes(StartTimeContainer& startTimes, const vector<StartTimeContainer::value_type>& values) {
 	for (unsigned i = 0; i < values.size(); ++i) {
-		startTimes.insert(values[i]);
+		startTimes.insert(values[i].first, values[i].second);
 	}
 }
 
-static void expectStartTimes(const StartTimeContainer& startTimes, const std::vector<StartTimeContainer::value_type>& required) {
+static void expectStartTimes(const StartTimeContainer& startTimes, const vector<StartTimeContainer::value_type>& required) {
 	ASSERT_EQ(required.size(), startTimes.size());
 
 	unsigned i = 0;
@@ -25,12 +26,12 @@ TEST(StartTimeContainerTest, size) {
 	StartTimeContainer startTimes;
 	EXPECT_EQ(0, startTimes.size());
 
-	startTimes.insert(std::make_pair(0, new StartTime()));
+	startTimes.insert(0, new StartTime());
 	EXPECT_EQ(1, startTimes.size());
 }
 
 TEST(StartTimeContainerTest, insert) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -42,7 +43,7 @@ TEST(StartTimeContainerTest, insert) {
 }
 
 TEST(StartTimeContainerTest, insertExisted) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -51,11 +52,11 @@ TEST(StartTimeContainerTest, insertExisted) {
 	StartTimeContainer startTimes;
 	insertToStartTimes(startTimes, required);
 
-	EXPECT_THROW(startTimes.insert(std::make_pair(20, new StartTime())), StartTimeIdExist);
+	EXPECT_THROW(startTimes.insert(20, new StartTime()), StartTimeIdExist);
 }
 
 TEST(StartTimeContainerTest, erase) {
-	const std::vector<StartTimeContainer::value_type> startTimesToAdd {
+	const vector<StartTimeContainer::value_type> startTimesToAdd {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{30, new StartTime()},
@@ -68,7 +69,7 @@ TEST(StartTimeContainerTest, erase) {
 
 	startTimes.erase(30);
 
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, startTimesToAdd[0].second},
 		{20, startTimesToAdd[1].second},
 		{15, startTimesToAdd[3].second},
@@ -78,7 +79,7 @@ TEST(StartTimeContainerTest, erase) {
 }
 
 TEST(StartTimeContainerTest, eraseInvalid) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -94,11 +95,11 @@ TEST(StartTimeContainerTest, eraseInvalid) {
 
 TEST(StartTimeContainerTest, sort) {
 
-	const std::vector<StartTimeContainer::value_type> startTimesToAdd {
-		{0, new StartTime(15)},
-		{1, new StartTime(25)},
-		{2, new StartTime(10)},
-		{3, new StartTime(20)},
+	const vector<StartTimeContainer::value_type> startTimesToAdd {
+		{0, new StartTime(0, 0, 15)},
+		{1, new StartTime(0, 0, 25)},
+		{2, new StartTime(0, 0, 10)},
+		{3, new StartTime(0, 0, 20)},
 	};
 
 	StartTimeContainer startTimes;
@@ -106,7 +107,7 @@ TEST(StartTimeContainerTest, sort) {
 
 	startTimes.sort();
 
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{2, startTimesToAdd[2].second},
 		{0, startTimesToAdd[0].second},
 		{3, startTimesToAdd[3].second},
@@ -118,7 +119,7 @@ TEST(StartTimeContainerTest, sort) {
 
 
 TEST(StartTimeContainerTest, accessValid) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{15, new StartTime()},
 		{20, new StartTime()},
@@ -133,7 +134,7 @@ TEST(StartTimeContainerTest, accessValid) {
 }
 
 TEST(StartTimeContainerTest, accessInvalid) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{15, new StartTime()},
 		{20, new StartTime()},
@@ -146,7 +147,7 @@ TEST(StartTimeContainerTest, accessInvalid) {
 }
 
 TEST(StartTimeContainerTest, getAtConst) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -166,7 +167,7 @@ TEST(StartTimeContainerTest, getAtConst) {
 }
 
 TEST(StartTimeContainerTest, getAt) {
-	const std::vector<StartTimeContainer::value_type> required {
+	const vector<StartTimeContainer::value_type> required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -195,7 +196,7 @@ TEST(StartTimeContainerTest, destructed) {
 
 	{
 		StartTimeContainer startTimes;
-		startTimes.insert(std::make_pair(0, mockStartTime));
+		startTimes.insert(0, mockStartTime);
 	}
 }
 
@@ -204,7 +205,7 @@ TEST(StartTimeContainerTest, eraseDestructed) {
 	EXPECT_CALL(*mockStartTime, destructorIsCalled()).Times(1);
 
 	StartTimeContainer startTimes;
-	startTimes.insert(std::make_pair(0, mockStartTime));
+	startTimes.insert(0, mockStartTime);
 	startTimes.erase(0);
 }
 

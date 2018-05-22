@@ -1,7 +1,6 @@
 #include "common.h"
-#include "Commands_test.h"
-
 #include "Command/CommandExecutor.h"
+#include "CommandsTest.h"
 #include "Logic/ContainerFactories.h"
 
 #define GET_STARTTIMECONTAINER_MOCK(programId) dynamic_cast<StartTimeContainerMock&>(document->getPrograms().at(programId)->getStartTimes())

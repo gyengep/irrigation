@@ -9,20 +9,20 @@
 class ProgramContainerTest : public ::testing::Test {
 protected:
 
-	typedef std::list<std::pair<IdType, Program*>> ProgramList;
+	typedef std::list<ProgramContainer::value_type> ProgramList;
 
 	class ProgramContainerCallback {
 		ProgramList programList;
 
 	public:
-		void callback(IdType id, LockedProgram program);
+		void callback(const IdType id, LockedProgramPtr lockedProgramPtr);
 		const ProgramList& getProgramList() const;
 	};
 
-	std::shared_ptr<ProgramContainer> programs;
+	ProgramContainer programs;
 
     virtual void SetUp();
     virtual void TearDown();
 
-    static ProgramList getAsProgramList(const std::shared_ptr<ProgramContainer> programs);
+    static ProgramList getAsProgramList(const ProgramContainer* programs);
 };

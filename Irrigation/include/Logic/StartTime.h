@@ -12,8 +12,8 @@ class StartTime {
 	bool enabled;
 
 public:
+	StartTime();
 	StartTime(unsigned hour, unsigned min, unsigned sec);
-	StartTime(unsigned seconds = 0);
 	virtual ~StartTime();
 
 	bool operator< (const StartTime& other) const;
@@ -24,4 +24,5 @@ public:
 
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned secOfDay);
+	virtual void setValue(unsigned hour, unsigned min);
 };

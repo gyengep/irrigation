@@ -1,42 +1,25 @@
 
-PROJECT_ROOT    = ..
-
-
 .PHONY: all
-all: library test
+all:
+	@$(MAKE) -C CommandExecutor all
+	@$(MAKE) -C DocumentView all
+	@$(MAKE) -C Hardware all
+	@$(MAKE) -C Logger all
+	@$(MAKE) -C Logic all
+	#@$(MAKE) -C Model all
+	@$(MAKE) -C Schedulers all
+	#@$(MAKE) -C Utils all
+	#@$(MAKE) -C Views/CommandLineView all
 
 .PHONY: clean
-clean: library-clean test-clean
-	
-.PHONY: library
-library:
-	@$(MAKE) -C $(PROJECT_ROOT)/src library
-	
-.PHONY: library-clean
-library-clean:
-	@$(MAKE) -C $(PROJECT_ROOT)/src library-clean
-	
-.PHONY: test
-test: 
-	@$(MAKE) -C $(PROJECT_ROOT)/test/CommandExecutor test
-	@$(MAKE) -C $(PROJECT_ROOT)/test/DocumentView test
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Hardware test
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Logger test
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Logic test
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Model test
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Schedulers test
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Utils test
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Views/CommandLineView test
-
-.PHONY: test-clean
-test-clean:
-	@$(MAKE) -C $(PROJECT_ROOT)/test/CommandExecutor test-clean
-	@$(MAKE) -C $(PROJECT_ROOT)/test/DocumentView test-clean
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Hardware test-clean
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Logger test-clean
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Logic test-clean
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Model test-clean
-	@$(MAKE) -C $(PROJECT_ROOT)/test/Schedulers test-clean
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Utils test-clean
-	#@$(MAKE) -C $(PROJECT_ROOT)/test/Views/CommandLineView test-clean
+clean:
+	@$(MAKE) -C CommandExecutor clean
+	@$(MAKE) -C DocumentView clean
+	@$(MAKE) -C Hardware clean
+	@$(MAKE) -C Logger clean
+	@$(MAKE) -C Logic clean
+	#@$(MAKE) -C Model clean
+	@$(MAKE) -C Schedulers clean
+	#@$(MAKE) -C Utils clean
+	#@$(MAKE) -C Views/CommandLineView clean
 

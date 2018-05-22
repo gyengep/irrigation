@@ -1,6 +1,8 @@
 #include <gmock/gmock.h>
 #include "Logger/Logger.h"
 
+using namespace std;
+
 
 #define LOG_ENTRY_ERROR 	"log_entry_error"
 #define LOG_ENTRY_WARNING 	"log_entry_warning"
@@ -130,10 +132,10 @@ TEST(LoggerTest, invalidLevel) {
 	Logger::Level level;
 
 	level = static_cast<Logger::Level>(Logger::TRACE + 1);
-	EXPECT_THROW(Logger::getLevelText(level), std::out_of_range);
+	EXPECT_THROW(Logger::getLevelText(level), out_of_range);
 
 	level = static_cast<Logger::Level>(-1);
-	EXPECT_THROW(Logger::getLevelText(level), std::out_of_range);
+	EXPECT_THROW(Logger::getLevelText(level), out_of_range);
 }
 
 TEST(LoggerTest, getLevelText) {

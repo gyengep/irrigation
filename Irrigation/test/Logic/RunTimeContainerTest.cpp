@@ -4,6 +4,7 @@
 #include "Logic/RunTimeContainer.h"
 #include "Logic/ZoneConfig.h"
 
+using namespace std;
 
 
 TEST(RunTimeContainerTest, size) {
@@ -35,7 +36,7 @@ TEST(RunTimeContainerTest, id) {
 
 TEST(RunTimeContainerTest, getAtConst) {
 	const RunTimeContainer runTimes;
-	std::vector<RunTime*> runTimePtrs;
+	vector<RunTime*> runTimePtrs;
 
 	for (auto it = runTimes.begin(); it != runTimes.end(); ++it) {
 		runTimePtrs.push_back(it->second);
@@ -48,7 +49,7 @@ TEST(RunTimeContainerTest, getAtConst) {
 
 TEST(RunTimeContainerTest, getAt) {
 	RunTimeContainer runTimes;
-	std::vector<RunTime*> runTimePtrs;
+	vector<RunTime*> runTimePtrs;
 
 	for (auto it = runTimes.begin(); it != runTimes.end(); ++it) {
 		runTimePtrs.push_back(it->second);
@@ -69,7 +70,7 @@ public:
 
 class MockRunTimeFactory : public RunTimeFactory {
 public:
-	virtual RunTime* createRunTime() {
+	virtual RunTime* createRunTime() const {
 		return new MockRunTime();
 	}
 };

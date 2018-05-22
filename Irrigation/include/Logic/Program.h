@@ -4,12 +4,11 @@
 #include <string>
 #include <vector>
 
-
 class Scheduler;
 class SpecifiedScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
-
+class SchedulerFactory;
 
 
 class Program {
@@ -25,6 +24,8 @@ private:
 	Program(const Program&);
 	void operator= (const Program&);
 
+	void initSchedulers(std::unique_ptr<const SchedulerFactory> schedulerFactory);
+
 	std::string name;
 	SchedulerType schedulerType;
 	std::vector<std::unique_ptr<Scheduler>> schedulers;
@@ -32,15 +33,18 @@ private:
 	std::unique_ptr<StartTimeContainer> startTimes;
 
 public:
-	Program();
+	Program(const std::string& name);
 	virtual ~Program();
+
+	// for testing
+	Program(const SchedulerFactory* schedulerFactory = nullptr);
 
 	std::string getName() const;
 	virtual void setName(const std::string& name);
 
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
-	Scheduler& getCurrentScheduler() const;
+	const Scheduler& getCurrentScheduler() const;
 
 	const SpecifiedScheduler& getSpecifiedScheduler() const;
 	SpecifiedScheduler& getSpecifiedScheduler();
@@ -51,4 +55,11 @@ public:
 	RunTimeContainer& getRunTimes() { return *runTimes; }
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
+};
+
+
+class SchedulerFactory {
+public:
+	virtual ~SchedulerFactory() {}
+	virtual Scheduler* createScheduler(Program::SchedulerType schedulerType) const;
 };
