@@ -48,17 +48,17 @@ clean:
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
 
-.PHONY: test-deps
-test-deps: dependency-all all
+.PHONY: all-with-libraries
+all-with-libraries: library-all all
 
-.PHONY: clean-deps
-clean-deps: dependency-clean clean
-	
-.PHONY: dependency-all
-dependency-all: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+.PHONY: clean-with-libraries
+clean-with-libraries: library-clean clean
+		
+.PHONY: library-all
+library-all: $(patsubst -l%,%-all,$(LOCAL_LIBS))
 
-.PHONY: dependency-clean
-dependency-clean: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+.PHONY: library-clean
+library-clean: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
 
 .PHONY: $(patsubst -l%,%-all,$(LOCAL_LIBS))
 $(patsubst -l%,%-all,$(LOCAL_LIBS)):

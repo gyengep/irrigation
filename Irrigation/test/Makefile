@@ -1,4 +1,6 @@
 
+PROJECT_ROOT    = ..
+
 .PHONY: all
 all:
 	@$(MAKE) -C CommandExecutor all
@@ -23,3 +25,16 @@ clean:
 	#@$(MAKE) -C Utils clean
 	#@$(MAKE) -C Views/CommandLineView clean
 
+.PHONY: all-with-libraries
+all-with-libraries: library-all all
+
+.PHONY: clean-with-libraries
+clean-with-libraries: library-clean clean
+		
+.PHONY: library-all
+library-all:
+	@$(MAKE) -C $(PROJECT_ROOT)/lib all
+
+.PHONY: library-clean
+library-clean:
+	@$(MAKE) -C $(PROJECT_ROOT)/lib clean
