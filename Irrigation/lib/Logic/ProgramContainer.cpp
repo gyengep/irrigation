@@ -111,7 +111,9 @@ void ProgramContainer::iterate(callback_type func) const {
 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		const InnerValueType* value = *it;
-		func(value->id, LockedProgramPtr(new LockedProgram(value->program, value->mutex)));
+		if (!func(value->id, LockedProgramPtr(new LockedProgram(value->program, value->mutex)))) {
+			return;
+		}
 	}
 }
 

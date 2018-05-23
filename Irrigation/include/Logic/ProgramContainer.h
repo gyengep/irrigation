@@ -36,7 +36,7 @@ public:
 	typedef IdType													key_type;
 	typedef Program*												mapped_type;
 	typedef std::pair<const key_type, mapped_type>					value_type;
-	typedef std::function<void(const IdType&, LockedProgramPtr)> 	callback_type;
+	typedef std::function<bool(const IdType&, LockedProgramPtr)> 	callback_type;
 
 private:
 

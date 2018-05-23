@@ -6,6 +6,8 @@
 
 using namespace std;
 using namespace placeholders;
+using testing::_;
+using testing::Return;
 
 
 void ProgramContainerTest::SetUp() {
@@ -15,9 +17,10 @@ void ProgramContainerTest::TearDown() {
 
 }
 
-void ProgramContainerTest::ProgramContainerCallback::callback(const IdType id, LockedProgramPtr lockedProgramPtr) {
+bool ProgramContainerTest::ProgramContainerCallback::callback(const IdType id, LockedProgramPtr lockedProgramPtr) {
 	LockedProgram* lockedProgram = lockedProgramPtr.get();
 	programList.push_back(make_pair(id, lockedProgram->get()));
+	return true;
 }
 
 const ProgramContainerTest::ProgramList& ProgramContainerTest::ProgramContainerCallback::getProgramList() const {
@@ -31,6 +34,51 @@ ProgramContainerTest::ProgramList ProgramContainerTest::getAsProgramList(const P
 	programs->iterate(f);
 
 	return programContainerCallback.getProgramList();
+}
+
+class MockProgramContainerCallback : public ProgramContainerTest::ProgramContainerCallback {
+public:
+	MOCK_METHOD2(callback, bool(const IdType, LockedProgramPtr));
+};
+
+TEST_F(ProgramContainerTest, iterate) {
+	programs.insert(1, new Program());
+	programs.insert(2, new Program());
+	programs.insert(3, new Program());
+	programs.insert(4, new Program());
+
+	MockProgramContainerCallback mockCallback;
+
+	ON_CALL(mockCallback, callback(_, _)).WillByDefault(Return(true));
+
+	EXPECT_CALL(mockCallback, callback(1, _)).Times(1);
+	EXPECT_CALL(mockCallback, callback(2, _)).Times(1);
+	EXPECT_CALL(mockCallback, callback(3, _)).Times(1);
+	EXPECT_CALL(mockCallback, callback(4, _)).Times(1);
+
+	auto f = bind(&ProgramContainerCallback::callback, &mockCallback, _1, _2);
+
+	programs.iterate(f);
+}
+
+TEST_F(ProgramContainerTest, iterateAbort) {
+	programs.insert(1, new Program());
+	programs.insert(2, new Program());
+	programs.insert(3, new Program());
+	programs.insert(4, new Program());
+
+	MockProgramContainerCallback mockCallback;
+
+	ON_CALL(mockCallback, callback(_, _)).WillByDefault(Return(true));
+
+	EXPECT_CALL(mockCallback, callback(1, _)).Times(1);
+	EXPECT_CALL(mockCallback, callback(2, _)).Times(1).WillOnce(Return(false));
+	EXPECT_CALL(mockCallback, callback(3, _)).Times(0);
+	EXPECT_CALL(mockCallback, callback(4, _)).Times(0);
+
+	auto f = bind(&ProgramContainerCallback::callback, &mockCallback, _1, _2);
+
+	programs.iterate(f);
 }
 
 TEST_F(ProgramContainerTest, insert) {
