@@ -1,4 +1,5 @@
 #include "ZoneHandler.h"
+#include <limits>
 #include <vector>
 #include "Hardware/Valves.h"
 
@@ -8,6 +9,9 @@ using namespace std;
 #if (ZONE_COUNT + 1) != (VALVE_COUNT)
 #error (ZONE_COUNT + 1) != (VALVE_COUNT)
 #endif
+
+
+const size_t ZoneHandler::invalidZoneId = std::numeric_limits<size_t>::max();
 
 
 ZoneHandler::ZoneHandler() :
