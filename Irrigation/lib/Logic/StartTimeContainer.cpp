@@ -3,6 +3,7 @@
 #include "StartTime.h"
 #include "Logger/Logger.h"
 
+using namespace std;
 
 
 StartTimeContainer::StartTimeContainer() {
