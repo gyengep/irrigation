@@ -3,6 +3,7 @@
 #include <fstream>
 #include <thread>
 
+using namespace std;
 
 
 #define LOGGER_FUNCTION(LEVEL)		\

@@ -9,8 +9,6 @@
 
 #define LOGGER Logger::getInstance()
 
-using namespace std;
-
 
 class Logger {
 public:
@@ -25,16 +23,16 @@ public:
 	};
 
 private:
-	static unique_ptr<Logger> instance;
-	static mutex initMutex;
-	static const array<const char*, 6> levelTexts;
+	static std::unique_ptr<Logger> instance;
+	static std::mutex initMutex;
+	static const std::array<const char*, 6> levelTexts;
 	static const unsigned bufferSize = 1000;
 
-	mutable mutex logMutex;
+	mutable std::mutex logMutex;
 	char buffer[bufferSize + 1];
-	atomic<Level> level;
-	ostream* output;
-	unique_ptr<ostream> dynamicCreatedoutput;
+	std::atomic<Level> level;
+	std::ostream* output;
+	std::unique_ptr<std::ostream> dynamicCreatedoutput;
 
 	Logger();
 	void log(Level level, const char * format, va_list args);
@@ -44,8 +42,8 @@ public:
 	static Logger& getInstance();
 
 	void setLevel(Level level);
-	void setFileName(const string& fileName);
-	void setOutput(ostream& output);
+	void setFileName(const std::string& fileName);
+	void setOutput(std::ostream& output);
 
 	bool  isLoggable(Level level) const;
 	Level getLevel() const { return level; }
