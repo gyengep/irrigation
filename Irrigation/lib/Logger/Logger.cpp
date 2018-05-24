@@ -69,7 +69,7 @@ void Logger::setOutput(ostream& o) {
 	lock_guard<mutex> lock(logMutex);
 
 	output = &o;
-	dynamicCreatedoutput.release();
+	dynamicCreatedoutput.reset();
 }
 
 void Logger::setLevel(Level level) {

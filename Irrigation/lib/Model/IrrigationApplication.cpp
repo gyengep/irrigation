@@ -59,7 +59,7 @@ void Application::run() {
 }
 
 void Application::cleanup() {
-	document.release();
+	document.reset();
 	LOGGER.info("Application terminated");
 }
 
