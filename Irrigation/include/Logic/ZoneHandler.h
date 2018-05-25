@@ -1,13 +1,12 @@
 #pragma once
 #include <array>
-#include <limits>
 #include <mutex>
 #include "ZoneConfig.h"
 
 
 class ZoneHandler {
 public:
-	static const size_t invalidZoneId = std::numeric_limits<size_t>::max();
+	static const size_t invalidZoneId;
 
 private:
 	mutable std::mutex mutex;

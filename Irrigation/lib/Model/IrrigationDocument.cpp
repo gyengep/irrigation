@@ -1,4 +1,5 @@
 #include "IrrigationDocument.h"
+#include <functional>
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
@@ -33,4 +34,24 @@ void IrrigationDocument::load() {
 	program->getRunTimes().at(4)->setValue(3);
 	program->getStartTimes().insert(2, new StartTime(8, 0, 0));
 	getPrograms().insert(2, program);
+}
+
+void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
+	if (!wateringController.isWateringActive()) {
+		using namespace std::placeholders;
+
+		ProgramContainer::callback_type func = std::bind(&IrrigationDocument::programContainerCallback, this, _1, _2, rawTime);
+		programs.iterate(func);
+	}
+
+	wateringController.on1SecTimer(rawTime);
+}
+
+bool IrrigationDocument::programContainerCallback(const IdType&, LockedProgramPtr lockedProgram, const time_t& rawTime) {
+	if (lockedProgram->get()->isScheduled(rawTime)) {
+		wateringController.start(rawTime, lockedProgram->get()->getRunTimes());
+		return false;
+	}
+
+	return true;
 }

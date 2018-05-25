@@ -7,7 +7,7 @@
 
 
 class ProgramContainerTest : public ::testing::Test {
-protected:
+public:
 
 	typedef std::list<ProgramContainer::value_type> ProgramList;
 
@@ -15,7 +15,7 @@ protected:
 		ProgramList programList;
 
 	public:
-		void callback(const IdType id, LockedProgramPtr lockedProgramPtr);
+		virtual bool callback(const IdType id, LockedProgramPtr lockedProgramPtr);
 		const ProgramList& getProgramList() const;
 	};
 
