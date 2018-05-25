@@ -42,35 +42,28 @@ Logger& Logger::getInstance() {
 Logger::Logger() :
 	logMutex(),
 	level(OFF),
-	output(nullptr),
-	dynamicCreatedoutput()
+	output(nullptr)
 {
 	buffer[bufferSize] = '\0';
-	setOutput(cout);
 }
 
 Logger::~Logger() {
 }
 
 void Logger::setFileName(const string& fileName) {
-	ofstream* file = new ofstream(fileName, ios::out | ios::app);
+	unique_ptr<ofstream> file(new ofstream(fileName, ios::out | ios::app));
 
 	if (!file->is_open()) {
-		delete file;
-		runtime_error("Could not open file: " + fileName);
+		throw runtime_error("Could not open file: " + fileName);
 	}
 
 	lock_guard<mutex> lock(logMutex);
-
-	output = file;
-	dynamicCreatedoutput.reset(file);
+	output.reset(file.release());
 }
 
-void Logger::setOutput(ostream& o) {
+void Logger::setOutput(ostream* o) {
 	lock_guard<mutex> lock(logMutex);
-
-	output = &o;
-	dynamicCreatedoutput.reset();
+	output.reset(o);
 }
 
 void Logger::setLevel(Level level) {
@@ -93,20 +86,22 @@ bool Logger::isLoggable(Level level) const {
 void Logger::log(Level level, const char * format, va_list args) {
 
 	time_t rawtime = time(NULL);
-	struct tm * timeinfo = localtime(&rawtime);
+	tm* timeinfo = localtime(&rawtime);
 
 	lock_guard<mutex> lock(logMutex);
 
-	strftime(buffer, bufferSize, "%Y.%m.%d %H:%M:%S", timeinfo);
-	(*output) << buffer << " ";
-	(*output) << this_thread::get_id() << " ";
-	(*output) << getLevelText(level) << ": ";
+	if (output.get() != nullptr) {
+		strftime(buffer, bufferSize, "%Y.%m.%d %H:%M:%S", timeinfo);
+		(*output) << buffer << " ";
+		(*output) << this_thread::get_id() << " ";
+		(*output) << getLevelText(level) << ": ";
 
-	vsnprintf(buffer, bufferSize, format, args);
-	(*output) << buffer;
+		vsnprintf(buffer, bufferSize, format, args);
+		(*output) << buffer;
 
-	(*output) << endl;
-	(*output).flush();
+		(*output) << endl;
+		(*output).flush();
+	}
 }
 
 void Logger::error(const char * format, ...)  {

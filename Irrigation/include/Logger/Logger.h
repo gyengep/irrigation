@@ -31,8 +31,7 @@ private:
 	mutable std::mutex logMutex;
 	char buffer[bufferSize + 1];
 	std::atomic<Level> level;
-	std::ostream* output;
-	std::unique_ptr<std::ostream> dynamicCreatedoutput;
+	std::unique_ptr<std::ostream> output;
 
 	Logger();
 	void log(Level level, const char * format, va_list args);
@@ -43,7 +42,7 @@ public:
 
 	void setLevel(Level level);
 	void setFileName(const std::string& fileName);
-	void setOutput(std::ostream& output);
+	void setOutput(std::ostream* output);
 
 	bool  isLoggable(Level level) const;
 	Level getLevel() const { return level; }

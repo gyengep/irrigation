@@ -19,113 +19,104 @@ static void logEntriesOnAllLevels() {
 	LOGGER.trace(LOG_ENTRY_TRACE);
 }
 
+TEST(LoggerTest, invalidFile) {
+	EXPECT_THROW(LOGGER.setFileName(""), runtime_error);
+}
 
 TEST(LoggerTest, logTextOff) {
 
-	ostringstream o;
+	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
 	LOGGER.setLevel(Logger::OFF);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_ERROR));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_WARNING));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_TRACE));
-
-	LOGGER.setOutput(cout);
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logTextError) {
 
-	ostringstream o;
+	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
 	LOGGER.setLevel(Logger::ERROR);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_ERROR));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_WARNING));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_TRACE));
-
-	LOGGER.setOutput(cout);
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logTextWarning) {
 
-	ostringstream o;
+	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
 	LOGGER.setLevel(Logger::WARNING);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_WARNING));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_TRACE));
-
-	LOGGER.setOutput(cout);
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logTextInfo) {
 
-	ostringstream o;
+	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
 	LOGGER.setLevel(Logger::INFO);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_WARNING));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_TRACE));
-
-	LOGGER.setOutput(cout);
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logTextDebug) {
 
-	ostringstream o;
+	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
 	LOGGER.setLevel(Logger::DEBUG);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_WARNING));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_INFO));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o.str().find(LOG_ENTRY_TRACE));
-
-	LOGGER.setOutput(cout);
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logTextTrace) {
 
-	ostringstream o;
+	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
 	LOGGER.setLevel(Logger::TRACE);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_WARNING));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_INFO));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_DEBUG));
-	EXPECT_NE(string::npos, o.str().find(LOG_ENTRY_TRACE));
-
-	LOGGER.setOutput(cout);
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, invalidLevel) {
