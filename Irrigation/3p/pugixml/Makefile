@@ -1,14 +1,14 @@
 
-TARGET_NAME     = gmock
+TARGET_NAME     = pugixml
 
 ########################################################
 ########################################################
 
 PROJECT_ROOT    = ../..
-SRC_EXT         = cc
-SOURCE_DIR      = $(PROJECT_ROOT)/3p/gmock_gtest
-OBJECT_DIR      = $(PROJECT_ROOT)/build/3p/gmock_gtest
-INCLUDE_DIR     = $(PROJECT_ROOT)/3p/gmock_gtest
+SRC_EXT         = cpp
+SOURCE_DIR      = $(PROJECT_ROOT)/3p/pugixml
+OBJECT_DIR      = $(PROJECT_ROOT)/build/3p/pugixml
+INCLUDE_DIR     = $(PROJECT_ROOT)/3p/pugixml
 TARGET_DIR      = $(PROJECT_ROOT)/build
 
 TARGET          = $(TARGET_DIR)/lib$(TARGET_NAME).a
