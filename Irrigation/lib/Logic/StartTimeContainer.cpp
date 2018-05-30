@@ -47,6 +47,7 @@ void StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
+			delete value;
 			throw StartTimeIdExist(key);
 		}
 	}
