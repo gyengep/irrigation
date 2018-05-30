@@ -1,5 +1,6 @@
 #pragma once
 #include <ctime>
+#include <mutex>
 #include "DocumentView/Document.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
@@ -7,15 +8,16 @@
 
 class IrrigationDocument : public Document {
 
+	mutable std::mutex mutex;
 	ProgramContainer programs;
 	WateringController wateringController;
 
-	bool programContainerCallback(const IdType& id, LockedProgramPtr lockedProgram, const time_t& rawTime);
-
 public:
-
 	IrrigationDocument();
 	virtual ~IrrigationDocument();
+
+	void lock() const;
+	void unlock() const;
 
 	const ProgramContainer& getPrograms() const { return programs; }
 	ProgramContainer& getPrograms() { return programs; }

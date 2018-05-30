@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
+#include <ctime>
 #include <memory>
-#include <mutex>
 #include "RunTime.h"
 #include "RunTimeContainer.h"
 #include "ZoneHandler.h"
@@ -17,7 +17,6 @@ class WateringController {
 		WateringProperties();
 	};
 
-	mutable std::mutex mutex;
 	std::unique_ptr<WateringProperties> wateringProperties;
 
 	void startNextRequiredZone(const std::time_t& rawTime);

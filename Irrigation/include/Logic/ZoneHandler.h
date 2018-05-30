@@ -1,6 +1,5 @@
 #pragma once
 #include <array>
-#include <mutex>
 #include "ZoneConfig.h"
 
 
@@ -9,7 +8,6 @@ public:
 	static const size_t invalidZoneId;
 
 private:
-	mutable std::mutex mutex;
 
 	const size_t masterValve = MASTER_VALVE_ID;
 	const std::array<size_t, ZONE_COUNT> zoneValves {

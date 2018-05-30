@@ -1,288 +1,176 @@
-#include "ProgramContainerTest.h"
-#include <chrono>
-#include <thread>
+#include <gmock/gmock.h>
 #include "Logic/Exceptions.h"
 #include "Logic/Program.h"
+#include "Logic/ProgramContainer.h"
 
 using namespace std;
-using namespace placeholders;
-using testing::_;
-using testing::Return;
-
-
-void ProgramContainerTest::SetUp() {
-}
-
-void ProgramContainerTest::TearDown() {
-
-}
-
-bool ProgramContainerTest::ProgramContainerCallback::callback(const IdType id, LockedProgramPtr lockedProgramPtr) {
-	LockedProgram* lockedProgram = lockedProgramPtr.get();
-	programList.push_back(make_pair(id, lockedProgram->get()));
-	return true;
-}
-
-const ProgramContainerTest::ProgramList& ProgramContainerTest::ProgramContainerCallback::getProgramList() const {
-	return programList;
-}
-
-ProgramContainerTest::ProgramList ProgramContainerTest::getAsProgramList(const ProgramContainer* programs) {
-	ProgramContainerCallback programContainerCallback;
-
-	auto f = bind(&ProgramContainerCallback::callback, &programContainerCallback, _1, _2);
-	programs->iterate(f);
-
-	return programContainerCallback.getProgramList();
-}
-
-class MockProgramContainerCallback : public ProgramContainerTest::ProgramContainerCallback {
-public:
-	MOCK_METHOD2(callback, bool(const IdType, LockedProgramPtr));
-};
-
-TEST_F(ProgramContainerTest, iterate) {
-	programs.insert(1, new Program());
-	programs.insert(2, new Program());
-	programs.insert(3, new Program());
-	programs.insert(4, new Program());
-
-	MockProgramContainerCallback mockCallback;
-
-	ON_CALL(mockCallback, callback(_, _)).WillByDefault(Return(true));
-
-	EXPECT_CALL(mockCallback, callback(1, _)).Times(1);
-	EXPECT_CALL(mockCallback, callback(2, _)).Times(1);
-	EXPECT_CALL(mockCallback, callback(3, _)).Times(1);
-	EXPECT_CALL(mockCallback, callback(4, _)).Times(1);
-
-	auto f = bind(&ProgramContainerCallback::callback, &mockCallback, _1, _2);
-
-	programs.iterate(f);
-}
-
-TEST_F(ProgramContainerTest, iterateAbort) {
-	programs.insert(1, new Program());
-	programs.insert(2, new Program());
-	programs.insert(3, new Program());
-	programs.insert(4, new Program());
-
-	MockProgramContainerCallback mockCallback;
-
-	ON_CALL(mockCallback, callback(_, _)).WillByDefault(Return(true));
-
-	EXPECT_CALL(mockCallback, callback(1, _)).Times(1);
-	EXPECT_CALL(mockCallback, callback(2, _)).Times(1).WillOnce(Return(false));
-	EXPECT_CALL(mockCallback, callback(3, _)).Times(0);
-	EXPECT_CALL(mockCallback, callback(4, _)).Times(0);
-
-	auto f = bind(&ProgramContainerCallback::callback, &mockCallback, _1, _2);
-
-	programs.iterate(f);
-}
-
-TEST_F(ProgramContainerTest, insert) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-
-	programs.insert(1, program1);
-	EXPECT_EQ(ProgramList({{1, program1}}), getAsProgramList(&programs));
-
-	programs.insert(2, program2);
-	EXPECT_EQ(ProgramList({{1, program1}, {2, program2}}),getAsProgramList(&programs));
-}
-
-TEST_F(ProgramContainerTest, insertExisting) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-
-	EXPECT_NO_THROW(programs.insert(1, program1));
-	EXPECT_THROW(programs.insert(1, program2), ProgramIdExist);
-}
-
-TEST_F(ProgramContainerTest, erase) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-	Program* program3 = new Program();
-	Program* program4 = new Program();
-
-	programs.insert(1, program1);
-	programs.insert(2, program2);
-	programs.insert(3, program3);
-	programs.insert(4, program4);
-
-	EXPECT_EQ(
-		ProgramList({{1, program1}, {2, program2}, {3, program3}, {4, program4}}),
-		getAsProgramList(&programs));
-
-	// Erase from middle
-	programs.erase(2);
-
-	EXPECT_EQ(
-		ProgramList({{1, program1}, {3, program3}, {4, program4}}),
-		getAsProgramList(&programs));
-
-	// Erase first
-	programs.erase(1);
-
-	EXPECT_EQ(
-		ProgramList({{3, program3}, {4, program4}}),
-		getAsProgramList(&programs));
-
-	// Erase last
-	programs.erase(4);
-
-	EXPECT_EQ(
-		ProgramList({{3, program3}}),
-		getAsProgramList(&programs));
-
-	// Erase last
-	programs.erase(3);
-
-	EXPECT_EQ(
-		ProgramList(),
-		getAsProgramList(&programs));
-}
-
-TEST_F(ProgramContainerTest, eraseInvalid) {
-	programs.insert(5, new Program());
-	EXPECT_THROW(programs.erase(6), InvalidProgramIdException);
-}
-
-TEST_F(ProgramContainerTest, get) {
-	Program* program1 = new Program();
-	Program* program2 = new Program();
-
-	programs.insert(1, program1);
-	programs.insert(2, program2);
-
-	EXPECT_EQ(program1, programs.at(1)->get());
-	EXPECT_EQ(program2, programs.at(2)->get());
-}
-
-TEST_F(ProgramContainerTest, getInvalid) {
-	EXPECT_THROW(programs.at(2), InvalidProgramIdException);
-}
 
 
 class MockProgram : public Program {
 public:
+	MockProgram() {
+		EXPECT_CALL(*this, destructorIsCalled()).Times(1);
+	}
+
 	MOCK_METHOD0(destructorIsCalled, bool());
 	virtual ~MockProgram() { destructorIsCalled(); }
 };
 
-
-TEST_F(ProgramContainerTest, destructed) {
-	MockProgram* mockProgram = new MockProgram();
-	EXPECT_CALL(*mockProgram, destructorIsCalled()).Times(1);
-
-	{
-		ProgramContainer programs;
-		programs.insert(0, mockProgram);
+static void insertToPrograms(ProgramContainer& programs, const vector<ProgramContainer::value_type>& values) {
+	for (unsigned i = 0; i < values.size(); ++i) {
+		programs.insert(values[i].first, values[i].second);
 	}
 }
 
-TEST_F(ProgramContainerTest, eraseDestructed) {
-	MockProgram* mockProgram = new MockProgram();
-	EXPECT_CALL(*mockProgram, destructorIsCalled()).Times(1);
+static void expectPrograms(const ProgramContainer& programs, const vector<ProgramContainer::value_type>& required) {
+	ASSERT_EQ(required.size(), programs.size());
 
-	programs.insert(0, mockProgram);
+	unsigned i = 0;
+	for (auto it = programs.begin(); it != programs.end(); ++it, ++i) {
+		EXPECT_EQ(required[i], *it);
+	}
+}
+
+
+TEST(ProgramContainerTest, size) {
+	ProgramContainer programs;
+	EXPECT_EQ(0, programs.size());
+
+	programs.insert(0, new Program());
+	EXPECT_EQ(1, programs.size());
+}
+
+TEST(ProgramContainerTest, insert) {
+	const vector<ProgramContainer::value_type> required {
+		{10, new Program()},
+		{20, new Program()},
+		{15, new Program()},
+	};
+
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
+	expectPrograms(programs, required);
+}
+
+TEST(ProgramContainerTest, insertExisting) {
+	const vector<ProgramContainer::value_type> required {
+		{100, new Program()},
+		{101, new Program()},
+		{102, new Program()},
+	};
+
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
+
+	EXPECT_THROW(programs.insert(101, new MockProgram()), ProgramIdExist);
+}
+
+TEST(ProgramContainerTest, erase) {
+	const vector<ProgramContainer::value_type> programsToAdd {
+		{50, new Program()},
+		{40, new Program()},
+		{70, new Program()},
+		{60, new Program()}
+	};
+
+	ProgramContainer programs;
+	insertToPrograms(programs, programsToAdd);
+	ASSERT_EQ(programsToAdd.size(), programs.size());
+
+	programs.erase(40);
+
+	const vector<ProgramContainer::value_type> required {
+		{50, programsToAdd[0].second},
+		{70, programsToAdd[2].second},
+		{60, programsToAdd[3].second},
+	};
+
+	expectPrograms(programs, required);
+}
+
+TEST(ProgramContainerTest, eraseInvalid) {
+	const vector<ProgramContainer::value_type> required {
+		{10, new Program()},
+		{20, new Program()},
+		{15, new Program()},
+	};
+
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
+
+	EXPECT_EQ(required.size(), programs.size());
+	EXPECT_THROW(programs.erase(30), InvalidProgramIdException);
+	EXPECT_EQ(required.size(), programs.size());
+}
+
+TEST(ProgramContainerTest, eraseDestructed) {
+	ProgramContainer programs;
+	programs.insert(0, new MockProgram());
 	programs.erase(0);
 }
 
+TEST(ProgramContainerTest, at) {
+	const vector<ProgramContainer::value_type> required {
+		{10, new Program()},
+		{15, new Program()},
+		{20, new Program()},
+	};
 
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
 
-void insertPrograms(ProgramContainer* programs, const IdType* ids, size_t count) {
-	for(size_t i = 0; i < count; ++i) {
-		programs->insert(ids[i], new Program());
+	ASSERT_EQ(required.size(), programs.size());
+	for (unsigned i = 0; i < required.size(); ++i) {
+		EXPECT_EQ(required[i].second, programs.at(required[i].first));
 	}
 }
 
-TEST_F(ProgramContainerTest, concurrentInsert) {
-	const size_t threadCount = 5;
-	const size_t addCount = 1000;
+TEST(ProgramContainerTest, atConst) {
+	const vector<ProgramContainer::value_type> required {
+		{10, new Program()},
+		{15, new Program()},
+		{20, new Program()},
+	};
 
-    thread threads[threadCount];
-    vector<array<IdType, addCount>> ids(threadCount);
+	ProgramContainer programs;
+	const ProgramContainer& constPrograms = programs;
 
-    IdType id = 0;
-    for (size_t i = 0; i < threadCount; ++i) {
-    	for (size_t t = 0; t < addCount; ++t) {
-    		ids[i][t] = id++;
-    	}
-    }
+	insertToPrograms(programs, required);
 
-    for (size_t i = 0; i < threadCount; ++i) {
-    	threads[i] = thread(insertPrograms, &programs, ids[i].data(), addCount);
-    }
-
-    for (size_t i = 0; i < threadCount; ++i) {
-    	threads[i].join();
-    }
-
-    EXPECT_EQ(threadCount * addCount, programs.size());
-}
-
-void erasePrograms(ProgramContainer* programs, const IdType* ids, size_t count) {
-	for(size_t i = 0; i < count; ++i) {
-		programs->erase(ids[i]);
+	ASSERT_EQ(required.size(), constPrograms.size());
+	for (unsigned i = 0; i < required.size(); ++i) {
+		EXPECT_EQ(required[i].second, constPrograms.at(required[i].first));
 	}
 }
 
-TEST_F(ProgramContainerTest, concurentErase) {
-	const size_t threadCount = 5;
-	const size_t addCount = 1000;
+TEST(ProgramContainerTest, atInvalid) {
+	const vector<ProgramContainer::value_type> required {
+		{10, new Program()},
+		{15, new Program()},
+		{20, new Program()},
+	};
 
-    thread threads[threadCount];
-    vector<array<IdType, addCount>> ids(threadCount);
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
 
-    IdType id = 0;
-    for (size_t i = 0; i < threadCount; ++i) {
-    	for (size_t t = 0; t < addCount; ++t) {
-    		ids[i][t] = id++;
-       		programs.insert(ids[i][t], new Program());
-    	}
-    }
-
-    for (size_t i = 0; i < threadCount; ++i) {
-    	threads[i] = thread(erasePrograms, &programs, ids[i].data(), addCount);
-    }
-
-    for (size_t i = 0; i < threadCount; ++i) {
-    	threads[i].join();
-    }
-
-    EXPECT_EQ(0, programs.size());
+	EXPECT_THROW(programs.at(6), InvalidProgramIdException);
 }
 
-void getProgramAndWait(ProgramContainer* programs, IdType id, int ms) {
-	LockedProgramPtr lockedProgramPtr = programs->at(id);
-    this_thread::sleep_for(chrono::milliseconds(ms));
+TEST(ProgramContainerTest, atConstInvalid) {
+	const vector<ProgramContainer::value_type> required {
+		{10, new Program()},
+		{15, new Program()},
+		{20, new Program()},
+	};
+
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
+
+	const ProgramContainer& constPrograms = programs;
+	EXPECT_THROW(constPrograms.at(6), InvalidProgramIdException);
 }
 
-TEST_F(ProgramContainerTest, programLock) {
-	const int waitMs = 100;
-
-	programs.insert(1, new Program());
-	programs.insert(2, new Program());
-
-	auto start = chrono::high_resolution_clock::now();
-
-	thread thread(getProgramAndWait, &programs, 2, waitMs);
-    this_thread::sleep_for(chrono::milliseconds(1));
-
-	LockedProgramPtr program1 = programs.at(1);
-	auto finish1 = chrono::high_resolution_clock::now();
-
-	LockedProgramPtr program2 = programs.at(2);
-	auto finish2 = chrono::high_resolution_clock::now();
-
-	thread.join();
-
-	auto elapsed1 = chrono::duration_cast<chrono::milliseconds>(finish1 - start);
-    EXPECT_LT(elapsed1.count(), waitMs - 10);
-
-	auto elapsed2 = chrono::duration_cast<chrono::milliseconds>(finish2 - start);
-    EXPECT_GE(elapsed2.count(), waitMs - 10);
+TEST(ProgramContainerTest, destructed) {
+	ProgramContainer programs;
+	programs.insert(0, new MockProgram());
 }
-

@@ -7,23 +7,21 @@
 using namespace std;
 
 
+class MockRunTime : public RunTime {
+public:
+	MockRunTime() {
+		EXPECT_CALL(*this, destructorIsCalled()).Times(1);
+	}
+
+	MOCK_METHOD0(destructorIsCalled, bool());
+	virtual ~MockRunTime() { destructorIsCalled(); }
+};
+
 TEST(RunTimeContainerTest, size) {
 	RunTimeContainer runTimes;
 	EXPECT_EQ(ZONE_COUNT, runTimes.size());
 }
 
-TEST(RunTimeContainerTest, accessValid) {
-	RunTimeContainer runTimes;
-
-	for (unsigned i = 0; i < ZONE_COUNT; i++) {
-		EXPECT_NO_THROW(runTimes.at(i));
-	}
-}
-
-TEST(RunTimeContainerTest, accessInvalid) {
-	RunTimeContainer runTimes;
-	EXPECT_THROW(runTimes.at(ZONE_COUNT), InvalidRunTimeIdException);
-}
 
 TEST(RunTimeContainerTest, id) {
 	RunTimeContainer runTimes;
@@ -34,38 +32,33 @@ TEST(RunTimeContainerTest, id) {
 	}
 }
 
-TEST(RunTimeContainerTest, getAtConst) {
-	const RunTimeContainer runTimes;
-	vector<RunTime*> runTimePtrs;
-
-	for (auto it = runTimes.begin(); it != runTimes.end(); ++it) {
-		runTimePtrs.push_back(it->second);
-	}
-
-	for (unsigned i = 0; i < runTimes.size(); i++) {
-		EXPECT_EQ(runTimePtrs[i], runTimes.at(i));
-	}
-}
-
-TEST(RunTimeContainerTest, getAt) {
+TEST(RunTimeContainerTest, at) {
 	RunTimeContainer runTimes;
-	vector<RunTime*> runTimePtrs;
 
-	for (auto it = runTimes.begin(); it != runTimes.end(); ++it) {
-		runTimePtrs.push_back(it->second);
-	}
-
-	for (unsigned i = 0; i < runTimes.size(); i++) {
-		EXPECT_EQ(runTimePtrs[i], runTimes.at(i));
+	unsigned i = 0;
+	for (auto it = runTimes.begin(); it != runTimes.end(); ++it, ++i) {
+		EXPECT_EQ(it->second, runTimes.at(i));
 	}
 }
 
+TEST(RunTimeContainerTest, atConst) {
+	const RunTimeContainer constRunTimes;
 
-class MockRunTime : public RunTime {
-public:
-	MOCK_METHOD0(destructorIsCalled, bool());
-	virtual ~MockRunTime() { destructorIsCalled(); }
-};
+	unsigned i = 0;
+	for (auto it = constRunTimes.begin(); it != constRunTimes.end(); ++it, ++i) {
+		EXPECT_EQ(it->second, constRunTimes.at(i));
+	}
+}
+
+TEST(RunTimeContainerTest, atInvalid) {
+	RunTimeContainer runTimes;
+	EXPECT_THROW(runTimes.at(ZONE_COUNT), InvalidRunTimeIdException);
+}
+
+TEST(RunTimeContainerTest, atConstInvalid) {
+	const RunTimeContainer constRunTimes;
+	EXPECT_THROW(constRunTimes.at(ZONE_COUNT), InvalidRunTimeIdException);
+}
 
 
 class MockRunTimeFactory : public RunTimeFactory {
@@ -77,11 +70,4 @@ public:
 
 TEST(RunTimeContainerTest, destructed) {
 	RunTimeContainer runTimes(new MockRunTimeFactory());
-
-	for (unsigned i = 0; i < runTimes.size(); i++) {
-		MockRunTime* mockRunTime = dynamic_cast<MockRunTime*>(runTimes.at(i));
-
-		ASSERT_NE(nullptr, mockRunTime);
-		EXPECT_CALL(*mockRunTime, destructorIsCalled()).Times(1);
-	}
 }

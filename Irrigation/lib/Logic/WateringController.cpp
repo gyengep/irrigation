@@ -19,8 +19,6 @@ WateringController::~WateringController() {
 }
 
 void WateringController::on1SecTimer(const time_t& rawTime) {
-	lock_guard<std::mutex> lock(mutex);
-
 	if (wateringProperties.get() != nullptr) {
 		const IdType id = wateringProperties->zones->getActiveId();
 		const unsigned zoneRunTime = wateringProperties->runTimes[id];
@@ -31,8 +29,6 @@ void WateringController::on1SecTimer(const time_t& rawTime) {
 }
 
 void WateringController::start(const time_t& rawTime, const RunTimeContainer& runTimes, float adjustment) {
-	lock_guard<std::mutex> lock(mutex);
-
 	wateringProperties.reset(new WateringProperties());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
@@ -43,18 +39,14 @@ void WateringController::start(const time_t& rawTime, const RunTimeContainer& ru
 }
 
 void WateringController::stop() {
-	lock_guard<std::mutex> lock(mutex);
 	wateringProperties.reset();
 }
 
 bool WateringController::isWateringActive() const {
-	lock_guard<std::mutex> lock(mutex);
 	return (wateringProperties.get() != nullptr);
 }
 
 size_t WateringController::getActiveZoneId() const {
-	lock_guard<std::mutex> lock(mutex);
-
 	if (wateringProperties.get() != nullptr) {
 		return wateringProperties->zones->getActiveId();
 	} else {

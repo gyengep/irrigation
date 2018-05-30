@@ -1,5 +1,4 @@
 #include "IrrigationDocument.h"
-#include <functional>
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
@@ -15,7 +14,17 @@ IrrigationDocument::IrrigationDocument()  {
 IrrigationDocument::~IrrigationDocument() {
 }
 
+void IrrigationDocument::lock() const {
+	mutex.lock();
+}
+
+void IrrigationDocument::unlock() const {
+	mutex.lock();
+}
+
 void IrrigationDocument::load() {
+	lock_guard<std::mutex> lock(mutex);
+
 	Program* program;
 
 	program = new Program("fulocsolas");
@@ -37,21 +46,17 @@ void IrrigationDocument::load() {
 }
 
 void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
-	if (!wateringController.isWateringActive()) {
-		using namespace std::placeholders;
+	lock_guard<std::mutex> lock(mutex);
 
-		ProgramContainer::callback_type func = std::bind(&IrrigationDocument::programContainerCallback, this, _1, _2, rawTime);
-		programs.iterate(func);
+	if (!wateringController.isWateringActive()) {
+		for (auto it = programs.begin(); programs.end() != it; ++it) {
+			const Program* program = it->second;
+			if (program->isScheduled(rawTime)) {
+				wateringController.start(rawTime, program->getRunTimes());
+				break;
+			}
+		}
 	}
 
 	wateringController.on1SecTimer(rawTime);
-}
-
-bool IrrigationDocument::programContainerCallback(const IdType&, LockedProgramPtr lockedProgram, const time_t& rawTime) {
-	if (lockedProgram->get()->isScheduled(rawTime)) {
-		wateringController.start(rawTime, lockedProgram->get()->getRunTimes());
-		return false;
-	}
-
-	return true;
 }
