@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 
 class RunTime {
@@ -16,4 +17,7 @@ public:
 
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned seconds);
+
+	std::string toString() const;
+	void fromString(const std::string& text);
 };

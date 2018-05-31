@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 
 class StartTime {
@@ -24,5 +25,7 @@ public:
 
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned secOfDay);
-	virtual void setValue(unsigned hour, unsigned min);
+
+	std::string toString() const;
+	void fromString(const std::string& text);
 };
