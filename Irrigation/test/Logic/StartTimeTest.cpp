@@ -8,7 +8,6 @@ using namespace std;
 TEST(StartTimeTest, init) {
 	StartTime startTime;
 	EXPECT_EQ(0, startTime.getValue());
-	EXPECT_TRUE(startTime.isEnabled());
 }
 
 TEST(StartTimeTest, initWithHourMinSec) {
@@ -22,16 +21,6 @@ TEST(StartTimeTest, setValue) {
 	startTime.setValue(50);
 
 	EXPECT_EQ(50, startTime.getValue());
-}
-
-TEST(StartTimeTest, isEnabled) {
-	StartTime startTime;
-
-	startTime.enable(false);
-	EXPECT_FALSE(startTime.isEnabled());
-
-	startTime.enable(true);
-	EXPECT_TRUE(startTime.isEnabled());
 }
 
 TEST(StartTimeTest, equal) {

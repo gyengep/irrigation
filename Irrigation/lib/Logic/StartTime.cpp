@@ -5,15 +5,11 @@
 using namespace std;
 
 
-StartTime::StartTime(unsigned hour, unsigned min, unsigned sec)  :
-	enabled(true)
-{
+StartTime::StartTime(unsigned hour, unsigned min, unsigned sec) {
 	setValue(sec + 60 * (min + 60 * hour));
 }
 
-StartTime::StartTime() :
-	enabled(true)
-{
+StartTime::StartTime() {
 	setValue(0);
 }
 

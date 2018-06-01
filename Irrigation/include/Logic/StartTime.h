@@ -10,7 +10,6 @@ class StartTime {
 	StartTime& operator= (const StartTime&);
 
 	unsigned secOfDay;
-	bool enabled;
 
 public:
 	StartTime();
@@ -19,9 +18,6 @@ public:
 
 	bool operator< (const StartTime& other) const;
 	bool operator== (const StartTime& other) const;
-
-	bool isEnabled() const { return enabled; }
-	void enable(bool enabled) { this->enabled = enabled; }
 
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned secOfDay);

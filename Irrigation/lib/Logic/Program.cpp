@@ -80,7 +80,7 @@ bool Program::isScheduled(const time_t& rawTime) const {
 
 	for (auto it = startTimes->begin(); startTimes->end() != it; ++it) {
 		const StartTime& startTime = *it->second;
-		if (startTime.isEnabled() && startTime == currentTime) {
+		if (startTime == currentTime) {
 			return getCurrentScheduler().isDayScheduled(timeinfo);
 		}
 	}

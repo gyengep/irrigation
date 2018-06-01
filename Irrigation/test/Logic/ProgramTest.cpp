@@ -86,11 +86,6 @@ TEST(Program, isScheduled1) {
 	program.getStartTimes().insert(2, new StartTime(6, 30, 0));
 	program.getStartTimes().insert(3, new StartTime(20, 15, 0));
 
-	program.getStartTimes().at(0)->enable(true);
-	program.getStartTimes().at(1)->enable(false);
-	program.getStartTimes().at(2)->enable(true);
-	program.getStartTimes().at(3)->enable(false);
-
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
@@ -114,11 +109,6 @@ TEST(Program, isScheduled2) {
 	program.getStartTimes().insert(2, new StartTime(6, 30, 0));
 	program.getStartTimes().insert(3, new StartTime(20, 15, 0));
 
-	program.getStartTimes().at(0)->enable(true);
-	program.getStartTimes().at(1)->enable(false);
-	program.getStartTimes().at(2)->enable(true);
-	program.getStartTimes().at(3)->enable(false);
-
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
@@ -126,7 +116,9 @@ TEST(Program, isScheduled2) {
 
 				bool requestedResult = false;
 				requestedResult |= (hour == 4 && min == 0 && sec == 0);
+				requestedResult |= (hour == 6 && min == 0 && sec == 0);
 				requestedResult |= (hour == 6 && min == 30 && sec == 0);
+				requestedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				EXPECT_EQ(requestedResult, program.isScheduled(t));
 			}
