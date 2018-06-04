@@ -34,5 +34,5 @@ gmock:
 	@$(MAKE) -C 3p/gmock_gtest all
 	
 .PHONY: pugixml
-gmock:
+pugixml:
 	@$(MAKE) -C 3p/pugixml all
