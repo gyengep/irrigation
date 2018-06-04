@@ -1,6 +1,10 @@
 #pragma once
 #include <ctime>
 
+enum SchedulerType {
+	SPECIFIED_DAYS,
+};
+
 
 class Scheduler {
 public:

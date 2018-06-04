@@ -24,13 +24,13 @@ TEST(Program, name) {
 TEST(Program, setSchedulerTypeInvalid) {
 	Program program;
 
-	Program::SchedulerType invalidSchedulerType = (Program::SchedulerType)(Program::SchedulerType::SPECIFIED_DAYS + 1);
+	SchedulerType invalidSchedulerType = (SchedulerType)(SPECIFIED_DAYS + 1);
 	EXPECT_THROW(program.setSchedulerType(invalidSchedulerType), InvalidSchedulerException);
 }
 
 TEST(Program, getSchedulerType) {
 	Program program;
-	EXPECT_EQ(Program::SPECIFIED_DAYS, program.getSchedulerType());
+	EXPECT_EQ(SPECIFIED_DAYS, program.getSchedulerType());
 }
 
 TEST(Program, getSpecifiedScheduler) {
@@ -68,7 +68,7 @@ public:
 
 class MockSchedulerFactory : public SchedulerFactory {
 public:
-	virtual Scheduler* createScheduler(Program::SchedulerType schedulerType) const {
+	virtual Scheduler* createScheduler(SchedulerType schedulerType) const {
 		return new MockScheduler();
 	}
 };

@@ -4,15 +4,14 @@
 #include "RunTimeContainer.h"
 #include "StartTime.h"
 #include "StartTimeContainer.h"
-#include "Schedulers/Scheduler.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
 
 
-Scheduler* SchedulerFactory::createScheduler(Program::SchedulerType schedulerType) const {
+Scheduler* SchedulerFactory::createScheduler(SchedulerType schedulerType) const {
 	switch (schedulerType) {
-	case Program::SPECIFIED_DAYS:
+	case SPECIFIED_DAYS:
 		return new SpecifiedScheduler();
 	default:
 		throw invalid_argument("Invalid schedulerType: " + to_string(schedulerType));
@@ -66,7 +65,7 @@ void Program::setSchedulerType(SchedulerType schedulerType) {
 	this->schedulerType = schedulerType;
 }
 
-Program::SchedulerType Program::getSchedulerType(void) const {
+SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 

@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "Schedulers/Scheduler.h"
 
-class Scheduler;
 class SpecifiedScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
@@ -12,14 +12,6 @@ class SchedulerFactory;
 
 
 class Program {
-public:
-
-	enum SchedulerType {
-		SPECIFIED_DAYS,
-	};
-
-private:
-
 	// disable copy constructor and copy operator
 	Program(const Program&);
 	void operator= (const Program&);
@@ -61,5 +53,5 @@ public:
 class SchedulerFactory {
 public:
 	virtual ~SchedulerFactory() {}
-	virtual Scheduler* createScheduler(Program::SchedulerType schedulerType) const;
+	virtual Scheduler* createScheduler(SchedulerType schedulerType) const;
 };
