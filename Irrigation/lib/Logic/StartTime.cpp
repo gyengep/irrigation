@@ -40,11 +40,7 @@ bool StartTime::operator< (const StartTime& other) const {
 bool StartTime::operator== (const StartTime& other) const {
 	return (getValue() == other.getValue());
 }
-
-string StartTime::toString() const {
-	return to_string(secOfDay);
-}
-
+/*
 void StartTime::fromString(const string& text) {
 	unsigned value = 0;
 	try {
@@ -56,4 +52,9 @@ void StartTime::fromString(const string& text) {
 	}
 
 	setValue(value);
+}
+*/
+
+StartTimeDTO StartTime::getStartTimeDTO() const {
+	return StartTimeDTO(getValue());
 }

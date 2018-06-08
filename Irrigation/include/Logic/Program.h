@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Schedulers/Scheduler.h"
+#include "ReaderWriter/ProgramDTO.h"
 
 class SpecifiedScheduler;
 class RunTimeContainer;
@@ -47,6 +48,8 @@ public:
 	RunTimeContainer& getRunTimes() { return *runTimes; }
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
+
+	ProgramDTO getProgramDTO() const;
 };
 
 

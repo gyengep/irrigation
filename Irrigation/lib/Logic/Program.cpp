@@ -94,3 +94,21 @@ const SpecifiedScheduler& Program::getSpecifiedScheduler() const {
 SpecifiedScheduler& Program::getSpecifiedScheduler() {
 	return *dynamic_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS].get());
 }
+
+ProgramDTO Program::getProgramDTO() const {
+	unique_ptr<list<RunTimeDTO>> runTimeDTOs(list<RunTimeDTO>());
+	unique_ptr<list<StartTimeDTO>> startTimeDTOs(new list<StartTimeDTO>());
+
+	for (auto it = runTimes->begin(); it != runTimes->end(); ++it) {
+		runTimeDTOs->push_back(it->second->getRunTimeDTO());
+	}
+
+	for (auto it = startTimes->begin(); it != startTimes->end(); ++it) {
+		startTimeDTOs->push_back(it->second->getStartTimeDTO());
+	}
+
+	return ProgramDTO(name.c_str(), "specified",
+			getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
+			runTimeDTOs.release(),
+			startTimeDTOs.release());
+}

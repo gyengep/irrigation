@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "ReaderWriter/StartTimeDTO.h"
 
 
 class StartTime {
@@ -22,6 +23,5 @@ public:
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned secOfDay);
 
-	std::string toString() const;
-	void fromString(const std::string& text);
+	StartTimeDTO getStartTimeDTO() const;
 };

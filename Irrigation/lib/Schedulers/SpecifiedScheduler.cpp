@@ -1,6 +1,7 @@
 #include "SpecifiedScheduler.h"
 #include "Exceptions.h"
 #include <ctime>
+#include <list>
 
 using namespace std;
 
@@ -36,4 +37,8 @@ bool SpecifiedScheduler::isDayScheduled(const tm& timeinfo) const {
 	}
 
 	return days[weekDay];
+}
+
+SpecifiedSchedulerDTO SpecifiedScheduler::getSpecifiedSchedulerDTO() const {
+	return SpecifiedSchedulerDTO(new list<bool>(days.begin(), days.end()));
 }

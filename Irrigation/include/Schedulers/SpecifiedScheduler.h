@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include "Schedulers/Scheduler.h"
+#include "ReaderWriter/SchedulersDTO.h"
 
 
 
@@ -31,4 +32,6 @@ public:
 	bool isDayEnabled(Days day) const;
 
 	virtual bool isDayScheduled(const std::tm& timeinfo) const;
+
+	SpecifiedSchedulerDTO getSpecifiedSchedulerDTO() const;
 };

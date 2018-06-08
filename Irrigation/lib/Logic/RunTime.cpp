@@ -24,10 +24,7 @@ void RunTime::setValue(unsigned seconds) {
 	this->seconds = seconds;
 }
 
-string RunTime::toString() const {
-	return to_string(seconds);
-}
-
+/*
 void RunTime::fromString(const string& text) {
 	unsigned value = 0;
 	try {
@@ -39,4 +36,9 @@ void RunTime::fromString(const string& text) {
 	}
 
 	setValue(value);
+}
+*/
+
+RunTimeDTO RunTime::getRunTimeDTO() const {
+	return RunTimeDTO(getValue());
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "ReaderWriter/RunTimeDTO.h"
 
 
 class RunTime {
@@ -18,6 +19,5 @@ public:
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned seconds);
 
-	std::string toString() const;
-	void fromString(const std::string& text);
+	RunTimeDTO getRunTimeDTO() const;
 };
