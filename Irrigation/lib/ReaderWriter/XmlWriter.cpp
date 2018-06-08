@@ -1,11 +1,11 @@
 #include "XmlWriter.h"
 #include <sstream>
 #include "pugixml.hpp"
-#include "DocumentDTO.h"
-#include "ProgramDTO.h"
-#include "RunTimeDTO.h"
-#include "StartTimeDTO.h"
-#include "SchedulersDTO.h"
+#include "DTO/DocumentDTO.h"
+#include "DTO/ProgramDTO.h"
+#include "DTO/RunTimeDTO.h"
+#include "DTO/StartTimeDTO.h"
+#include "DTO/SchedulersDTO.h"
 
 using namespace std;
 

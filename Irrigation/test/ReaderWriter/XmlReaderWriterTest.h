@@ -1,10 +1,10 @@
 #pragma once
 #include <gmock/gmock.h>
-#include "ReaderWriter/DocumentDTO.h"
-#include "ReaderWriter/ProgramDTO.h"
-#include "ReaderWriter/RunTimeDTO.h"
-#include "ReaderWriter/StartTimeDTO.h"
-#include "ReaderWriter/SchedulersDTO.h"
+#include "DTO/DocumentDTO.h"
+#include "DTO/ProgramDTO.h"
+#include "DTO/RunTimeDTO.h"
+#include "DTO/StartTimeDTO.h"
+#include "DTO/SchedulersDTO.h"
 #include "ReaderWriter/XmlReader.h"
 #include "ReaderWriter/XmlWriter.h"
 

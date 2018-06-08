@@ -96,7 +96,7 @@ SpecifiedScheduler& Program::getSpecifiedScheduler() {
 }
 
 ProgramDTO Program::getProgramDTO() const {
-	unique_ptr<list<RunTimeDTO>> runTimeDTOs(list<RunTimeDTO>());
+	unique_ptr<list<RunTimeDTO>> runTimeDTOs(new list<RunTimeDTO>());
 	unique_ptr<list<StartTimeDTO>> startTimeDTOs(new list<StartTimeDTO>());
 
 	for (auto it = runTimes->begin(); it != runTimes->end(); ++it) {

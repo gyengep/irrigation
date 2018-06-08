@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
+#include "DTO/SchedulersDTO.h"
 #include "Schedulers/Scheduler.h"
-#include "ReaderWriter/SchedulersDTO.h"
 
 
 

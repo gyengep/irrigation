@@ -14,6 +14,8 @@ class Application {
 	static std::unique_ptr<Application> instance;
 	static std::mutex createMutex;
 
+	static const std::string configFileName;
+
 	std::unique_ptr<IrrigationDocument> document;
 	std::atomic_bool isTerminated;
 

@@ -2,6 +2,7 @@
 #include <ctime>
 #include <mutex>
 #include "DocumentView/Document.h"
+#include "DTO/DocumentDTO.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
 
@@ -27,5 +28,8 @@ public:
 
 	void on1SecTimer(const std::time_t& rawTime);
 
-	virtual void load();
+	virtual void save(const std::string& fileName) const;
+	virtual void load(const std::string& fileName);
+
+	DocumentDTO getDocumentDTO() const;
 };

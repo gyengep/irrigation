@@ -1,7 +1,7 @@
 #pragma once
-
 #include <list>
 #include <mutex>
+#include <string>
 
 class View;
 
@@ -18,6 +18,6 @@ public:
 	void addView(View* view);
 	void removeView(View* view);
 
-	virtual void save() {}
-	virtual void load() {}
+	virtual void save(const std::string& fileName) const {}
+	virtual void load(const std::string& fileName) {}
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "ReaderWriter/StartTimeDTO.h"
+#include "DTO/StartTimeDTO.h"
 
 
 class StartTime {

@@ -34,9 +34,6 @@ bool equalsPtr(const TYPE* p1, const TYPE* p2) {
 	return false;
 }
 
-template<>
-bool equalsPtr(const char* p1, const char* p2);
-
 
 template<typename TYPE>
 std::ostream& operator<<(std::ostream& os, const std::list<TYPE>& list) {
@@ -52,5 +49,3 @@ std::ostream& operator<<(std::ostream& os, const std::list<TYPE>& list) {
 	return os;
 }
 
-template<>
-std::ostream& operator<<(std::ostream& os, const std::list<std::string>& list);

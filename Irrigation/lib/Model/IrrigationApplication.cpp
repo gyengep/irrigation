@@ -4,14 +4,18 @@
 #include "Hardware/Valves.h"
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
+#include "ReaderWriter/XmlWriter.h"
 #include "Views/CommandLineView/CommandLineView.h"
 //#include "Views/CommandLineView/WebServerView.h"
+
 
 using namespace std;
 
 
 mutex Application::createMutex;
 unique_ptr<Application> Application::instance;
+
+const std::string Application::configFileName = "/tmp/irrigation.xml";
 
 
 Application& Application::getInstance() {
@@ -42,7 +46,7 @@ void Application::init() {
 	//document->addView(new CommandLineView());
 	//document->addView(new WebServerView());
 
-	document->load();
+	document->load(configFileName);
 }
 
 void Application::run() {
@@ -59,6 +63,7 @@ void Application::run() {
 }
 
 void Application::cleanup() {
+	document->save(configFileName);
 	document.reset();
 	LOGGER.info("Application terminated");
 }
