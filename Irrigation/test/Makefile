@@ -5,6 +5,7 @@ PROJECT_ROOT    = ..
 all:
 	@$(MAKE) -C CommandExecutor all
 	@$(MAKE) -C DocumentView all
+	@$(MAKE) -C DTO all
 	@$(MAKE) -C Hardware all
 	@$(MAKE) -C Logger all
 	@$(MAKE) -C Logic all
@@ -18,6 +19,7 @@ all:
 clean:
 	@$(MAKE) -C CommandExecutor clean
 	@$(MAKE) -C DocumentView clean
+	@$(MAKE) -C DTO clean
 	@$(MAKE) -C Hardware clean
 	@$(MAKE) -C Logger clean
 	@$(MAKE) -C Logic clean
