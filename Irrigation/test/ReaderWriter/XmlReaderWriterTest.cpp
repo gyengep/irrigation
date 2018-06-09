@@ -21,20 +21,6 @@ static std::string remove_xml_tag(const std::string& text) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-/*
-TEST(XmlReader, loadNoneXml) {
-	XmlReader reader;
-	EXPECT_THROW(reader.loadFromString("jhvjhvjh"), XmlParsingError);
-}
-
-
-TEST(XmlReader, loadInvalidXml) {
-	XmlReader reader;
-	EXPECT_THROW(reader.loadFromString("<abc/><123/>"), XmlParsingError);
-}
-*/
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RunTimeReaderWriterTest, runTimeAll) {
 	const string expectedXml = "<runtime id=\"1\">5</runtime>";
@@ -84,6 +70,14 @@ TEST_F(RunTimeReaderWriterTest, runTimeInvalid) {
 	const string expectedXml = "<runtimeABC/>";
 
 	EXPECT_THROW(reader.load(runTime, expectedXml), RequiredTagMissing);
+}
+
+TEST_F(RunTimeReaderWriterTest, runTimeNoneXml) {
+	EXPECT_THROW(reader.load(runTime, "jhvjhvjh"), XmlParsingError);
+}
+
+TEST_F(RunTimeReaderWriterTest, runTimeInvalidXml) {
+	EXPECT_THROW(reader.load(runTime, "<abc/><123/>"), XmlParsingError);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -139,6 +133,14 @@ TEST_F(StartTimeReaderWriterTest, startTimeInvalid) {
 	EXPECT_THROW(reader.load(startTime, expectedXml), RequiredTagMissing);
 }
 
+TEST_F(StartTimeReaderWriterTest, startTimeNoneXml) {
+	EXPECT_THROW(reader.load(startTime, "jhvjhvjh"), XmlParsingError);
+}
+
+TEST_F(StartTimeReaderWriterTest, startTimeInvalidXml) {
+	EXPECT_THROW(reader.load(startTime, "<abc/><123/>"), XmlParsingError);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -178,6 +180,14 @@ TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerInvalid) {
 	const string expectedXml = "<ABCD/>";
 
 	EXPECT_THROW(reader.load(scheduler, expectedXml), RequiredTagMissing);
+}
+
+TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerNoneXml) {
+	EXPECT_THROW(reader.load(scheduler, "jhvjhvjh"), XmlParsingError);
+}
+
+TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerInvalidXml) {
+	EXPECT_THROW(reader.load(scheduler, "<abc/><123/>"), XmlParsingError);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -338,6 +348,14 @@ TEST_F(ProgramReaderWriterTest, programInvalid) {
 	EXPECT_THROW(reader.load(program, expectedXml), RequiredTagMissing);
 }
 
+TEST_F(ProgramReaderWriterTest, programNoneXml) {
+	EXPECT_THROW(reader.load(program, "jhvjhvjh"), XmlParsingError);
+}
+
+TEST_F(ProgramReaderWriterTest, programInvalidXml) {
+	EXPECT_THROW(reader.load(program, "<abc/><123/>"), XmlParsingError);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -437,4 +455,12 @@ TEST_F(DocumentReaderWriterTest, documentInvalid) {
 	const string expectedXml = "<irrig/>";
 
 	EXPECT_THROW(reader.load(document, expectedXml), RequiredTagMissing);
+}
+
+TEST_F(DocumentReaderWriterTest, documentNoneXml) {
+	EXPECT_THROW(reader.load(document, "jhvjhvjh"), XmlParsingError);
+}
+
+TEST_F(DocumentReaderWriterTest, documentInvalidXml) {
+	EXPECT_THROW(reader.load(document, "<abc/><123/>"), XmlParsingError);
 }
