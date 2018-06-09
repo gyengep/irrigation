@@ -19,7 +19,7 @@ XmlReader::XmlReader() {
 XmlReader::~XmlReader() {
 }
 
-void XmlReader::loadFromString(xml_document* doc, const std::string& text) {
+void XmlReader::loadFromString(xml_document* doc, const string& text) {
 	xml_parse_result result = doc->load_string(text.c_str());
 
 	if (status_ok != result.status) {
@@ -148,10 +148,10 @@ void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) con
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void XmlReader::load(DocumentDTO& document, const std::string& text) const {
+void XmlReader::load(DocumentDTO& document, const string& text) const {
 	const char* tagName = "irrigation";
 
-	std::unique_ptr<xml_document> doc(new xml_document());
+	unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -163,10 +163,10 @@ void XmlReader::load(DocumentDTO& document, const std::string& text) const {
 	loadDocument(node, document);
 }
 
-void XmlReader::load(ProgramDTO& program, const std::string& text) const {
+void XmlReader::load(ProgramDTO& program, const string& text) const {
 	const char* tagName = "program";
 
-	std::unique_ptr<xml_document> doc(new xml_document());
+	unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -178,10 +178,10 @@ void XmlReader::load(ProgramDTO& program, const std::string& text) const {
 	loadProgram(node, program);
 }
 
-void XmlReader::load(RunTimeDTO& runTime, const std::string& text) const {
+void XmlReader::load(RunTimeDTO& runTime, const string& text) const {
 	const char* tagName = "runtime";
 
-	std::unique_ptr<xml_document> doc(new xml_document());
+	unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -193,10 +193,10 @@ void XmlReader::load(RunTimeDTO& runTime, const std::string& text) const {
 	loadRunTime(node, runTime);
 }
 
-void XmlReader::load(StartTimeDTO& startTime, const std::string& text) const {
+void XmlReader::load(StartTimeDTO& startTime, const string& text) const {
 	const char* tagName = "starttime";
 
-	std::unique_ptr<xml_document> doc(new xml_document());
+	unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -208,10 +208,10 @@ void XmlReader::load(StartTimeDTO& startTime, const std::string& text) const {
 	loadStartTime(node, startTime);
 }
 
-void XmlReader::load(SpecifiedSchedulerDTO& scheduler, const std::string& text) const {
+void XmlReader::load(SpecifiedSchedulerDTO& scheduler, const string& text) const {
 	const char* tagName = "scheduler";
 
-	std::unique_ptr<xml_document> doc(new xml_document());
+	unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);

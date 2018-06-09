@@ -15,7 +15,7 @@ using namespace std;
 mutex Application::createMutex;
 unique_ptr<Application> Application::instance;
 
-const std::string Application::configFileName = "/tmp/irrigation.xml";
+const string Application::configFileName = "/tmp/irrigation.xml";
 
 
 Application& Application::getInstance() {

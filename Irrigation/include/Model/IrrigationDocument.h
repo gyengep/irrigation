@@ -28,8 +28,5 @@ public:
 
 	void on1SecTimer(const std::time_t& rawTime);
 
-	virtual void save(const std::string& fileName) const;
-	virtual void load(const std::string& fileName);
-
 	DocumentDTO getDocumentDTO() const;
 };

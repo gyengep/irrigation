@@ -11,7 +11,7 @@ using namespace std;
 #endif
 
 
-const size_t ZoneHandler::invalidZoneId = std::numeric_limits<size_t>::max();
+const size_t ZoneHandler::invalidZoneId = numeric_limits<size_t>::max();
 
 
 ZoneHandler::ZoneHandler() :

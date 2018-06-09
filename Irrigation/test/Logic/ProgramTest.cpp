@@ -78,7 +78,7 @@ public:
 TEST(Program, isScheduled1) {
 	MockSchedulerFactory schedulerFactory;
 	Program program(schedulerFactory);
-	std::time_t t;
+	time_t t;
 
 	program.getCurrentScheduler();
 	const MockScheduler& mockScheduler = dynamic_cast<const MockScheduler&>(program.getCurrentScheduler());
@@ -103,7 +103,7 @@ TEST(Program, isScheduled1) {
 TEST(Program, isScheduled2) {
 	MockSchedulerFactory schedulerFactory;
 	Program program(schedulerFactory);
-	std::time_t t;
+	time_t t;
 
 	const MockScheduler& mockScheduler = dynamic_cast<const MockScheduler&>(program.getCurrentScheduler());
 	ON_CALL(mockScheduler, isDayScheduled(_)).WillByDefault(Return(true));

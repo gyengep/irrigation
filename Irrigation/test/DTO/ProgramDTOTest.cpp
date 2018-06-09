@@ -22,8 +22,8 @@ TEST(ProgramDTOTest, defaultConstructor) {
 TEST(ProgramDTOTest, constructor) {
 	ProgramDTO programDTO("name", "scheduler",
 			SpecifiedSchedulerDTO(new list<bool>({ true, false, true })),
-			new std::list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) }),
-			new std::list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) }));
+			new list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) }),
+			new list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) }));
 
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
@@ -35,15 +35,15 @@ TEST(ProgramDTOTest, constructor) {
 	EXPECT_THAT(programDTO.getName().c_str(), StrEq("name"));
 	EXPECT_THAT(programDTO.getSchedulerType().c_str(), StrEq("scheduler"));
 	EXPECT_THAT(programDTO.getSpecifiedScheduler(), SpecifiedSchedulerDTO(new list<bool>({ true, false, true })));
-	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(std::list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) })));
-	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(std::list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) })));
+	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) })));
+	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) })));
 }
 
 TEST(ProgramDTOTest, copyConstructor) {
 	ProgramDTO programDTO(ProgramDTO("name", "scheduler",
 			SpecifiedSchedulerDTO(new list<bool>({ true, false, true })),
-			new std::list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) }),
-			new std::list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) })));
+			new list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) }),
+			new list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) })));
 
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
@@ -55,8 +55,8 @@ TEST(ProgramDTOTest, copyConstructor) {
 	EXPECT_THAT(programDTO.getName().c_str(), StrEq("name"));
 	EXPECT_THAT(programDTO.getSchedulerType().c_str(), StrEq("scheduler"));
 	EXPECT_THAT(programDTO.getSpecifiedScheduler(), SpecifiedSchedulerDTO(new list<bool>({ true, false, true })));
-	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(std::list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) })));
-	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(std::list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) })));
+	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(list<RunTimeDTO>({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) })));
+	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(list<StartTimeDTO>({ StartTimeDTO(31), StartTimeDTO(18) })));
 }
 
 TEST(ProgramDTOTest, getId) {

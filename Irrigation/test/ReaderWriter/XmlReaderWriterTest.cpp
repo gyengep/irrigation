@@ -7,7 +7,7 @@ using namespace testing;
 
 
 
-static std::string remove_xml_tag(const std::string& text) {
+static string remove_xml_tag(const string& text) {
 	string copy(text);
 
 	size_t pos = copy.find('>');
@@ -29,7 +29,7 @@ TEST_F(RunTimeReaderWriterTest, runTimeAll) {
 
 	EXPECT_THAT(runTime, RunTimeDTO(5).setId(1));
 
-	const std::string actualXml = writer.save(runTime, false);
+	const string actualXml = writer.save(runTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -40,7 +40,7 @@ TEST_F(RunTimeReaderWriterTest, runTimeValue) {
 
 	EXPECT_THAT(runTime, RunTimeDTO(5));
 
-	const std::string actualXml = writer.save(runTime, false);
+	const string actualXml = writer.save(runTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -51,7 +51,7 @@ TEST_F(RunTimeReaderWriterTest, runTimeId) {
 
 	EXPECT_THAT(runTime, RunTimeDTO().setId(1));
 
-	const std::string actualXml = writer.save(runTime, false);
+	const string actualXml = writer.save(runTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -62,7 +62,7 @@ TEST_F(RunTimeReaderWriterTest, runTimeEmpty) {
 
 	EXPECT_THAT(runTime, RunTimeDTO());
 
-	const std::string actualXml = writer.save(runTime, false);
+	const string actualXml = writer.save(runTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -90,7 +90,7 @@ TEST_F(StartTimeReaderWriterTest, startTimeAll) {
 
 	EXPECT_THAT(startTime, StartTimeDTO(5).setId(1));
 
-	const std::string actualXml = writer.save(startTime, false);
+	const string actualXml = writer.save(startTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -101,7 +101,7 @@ TEST_F(StartTimeReaderWriterTest, startTimeValue) {
 
 	EXPECT_THAT(startTime, StartTimeDTO(5));
 
-	const std::string actualXml = writer.save(startTime, false);
+	const string actualXml = writer.save(startTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -112,7 +112,7 @@ TEST_F(StartTimeReaderWriterTest, startTimeId) {
 
 	EXPECT_THAT(startTime, StartTimeDTO().setId(1));
 
-	const std::string actualXml = writer.save(startTime, false);
+	const string actualXml = writer.save(startTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -123,7 +123,7 @@ TEST_F(StartTimeReaderWriterTest, startTimeEmpty) {
 
 	EXPECT_THAT(startTime, StartTimeDTO());
 
-	const std::string actualXml = writer.save(startTime, false);
+	const string actualXml = writer.save(startTime, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -155,7 +155,7 @@ TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerAll) {
 
 	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(new list<bool>({ true, false })));
 
-	const std::string actualXml = writer.save(scheduler, false);
+	const string actualXml = writer.save(scheduler, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -166,7 +166,7 @@ TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerEmpty) {
 
 	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(new list<bool>()));
 
-	const std::string actualXml = writer.save(scheduler, false);
+	const string actualXml = writer.save(scheduler, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -231,7 +231,7 @@ TEST_F(ProgramReaderWriterTest, programAll) {
 				StartTimeDTO(100).setId(55)})
 			));
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -245,7 +245,7 @@ TEST_F(ProgramReaderWriterTest, programName) {
 
 	EXPECT_THAT(program, ProgramDTO().setName("abcdefg"));
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -259,7 +259,7 @@ TEST_F(ProgramReaderWriterTest, programSchedulerType) {
 
 	EXPECT_THAT(program, ProgramDTO().setSchedulerType("specified"));
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -281,7 +281,7 @@ TEST_F(ProgramReaderWriterTest, programSchedulers) {
 			.setSpecifiedScheduler(SpecifiedSchedulerDTO(new list<bool>({ true, false})))
 			);
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -303,7 +303,7 @@ TEST_F(ProgramReaderWriterTest, programRunTimes) {
 				RunTimeDTO(10).setId(25)}))
 			);
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -327,7 +327,7 @@ TEST_F(ProgramReaderWriterTest, programStartTimes) {
 				StartTimeDTO(100).setId(55)}))
 			);
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -338,7 +338,7 @@ TEST_F(ProgramReaderWriterTest, programEmpty) {
 
 	EXPECT_THAT(program, ProgramDTO());
 
-	const std::string actualXml = writer.save(program, false);
+	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -436,7 +436,7 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 					StartTimeDTO(150).setId(155)}))
 			})));
 
-	const std::string actualXml = writer.save(document, false);
+	const string actualXml = writer.save(document, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
@@ -447,7 +447,7 @@ TEST_F(DocumentReaderWriterTest, documentEmpty) {
 
 	EXPECT_THAT(document, DocumentDTO());
 
-	const std::string actualXml = writer.save(document, false);
+	const string actualXml = writer.save(document, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 

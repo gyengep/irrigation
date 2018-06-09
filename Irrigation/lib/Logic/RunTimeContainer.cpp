@@ -30,7 +30,7 @@ RunTimeContainer::~RunTimeContainer() {
 	}
 }
 
-void RunTimeContainer::init(std::unique_ptr<const RunTimeFactory> runTimeFactory) {
+void RunTimeContainer::init(unique_ptr<const RunTimeFactory> runTimeFactory) {
 	container.reserve(ZONE_COUNT);
 	for (size_t i = 0; i < ZONE_COUNT; i++) {
 		container.push_back(make_pair(i, runTimeFactory->createRunTime()));

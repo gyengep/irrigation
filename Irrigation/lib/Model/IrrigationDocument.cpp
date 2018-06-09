@@ -38,13 +38,6 @@ void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
 	wateringController.on1SecTimer(rawTime);
 }
 
-void IrrigationDocument::save(const std::string& fileName) const {
-}
-
-void IrrigationDocument::load(const std::string& fileName) {
-
-}
-
 DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<std::mutex> lock(mutex);
 
