@@ -16,23 +16,21 @@ namespace pugi {
 
 
 class XmlWriter {
-	std::unique_ptr<pugi::xml_document> doc;
+	static std::string toString(const pugi::xml_document* doc, bool humanReadable);
 
-	void saveDocument(pugi::xml_node& parent, const DocumentDTO& document);
-	void saveProgram(pugi::xml_node& parent, const ProgramDTO& program);
-	void saveRunTime(pugi::xml_node& parent, const RunTimeDTO& runTime);
-	void saveStartTime(pugi::xml_node& parent, const StartTimeDTO& startTime);
-	void saveScheduler(pugi::xml_node& parent, const SpecifiedSchedulerDTO& scheduler);
+	void saveDocument(pugi::xml_node* parent, const DocumentDTO& document);
+	void saveProgram(pugi::xml_node* parent, const ProgramDTO& program);
+	void saveRunTime(pugi::xml_node* parent, const RunTimeDTO& runTime);
+	void saveStartTime(pugi::xml_node* parent, const StartTimeDTO& startTime);
+	void saveScheduler(pugi::xml_node* parent, const SpecifiedSchedulerDTO& scheduler);
 
 public:
 	XmlWriter();
 	virtual ~XmlWriter();
 
-	virtual std::string toString(bool humanReadable = true) const;
-
-	virtual void save(const DocumentDTO& document);
-	virtual void save(const ProgramDTO& program);
-	virtual void save(const RunTimeDTO& runTime);
-	virtual void save(const StartTimeDTO& startTime);
-	virtual void save(const SpecifiedSchedulerDTO& scheduler);
+	virtual std::string save(const DocumentDTO& document, bool humanReadable = true);
+	virtual std::string save(const ProgramDTO& program, bool humanReadable = true);
+	virtual std::string save(const RunTimeDTO& runTime, bool humanReadable = true);
+	virtual std::string save(const StartTimeDTO& startTime, bool humanReadable = true);
+	virtual std::string save(const SpecifiedSchedulerDTO& scheduler, bool humanReadable = true);
 };

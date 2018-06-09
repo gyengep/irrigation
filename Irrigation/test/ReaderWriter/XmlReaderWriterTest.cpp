@@ -21,7 +21,7 @@ static std::string remove_xml_tag(const std::string& text) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 TEST(XmlReader, loadNoneXml) {
 	XmlReader reader;
 	EXPECT_THROW(reader.loadFromString("jhvjhvjh"), XmlParsingError);
@@ -32,67 +32,58 @@ TEST(XmlReader, loadInvalidXml) {
 	XmlReader reader;
 	EXPECT_THROW(reader.loadFromString("<abc/><123/>"), XmlParsingError);
 }
-
+*/
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RunTimeReaderWriterTest, runTimeAll) {
 	const string expectedXml = "<runtime id=\"1\">5</runtime>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(runTime);
+	reader.load(runTime, expectedXml);
 
 	EXPECT_THAT(runTime, RunTimeDTO(5).setId(1));
 
-	writer.save(runTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(runTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(RunTimeReaderWriterTest, runTimeValue) {
 	const string expectedXml = "<runtime>5</runtime>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(runTime);
+	reader.load(runTime, expectedXml);
 
 	EXPECT_THAT(runTime, RunTimeDTO(5));
 
-	writer.save(runTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(runTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(RunTimeReaderWriterTest, runTimeId) {
 	const string expectedXml = "<runtime id=\"1\"/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(runTime);
+	reader.load(runTime, expectedXml);
 
 	EXPECT_THAT(runTime, RunTimeDTO().setId(1));
 
-	writer.save(runTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(runTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(RunTimeReaderWriterTest, runTimeEmpty) {
 	const string expectedXml = "<runtime/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(runTime);
+	reader.load(runTime, expectedXml);
 
 	EXPECT_THAT(runTime, RunTimeDTO());
 
-	writer.save(runTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(runTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(RunTimeReaderWriterTest, runTimeInvalid) {
 	const string expectedXml = "<runtimeABC/>";
 
-	reader.loadFromString(expectedXml);
-	EXPECT_THROW(reader.load(runTime), RequiredTagMissing);
+	EXPECT_THROW(reader.load(runTime, expectedXml), RequiredTagMissing);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,60 +92,51 @@ TEST_F(RunTimeReaderWriterTest, runTimeInvalid) {
 TEST_F(StartTimeReaderWriterTest, startTimeAll) {
 	const string expectedXml = "<starttime id=\"1\">5</starttime>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(startTime);
+	reader.load(startTime, expectedXml);
 
 	EXPECT_THAT(startTime, StartTimeDTO(5).setId(1));
 
-	writer.save(startTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(startTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(StartTimeReaderWriterTest, startTimeValue) {
 	const string expectedXml = "<starttime>5</starttime>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(startTime);
+	reader.load(startTime, expectedXml);
 
 	EXPECT_THAT(startTime, StartTimeDTO(5));
 
-	writer.save(startTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(startTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(StartTimeReaderWriterTest, startTimeId) {
 	const string expectedXml = "<starttime id=\"1\"/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(startTime);
+	reader.load(startTime, expectedXml);
 
 	EXPECT_THAT(startTime, StartTimeDTO().setId(1));
 
-	writer.save(startTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(startTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(StartTimeReaderWriterTest, startTimeEmpty) {
 	const string expectedXml = "<starttime/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(startTime);
+	reader.load(startTime, expectedXml);
 
 	EXPECT_THAT(startTime, StartTimeDTO());
 
-	writer.save(startTime);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(startTime, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(StartTimeReaderWriterTest, startTimeInvalid) {
 	const string expectedXml = "<starttime12345/>";
 
-	reader.loadFromString(expectedXml);
-	EXPECT_THROW(reader.load(startTime), RequiredTagMissing);
+	EXPECT_THROW(reader.load(startTime, expectedXml), RequiredTagMissing);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,41 +149,35 @@ TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerAll) {
 				"<day>false</day>"
 			"</scheduler>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(scheduler);
+	reader.load(scheduler, expectedXml);
 
 	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(new list<bool>({ true, false })));
 
-	writer.save(scheduler);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(scheduler, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerEmpty) {
 	const string expectedXml = "<scheduler type=\"specified\"/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(scheduler);
+	reader.load(scheduler, expectedXml);
 
 	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(new list<bool>()));
 
-	writer.save(scheduler);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(scheduler, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerInvalidType) {
 	const string expectedXml = "<scheduler type=\"ABC\"/>";
 
-	reader.loadFromString(expectedXml);
-	EXPECT_THROW(reader.load(scheduler), BadSchedulerType);
+	EXPECT_THROW(reader.load(scheduler, expectedXml), BadSchedulerType);
 }
 
 TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerInvalid) {
 	const string expectedXml = "<ABCD/>";
 
-	reader.loadFromString(expectedXml);
-	EXPECT_THROW(reader.load(scheduler), RequiredTagMissing);
+	EXPECT_THROW(reader.load(scheduler, expectedXml), RequiredTagMissing);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -229,8 +205,7 @@ TEST_F(ProgramReaderWriterTest, programAll) {
 				"</starttimes>"
 			"</program>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program,
 			ProgramDTO()
@@ -246,9 +221,8 @@ TEST_F(ProgramReaderWriterTest, programAll) {
 				StartTimeDTO(100).setId(55)})
 			));
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programName) {
@@ -257,14 +231,12 @@ TEST_F(ProgramReaderWriterTest, programName) {
 				"<name>abcdefg</name>"
 			"</program>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program, ProgramDTO().setName("abcdefg"));
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programSchedulerType) {
@@ -273,14 +245,12 @@ TEST_F(ProgramReaderWriterTest, programSchedulerType) {
 				"<schedulertype>specified</schedulertype>"
 			"</program>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program, ProgramDTO().setSchedulerType("specified"));
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programSchedulers) {
@@ -294,17 +264,15 @@ TEST_F(ProgramReaderWriterTest, programSchedulers) {
 				"</schedulers>"
 			"</program>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program,
 			ProgramDTO()
 			.setSpecifiedScheduler(SpecifiedSchedulerDTO(new list<bool>({ true, false})))
 			);
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programRunTimes) {
@@ -316,8 +284,7 @@ TEST_F(ProgramReaderWriterTest, programRunTimes) {
 				"</runtimes>"
 			"</program>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program,
 			ProgramDTO()
@@ -326,9 +293,8 @@ TEST_F(ProgramReaderWriterTest, programRunTimes) {
 				RunTimeDTO(10).setId(25)}))
 			);
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programStartTimes) {
@@ -341,8 +307,7 @@ TEST_F(ProgramReaderWriterTest, programStartTimes) {
 				"</starttimes>"
 			"</program>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program,
 			ProgramDTO()
@@ -352,29 +317,25 @@ TEST_F(ProgramReaderWriterTest, programStartTimes) {
 				StartTimeDTO(100).setId(55)}))
 			);
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programEmpty) {
 	const string expectedXml = "<program/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(program);
+	reader.load(program, expectedXml);
 
 	EXPECT_THAT(program, ProgramDTO());
 
-	writer.save(program);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(program, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(ProgramReaderWriterTest, programInvalid) {
 	const string expectedXml = "<prograsdcnnm/>";
 
-	reader.loadFromString(expectedXml);
-	EXPECT_THROW(reader.load(program), RequiredTagMissing);
+	EXPECT_THROW(reader.load(program, expectedXml), RequiredTagMissing);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -427,8 +388,7 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 				"</programs>"
 			"</irrigation>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(document);
+	reader.load(document, expectedXml);
 
 	EXPECT_THAT(document, DocumentDTO(
 		new list<ProgramDTO>({
@@ -458,27 +418,23 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 					StartTimeDTO(150).setId(155)}))
 			})));
 
-	writer.save(document);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(document, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(DocumentReaderWriterTest, documentEmpty) {
 	const string expectedXml = "<irrigation/>";
 
-	reader.loadFromString(expectedXml);
-	reader.load(document);
+	reader.load(document, expectedXml);
 
 	EXPECT_THAT(document, DocumentDTO());
 
-	writer.save(document);
-
-	EXPECT_EQ(expectedXml, remove_xml_tag(writer.toString(false)));
+	const std::string actualXml = writer.save(document, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
 TEST_F(DocumentReaderWriterTest, documentInvalid) {
 	const string expectedXml = "<irrig/>";
 
-	reader.loadFromString(expectedXml);
-	EXPECT_THROW(reader.load(document), RequiredTagMissing);
+	EXPECT_THROW(reader.load(document, expectedXml), RequiredTagMissing);
 }

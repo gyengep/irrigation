@@ -41,7 +41,7 @@ public:
 
 
 class XmlReader {
-	std::unique_ptr<pugi::xml_document> doc;
+	static void loadFromString(pugi::xml_document* doc, const std::string& text);
 
 	void loadDocument(const pugi::xml_node& node, DocumentDTO& document) const;
 	void loadProgram(const pugi::xml_node& node, ProgramDTO& program) const;
@@ -53,11 +53,9 @@ public:
 	XmlReader();
 	virtual ~XmlReader();
 
-	virtual void loadFromString(const std::string& text);
-
-	virtual void load(DocumentDTO& document) const;
-	virtual void load(ProgramDTO& program) const;
-	virtual void load(RunTimeDTO& runTime) const;
-	virtual void load(StartTimeDTO& startTime) const;
-	virtual void load(SpecifiedSchedulerDTO& scheduler) const;
+	virtual void load(DocumentDTO& document, const std::string& text) const;
+	virtual void load(ProgramDTO& program, const std::string& text) const;
+	virtual void load(RunTimeDTO& runTime, const std::string& text) const;
+	virtual void load(StartTimeDTO& startTime, const std::string& text) const;
+	virtual void load(SpecifiedSchedulerDTO& scheduler, const std::string& text) const;
 };

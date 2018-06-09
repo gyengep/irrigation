@@ -10,13 +10,13 @@
 using namespace std;
 
 
-XmlWriter::XmlWriter() : doc(new pugi::xml_document()) {
+XmlWriter::XmlWriter() {
 }
 
 XmlWriter::~XmlWriter() {
 }
 
-string XmlWriter::toString(bool humanReadable) const {
+string XmlWriter::toString(const pugi::xml_document* doc, bool humanReadable) {
 	ostringstream o;
 	if (humanReadable) {
 		doc->save(o);
@@ -28,20 +28,20 @@ string XmlWriter::toString(bool humanReadable) const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void XmlWriter::saveDocument(pugi::xml_node& parent, const DocumentDTO& document) {
-	pugi::xml_node node = parent.append_child("irrigation");
+void XmlWriter::saveDocument(pugi::xml_node* parent, const DocumentDTO& document) {
+	pugi::xml_node node = parent->append_child("irrigation");
 
 	if (document.hasPrograms()) {
 		pugi::xml_node programListNode = node.append_child("programs");
 		const list<ProgramDTO>& programs = document.getPrograms();
 		for (auto it = programs.begin(); it != programs.end(); ++it) {
-			saveProgram(programListNode, *it);
+			saveProgram(&programListNode, *it);
 		}
 	}
 }
 
-void XmlWriter::saveProgram(pugi::xml_node& parent, const ProgramDTO& program) {
-	pugi::xml_node node = parent.append_child("program");
+void XmlWriter::saveProgram(pugi::xml_node* parent, const ProgramDTO& program) {
+	pugi::xml_node node = parent->append_child("program");
 
 	if (program.hasId()) {
 		node.append_attribute("id").set_value(program.getId());
@@ -58,14 +58,14 @@ void XmlWriter::saveProgram(pugi::xml_node& parent, const ProgramDTO& program) {
 	if (program.hasSpecifiedScheduler()) {
 		const SpecifiedSchedulerDTO& scheduler = program.getSpecifiedScheduler();
 		pugi::xml_node schedulersListNode = node.append_child("schedulers");
-		saveScheduler(schedulersListNode, scheduler);
+		saveScheduler(&schedulersListNode, scheduler);
 	}
 
 	if (program.hasRunTimes()) {
 		const list<RunTimeDTO>& runTimes = program.getRunTimes();
 		pugi::xml_node runTimeListNode = node.append_child("runtimes");
 		for (auto it = runTimes.begin(); it != runTimes.end(); ++it) {
-			saveRunTime(runTimeListNode, *it);
+			saveRunTime(&runTimeListNode, *it);
 		}
 	}
 
@@ -73,13 +73,13 @@ void XmlWriter::saveProgram(pugi::xml_node& parent, const ProgramDTO& program) {
 		const list<StartTimeDTO>& startTimes = program.getStartTimes();
 		pugi::xml_node startTimeListNode = node.append_child("starttimes");
 		for (auto it = startTimes.begin(); it != startTimes.end(); ++it) {
-			saveStartTime(startTimeListNode, *it);
+			saveStartTime(&startTimeListNode, *it);
 		}
 	}
 }
 
-void XmlWriter::saveRunTime(pugi::xml_node& parent, const RunTimeDTO& runTime) {
-	pugi::xml_node node = parent.append_child("runtime");
+void XmlWriter::saveRunTime(pugi::xml_node* parent, const RunTimeDTO& runTime) {
+	pugi::xml_node node = parent->append_child("runtime");
 
 	if (runTime.hasValue()) {
 		node.text().set(runTime.getValue());
@@ -90,8 +90,8 @@ void XmlWriter::saveRunTime(pugi::xml_node& parent, const RunTimeDTO& runTime) {
 	}
 }
 
-void XmlWriter::saveStartTime(pugi::xml_node& parent, const StartTimeDTO& startTime) {
-	pugi::xml_node node = parent.append_child("starttime");
+void XmlWriter::saveStartTime(pugi::xml_node* parent, const StartTimeDTO& startTime) {
+	pugi::xml_node node = parent->append_child("starttime");
 
 	if (startTime.hasValue()) {
 		node.text().set(startTime.getValue());
@@ -102,8 +102,8 @@ void XmlWriter::saveStartTime(pugi::xml_node& parent, const StartTimeDTO& startT
 	}
 }
 
-void XmlWriter::saveScheduler(pugi::xml_node& parent, const SpecifiedSchedulerDTO& scheduler) {
-	pugi::xml_node node = parent.append_child("scheduler");
+void XmlWriter::saveScheduler(pugi::xml_node* parent, const SpecifiedSchedulerDTO& scheduler) {
+	pugi::xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("specified");
 
 	if (scheduler.hasValues()) {
@@ -116,22 +116,32 @@ void XmlWriter::saveScheduler(pugi::xml_node& parent, const SpecifiedSchedulerDT
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void XmlWriter::save(const DocumentDTO& document) {
-	saveDocument(*doc.get(), document);
+string XmlWriter::save(const DocumentDTO& document, bool humanReadable) {
+	unique_ptr<pugi::xml_document> doc(new pugi::xml_document());
+	saveDocument(doc.get(), document);
+	return toString(doc.get(), humanReadable);
 }
 
-void XmlWriter::save(const ProgramDTO& program) {
-	saveProgram(*doc.get(), program);
+string XmlWriter::save(const ProgramDTO& program, bool humanReadable) {
+	unique_ptr<pugi::xml_document> doc(new pugi::xml_document());
+	saveProgram(doc.get(), program);
+	return toString(doc.get(), humanReadable);
 }
 
-void XmlWriter::save(const RunTimeDTO& runTime) {
-	saveRunTime(*doc.get(), runTime);
+string XmlWriter::save(const RunTimeDTO& runTime, bool humanReadable) {
+	unique_ptr<pugi::xml_document> doc(new pugi::xml_document());
+	saveRunTime(doc.get(), runTime);
+	return toString(doc.get(), humanReadable);
 }
 
-void XmlWriter::save(const StartTimeDTO& startTime) {
-	saveStartTime(*doc.get(), startTime);
+string XmlWriter::save(const StartTimeDTO& startTime, bool humanReadable) {
+	unique_ptr<pugi::xml_document> doc(new pugi::xml_document());
+	saveStartTime(doc.get(), startTime);
+	return toString(doc.get(), humanReadable);
 }
 
-void XmlWriter::save(const SpecifiedSchedulerDTO& scheduler) {
-	saveScheduler(*doc.get(), scheduler);
+string XmlWriter::save(const SpecifiedSchedulerDTO& scheduler, bool humanReadable) {
+	unique_ptr<pugi::xml_document> doc(new pugi::xml_document());
+	saveScheduler(doc.get(), scheduler);
+	return toString(doc.get(), humanReadable);
 }
