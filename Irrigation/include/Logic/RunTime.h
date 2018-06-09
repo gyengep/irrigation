@@ -4,7 +4,7 @@
 
 
 class RunTime {
-	static const unsigned maxSeconds = 60 * 60 * 2;
+	static const unsigned maxSeconds = 60 * 60 * 24;
 
 	// disable copy constructor and copy operator
 	RunTime(const RunTime&);

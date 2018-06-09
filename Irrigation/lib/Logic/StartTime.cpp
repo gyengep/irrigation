@@ -21,7 +21,7 @@ unsigned StartTime::getValue() const {
 }
 
 void StartTime::setValue(unsigned secOfDay) {
-	if (secOfDay > maxSeconds) {
+	if (secOfDay >= maxSeconds) {
 		throw out_of_range("StartTime is out of range");
 	}
 

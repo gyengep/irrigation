@@ -8,9 +8,9 @@
 #include "DTO/StartTimeDTO.h"
 #include "DTO/SchedulersDTO.h"
 
-
 using namespace std;
 using namespace pugi;
+
 
 
 XmlReader::XmlReader() {
@@ -19,7 +19,7 @@ XmlReader::XmlReader() {
 XmlReader::~XmlReader() {
 }
 
-void XmlReader::loadFromString(pugi::xml_document* doc, const std::string& text) {
+void XmlReader::loadFromString(xml_document* doc, const std::string& text) {
 	xml_parse_result result = doc->load_string(text.c_str());
 
 	if (status_ok != result.status) {
@@ -101,7 +101,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
 	}
 }
 
-void XmlReader::loadScheduler(const pugi::xml_node& node, SpecifiedSchedulerDTO& scheduler) const {
+void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& scheduler) const {
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
 		const char* type = "specified";
@@ -151,7 +151,7 @@ void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) con
 void XmlReader::load(DocumentDTO& document, const std::string& text) const {
 	const char* tagName = "irrigation";
 
-	std::unique_ptr<pugi::xml_document> doc(new xml_document());
+	std::unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -166,7 +166,7 @@ void XmlReader::load(DocumentDTO& document, const std::string& text) const {
 void XmlReader::load(ProgramDTO& program, const std::string& text) const {
 	const char* tagName = "program";
 
-	std::unique_ptr<pugi::xml_document> doc(new xml_document());
+	std::unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -181,7 +181,7 @@ void XmlReader::load(ProgramDTO& program, const std::string& text) const {
 void XmlReader::load(RunTimeDTO& runTime, const std::string& text) const {
 	const char* tagName = "runtime";
 
-	std::unique_ptr<pugi::xml_document> doc(new xml_document());
+	std::unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -196,7 +196,7 @@ void XmlReader::load(RunTimeDTO& runTime, const std::string& text) const {
 void XmlReader::load(StartTimeDTO& startTime, const std::string& text) const {
 	const char* tagName = "starttime";
 
-	std::unique_ptr<pugi::xml_document> doc(new xml_document());
+	std::unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
@@ -211,7 +211,7 @@ void XmlReader::load(StartTimeDTO& startTime, const std::string& text) const {
 void XmlReader::load(SpecifiedSchedulerDTO& scheduler, const std::string& text) const {
 	const char* tagName = "scheduler";
 
-	std::unique_ptr<pugi::xml_document> doc(new xml_document());
+	std::unique_ptr<xml_document> doc(new xml_document());
 	loadFromString(doc.get(), text);
 
 	const xml_node node = doc->child(tagName);
