@@ -9,43 +9,37 @@
 using namespace std;
 
 
-Scheduler* SchedulerFactory::createScheduler(SchedulerType schedulerType) const {
-	switch (schedulerType) {
-	case SPECIFIED_DAYS:
-		return new SpecifiedScheduler();
-	default:
-		throw invalid_argument("Invalid schedulerType: " + to_string(schedulerType));
-	}
+
+SpecifiedScheduler* SchedulerFactory::createSpecifiedSheduler() const {
+	return new SpecifiedScheduler();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 Program::Program(const string& name) :
 	name(name),
-	schedulerType(SPECIFIED_DAYS),
+	schedulerType(SchedulerType::SPECIFIED_DAYS),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
-	unique_ptr<const SchedulerFactory> ptr(new SchedulerFactory());
-	initSchedulers(move(ptr));
+	initSchedulers(SchedulerFactory());
 }
 
-Program::Program(const SchedulerFactory* schedulerFactory) :
-	schedulerType(SPECIFIED_DAYS),
+Program::Program(const SchedulerFactory& schedulerFactory) :
+	schedulerType(SchedulerType::SPECIFIED_DAYS),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
-	unique_ptr<const SchedulerFactory> ptr(schedulerFactory ? schedulerFactory : new SchedulerFactory());
-	initSchedulers(move(ptr));
+	initSchedulers(schedulerFactory);
 }
 
 Program::~Program() {
 }
 
-void Program::initSchedulers(unique_ptr<const SchedulerFactory> schedulerFactory) {
-	schedulers.resize(1);
-	schedulers[SPECIFIED_DAYS].reset(schedulerFactory->createScheduler(SPECIFIED_DAYS));
+void Program::initSchedulers(const SchedulerFactory& schedulerFactory) {
+	specifiedScheduler.reset(schedulerFactory.createSpecifiedSheduler());
 }
 
 string Program::getName() const {
@@ -56,13 +50,14 @@ void Program::setName(const string& newName) {
 	name = newName;
 }
 
-
 void Program::setSchedulerType(SchedulerType schedulerType) {
-	if (schedulerType >= schedulers.size()) {
-		throw InvalidSchedulerException();
+	switch(schedulerType) {
+	case SchedulerType::SPECIFIED_DAYS:
+		this->schedulerType = schedulerType;
+		break;
+	default:
+		throw InvalidSchedulerTypeException(schedulerType);
 	}
-
-	this->schedulerType = schedulerType;
 }
 
 SchedulerType Program::getSchedulerType(void) const {
@@ -70,7 +65,12 @@ SchedulerType Program::getSchedulerType(void) const {
 }
 
 const Scheduler& Program::getCurrentScheduler() const {
-	return *schedulers[schedulerType].get();
+	switch (schedulerType) {
+	case SchedulerType::SPECIFIED_DAYS:
+		return getSpecifiedScheduler();
+	default:
+		throw logic_error("Invalid scheduler type");
+	}
 }
 
 bool Program::isScheduled(const time_t& rawTime) const {
@@ -88,11 +88,11 @@ bool Program::isScheduled(const time_t& rawTime) const {
 }
 
 const SpecifiedScheduler& Program::getSpecifiedScheduler() const {
-	return *dynamic_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS].get());
+	return *specifiedScheduler.get();
 }
 
 SpecifiedScheduler& Program::getSpecifiedScheduler() {
-	return *dynamic_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS].get());
+	return *specifiedScheduler.get();
 }
 
 ProgramDTO Program::getProgramDTO() const {

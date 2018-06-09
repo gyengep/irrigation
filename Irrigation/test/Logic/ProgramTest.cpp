@@ -3,7 +3,7 @@
 #include "Logic/Program.h"
 #include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
-#include "Schedulers/Scheduler.h"
+#include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
 using ::testing::_;
@@ -24,13 +24,15 @@ TEST(Program, name) {
 TEST(Program, setSchedulerTypeInvalid) {
 	Program program;
 
-	SchedulerType invalidSchedulerType = (SchedulerType)(SPECIFIED_DAYS + 1);
-	EXPECT_THROW(program.setSchedulerType(invalidSchedulerType), InvalidSchedulerException);
+	int specifiedDaysAsInt = static_cast<int>(SchedulerType::SPECIFIED_DAYS);
+	SchedulerType invalidSchedulerType = static_cast<SchedulerType>(specifiedDaysAsInt + 1);
+
+	EXPECT_THROW(program.setSchedulerType(invalidSchedulerType), InvalidSchedulerTypeException);
 }
 
 TEST(Program, getSchedulerType) {
 	Program program;
-	EXPECT_EQ(SPECIFIED_DAYS, program.getSchedulerType());
+	EXPECT_EQ(SchedulerType::SPECIFIED_DAYS, program.getSchedulerType());
 }
 
 TEST(Program, getSpecifiedScheduler) {
@@ -61,22 +63,24 @@ time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst
 	return mktime(&tm);
 }
 
-class MockScheduler : public Scheduler {
+class MockScheduler : public SpecifiedScheduler {
 public:
 	MOCK_CONST_METHOD1(isDayScheduled, bool(const tm&));
 };
 
 class MockSchedulerFactory : public SchedulerFactory {
 public:
-	virtual Scheduler* createScheduler(SchedulerType schedulerType) const {
+	virtual SpecifiedScheduler* createSpecifiedSheduler() const {
 		return new MockScheduler();
 	}
 };
 
 TEST(Program, isScheduled1) {
-	Program program(new MockSchedulerFactory());
+	MockSchedulerFactory schedulerFactory;
+	Program program(schedulerFactory);
 	std::time_t t;
 
+	program.getCurrentScheduler();
 	const MockScheduler& mockScheduler = dynamic_cast<const MockScheduler&>(program.getCurrentScheduler());
 	ON_CALL(mockScheduler, isDayScheduled(_)).WillByDefault(Return(false));
 	EXPECT_CALL(mockScheduler, isDayScheduled(_)).Times(AnyNumber());
@@ -97,7 +101,8 @@ TEST(Program, isScheduled1) {
 }
 
 TEST(Program, isScheduled2) {
-	Program program(new MockSchedulerFactory());
+	MockSchedulerFactory schedulerFactory;
+	Program program(schedulerFactory);
 	std::time_t t;
 
 	const MockScheduler& mockScheduler = dynamic_cast<const MockScheduler&>(program.getCurrentScheduler());

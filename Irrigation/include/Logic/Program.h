@@ -12,25 +12,26 @@ class StartTimeContainer;
 class SchedulerFactory;
 
 
+
 class Program {
 	// disable copy constructor and copy operator
 	Program(const Program&);
 	void operator= (const Program&);
 
-	void initSchedulers(std::unique_ptr<const SchedulerFactory> schedulerFactory);
+	void initSchedulers(const SchedulerFactory& schedulerFactory);
 
 	std::string name;
 	SchedulerType schedulerType;
-	std::vector<std::unique_ptr<Scheduler>> schedulers;
+	std::unique_ptr<SpecifiedScheduler> specifiedScheduler;
 	std::unique_ptr<RunTimeContainer> runTimes;
 	std::unique_ptr<StartTimeContainer> startTimes;
 
 public:
-	Program(const std::string& name);
+	Program(const std::string& name = std::string());
 	virtual ~Program();
 
 	// for testing
-	Program(const SchedulerFactory* schedulerFactory = nullptr);
+	Program(const SchedulerFactory& schedulerFactory);
 
 	std::string getName() const;
 	virtual void setName(const std::string& name);
@@ -56,5 +57,5 @@ public:
 class SchedulerFactory {
 public:
 	virtual ~SchedulerFactory() {}
-	virtual Scheduler* createScheduler(SchedulerType schedulerType) const;
+	virtual SpecifiedScheduler* createSpecifiedSheduler() const;
 };
