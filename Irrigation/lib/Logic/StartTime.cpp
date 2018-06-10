@@ -1,5 +1,4 @@
 #include "StartTime.h"
-#include "Parser.h"
 #include <stdexcept>
 
 using namespace std;
@@ -40,20 +39,6 @@ bool StartTime::operator< (const StartTime& other) const {
 bool StartTime::operator== (const StartTime& other) const {
 	return (getValue() == other.getValue());
 }
-/*
-void StartTime::fromString(const string& text) {
-	unsigned value = 0;
-	try {
-		value = Parser::parseUnsigned(text);
-	} catch(out_of_range& e) {
-		throw out_of_range("StartTime is out of range");
-	} catch (invalid_argument& e) {
-		throw invalid_argument("StartTime string contains invalid characters");
-	}
-
-	setValue(value);
-}
-*/
 
 StartTimeDTO StartTime::getStartTimeDTO() const {
 	return StartTimeDTO(getValue());
