@@ -1,7 +1,9 @@
 #include <gmock/gmock.h>
 #include "Logic/Exceptions.h"
 #include "Logic/Program.h"
+#include "Logic/RunTime.h"
 #include "Logic/StartTime.h"
+#include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
@@ -39,6 +41,46 @@ TEST(Program, getSpecifiedScheduler) {
 	Program program;
 	EXPECT_NE(nullptr, &program.getSpecifiedScheduler());
 }
+
+TEST(Program, getProgramDTO) {
+	Program program;
+	program.setName("Abcdefg");
+	program.setSchedulerType(SchedulerType::SPECIFIED_DAYS);
+
+	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::MONDAY, true);
+	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::FRIDAY, true);
+
+	program.getRunTimes().at(0)->setValue(20);
+	program.getRunTimes().at(1)->setValue(21);
+	program.getRunTimes().at(2)->setValue(22);
+	program.getRunTimes().at(3)->setValue(23);
+	program.getRunTimes().at(4)->setValue(24);
+	program.getRunTimes().at(5)->setValue(25);
+
+	program.getStartTimes().insert(100, new StartTime(1, 0, 0));
+	program.getStartTimes().insert(101, new StartTime(1, 0, 1));
+	program.getStartTimes().insert(102, new StartTime(1, 0, 2));
+
+	const ProgramDTO expectedProgramDTO("Abcdefg", "specified",
+			SpecifiedSchedulerDTO(new list<bool>({ false, true, false, false, false, true, false})),
+			new list<RunTimeDTO>({
+				RunTimeDTO(20).setId(0),
+				RunTimeDTO(21).setId(1),
+				RunTimeDTO(22).setId(2),
+				RunTimeDTO(23).setId(3),
+				RunTimeDTO(24).setId(4),
+				RunTimeDTO(25).setId(5)
+			}),
+			new list<StartTimeDTO>({
+				StartTimeDTO(3600).setId(100),
+				StartTimeDTO(3601).setId(101),
+				StartTimeDTO(3602).setId(102)
+			})
+		);
+
+	EXPECT_EQ(expectedProgramDTO, program.getProgramDTO());
+}
+
 
 time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
 

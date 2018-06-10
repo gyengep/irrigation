@@ -54,10 +54,7 @@ TEST(StartTimeTest, getStartTimeDTO) {
 	StartTime startTime;
 	startTime.setValue(50);
 
-	StartTimeDTO startTimeDTO = startTime.getStartTimeDTO();
+	const StartTimeDTO expectedStartTimeDTO(50);
 
-	EXPECT_FALSE(startTimeDTO.hasId());
-	EXPECT_TRUE(startTimeDTO.hasValue());
-
-	EXPECT_EQ(50, startTimeDTO.getValue());
+	EXPECT_EQ(expectedStartTimeDTO, startTime.getStartTimeDTO());
 }

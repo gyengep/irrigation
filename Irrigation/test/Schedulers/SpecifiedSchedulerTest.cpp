@@ -1,7 +1,9 @@
 #include <gmock/gmock.h>
+#include <list>
 #include "Schedulers/Exceptions.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
+using namespace std;
 
 extern void checkDay(const Scheduler& scheduler, bool requestedResult, int day);
 
@@ -79,4 +81,17 @@ TEST(SpecifiedScheduler, isDayScheduled) {
 	for (int day = 19; day < 26; day++) {
 		checkDay(scheduler, 22 == day || 25 == day, day);
 	}
+}
+
+TEST(SpecifiedScheduler, getSpecifiedSchedulerDTO) {
+	SpecifiedScheduler scheduler;
+
+	scheduler.enableDay(SpecifiedScheduler::MONDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::TUESDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::FRIDAY, true);
+
+	const SpecifiedSchedulerDTO expectedSchedulerDTO(new list<bool>({
+		false, true, true, false, false, true, false }));
+
+	EXPECT_EQ(expectedSchedulerDTO, scheduler.getSpecifiedSchedulerDTO());
 }

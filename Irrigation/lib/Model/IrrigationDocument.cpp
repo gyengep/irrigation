@@ -41,10 +41,10 @@ void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
 DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<std::mutex> lock(mutex);
 
-	list<ProgramDTO>* programDTOs = new list<ProgramDTO>();
+	unique_ptr<list<ProgramDTO>> programDTOs(new list<ProgramDTO>());
 	for (auto it = programs.begin(); it != programs.end(); ++it) {
-		programDTOs->push_back(it->second->getProgramDTO());
+		programDTOs->push_back(it->second->getProgramDTO().setId(it->first));
 	}
 
-	return DocumentDTO(programDTOs);
+	return DocumentDTO(programDTOs.release());
 }

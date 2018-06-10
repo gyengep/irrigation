@@ -100,15 +100,15 @@ ProgramDTO Program::getProgramDTO() const {
 	unique_ptr<list<StartTimeDTO>> startTimeDTOs(new list<StartTimeDTO>());
 
 	for (auto it = runTimes->begin(); it != runTimes->end(); ++it) {
-		runTimeDTOs->push_back(it->second->getRunTimeDTO());
+		runTimeDTOs->push_back(it->second->getRunTimeDTO().setId(it->first));
 	}
 
 	for (auto it = startTimes->begin(); it != startTimes->end(); ++it) {
-		startTimeDTOs->push_back(it->second->getStartTimeDTO());
+		startTimeDTOs->push_back(it->second->getStartTimeDTO().setId(it->first));
 	}
 
 	return ProgramDTO(name.c_str(), "specified",
-			getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
+			move(getSpecifiedScheduler().getSpecifiedSchedulerDTO()),
 			runTimeDTOs.release(),
 			startTimeDTOs.release());
 }

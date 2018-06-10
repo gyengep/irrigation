@@ -27,10 +27,7 @@ TEST(RunTimeTest, getRunTimeDTO) {
 	RunTime runTime;
 	runTime.setValue(50);
 
-	RunTimeDTO runTimeDTO = runTime.getRunTimeDTO();
+	const RunTimeDTO expectedRunTimeDTO(50);
 
-	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_TRUE(runTimeDTO.hasValue());
-
-	EXPECT_EQ(50, runTimeDTO.getValue());
+	EXPECT_EQ(expectedRunTimeDTO, runTime.getRunTimeDTO());
 }
