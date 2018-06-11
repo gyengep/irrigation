@@ -1,5 +1,4 @@
 #pragma once
-
 #include <list>
 #include <mutex>
 
@@ -17,7 +16,4 @@ public:
 
 	void addView(View* view);
 	void removeView(View* view);
-
-	virtual void save() {}
-	virtual void load() {}
 };

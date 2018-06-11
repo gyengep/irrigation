@@ -48,7 +48,11 @@ TEST(StartTimeContainerTest, insert) {
 	};
 
 	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
+
+	for (auto& pair : required) {
+		EXPECT_EQ(pair.second, startTimes.insert(pair.first, pair.second));
+	}
+
 	expectStartTimes(startTimes, required);
 }
 

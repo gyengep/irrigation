@@ -3,33 +3,44 @@
 #include "Logic/RunTime.h"
 
 using namespace std;
+using namespace testing;
 
 
-TEST(RunTimeTest, toString) {
+
+TEST(RunTimeTest, init) {
 	RunTime runTime;
-	runTime.setValue(2465);
-	EXPECT_EQ("2465", runTime.toString());
+	EXPECT_EQ(0, runTime.getValue());
 }
 
-TEST(RunTimeTest, fromString) {
+TEST(RunTimeTest, setValue) {
 	RunTime runTime;
-	runTime.fromString("2465");
-	EXPECT_EQ(2465, runTime.getValue());
+	runTime.setValue(25);
+	EXPECT_EQ(25, runTime.getValue());
 }
 
-TEST(RunTimeTest, fromStringInvalid) {
+TEST(RunTimeTest, setValueMax) {
 	RunTime runTime;
-	EXPECT_THROW(runTime.fromString("abc"), invalid_argument);
-	EXPECT_THROW(runTime.fromString("123 "), invalid_argument);
-	EXPECT_THROW(runTime.fromString("1234a"), invalid_argument);
-	EXPECT_THROW(runTime.fromString("a1234"), invalid_argument);
-	EXPECT_THROW(runTime.fromString("12 34"), invalid_argument);
+	EXPECT_NO_THROW(runTime.setValue(3600 * 24));
+	EXPECT_THROW(runTime.setValue(3600 * 24 + 1), out_of_range);
 }
 
-TEST(RunTimeTest, fromStringOutOfRange) {
+TEST(RunTimeTest, convertRunTimeDTO) {
+	const RunTimeDTO expectedRunTimeDTO(50);
+
 	RunTime runTime;
-	EXPECT_NO_THROW(runTime.fromString("7200"));
-	EXPECT_THROW(runTime.fromString("7201"), out_of_range);
-	EXPECT_THROW(runTime.fromString("4294967297"), out_of_range);
+	runTime.updateFromDTO(expectedRunTimeDTO);
+
+	EXPECT_THAT(runTime.getValue(), Eq(50));
+	EXPECT_THAT(runTime.getRunTimeDTO(), Eq(expectedRunTimeDTO));
 }
 
+TEST(RunTimeTest, updateValueFromDTO) {
+	RunTime runTime;
+	runTime.setValue(100);
+
+	runTime.updateFromDTO(RunTimeDTO());
+	EXPECT_THAT(runTime.getValue(), Eq(100));
+
+	runTime.updateFromDTO(RunTimeDTO().setValue(50));
+	EXPECT_THAT(runTime.getValue(), Eq(50));
+}

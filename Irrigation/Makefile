@@ -32,3 +32,7 @@ src-clean:
 .PHONY: gmock
 gmock:
 	@$(MAKE) -C 3p/gmock_gtest all
+	
+.PHONY: pugixml
+pugixml:
+	@$(MAKE) -C 3p/pugixml all

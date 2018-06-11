@@ -34,7 +34,13 @@ public:
 };
 
 
-class InvalidSchedulerException : public std::runtime_error {
+enum class SchedulerType;
+
+class InvalidSchedulerTypeException : public std::runtime_error {
 public:
-	explicit InvalidSchedulerException() : std::runtime_error("Invalid scheduler type") {}
+	InvalidSchedulerTypeException(SchedulerType schedulerType) :
+		std::runtime_error("Invalid schedulerType: " + std::to_string(static_cast<int>(schedulerType))) {
+	}
 };
+
+

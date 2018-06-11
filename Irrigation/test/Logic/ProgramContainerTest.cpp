@@ -48,7 +48,11 @@ TEST(ProgramContainerTest, insert) {
 	};
 
 	ProgramContainer programs;
-	insertToPrograms(programs, required);
+
+	for (auto& pair : required) {
+		EXPECT_EQ(pair.second, programs.insert(pair.first, pair.second));
+	}
+
 	expectPrograms(programs, required);
 }
 

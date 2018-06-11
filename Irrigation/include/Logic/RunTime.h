@@ -1,9 +1,10 @@
 #pragma once
 #include <string>
+#include "DTO/RunTimeDTO.h"
 
 
 class RunTime {
-	static const unsigned maxSeconds = 60 * 60 * 2;
+	static const unsigned maxSeconds = 60 * 60 * 24;
 
 	// disable copy constructor and copy operator
 	RunTime(const RunTime&);
@@ -18,6 +19,6 @@ public:
 	virtual unsigned getValue() const;
 	virtual void setValue(unsigned seconds);
 
-	std::string toString() const;
-	void fromString(const std::string& text);
+	RunTimeDTO getRunTimeDTO() const;
+	void updateFromDTO(const RunTimeDTO& runTimeDTO);
 };

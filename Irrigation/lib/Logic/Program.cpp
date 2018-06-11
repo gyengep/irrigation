@@ -4,49 +4,33 @@
 #include "RunTimeContainer.h"
 #include "StartTime.h"
 #include "StartTimeContainer.h"
-#include "Schedulers/Scheduler.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
 
 
-Scheduler* SchedulerFactory::createScheduler(Program::SchedulerType schedulerType) const {
-	switch (schedulerType) {
-	case Program::SPECIFIED_DAYS:
-		return new SpecifiedScheduler();
-	default:
-		throw invalid_argument("Invalid schedulerType: " + to_string(schedulerType));
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 Program::Program(const string& name) :
+	schedulerFactory(new SchedulerFactory()),
 	name(name),
-	schedulerType(SPECIFIED_DAYS),
+	schedulerType(SchedulerType::SPECIFIED_DAYS),
+	specifiedScheduler(schedulerFactory->createSpecifiedScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
-	unique_ptr<const SchedulerFactory> ptr(new SchedulerFactory());
-	initSchedulers(move(ptr));
 }
 
 Program::Program(const SchedulerFactory* schedulerFactory) :
-	schedulerType(SPECIFIED_DAYS),
+	schedulerFactory(schedulerFactory),
+	name(),
+	schedulerType(SchedulerType::SPECIFIED_DAYS),
+	specifiedScheduler(schedulerFactory->createSpecifiedScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
-	unique_ptr<const SchedulerFactory> ptr(schedulerFactory ? schedulerFactory : new SchedulerFactory());
-	initSchedulers(move(ptr));
 }
 
 Program::~Program() {
-}
-
-void Program::initSchedulers(unique_ptr<const SchedulerFactory> schedulerFactory) {
-	schedulers.resize(1);
-	schedulers[SPECIFIED_DAYS].reset(schedulerFactory->createScheduler(SPECIFIED_DAYS));
 }
 
 string Program::getName() const {
@@ -57,21 +41,27 @@ void Program::setName(const string& newName) {
 	name = newName;
 }
 
-
 void Program::setSchedulerType(SchedulerType schedulerType) {
-	if (schedulerType >= schedulers.size()) {
-		throw InvalidSchedulerException();
+	switch(schedulerType) {
+	case SchedulerType::SPECIFIED_DAYS:
+		this->schedulerType = schedulerType;
+		break;
+	default:
+		throw InvalidSchedulerTypeException(schedulerType);
 	}
-
-	this->schedulerType = schedulerType;
 }
 
-Program::SchedulerType Program::getSchedulerType(void) const {
+SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 
 const Scheduler& Program::getCurrentScheduler() const {
-	return *schedulers[schedulerType].get();
+	switch (schedulerType) {
+	case SchedulerType::SPECIFIED_DAYS:
+		return getSpecifiedScheduler();
+	default:
+		throw logic_error("Invalid scheduler type");
+	}
 }
 
 bool Program::isScheduled(const time_t& rawTime) const {
@@ -89,9 +79,70 @@ bool Program::isScheduled(const time_t& rawTime) const {
 }
 
 const SpecifiedScheduler& Program::getSpecifiedScheduler() const {
-	return *dynamic_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS].get());
+	return *specifiedScheduler.get();
 }
 
 SpecifiedScheduler& Program::getSpecifiedScheduler() {
-	return *dynamic_cast<SpecifiedScheduler*>(schedulers[SPECIFIED_DAYS].get());
+	return *specifiedScheduler.get();
+}
+
+ProgramDTO Program::getProgramDTO() const {
+	unique_ptr<list<RunTimeDTO>> runTimeDTOs(new list<RunTimeDTO>());
+	unique_ptr<list<StartTimeDTO>> startTimeDTOs(new list<StartTimeDTO>());
+
+	for (auto it = runTimes->begin(); it != runTimes->end(); ++it) {
+		runTimeDTOs->push_back(it->second->getRunTimeDTO().setId(it->first));
+	}
+
+	for (auto it = startTimes->begin(); it != startTimes->end(); ++it) {
+		startTimeDTOs->push_back(it->second->getStartTimeDTO().setId(it->first));
+	}
+
+	return ProgramDTO(name.c_str(), "specified",
+			move(getSpecifiedScheduler().getSpecifiedSchedulerDTO()),
+			runTimeDTOs.release(),
+			startTimeDTOs.release());
+}
+
+void Program::updateFromDTO(const ProgramDTO& programDTO) {
+	if (programDTO.hasName()) {
+		setName(programDTO.getName());
+	}
+
+	if (programDTO.hasSchedulerType()) {
+		if (programDTO.getSchedulerType() != "specified") {
+			throw logic_error("Program::updateFromDTO(): invalid schedulerType: " + programDTO.getSchedulerType());
+		}
+
+		setSchedulerType(SchedulerType::SPECIFIED_DAYS);
+	}
+
+	if (programDTO.hasSpecifiedScheduler()) {
+		specifiedScheduler.reset(schedulerFactory->createSpecifiedScheduler());
+		specifiedScheduler->updateFromDTO(programDTO.getSpecifiedScheduler());
+	}
+
+	if (programDTO.hasRunTimes()) {
+		runTimes.reset(new RunTimeContainer());
+
+		for (const RunTimeDTO& runTimeDTO : programDTO.getRunTimes()) {
+			if (!runTimeDTO.hasId()) {
+				throw logic_error("Program::updateFromDTO(): !runTime.hasId()");
+			}
+
+			runTimes->at(runTimeDTO.getId())->updateFromDTO(runTimeDTO);
+		}
+	}
+
+	if (programDTO.hasStartTimes()) {
+		startTimes.reset(new StartTimeContainer());
+
+		for (const StartTimeDTO& startTimeDTO : programDTO.getStartTimes()) {
+			if (!startTimeDTO.hasId()) {
+				throw logic_error("Program::updateFromDTO(): !startTime.hasId()");
+			}
+
+			startTimes->insert(startTimeDTO.getId(), new StartTime())->updateFromDTO(startTimeDTO);
+		}
+	}
 }

@@ -1,5 +1,4 @@
 #include "StartTime.h"
-#include "Parser.h"
 #include <stdexcept>
 
 using namespace std;
@@ -21,7 +20,7 @@ unsigned StartTime::getValue() const {
 }
 
 void StartTime::setValue(unsigned secOfDay) {
-	if (secOfDay > maxSeconds) {
+	if (secOfDay >= maxSeconds) {
 		throw out_of_range("StartTime is out of range");
 	}
 
@@ -41,19 +40,12 @@ bool StartTime::operator== (const StartTime& other) const {
 	return (getValue() == other.getValue());
 }
 
-string StartTime::toString() const {
-	return to_string(secOfDay);
+StartTimeDTO StartTime::getStartTimeDTO() const {
+	return StartTimeDTO(getValue());
 }
 
-void StartTime::fromString(const string& text) {
-	unsigned value = 0;
-	try {
-		value = Parser::parseUnsigned(text);
-	} catch(out_of_range& e) {
-		throw out_of_range("StartTime is out of range");
-	} catch (invalid_argument& e) {
-		throw invalid_argument("StartTime string contains invalid characters");
+void StartTime::updateFromDTO(const StartTimeDTO& startTimeDTO) {
+	if (startTimeDTO.hasValue()) {
+		setValue(startTimeDTO.getValue());
 	}
-
-	setValue(value);
 }

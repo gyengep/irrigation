@@ -1,7 +1,9 @@
 #pragma once
 #include <ctime>
+#include <memory>
 #include <mutex>
 #include "DocumentView/Document.h"
+#include "DTO/DocumentDTO.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
 
@@ -9,7 +11,7 @@
 class IrrigationDocument : public Document {
 
 	mutable std::mutex mutex;
-	ProgramContainer programs;
+	std::unique_ptr<ProgramContainer> programs;
 	WateringController wateringController;
 
 public:
@@ -19,13 +21,14 @@ public:
 	void lock() const;
 	void unlock() const;
 
-	const ProgramContainer& getPrograms() const { return programs; }
-	ProgramContainer& getPrograms() { return programs; }
+	const ProgramContainer& getPrograms() const { return *programs; }
+	ProgramContainer& getPrograms() { return *programs; }
 
 	const WateringController& getWateringController() const { return wateringController; }
 	WateringController& getWateringController() { return wateringController; }
 
 	void on1SecTimer(const std::time_t& rawTime);
 
-	virtual void load();
+	DocumentDTO getDocumentDTO() const;
+	void updateFromDTO(const DocumentDTO& documentDTO);
 };

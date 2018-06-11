@@ -1,12 +1,12 @@
-install microhttpd
-------------------
+microhttpd
+----------
  - ./configure
  - make
  - make install
  
  
-install teng
-------------
+teng
+----
  - ./configure
  - change the following line in the makefile: 
 	CXXFLAGS =
@@ -14,6 +14,12 @@ install teng
 	CXXFLAGS = -D_DEFAULT_SOURCE
  - make
  - make install
+ 
+ 
+pugixml
+-------
+  - copy the pugiconfig.hpp, pugixml.cpp and pugixml.hpp to the workspace 
+    and build it with the project
  
 
  
