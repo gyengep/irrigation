@@ -6,6 +6,13 @@
 using namespace std;
 
 
+
+SpecifiedScheduler* SchedulerFactory::createSpecifiedScheduler() const {
+	return new SpecifiedScheduler();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 SpecifiedScheduler::SpecifiedScheduler() {
 	days.fill(false);
 }
