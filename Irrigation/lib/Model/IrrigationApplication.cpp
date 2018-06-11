@@ -45,8 +45,6 @@ void Application::init() {
 	document.reset(new IrrigationDocument());
 	//document->addView(new CommandLineView());
 	//document->addView(new WebServerView());
-
-	document->load(configFileName);
 }
 
 void Application::run() {
@@ -63,7 +61,6 @@ void Application::run() {
 }
 
 void Application::cleanup() {
-	document->save(configFileName);
 	document.reset();
 	LOGGER.info("Application terminated");
 }
