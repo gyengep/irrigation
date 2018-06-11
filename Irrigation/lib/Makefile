@@ -1,17 +1,9 @@
 
 .PHONY: all
-all: CommandExecutor-all DocumentView-all DTO-all Hardware-all Logger-all Logic-all Model-all ReaderWriter-all Schedulers-all
+all: DocumentView-all DTO-all Hardware-all Logger-all Logic-all Model-all ReaderWriter-all Schedulers-all
 
 .PHONY: clean
-clean: CommandExecutor-clean DocumentView-clean DTO-clean Hardware-clean Logger-clean Logic-clean Model-clean ReaderWriter-clean Schedulers-clean
-
-.PHONY: CommandExecutor-all
-CommandExecutor-all:
-	@$(MAKE) -C CommandExecutor all
-
-.PHONY: CommandExecutor-clean
-CommandExecutor-clean:
-	@$(MAKE) -C CommandExecutor clean
+clean: DocumentView-clean DTO-clean Hardware-clean Logger-clean Logic-clean Model-clean ReaderWriter-clean Schedulers-clean
 
 .PHONY: DocumentView-all
 DocumentView-all:

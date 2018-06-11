@@ -5,8 +5,6 @@
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
 #include "ReaderWriter/XmlWriter.h"
-#include "Views/CommandLineView/CommandLineView.h"
-//#include "Views/CommandLineView/WebServerView.h"
 
 
 using namespace std;
@@ -43,8 +41,6 @@ void Application::init() {
 	Valves::init();
 	
 	document.reset(new IrrigationDocument());
-	//document->addView(new CommandLineView());
-	//document->addView(new WebServerView());
 }
 
 void Application::run() {
