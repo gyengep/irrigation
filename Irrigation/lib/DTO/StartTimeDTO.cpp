@@ -1,5 +1,6 @@
 #include "StartTimeDTO.h"
 #include "EqualsPtr.h"
+#include "PrintToStream.h"
 #include <stdexcept>
 
 using namespace std;
