@@ -3,6 +3,7 @@
 #include "Logic/RunTime.h"
 
 using namespace std;
+using namespace testing;
 
 
 
@@ -23,11 +24,23 @@ TEST(RunTimeTest, setValueMax) {
 	EXPECT_THROW(runTime.setValue(3600 * 24 + 1), out_of_range);
 }
 
-TEST(RunTimeTest, getRunTimeDTO) {
-	RunTime runTime;
-	runTime.setValue(50);
-
+TEST(RunTimeTest, convertRunTimeDTO) {
 	const RunTimeDTO expectedRunTimeDTO(50);
 
-	EXPECT_EQ(expectedRunTimeDTO, runTime.getRunTimeDTO());
+	RunTime runTime;
+	runTime.updateFromDTO(expectedRunTimeDTO);
+
+	EXPECT_THAT(runTime.getValue(), Eq(50));
+	EXPECT_THAT(runTime.getRunTimeDTO(), Eq(expectedRunTimeDTO));
+}
+
+TEST(RunTimeTest, updateValueFromDTO) {
+	RunTime runTime;
+	runTime.setValue(100);
+
+	runTime.updateFromDTO(RunTimeDTO());
+	EXPECT_THAT(runTime.getValue(), Eq(100));
+
+	runTime.updateFromDTO(RunTimeDTO().setValue(50));
+	EXPECT_THAT(runTime.getValue(), Eq(50));
 }

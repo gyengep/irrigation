@@ -42,3 +42,13 @@ bool SpecifiedScheduler::isDayScheduled(const tm& timeinfo) const {
 SpecifiedSchedulerDTO SpecifiedScheduler::getSpecifiedSchedulerDTO() const {
 	return SpecifiedSchedulerDTO(new list<bool>(days.begin(), days.end()));
 }
+
+void SpecifiedScheduler::updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO) {
+	if (schedulerDTO.hasValues()) {
+		const size_t maxIndex = min(days.size(), schedulerDTO.getValues().size());
+		for (size_t i = 0; i < maxIndex; ++i) {
+			auto it = next(schedulerDTO.getValues().begin(), i);
+			days[i] = *it;
+		}
+	}
+}

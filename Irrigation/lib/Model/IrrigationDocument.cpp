@@ -26,7 +26,7 @@ void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
 	lock_guard<std::mutex> lock(mutex);
 
 	if (!wateringController.isWateringActive()) {
-		for (auto it = programs.begin(); programs.end() != it; ++it) {
+		for (auto it = programs->begin(); programs->end() != it; ++it) {
 			const Program* program = it->second;
 			if (program->isScheduled(rawTime)) {
 				wateringController.start(rawTime, program->getRunTimes());
@@ -42,9 +42,25 @@ DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<std::mutex> lock(mutex);
 
 	unique_ptr<list<ProgramDTO>> programDTOs(new list<ProgramDTO>());
-	for (auto it = programs.begin(); it != programs.end(); ++it) {
+	for (auto it = programs->begin(); it != programs->end(); ++it) {
 		programDTOs->push_back(it->second->getProgramDTO().setId(it->first));
 	}
 
 	return DocumentDTO(programDTOs.release());
+}
+
+void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
+	lock_guard<std::mutex> lock(mutex);
+
+	if (documentDTO.hasPrograms()) {
+		programs.reset(new ProgramContainer());
+
+		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
+			if (!programDTO.hasId()) {
+				throw logic_error("IrrigationDocument::updateFromDTO(): !program.hasId()");
+			}
+
+			programs->insert(programDTO.getId(), new Program())->updateFromDTO(programDTO);
+		}
+	}
 }

@@ -34,4 +34,5 @@ public:
 	virtual bool isDayScheduled(const std::tm& timeinfo) const;
 
 	SpecifiedSchedulerDTO getSpecifiedSchedulerDTO() const;
+	void updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO);
 };

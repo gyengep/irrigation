@@ -307,6 +307,17 @@ TEST_F(ProgramReaderWriterTest, programRunTimes) {
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
 }
 
+TEST_F(ProgramReaderWriterTest, programRunTimeIdMissing) {
+	const string expectedXml =
+			"<program>"
+				"<runtimes>"
+					"<runtime>50</runtime>"
+				"</runtimes>"
+			"</program>";
+
+	EXPECT_THROW(reader.load(program, expectedXml), RequiredAttributeMissing);
+}
+
 TEST_F(ProgramReaderWriterTest, programStartTimes) {
 	const string expectedXml =
 			"<program>"
@@ -329,6 +340,17 @@ TEST_F(ProgramReaderWriterTest, programStartTimes) {
 
 	const string actualXml = writer.save(program, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
+}
+
+TEST_F(ProgramReaderWriterTest, programStartTimeIdMissing) {
+	const string expectedXml =
+			"<program>"
+				"<starttimes>"
+					"<starttime>50</starttime>"
+				"</starttimes>"
+			"</program>";
+
+	EXPECT_THROW(reader.load(program, expectedXml), RequiredAttributeMissing);
 }
 
 TEST_F(ProgramReaderWriterTest, programEmpty) {
@@ -438,6 +460,17 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 
 	const string actualXml = writer.save(document, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
+}
+
+TEST_F(DocumentReaderWriterTest, ProgramIdMissing) {
+	const string expectedXml =
+			"<irrigation>"
+				"<programs>"
+					"<program/>"
+				"</programs>"
+			"</irrigation>";
+
+	EXPECT_THROW(reader.load(document, expectedXml), RequiredAttributeMissing);
 }
 
 TEST_F(DocumentReaderWriterTest, documentEmpty) {

@@ -4,12 +4,13 @@
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
+using namespace testing;
+
 
 extern void checkDay(const Scheduler& scheduler, bool requestedResult, int day);
 
 
-
-TEST(SpecifiedScheduler, init) {
+TEST(SpecifiedSchedulerTest, init) {
 	SpecifiedScheduler scheduler;
 
 	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::MONDAY));
@@ -21,7 +22,7 @@ TEST(SpecifiedScheduler, init) {
 	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));
 }
 
-TEST(SpecifiedScheduler, enableDay) {
+TEST(SpecifiedSchedulerTest, enableDay) {
 	SpecifiedScheduler scheduler;
 
 	scheduler.enableDay(SpecifiedScheduler::WEDNESDAY, true);
@@ -55,17 +56,17 @@ TEST(SpecifiedScheduler, enableDay) {
 	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));
 }
 
-TEST(SpecifiedScheduler, enableDayInvalid) {
+TEST(SpecifiedSchedulerTest, enableDayInvalid) {
 	SpecifiedScheduler scheduler;
 	EXPECT_THROW(scheduler.enableDay((SpecifiedScheduler::Days)7, true), InvalidDayException);
 }
 
-TEST(SpecifiedScheduler, isDayEnabledInvalid) {
+TEST(SpecifiedSchedulerTest, isDayEnabledInvalid) {
 	SpecifiedScheduler scheduler;
 	EXPECT_THROW(scheduler.isDayEnabled((SpecifiedScheduler::Days)7), InvalidDayException);
 }
 
-TEST(SpecifiedScheduler, isDayScheduled) {
+TEST(SpecifiedSchedulerTest, isDayScheduled) {
 	SpecifiedScheduler scheduler;
 
 	scheduler.enableDay(SpecifiedScheduler::WEDNESDAY, true);
@@ -83,7 +84,7 @@ TEST(SpecifiedScheduler, isDayScheduled) {
 	}
 }
 
-TEST(SpecifiedScheduler, getSpecifiedSchedulerDTO) {
+TEST(SpecifiedSchedulerTest, getSpecifiedSchedulerDTO) {
 	SpecifiedScheduler scheduler;
 
 	scheduler.enableDay(SpecifiedScheduler::MONDAY, true);
@@ -94,4 +95,61 @@ TEST(SpecifiedScheduler, getSpecifiedSchedulerDTO) {
 		false, true, true, false, false, true, false }));
 
 	EXPECT_EQ(expectedSchedulerDTO, scheduler.getSpecifiedSchedulerDTO());
+}
+
+TEST(SpecifiedSchedulerTest, convertSpecifiedSchedulerDTO) {
+	const SpecifiedSchedulerDTO expectedSchedulerDTO(new list<bool>({
+		false, true, false, true, true, false, false
+	}));
+
+	SpecifiedScheduler scheduler;
+	scheduler.updateFromDTO(expectedSchedulerDTO);
+
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::MONDAY));
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::TUESDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::WEDNESDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::THURSDAY));
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::FRIDAY));
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::SATURDAY));
+	EXPECT_THAT(scheduler.getSpecifiedSchedulerDTO(), Eq(expectedSchedulerDTO));
+}
+
+TEST(SpecifiedSchedulerTest, updateLessValueFromDTO) {
+	SpecifiedScheduler scheduler;
+	scheduler.enableDay(SpecifiedScheduler::SUNDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::MONDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::TUESDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::WEDNESDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::THURSDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::FRIDAY, true);
+	scheduler.enableDay(SpecifiedScheduler::SATURDAY, true);
+
+	scheduler.updateFromDTO(SpecifiedSchedulerDTO(new list<bool>({
+		false, false, false
+	})));
+
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::MONDAY));
+	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::TUESDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::WEDNESDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::THURSDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::FRIDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::SATURDAY));
+}
+
+TEST(SpecifiedSchedulerTest, updateMoreValueFromDTO) {
+	SpecifiedScheduler scheduler;
+
+	scheduler.updateFromDTO(SpecifiedSchedulerDTO(new list<bool>({
+		true, true, true, true, true, true, true, true, true, true,
+	})));
+
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::MONDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::TUESDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::WEDNESDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::THURSDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::FRIDAY));
+	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::SATURDAY));
 }

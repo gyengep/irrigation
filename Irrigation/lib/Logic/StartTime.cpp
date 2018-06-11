@@ -43,3 +43,9 @@ bool StartTime::operator== (const StartTime& other) const {
 StartTimeDTO StartTime::getStartTimeDTO() const {
 	return StartTimeDTO(getValue());
 }
+
+void StartTime::updateFromDTO(const StartTimeDTO& startTimeDTO) {
+	if (startTimeDTO.hasValue()) {
+		setValue(startTimeDTO.getValue());
+	}
+}

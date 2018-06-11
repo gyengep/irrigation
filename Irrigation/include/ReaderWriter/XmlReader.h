@@ -33,6 +33,12 @@ public:
 		XmlReaderException(std::string("Required tag missing: ") + what) {}
 };
 
+class RequiredAttributeMissing : public XmlReaderException {
+public:
+	RequiredAttributeMissing(const char* what) :
+		XmlReaderException(std::string("Required attribute missing: ") + what) {}
+};
+
 class BadSchedulerType : public XmlReaderException {
 public:
 	BadSchedulerType(const char* what) :
@@ -44,9 +50,9 @@ class XmlReader {
 	static void loadFromString(pugi::xml_document* doc, const std::string& text);
 
 	void loadDocument(const pugi::xml_node& node, DocumentDTO& document) const;
-	void loadProgram(const pugi::xml_node& node, ProgramDTO& program) const;
-	void loadRunTime(const pugi::xml_node& node, RunTimeDTO& runTime) const;
-	void loadStartTime(const pugi::xml_node& node, StartTimeDTO& startTime) const;
+	void loadProgram(const pugi::xml_node& node, ProgramDTO& program, bool idIsRequired) const;
+	void loadRunTime(const pugi::xml_node& node, RunTimeDTO& runTime, bool idIsRequired) const;
+	void loadStartTime(const pugi::xml_node& node, StartTimeDTO& startTime, bool idIsRequired) const;
 	void loadScheduler(const pugi::xml_node& node, SpecifiedSchedulerDTO& scheduler) const;
 
 public:

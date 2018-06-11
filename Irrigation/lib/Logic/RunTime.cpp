@@ -26,3 +26,9 @@ void RunTime::setValue(unsigned seconds) {
 RunTimeDTO RunTime::getRunTimeDTO() const {
 	return RunTimeDTO(getValue());
 }
+
+void RunTime::updateFromDTO(const RunTimeDTO& runTimeDTO) {
+	if (runTimeDTO.hasValue()) {
+		setValue(runTimeDTO.getValue());
+	}
+}

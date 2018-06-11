@@ -19,27 +19,26 @@ SpecifiedScheduler* SchedulerFactory::createSpecifiedSheduler() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 Program::Program(const string& name) :
+	schedulerFactory(new SchedulerFactory()),
 	name(name),
 	schedulerType(SchedulerType::SPECIFIED_DAYS),
+	specifiedScheduler(schedulerFactory->createSpecifiedSheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
-	initSchedulers(SchedulerFactory());
 }
 
-Program::Program(const SchedulerFactory& schedulerFactory) :
+Program::Program(const SchedulerFactory* schedulerFactory) :
+	schedulerFactory(schedulerFactory),
+	name(),
 	schedulerType(SchedulerType::SPECIFIED_DAYS),
+	specifiedScheduler(schedulerFactory->createSpecifiedSheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
-	initSchedulers(schedulerFactory);
 }
 
 Program::~Program() {
-}
-
-void Program::initSchedulers(const SchedulerFactory& schedulerFactory) {
-	specifiedScheduler.reset(schedulerFactory.createSpecifiedSheduler());
 }
 
 string Program::getName() const {
@@ -111,4 +110,47 @@ ProgramDTO Program::getProgramDTO() const {
 			move(getSpecifiedScheduler().getSpecifiedSchedulerDTO()),
 			runTimeDTOs.release(),
 			startTimeDTOs.release());
+}
+
+void Program::updateFromDTO(const ProgramDTO& programDTO) {
+	if (programDTO.hasName()) {
+		setName(programDTO.getName());
+	}
+
+	if (programDTO.hasSchedulerType()) {
+		if (programDTO.getSchedulerType() != "specified") {
+			throw logic_error("Program::updateFromDTO(): invalid schedulerType: " + programDTO.getSchedulerType());
+		}
+
+		setSchedulerType(SchedulerType::SPECIFIED_DAYS);
+	}
+
+	if (programDTO.hasSpecifiedScheduler()) {
+		specifiedScheduler.reset(schedulerFactory->createSpecifiedSheduler());
+		specifiedScheduler->updateFromDTO(programDTO.getSpecifiedScheduler());
+	}
+
+	if (programDTO.hasRunTimes()) {
+		runTimes.reset(new RunTimeContainer());
+
+		for (const RunTimeDTO& runTimeDTO : programDTO.getRunTimes()) {
+			if (!runTimeDTO.hasId()) {
+				throw logic_error("Program::updateFromDTO(): !runTime.hasId()");
+			}
+
+			runTimes->at(runTimeDTO.getId())->updateFromDTO(runTimeDTO);
+		}
+	}
+
+	if (programDTO.hasStartTimes()) {
+		startTimes.reset(new StartTimeContainer());
+
+		for (const StartTimeDTO& startTimeDTO : programDTO.getStartTimes()) {
+			if (!startTimeDTO.hasId()) {
+				throw logic_error("Program::updateFromDTO(): !startTime.hasId()");
+			}
+
+			startTimes->insert(startTimeDTO.getId(), new StartTime())->updateFromDTO(startTimeDTO);
+		}
+	}
 }

@@ -37,7 +37,7 @@ void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const 
 		xml_node programNode = programListNode.child("program");
 		while (programNode) {
 			ProgramDTO program;
-			loadProgram(programNode, program);
+			loadProgram(programNode, program, true);
 			programs->push_back(program);
 			programNode = programNode.next_sibling();
 		}
@@ -46,13 +46,15 @@ void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const 
 	}
 }
 
-void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
-	xml_node tmpNode;
-
+void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool idIsRequired) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		program.setId(idAttribute.as_uint());
+	} else if (idIsRequired) {
+		throw RequiredAttributeMissing("id");
 	}
+
+	xml_node tmpNode;
 
 	if ((tmpNode = node.child("name")) != nullptr) {
 		program.setName(tmpNode.text().as_string());
@@ -78,7 +80,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
 		xml_node runTimeNode = tmpNode.child("runtime");
 		while (runTimeNode) {
 			RunTimeDTO runTimeDTO;
-			loadRunTime(runTimeNode, runTimeDTO);
+			loadRunTime(runTimeNode, runTimeDTO, true);
 			runTimes->push_back(runTimeDTO);
 			runTimeNode = runTimeNode.next_sibling();
 		}
@@ -92,7 +94,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
 		xml_node startTimeNode = tmpNode.child("starttime");
 		while (startTimeNode) {
 			StartTimeDTO startTimeDTO;
-			loadStartTime(startTimeNode, startTimeDTO);
+			loadStartTime(startTimeNode, startTimeDTO, true);
 			startTimes->push_back(startTimeDTO);
 			startTimeNode = startTimeNode.next_sibling();
 		}
@@ -121,29 +123,32 @@ void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& sched
 	scheduler.setValues(values.release());
 }
 
-void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime) const {
+void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool idIsRequired) const {
+	xml_attribute idAttribute;
+	if ((idAttribute = node.attribute("id")) != nullptr) {
+		runTime.setId(idAttribute.as_uint());
+	} else if (idIsRequired) {
+		throw RequiredAttributeMissing("id");
+	}
+
 	xml_text nodeText;
 	if ((nodeText = node.text()) != nullptr) {
 		runTime.setValue(nodeText.as_uint());
 	}
-
-	xml_attribute idAttribute;
-	if ((idAttribute = node.attribute("id")) != nullptr) {
-		runTime.setId(idAttribute.as_uint());
-	}
 }
 
-void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) const {
+void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime, bool idIsRequired) const {
+	xml_attribute idAttribute;
+	if ((idAttribute = node.attribute("id")) != nullptr) {
+		startTime.setId(idAttribute.as_uint());
+	} else if (idIsRequired) {
+		throw RequiredAttributeMissing("id");
+	}
+
 	xml_text nodeText;
 	if ((nodeText = node.text()) != nullptr) {
 		startTime.setValue(nodeText.as_uint());
 	}
-
-	xml_attribute idAttribute;
-	if ((idAttribute = node.attribute("id")) != nullptr) {
-		startTime.setId(idAttribute.as_uint());
-	}
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,7 +180,7 @@ void XmlReader::load(ProgramDTO& program, const string& text) const {
 		throw RequiredTagMissing(tagName);
 	}
 
-	loadProgram(node, program);
+	loadProgram(node, program, false);
 }
 
 void XmlReader::load(RunTimeDTO& runTime, const string& text) const {
@@ -190,7 +195,7 @@ void XmlReader::load(RunTimeDTO& runTime, const string& text) const {
 		throw RequiredTagMissing(tagName);
 	}
 
-	loadRunTime(node, runTime);
+	loadRunTime(node, runTime, false);
 }
 
 void XmlReader::load(StartTimeDTO& startTime, const string& text) const {
@@ -205,7 +210,7 @@ void XmlReader::load(StartTimeDTO& startTime, const string& text) const {
 		throw RequiredTagMissing(tagName);
 	}
 
-	loadStartTime(node, startTime);
+	loadStartTime(node, startTime, false);
 }
 
 void XmlReader::load(SpecifiedSchedulerDTO& scheduler, const string& text) const {

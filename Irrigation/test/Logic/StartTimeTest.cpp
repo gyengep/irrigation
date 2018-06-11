@@ -3,6 +3,7 @@
 #include "Logic/StartTime.h"
 
 using namespace std;
+using namespace testing;
 
 
 
@@ -50,11 +51,23 @@ TEST(StartTimeTest, less) {
 	EXPECT_FALSE(StartTime(1, 0, 2) < startTime);
 }
 
-TEST(StartTimeTest, getStartTimeDTO) {
-	StartTime startTime;
-	startTime.setValue(50);
-
+TEST(StartTimeTest, convertStartTimeDTO) {
 	const StartTimeDTO expectedStartTimeDTO(50);
 
-	EXPECT_EQ(expectedStartTimeDTO, startTime.getStartTimeDTO());
+	StartTime startTime;
+	startTime.updateFromDTO(expectedStartTimeDTO);
+
+	EXPECT_THAT(startTime.getValue(), Eq(50));
+	EXPECT_THAT(startTime.getStartTimeDTO(), Eq(expectedStartTimeDTO));
+}
+
+TEST(StartTimeTest, updateValueFromDTO) {
+	StartTime startTime;
+	startTime.setValue(100);
+
+	startTime.updateFromDTO(StartTimeDTO());
+	EXPECT_THAT(startTime.getValue(), Eq(100));
+
+	startTime.updateFromDTO(StartTimeDTO().setValue(50));
+	EXPECT_THAT(startTime.getValue(), Eq(50));
 }

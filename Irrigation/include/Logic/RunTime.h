@@ -20,4 +20,5 @@ public:
 	virtual void setValue(unsigned seconds);
 
 	RunTimeDTO getRunTimeDTO() const;
+	void updateFromDTO(const RunTimeDTO& runTimeDTO);
 };

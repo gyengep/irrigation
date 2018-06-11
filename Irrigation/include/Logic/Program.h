@@ -18,7 +18,7 @@ class Program {
 	Program(const Program&);
 	void operator= (const Program&);
 
-	void initSchedulers(const SchedulerFactory& schedulerFactory);
+	std::unique_ptr<const SchedulerFactory> schedulerFactory;
 
 	std::string name;
 	SchedulerType schedulerType;
@@ -31,7 +31,7 @@ public:
 	virtual ~Program();
 
 	// for testing
-	Program(const SchedulerFactory& schedulerFactory);
+	Program(const SchedulerFactory* schedulerFactory);
 
 	std::string getName() const;
 	virtual void setName(const std::string& name);
@@ -51,6 +51,7 @@ public:
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
 	ProgramDTO getProgramDTO() const;
+	void updateFromDTO(const ProgramDTO& programDTO);
 };
 
 

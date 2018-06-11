@@ -24,4 +24,5 @@ public:
 	virtual void setValue(unsigned secOfDay);
 
 	StartTimeDTO getStartTimeDTO() const;
+	void updateFromDTO(const StartTimeDTO& startTimeDTO);
 };
