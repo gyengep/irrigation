@@ -244,7 +244,7 @@ public:
 
 class MockSchedulerFactory : public SchedulerFactory {
 public:
-	virtual SpecifiedScheduler* createSpecifiedSheduler() const {
+	virtual SpecifiedScheduler* createSpecifiedScheduler() const override {
 		return new MockScheduler();
 	}
 };

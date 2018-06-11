@@ -6,10 +6,8 @@
 #include "DTO/ProgramDTO.h"
 #include "Schedulers/Scheduler.h"
 
-class SpecifiedScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
-class SchedulerFactory;
 
 
 
@@ -52,11 +50,4 @@ public:
 
 	ProgramDTO getProgramDTO() const;
 	void updateFromDTO(const ProgramDTO& programDTO);
-};
-
-
-class SchedulerFactory {
-public:
-	virtual ~SchedulerFactory() {}
-	virtual SpecifiedScheduler* createSpecifiedSheduler() const;
 };

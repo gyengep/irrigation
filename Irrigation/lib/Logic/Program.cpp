@@ -10,19 +10,11 @@ using namespace std;
 
 
 
-SpecifiedScheduler* SchedulerFactory::createSpecifiedSheduler() const {
-	return new SpecifiedScheduler();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
 Program::Program(const string& name) :
 	schedulerFactory(new SchedulerFactory()),
 	name(name),
 	schedulerType(SchedulerType::SPECIFIED_DAYS),
-	specifiedScheduler(schedulerFactory->createSpecifiedSheduler()),
+	specifiedScheduler(schedulerFactory->createSpecifiedScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
@@ -32,7 +24,7 @@ Program::Program(const SchedulerFactory* schedulerFactory) :
 	schedulerFactory(schedulerFactory),
 	name(),
 	schedulerType(SchedulerType::SPECIFIED_DAYS),
-	specifiedScheduler(schedulerFactory->createSpecifiedSheduler()),
+	specifiedScheduler(schedulerFactory->createSpecifiedScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
@@ -126,7 +118,7 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasSpecifiedScheduler()) {
-		specifiedScheduler.reset(schedulerFactory->createSpecifiedSheduler());
+		specifiedScheduler.reset(schedulerFactory->createSpecifiedScheduler());
 		specifiedScheduler->updateFromDTO(programDTO.getSpecifiedScheduler());
 	}
 
