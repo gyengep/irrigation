@@ -60,7 +60,8 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 				throw logic_error("IrrigationDocument::updateFromDTO(): !program.hasId()");
 			}
 
-			programs->insert(programDTO.getId(), new Program())->updateFromDTO(programDTO);
+			ProgramContainer::value_type& idAndProgramPair = programs->insert(programDTO.getId(), new Program());
+			idAndProgramPair.second->updateFromDTO(programDTO);
 		}
 	}
 }

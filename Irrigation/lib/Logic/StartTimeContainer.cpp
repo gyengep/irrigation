@@ -43,7 +43,7 @@ StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) {
 	return find(key)->second;
 }
 
-const StartTimeContainer::mapped_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
+StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
@@ -54,7 +54,7 @@ const StartTimeContainer::mapped_type& StartTimeContainer::insert(const key_type
 
 	container.push_back(make_pair(key, value));
 	LOGGER.info("StartTime %u added", key);
-	return value;
+	return container.back();
 }
 
 void StartTimeContainer::erase(const key_type& key) {

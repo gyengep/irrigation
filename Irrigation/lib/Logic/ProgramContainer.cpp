@@ -43,7 +43,7 @@ ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) {
 	return find(key)->second;
 }
 
-const ProgramContainer::mapped_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
+ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
@@ -54,7 +54,7 @@ const ProgramContainer::mapped_type& ProgramContainer::insert(const key_type& ke
 
 	container.push_back(make_pair(key, value));
 	LOGGER.info("Program %u added", key);
-	return value;
+	return container.back();
 }
 
 void ProgramContainer::erase(const key_type& key) {

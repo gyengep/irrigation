@@ -142,7 +142,8 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 				throw logic_error("Program::updateFromDTO(): !startTime.hasId()");
 			}
 
-			startTimes->insert(startTimeDTO.getId(), new StartTime())->updateFromDTO(startTimeDTO);
+			StartTimeContainer::value_type& IdAndStartTimePair = startTimes->insert(startTimeDTO.getId(), new StartTime());
+			IdAndStartTimePair.second->updateFromDTO(startTimeDTO);
 		}
 	}
 }

@@ -31,7 +31,7 @@ public:
 	StartTimeContainer();
 	virtual ~StartTimeContainer();
 
-	virtual const mapped_type& insert(const key_type& key, const mapped_type& value);
+	virtual value_type& insert(const key_type& key, const mapped_type& value);
 	virtual void erase(const key_type& key);
 	virtual void sort();
 

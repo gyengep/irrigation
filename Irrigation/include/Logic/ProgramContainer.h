@@ -29,7 +29,7 @@ public:
 	ProgramContainer();
 	virtual ~ProgramContainer();
 
-	virtual const mapped_type& insert(const key_type& key, const mapped_type& value);
+	virtual value_type& insert(const key_type& key, const mapped_type& value);
 	virtual void erase(const key_type& key);
 
 	const_iterator begin() const 		{ return container.begin(); }

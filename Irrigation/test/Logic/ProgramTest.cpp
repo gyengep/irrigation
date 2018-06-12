@@ -189,9 +189,9 @@ TEST(Program, updateRunTimesFromProgramDTO) {
 
 TEST(Program, updateStartTimesFromProgramDTO) {
 	Program program;
-	program.getStartTimes().insert(100, new StartTime())->setValue(10);
-	program.getStartTimes().insert(101, new StartTime())->setValue(11);
-	program.getStartTimes().insert(102, new StartTime())->setValue(12);
+	program.getStartTimes().insert(100, new StartTime()).second->setValue(10);
+	program.getStartTimes().insert(101, new StartTime()).second->setValue(11);
+	program.getStartTimes().insert(102, new StartTime()).second->setValue(12);
 
 	program.updateFromDTO(ProgramDTO());
 	EXPECT_THAT(program.getStartTimes().size(), Eq(3));
