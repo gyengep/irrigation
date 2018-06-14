@@ -1,4 +1,5 @@
-#include <IrrigationApplication.h>
+#include "IrrigationApplication.h"
+#include <chrono>
 #include <mutex>
 #include <sys/unistd.h>
 #include "Hardware/Valves.h"
@@ -47,10 +48,22 @@ void Application::run() {
 
 	init();
 	LOGGER.info("Application started");
-	
+
+	auto updateTimePoint = chrono::steady_clock::now();
+	time_t lastTime = 0;
+
 	while (!isTerminated) {
-		//document->on1SecTimer();
-		usleep(50000);
+		time_t currentTime = getTime();
+
+		if ((currentTime != (lastTime + 1)) && (lastTime != 0)) {
+			LOGGER.warning("Update period failure! different is: %d", (currentTime - lastTime));
+		}
+
+		lastTime = currentTime;
+		document->on1SecTimer(currentTime);
+
+		updateTimePoint += chrono::seconds(1);
+		this_thread::sleep_until(updateTimePoint);
 	}
 	
 	cleanup();
