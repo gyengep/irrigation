@@ -5,6 +5,7 @@
 #include "StartTime.h"
 #include "StartTimeContainer.h"
 #include "Schedulers/SpecifiedScheduler.h"
+#include <sstream>
 
 using namespace std;
 
@@ -146,4 +147,17 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 			IdAndStartTimePair.second->updateFromDTO(startTimeDTO);
 		}
 	}
+}
+
+std::string Program::toString() const {
+	ostringstream o;
+	o << "Program{";
+	o << "name=\"" << name << "\", ";
+	o << "schedulerType=\"" << schedulerTypeToString(schedulerType) << "\", ";
+	o << "specifiedScheduler=" << specifiedScheduler->toString() << ", ";
+	o << "runTimes=" << runTimes->toString() << ", ";
+	o << "startTimes=" << startTimes->toString();
+	o << "}";
+
+	return o.str();
 }

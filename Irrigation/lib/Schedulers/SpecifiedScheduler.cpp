@@ -2,6 +2,7 @@
 #include "Exceptions.h"
 #include <ctime>
 #include <list>
+#include <sstream>
 
 using namespace std;
 
@@ -58,4 +59,17 @@ void SpecifiedScheduler::updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO
 			days[i] = *it;
 		}
 	}
+}
+
+std::string SpecifiedScheduler::toString() const {
+	ostringstream o;
+	o << "SpecifiedScheduler{values=[";
+	for (auto it = days.begin(); it != days.end(); ++it) {
+		if (it != days.begin()) {
+			o << ", ";
+		}
+		o << (*it ? "true" : "false");
+	}
+	o << "]}";
+	return o.str();
 }

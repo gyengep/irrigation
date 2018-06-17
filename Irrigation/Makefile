@@ -1,4 +1,7 @@
 
+.PHONY: all-without-test
+all-without-test: library-all src-all
+
 .PHONY: all
 all: library-all test-all src-all
 

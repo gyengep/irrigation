@@ -2,6 +2,7 @@
 #include "Exceptions.h"
 #include "StartTime.h"
 #include "Logger/Logger.h"
+#include <sstream>
 
 using namespace std;
 
@@ -75,3 +76,15 @@ bool StartTimeContainer::compareStartTime(const value_type& first, const value_t
 	return (firstStartTime < secondStartTime);
 }
 
+string StartTimeContainer::toString() const {
+	ostringstream o;
+	o << "[";
+	for (auto it = container.begin(); it != container.end(); ++it) {
+		if (it != container.begin()) {
+			o << ", ";
+		}
+		o << "{" << it->first.toString() << ", " << it->second->toString() << "}";
+	}
+	o << "]";
+	return o.str();
+}

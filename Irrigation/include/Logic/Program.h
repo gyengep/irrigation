@@ -50,4 +50,6 @@ public:
 
 	ProgramDTO getProgramDTO() const;
 	void updateFromDTO(const ProgramDTO& programDTO);
+
+	std::string toString() const;
 };

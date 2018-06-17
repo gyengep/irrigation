@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 
 class IdType {
@@ -11,4 +12,6 @@ public:
 
 	IdType& operator= (unsigned value) { return *this; }
 	operator unsigned() const { return id; }
+
+	std::string toString() const;
 };

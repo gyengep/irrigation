@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<irrigation>
+	<programs>
+		<program id="6">
+			<name>fulocsolas</name>
+			<schedulertype>specified</schedulertype>
+			<schedulers>
+				<scheduler type="specified">
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+				</scheduler>
+			</schedulers>
+			<runtimes>
+				<runtime id="0">1560</runtime>
+				<runtime id="1">2280</runtime>
+				<runtime id="2">1920</runtime>
+				<runtime id="3">0</runtime>
+				<runtime id="4">0</runtime>
+				<runtime id="5">0</runtime>
+			</runtimes>
+			<starttimes>
+				<starttime id="7">14400</starttime>
+			</starttimes>
+		</program>
+		<program id="8">
+			<name>paradicsom</name>
+			<schedulertype>specified</schedulertype>
+			<schedulers>
+				<scheduler type="specified">
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+				</scheduler>
+			</schedulers>
+			<runtimes>
+				<runtime id="0">0</runtime>
+				<runtime id="1">0</runtime>
+				<runtime id="2">0</runtime>
+				<runtime id="3">1200</runtime>
+				<runtime id="4">0</runtime>
+				<runtime id="5">0</runtime>
+			</runtimes>
+			<starttimes>
+				<starttime id="9">21600</starttime>
+			</starttimes>
+		</program>
+		<program id="10">
+			<name>virag</name>
+			<schedulertype>specified</schedulertype>
+			<schedulers>
+				<scheduler type="specified">
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+					<day>true</day>
+				</scheduler>
+			</schedulers>
+			<runtimes>
+				<runtime id="0">0</runtime>
+				<runtime id="1">0</runtime>
+				<runtime id="2">0</runtime>
+				<runtime id="3">0</runtime>
+				<runtime id="4">180</runtime>
+				<runtime id="5">60</runtime>
+			</runtimes>
+			<starttimes>
+				<starttime id="11">23400</starttime>
+			</starttimes>
+		</program>
+	</programs>
+</irrigation>

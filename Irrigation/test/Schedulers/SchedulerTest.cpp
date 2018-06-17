@@ -32,6 +32,19 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec, bool
 	return *localtime(&t);
 }
 
+void checkDay(const Scheduler& scheduler, bool requestedResult, int day) {
+	tm tm;
+	for (int hour = 0; hour < 24; hour++) {
+		for (int min = 0; min < 60; min++) {
+			for (int sec = 0; sec < 60; sec++) {
+				tm = toCalendarTime(2016, 9, day, hour, min, sec, true);
+				EXPECT_EQ(requestedResult, scheduler.isDayScheduled(tm));
+			}
+		}
+	}
+}
+
+
 TEST(Scheduler, Time) {
 	tm tm = toCalendarTime(2016, 9, 11, 20, 59, 33, true);
 
@@ -64,14 +77,6 @@ TEST(Scheduler, Time) {
 	EXPECT_EQ(33, tm.tm_sec);
 }
 
-void checkDay(const Scheduler& scheduler, bool requestedResult, int day) {
-	tm tm;
-	for (int hour = 0; hour < 24; hour++) {
-		for (int min = 0; min < 60; min++) {
-			for (int sec = 0; sec < 60; sec++) {
-				tm = toCalendarTime(2016, 9, day, hour, min, sec, true);
-				EXPECT_EQ(requestedResult, scheduler.isDayScheduled(tm));
-			}
-		}
-	}
+TEST(schedulerType, toString) {
+	EXPECT_EQ("specified", schedulerTypeToString(SchedulerType::SPECIFIED_DAYS));
 }

@@ -3,6 +3,7 @@
 #include "RunTime.h"
 #include "ZoneConfig.h"
 #include <memory>
+#include <sstream>
 #include "Logger/Logger.h"
 
 using namespace std;
@@ -51,4 +52,17 @@ RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) {
 	}
 
 	return container[key].second;
+}
+
+string RunTimeContainer::toString() const {
+	ostringstream o;
+	o << "[";
+	for (auto it = container.begin(); it != container.end(); ++it) {
+		if (it != container.begin()) {
+			o << ", ";
+		}
+		o << "{" << it->first.toString() << ", " << it->second->toString() << "}";
+	}
+	o << "]";
+	return o.str();
 }

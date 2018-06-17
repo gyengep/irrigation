@@ -24,7 +24,7 @@ public:
 class XmlParsingError : public XmlReaderException {
 public:
 	XmlParsingError(const char* what) :
-		XmlReaderException(std::string("XML parsing error: ") + what) {}
+		XmlReaderException(what) {}
 };
 
 class RequiredTagMissing : public XmlReaderException {

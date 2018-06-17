@@ -1,5 +1,6 @@
 #include "RunTime.h"
 #include <stdexcept>
+#include <sstream>
 
 using namespace std;
 
@@ -31,4 +32,10 @@ void RunTime::updateFromDTO(const RunTimeDTO& runTimeDTO) {
 	if (runTimeDTO.hasValue()) {
 		setValue(runTimeDTO.getValue());
 	}
+}
+
+string RunTime::toString() const {
+	ostringstream o;
+	o << "RunTime{seconds=" << seconds << "}";
+	return o.str();
 }

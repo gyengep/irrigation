@@ -35,4 +35,6 @@ public:
 
 	SpecifiedSchedulerDTO getSpecifiedSchedulerDTO() const;
 	void updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO);
+
+	std::string toString() const;
 };

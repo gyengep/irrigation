@@ -1,5 +1,6 @@
 #pragma once
 #include <ctime>
+#include <string>
 
 
 class SpecifiedScheduler;
@@ -8,6 +9,8 @@ class SpecifiedScheduler;
 enum class SchedulerType {
 	SPECIFIED_DAYS,
 };
+
+std::string schedulerTypeToString(SchedulerType schedulerType);
 
 
 class SchedulerFactory {

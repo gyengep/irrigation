@@ -23,7 +23,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 LOCAL_LIBS      = -lLogger -lModel -lHardware -lDocumentView -lLogic -lSchedulers -lDTO -lReaderWriter
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -lmicrohttpd
+LIBS            = $(LOCAL_LIBS) -lmicrohttpd -lpugixml
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP  
 CPPFLAGS        = $(INCLUDE_PATH) 

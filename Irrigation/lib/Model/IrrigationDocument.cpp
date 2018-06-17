@@ -8,7 +8,9 @@
 using namespace std;
 
 
-IrrigationDocument::IrrigationDocument()  {
+IrrigationDocument::IrrigationDocument() :
+	programs(new ProgramContainer())
+{
 }
 
 IrrigationDocument::~IrrigationDocument() {

@@ -25,4 +25,6 @@ public:
 
 	StartTimeDTO getStartTimeDTO() const;
 	void updateFromDTO(const StartTimeDTO& startTimeDTO);
+
+	std::string toString() const;
 };

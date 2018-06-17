@@ -1,7 +1,9 @@
 #include "StartTime.h"
 #include <stdexcept>
+#include <sstream>
 
 using namespace std;
+
 
 
 StartTime::StartTime(unsigned hour, unsigned min, unsigned sec) {
@@ -48,4 +50,10 @@ void StartTime::updateFromDTO(const StartTimeDTO& startTimeDTO) {
 	if (startTimeDTO.hasValue()) {
 		setValue(startTimeDTO.getValue());
 	}
+}
+
+string StartTime::toString() const {
+	ostringstream o;
+	o << "StartTime{secondOfDay=" << secOfDay << "}";
+	return o.str();
 }
