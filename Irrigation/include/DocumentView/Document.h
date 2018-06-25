@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include <memory>
 #include <mutex>
 
 class View;
@@ -7,7 +8,7 @@ class View;
 
 class Document {
 	mutable std::mutex mutex;
-	std::list<View*> views;
+	std::list<std::unique_ptr<View>> views;
 
 public:
 
