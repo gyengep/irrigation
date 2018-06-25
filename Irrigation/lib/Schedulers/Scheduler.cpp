@@ -1,15 +1,16 @@
 #include "Scheduler.h"
 #include <stdexcept>
+#include <string>
 
 using namespace std;
 
 
 
-string schedulerTypeToString(SchedulerType schedulerType) {
+string to_string(SchedulerType schedulerType) {
 	switch (schedulerType) {
 	case SchedulerType::SPECIFIED_DAYS:
 		return "specified";
 	default:
-		throw invalid_argument("Invalid schedulerType");
+		throw invalid_argument("Unknown value of enum SchedulerType: " + to_string(static_cast<unsigned>(schedulerType)));
 	}
 }

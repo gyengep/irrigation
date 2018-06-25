@@ -10,7 +10,7 @@ enum class SchedulerType {
 	SPECIFIED_DAYS,
 };
 
-std::string schedulerTypeToString(SchedulerType schedulerType);
+std::string to_string(SchedulerType schedulerType);
 
 
 class SchedulerFactory {

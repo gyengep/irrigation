@@ -3,18 +3,9 @@
 #include <stdexcept>
 #include "Logger/Logger.h"
 #include "Model/IrrigationApplication.h"
-#include "Model/Exceptions/InvalidConfigFileException.h"
-#include "Model/Exceptions/ConfigFileOpenException.h"
 
 using namespace std;
 
-enum ExitCode {
-	SUCCESS,
-	UNKNOWN_ERROR,
-	UNKNOWN_EXCEPTION,
-	CANT_OPEN_CONFIG_FILE,
-	INVALID_CONFIG_FILE
-};
 
 
 void signal_handler(int signo) {
@@ -30,19 +21,13 @@ int main() {
 		Application::getInstance().init();
 		Application::getInstance().start();
 		Application::getInstance().stop();
-		return ExitCode::SUCCESS;
+		return EXIT_SUCCESS;
 
-	} catch (const ConfigFileOpenException& e) {
-		LOGGER.error(e.what());
-		return ExitCode::CANT_OPEN_CONFIG_FILE;
-	} catch (const InvalidConfigFileException& e) {
-		LOGGER.error(e.what());
-		return ExitCode::INVALID_CONFIG_FILE;
-	} catch(exception& e) {
-		LOGGER.error("Unknown exception: %s", e.what());
-		return UNKNOWN_EXCEPTION;
+	} catch (const exception& e) {
+		LOGGER.error("Irrigation system is stopped because of an exception", e);
 	} catch(...) {
-		LOGGER.error("Unknown error!");
-		return UNKNOWN_ERROR;
+		LOGGER.error("Irrigation system is stopped because of an unknown error");
 	}
+
+	return EXIT_FAILURE;
 }

@@ -1,6 +1,8 @@
 #include "RunTime.h"
+#include <iomanip>
 #include <stdexcept>
 #include <sstream>
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 
@@ -18,7 +20,9 @@ unsigned RunTime::getValue() const {
 
 void RunTime::setValue(unsigned seconds) {
 	if (seconds > maxSeconds) {
-		throw out_of_range("Runtime is out of range");
+		throw ValueOutOfBoundsException(
+				"RunTime value shall not be greater than " + to_string(maxSeconds) +
+				", while actual value is " + to_string(seconds));
 	}
 
 	this->seconds = seconds;
@@ -34,8 +38,9 @@ void RunTime::updateFromDTO(const RunTimeDTO& runTimeDTO) {
 	}
 }
 
-string RunTime::toString() const {
+string to_string(const RunTime& runTime) {
 	ostringstream o;
-	o << "RunTime{seconds=" << seconds << "}";
+	o << setfill('0') << setw(2) << (runTime.getValue()/60) << ":";
+	o << setfill('0') << setw(2) << (runTime.getValue()%60);
 	return o.str();
 }

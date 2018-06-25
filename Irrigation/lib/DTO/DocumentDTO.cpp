@@ -31,7 +31,7 @@ bool DocumentDTO::hasPrograms() const {
 
 const list<ProgramDTO>& DocumentDTO::getPrograms() const {
 	if (!hasPrograms()) {
-		throw logic_error("DocumentDTO::getPrograms()");
+		throw logic_error("DocumentDTO::getPrograms(): !hasPrograms()");
 	}
 
 	return *programs.get();

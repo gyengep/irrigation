@@ -1,12 +1,9 @@
 #include "IrrigationApplication.h"
-#include "Exceptions/IOException.h"
-#include "Exceptions/InvalidConfigFileException.h"
-#include "Exceptions/ConfigFileOpenException.h"
-#include <fstream>
 #include <chrono>
+#include <fstream>
 #include <mutex>
-#include <cstring>
 #include <sys/unistd.h>
+#include "Exceptions/Exceptions.h"
 #include "Hardware/Valves.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
@@ -23,7 +20,7 @@ unique_ptr<Application> Application::instance;
 
 const string Application::configFileName = "/tmp/irrigation.xml";
 const string Application::logFileName = "/tmp/irrigation.log";
-const Logger::Level Application::logLevel = Logger::Level::TRACE;
+const LogLevel Application::logLevel = LogLevel::TRACE;
 
 
 Application& Application::getInstance() {
@@ -46,22 +43,68 @@ Application::Application() :
 Application::~Application() {
 }
 
-void Application::init() {
+void Application::initLogger() {
+	try {
+		unique_ptr<ofstream> ofs(new ofstream());
+		ofs->exceptions(ofstream::badbit | ofstream::failbit);
+		ofs->open(logFileName, ofstream::out | ofstream::app);
 
-	LOGGER.setOutput(new ofstream(logFileName, ofstream::out | ofstream::app));
-	LOGGER.setLevel(logLevel);
+		if (ofs->fail()) {
+			throw IOException(errno);
+		}
+
+		LOGGER.setOutput(ofs.release());
+		LOGGER.setLevel(logLevel);
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't initialize logger"));
+	}
+}
+
+void Application::initValves() {
+	try {
+		Valves::init();
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't initialize valves"));
+	}
+}
+
+void Application::initDocument() {
+	document.reset(new IrrigationDocument());
+
+	try {
+		LOGGER.debug("Loading configuration...");
+
+		const string xml = readFile(configFileName);
+		const DocumentDTO documentDTO = XmlReader().loadDocument(xml);
+		document->updateFromDTO(documentDTO);
+
+		LOGGER.debug("Configuration is successfully loaded");
+	} catch (const FileNotFoundException& e) {
+		LOGGER.debug("Configuration file not found. Default configuration is loaded.");
+	} catch (const IOException& e) {
+		throw_with_nested(runtime_error("Can't open configuration file"));
+	} catch (const XMLParseException& e) {
+		throw_with_nested(runtime_error("Can't parse configuration file"));
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't initialize document"));
+	}
+}
+
+void Application::init() {
+	initLogger();
 
 	LOGGER.info("Irrigation System started");
-	Valves::init();
-	
-	document.reset(new IrrigationDocument());
-	loadDocument(configFileName);
+
+	initValves();
+	initDocument();
 }
 
 void Application::start() {
 
 	auto updateTimePoint = chrono::steady_clock::now();
 	time_t lastTime = 0;
+
+	LOGGER.debug("Main loop is started");
 
 	while (!isTerminated) {
 		time_t currentTime = getTime();
@@ -77,6 +120,7 @@ void Application::start() {
 		this_thread::sleep_until(updateTimePoint);
 	}
 
+	LOGGER.debug("Main loop is finished");
 }
 
 void Application::stop() {
@@ -95,53 +139,30 @@ time_t Application::getTime() const {
 	return time(nullptr);
 }
 
-void Application::loadDocument(const string& fileName) {
-	DocumentDTO documentDTO;
-
-	try {
-		string xml = readFile(configFileName);
-		XmlReader().load(documentDTO, xml);
-		LOGGER.debug("Configuration successfully loaded.");
-	} catch (FileNotFoundException& e) {
-		LOGGER.debug("Configuration file not found. Default configuration is loaded.");
-	} catch (IOException& e) {
-		throw ConfigFileOpenException(string("Can't open configuration file. ") + e.what());
-	} catch (XmlReaderException& e) {
-		throw InvalidConfigFileException(string("Configuration file parsing failed. ") + e.what());
-	}
-
-	document->updateFromDTO(documentDTO);
-
-	if (LOGGER.isLoggable(Logger::DEBUG)) {
-		for (auto idProgramPair : document->getPrograms()) {
-			LOGGER.debug("Program[%u]=%s", (unsigned)idProgramPair.first, idProgramPair.second->toString().c_str());
-		}
-	}
-}
-
 string Application::readFile(const string& fileName) {
 	ifstream ifs(fileName);
 
 	if (ifs.fail()) {
 		if (ENOENT == errno) {
-			throw FileNotFoundException("File not found.");
+			throw FileNotFoundException();
 		} else {
-			throw IOException(strerror(errno));
+			throw IOException(errno);
 		}
 	}
 
 	string buffer(
-		(std::istreambuf_iterator<char>(ifs)),
-		(std::istreambuf_iterator<char>())
+		(istreambuf_iterator<char>(ifs)),
+		(istreambuf_iterator<char>())
 		);
 
 	if (ifs.fail()) {
-		throw IOException(strerror(errno));
+		throw IOException(errno);
 	}
 
 	ifs.close();
+
 	if (ifs.fail()) {
-		throw IOException(strerror(errno));
+		throw IOException(errno);
 	}
 
 	return buffer;
@@ -164,16 +185,16 @@ void Application::writeFile(const string& fileName, const string& text) {
 
 	ofs.open(fileName, ofstream::out | ofstream::trunc);
 	if (ofs.fail()) {
-		throw IOException(strerror(errno));
+		throw IOException(errno);
 	}
 
 	ofs << text;
 	if (ofs.fail()) {
-		throw IOException(strerror(errno));
+		throw IOException(errno);
 	}
 
 	ofs.close();
 	if (ofs.fail()) {
-		throw IOException(strerror(errno));
+		throw IOException(errno);
 	}
 }

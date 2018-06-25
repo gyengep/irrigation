@@ -1,5 +1,6 @@
 #include "ProgramContainer.h"
-#include "Exceptions.h"
+#include <memory>
+#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 
@@ -22,7 +23,7 @@ ProgramContainer::container_type::iterator ProgramContainer::find(const key_type
 		}
 	}
 
-	throw InvalidProgramIdException(key);
+	throw NoSuchElementException("Program with id " + to_string(key) + " not found");
 }
 
 ProgramContainer::container_type::const_iterator ProgramContainer::find(const key_type& key) const {
@@ -32,7 +33,7 @@ ProgramContainer::container_type::const_iterator ProgramContainer::find(const ke
 		}
 	}
 
-	throw InvalidProgramIdException(key);
+	throw NoSuchElementException("Program with id " + to_string(key) + " not found");
 }
 
 const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) const {
@@ -44,22 +45,24 @@ ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) {
 }
 
 ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
-
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
 			delete value;
-			throw ProgramIdExist(key);
+			throw AlreadyExistException("Program with id " + to_string(key) + " is already exist");
 		}
 	}
 
 	container.push_back(make_pair(key, value));
-	LOGGER.info("Program %u added", key);
+	LOGGER.debug("Program[%s] added: %s",
+		to_string(key).c_str(),
+		to_string(*value).c_str()
+		);
 	return container.back();
 }
 
 void ProgramContainer::erase(const key_type& key) {
 	auto it = find(key);
+	LOGGER.debug("Program[%s] deleted", to_string(key).c_str());
 	delete it->second;
 	container.erase(it);
-	LOGGER.info("Program %u deleted", key);
 }

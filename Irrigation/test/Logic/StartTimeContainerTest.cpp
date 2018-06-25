@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "Logic/Exceptions.h"
+#include "Exceptions/Exceptions.h"
 #include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
 
@@ -66,7 +66,7 @@ TEST(StartTimeContainerTest, insertExisted) {
 	StartTimeContainer startTimes;
 	insertToStartTimes(startTimes, required);
 
-	EXPECT_THROW(startTimes.insert(20, new MockStartTime()), StartTimeIdExist);
+	EXPECT_THROW(startTimes.insert(20, new MockStartTime()), AlreadyExistException);
 }
 
 TEST(StartTimeContainerTest, erase) {
@@ -103,7 +103,7 @@ TEST(StartTimeContainerTest, eraseInvalid) {
 	insertToStartTimes(startTimes, required);
 
 	EXPECT_EQ(required.size(), startTimes.size());
-	EXPECT_THROW(startTimes.erase(30), InvalidStartTimeIdException);
+	EXPECT_THROW(startTimes.erase(30), NoSuchElementException);
 	EXPECT_EQ(required.size(), startTimes.size());
 }
 
@@ -157,7 +157,7 @@ TEST(StartTimeContainerTest, atInvalid) {
 	StartTimeContainer startTimes;
 	insertToStartTimes(startTimes, required);
 
-	EXPECT_THROW(startTimes.at(6), InvalidStartTimeIdException);
+	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
 }
 
 TEST(StartTimeContainerTest, atConstInvalid) {
@@ -171,7 +171,7 @@ TEST(StartTimeContainerTest, atConstInvalid) {
 	insertToStartTimes(startTimes, required);
 
 	const StartTimeContainer& constStartTimes = startTimes;
-	EXPECT_THROW(constStartTimes.at(6), InvalidStartTimeIdException);
+	EXPECT_THROW(constStartTimes.at(6), NoSuchElementException);
 }
 
 TEST(StartTimeContainerTest, destructed) {

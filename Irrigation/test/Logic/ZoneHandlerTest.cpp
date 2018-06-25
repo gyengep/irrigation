@@ -1,6 +1,6 @@
 #include "ZoneHandlerTest.h"
 #include <gmock/gmock.h>
-#include <stdexcept>
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 using ::testing::Sequence;
@@ -87,5 +87,5 @@ TEST(ZonesTest, activate) {
 
 TEST(ZonesTest, activateInvalid) {
 	ZoneHandler zones;
-	EXPECT_THROW(zones.activate(ZONE_COUNT), out_of_range);
+	EXPECT_THROW(zones.activate(ZONE_COUNT), IndexOutOfBoundsException);
 }

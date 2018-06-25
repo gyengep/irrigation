@@ -29,7 +29,7 @@ bool SpecifiedSchedulerDTO::hasValues() const {
 
 const list<bool>& SpecifiedSchedulerDTO::getValues() const {
 	if (!hasValues()) {
-		throw logic_error("SpecifiedSchedulerDTO::getValues()");
+		throw logic_error("SpecifiedSchedulerDTO::getValues(): !hasValues()");
 	}
 
 	return *values.get();

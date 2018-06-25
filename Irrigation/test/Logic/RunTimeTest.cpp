@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include <stdexcept>
+#include "Exceptions/Exceptions.h"
 #include "Logic/RunTime.h"
 
 using namespace std;
@@ -21,7 +21,7 @@ TEST(RunTimeTest, setValue) {
 TEST(RunTimeTest, setValueMax) {
 	RunTime runTime;
 	EXPECT_NO_THROW(runTime.setValue(3600 * 24));
-	EXPECT_THROW(runTime.setValue(3600 * 24 + 1), out_of_range);
+	EXPECT_THROW(runTime.setValue(3600 * 24 + 1), ValueOutOfBoundsException);
 }
 
 TEST(RunTimeTest, convertRunTimeDTO) {

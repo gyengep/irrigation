@@ -22,5 +22,5 @@ public:
 	RunTimeDTO getRunTimeDTO() const;
 	void updateFromDTO(const RunTimeDTO& runTimeDTO);
 
-	std::string toString() const;
+	friend std::string to_string(const RunTime& runTime);
 };

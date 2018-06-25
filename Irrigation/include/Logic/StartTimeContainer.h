@@ -42,5 +42,5 @@ public:
 	const mapped_type& at(const key_type& key) const;
 	mapped_type& at(const key_type& key);
 
-	std::string toString() const;
+	friend std::string to_string(const StartTimeContainer& startTimeContainer);
 };

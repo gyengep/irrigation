@@ -1,10 +1,10 @@
 #include "ValvesTest.h"
 #include <memory>
+#include "Exceptions/Exceptions.h"
 #include "Hardware/Valves.h"
 
 
 using namespace std;
-using ::testing::_;
 
 
 
@@ -30,7 +30,7 @@ TEST(ValvesTest, activate) {
 }
 
 TEST(ValvesTest, invalid) {
-	EXPECT_THROW(Valves::getInstance().activate(VALVE_COUNT, true), out_of_range);
+	EXPECT_THROW(Valves::getInstance().activate(VALVE_COUNT, true), IndexOutOfBoundsException);
 }
 
 TEST_F(ValvesTestWithMock, setPin_1pc1) {
@@ -45,7 +45,7 @@ TEST_F(ValvesTestWithMock, setPin_1pc2) {
 
 TEST_F(ValvesTestWithMock, setPin_more_invalid) {
 	vector<size_t> pins {5, 2, 3, 7};
-	EXPECT_THROW(Valves::getInstance().activate(pins, true), out_of_range);
+	EXPECT_THROW(Valves::getInstance().activate(pins, true), IndexOutOfBoundsException);
 }
 
 TEST_F(ValvesTestWithMock, setPin_more_1) {

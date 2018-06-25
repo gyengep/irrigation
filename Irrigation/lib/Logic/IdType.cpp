@@ -20,8 +20,8 @@ IdType::IdType(unsigned id) :
 	lastUsedId = max(id, lastUsedId);
 }
 
-string IdType::toString() const {
+string to_string(const IdType& idType) {
 	ostringstream o;
-	o << "IdType{id=" << id << "}";
+	o << (unsigned)idType;
 	return o.str();
 }

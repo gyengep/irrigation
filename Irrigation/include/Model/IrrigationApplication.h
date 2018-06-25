@@ -3,9 +3,8 @@
 #include <ctime>
 #include <memory>
 #include <mutex>
-#include "Logger/Logger.h"
 
-
+enum class LogLevel;
 class IrrigationDocument;
 
 
@@ -17,13 +16,16 @@ class Application {
 
 	static const std::string configFileName;
 	static const std::string logFileName;
-	static const Logger::Level logLevel;
+	static const LogLevel logLevel;
 
 	std::unique_ptr<IrrigationDocument> document;
 	std::atomic_bool isTerminated;
 
-	void loadDocument(const std::string& fileName);
 	void saveDocument(const std::string& fileName) const;
+
+	void initLogger();
+	void initValves();
+	void initDocument();
 
 protected:
 

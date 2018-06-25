@@ -1,9 +1,9 @@
 
 .PHONY: all
-all: DocumentView-all DTO-all Hardware-all Logger-all Logic-all Model-all ReaderWriter-all Schedulers-all
+all: DocumentView-all DTO-all Hardware-all Logger-all Logic-all Model-all ReaderWriter-all Schedulers-all Utils-all
 
 .PHONY: clean
-clean: DocumentView-clean DTO-clean Hardware-clean Logger-clean Logic-clean Model-clean ReaderWriter-clean Schedulers-clean
+clean: DocumentView-clean DTO-clean Hardware-clean Logger-clean Logic-clean Model-clean ReaderWriter-clean Schedulers-clean Utils-clean
 
 .PHONY: DocumentView-all
 DocumentView-all:
@@ -68,3 +68,11 @@ Schedulers-all:
 .PHONY: Schedulers-clean
 Schedulers-clean:
 	@$(MAKE) -C Schedulers clean
+
+.PHONY: Utils-all
+Utils-all:
+	@$(MAKE) -C Utils all
+
+.PHONY: Utils-clean
+Utils-clean:
+	@$(MAKE) -C Utils clean

@@ -1,6 +1,7 @@
 #include "ZoneHandler.h"
 #include <limits>
 #include <vector>
+#include "Exceptions/Exceptions.h"
 #include "Hardware/Valves.h"
 
 using namespace std;
@@ -34,7 +35,9 @@ size_t ZoneHandler::getActiveId() const {
 
 void ZoneHandler::activate(size_t zoneId) {
 	if (zoneValves.size() <= zoneId) {
-		throw out_of_range("Invalid zoneID: " + to_string(zoneId));
+		throw IndexOutOfBoundsException(
+				"Zone index shall be less than " + to_string(zoneValves.size()) +
+				", while actual value is " + to_string(zoneId));
 	}
 
 	if (invalidZoneId != activeZoneId) {

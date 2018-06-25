@@ -88,7 +88,7 @@ bool ProgramDTO::hasStartTimes() const {
 
 unsigned ProgramDTO::getId() const {
 	if (!hasId()) {
-		throw logic_error("ProgramDTO::getId()");
+		throw logic_error("ProgramDTO::getId(): !hasId()");
 	}
 
 	return *id.get();
@@ -96,7 +96,7 @@ unsigned ProgramDTO::getId() const {
 
 const string& ProgramDTO::getName() const {
 	if (!hasName()) {
-		throw logic_error("ProgramDTO::getName()");
+		throw logic_error("ProgramDTO::getName(): !hasName()");
 	}
 
 	return *name.get();
@@ -104,7 +104,7 @@ const string& ProgramDTO::getName() const {
 
 const string& ProgramDTO::getSchedulerType() const {
 	if (!hasSchedulerType()) {
-		throw logic_error("ProgramDTO::getSchedulerType()");
+		throw logic_error("ProgramDTO::getSchedulerType(): !hasSchedulerType()");
 	}
 
 	return *schedulerType.get();
@@ -112,7 +112,7 @@ const string& ProgramDTO::getSchedulerType() const {
 
 const SpecifiedSchedulerDTO& ProgramDTO::getSpecifiedScheduler() const {
 	if (!hasSpecifiedScheduler()) {
-		throw logic_error("ProgramDTO::getSpecifiedScheduler()");
+		throw logic_error("ProgramDTO::getSpecifiedScheduler(): !hasSpecifiedScheduler()");
 	}
 
 	return *specifiedScheduler.get();
@@ -120,7 +120,7 @@ const SpecifiedSchedulerDTO& ProgramDTO::getSpecifiedScheduler() const {
 
 const list<RunTimeDTO>& ProgramDTO::getRunTimes() const {
 	if (!hasRunTimes()) {
-		throw logic_error("ProgramDTO::getRunTimes()");
+		throw logic_error("ProgramDTO::getRunTimes(): !hasRunTimes()");
 	}
 
 	return *runTimes.get();
@@ -128,7 +128,7 @@ const list<RunTimeDTO>& ProgramDTO::getRunTimes() const {
 
 const list<StartTimeDTO>& ProgramDTO::getStartTimes() const {
 	if (!hasStartTimes()) {
-		throw logic_error("ProgramDTO::getStartTimes()");
+		throw logic_error("ProgramDTO::getStartTimes(): !hasStartTimes()");
 	}
 
 	return *startTimes.get();

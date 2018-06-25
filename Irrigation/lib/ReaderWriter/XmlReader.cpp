@@ -1,4 +1,4 @@
-#include "XmlReader.h"
+#include <ReaderWriter/XmlReader.h>
 #include <sstream>
 #include <string.h>
 #include "pugixml.hpp"
@@ -23,7 +23,7 @@ void XmlReader::loadFromString(xml_document* doc, const string& text) {
 	xml_parse_result result = doc->load_string(text.c_str());
 
 	if (status_ok != result.status) {
-		throw XmlParsingError(result.description());
+		throw XMLParseException(result.description());
 	}
 }
 
@@ -46,12 +46,12 @@ void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const 
 	}
 }
 
-void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool idIsRequired) const {
+void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool isIdRequired) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		program.setId(idAttribute.as_uint());
-	} else if (idIsRequired) {
-		throw RequiredAttributeMissing("id");
+	} else if (isIdRequired) {
+		throw RequiredAttributeMissing("The 'id' attribute is missing");
 	}
 
 	xml_node tmpNode;
@@ -106,9 +106,8 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool idIs
 void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& scheduler) const {
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		const char* type = "specified";
-		if (strcmp(typeAttribute.as_string(), type) != 0) {
-			throw BadSchedulerType(type);
+		if (strcmp(typeAttribute.as_string(), "specified") != 0) {
+			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
 		}
 	}
 
@@ -123,12 +122,12 @@ void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& sched
 	scheduler.setValues(values.release());
 }
 
-void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool idIsRequired) const {
+void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool isIdRequired) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		runTime.setId(idAttribute.as_uint());
-	} else if (idIsRequired) {
-		throw RequiredAttributeMissing("id");
+	} else if (isIdRequired) {
+		throw RequiredAttributeMissing("The 'id' attribute is missing");
 	}
 
 	xml_text nodeText;
@@ -137,12 +136,12 @@ void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool idIs
 	}
 }
 
-void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime, bool idIsRequired) const {
+void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime, bool isIdRequired) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		startTime.setId(idAttribute.as_uint());
-	} else if (idIsRequired) {
-		throw RequiredAttributeMissing("id");
+	} else if (isIdRequired) {
+		throw RequiredAttributeMissing("The 'id' attribute is missing");
 	}
 
 	xml_text nodeText;
@@ -153,7 +152,7 @@ void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime, boo
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void XmlReader::load(DocumentDTO& document, const string& text) const {
+DocumentDTO XmlReader::loadDocument(const string& text) const {
 	const char* tagName = "irrigation";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -162,13 +161,15 @@ void XmlReader::load(DocumentDTO& document, const string& text) const {
 	const xml_node node = doc->child(tagName);
 
 	if (node == nullptr) {
-		throw RequiredTagMissing(tagName);
+		throw RequiredTagMissing("The 'irrigation' element tag not found");
 	}
 
+	DocumentDTO document;
 	loadDocument(node, document);
+	return document;
 }
 
-void XmlReader::load(ProgramDTO& program, const string& text) const {
+ProgramDTO XmlReader::loadProgram(const string& text) const {
 	const char* tagName = "program";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -177,13 +178,15 @@ void XmlReader::load(ProgramDTO& program, const string& text) const {
 	const xml_node node = doc->child(tagName);
 
 	if (node == nullptr) {
-		throw RequiredTagMissing(tagName);
+		throw RequiredTagMissing("The 'program' element tag not found");
 	}
 
+	ProgramDTO program;
 	loadProgram(node, program, false);
+	return program;
 }
 
-void XmlReader::load(RunTimeDTO& runTime, const string& text) const {
+RunTimeDTO XmlReader::loadRunTime(const string& text) const {
 	const char* tagName = "runtime";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -192,13 +195,15 @@ void XmlReader::load(RunTimeDTO& runTime, const string& text) const {
 	const xml_node node = doc->child(tagName);
 
 	if (node == nullptr) {
-		throw RequiredTagMissing(tagName);
+		throw RequiredTagMissing("The 'runtime' element tag not found");
 	}
 
+	RunTimeDTO runTime;
 	loadRunTime(node, runTime, false);
+	return runTime;
 }
 
-void XmlReader::load(StartTimeDTO& startTime, const string& text) const {
+StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 	const char* tagName = "starttime";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -207,13 +212,15 @@ void XmlReader::load(StartTimeDTO& startTime, const string& text) const {
 	const xml_node node = doc->child(tagName);
 
 	if (node == nullptr) {
-		throw RequiredTagMissing(tagName);
+		throw RequiredTagMissing("The 'starttime' element tag not found");
 	}
 
+	StartTimeDTO startTime;
 	loadStartTime(node, startTime, false);
+	return startTime;
 }
 
-void XmlReader::load(SpecifiedSchedulerDTO& scheduler, const string& text) const {
+SpecifiedSchedulerDTO XmlReader::loadSpecifiedScheduler(const string& text) const {
 	const char* tagName = "scheduler";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -222,8 +229,10 @@ void XmlReader::load(SpecifiedSchedulerDTO& scheduler, const string& text) const
 	const xml_node node = doc->child(tagName);
 
 	if (node == nullptr) {
-		throw RequiredTagMissing(tagName);
+		throw RequiredTagMissing("The 'scheduler' element tag not found");
 	}
 
+	SpecifiedSchedulerDTO scheduler;
 	loadScheduler(node, scheduler);
+	return scheduler;
 }

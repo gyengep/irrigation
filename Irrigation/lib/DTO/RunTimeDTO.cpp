@@ -38,7 +38,7 @@ bool RunTimeDTO::hasValue() const {
 
 unsigned RunTimeDTO::getId() const {
 	if (!hasId()) {
-		throw logic_error("RunTimeDTO::getId()");
+		throw logic_error("RunTimeDTO::getId(): !hasId()");
 	}
 
 	return *id.get();
@@ -46,7 +46,7 @@ unsigned RunTimeDTO::getId() const {
 
 unsigned RunTimeDTO::getValue() const {
 	if (!hasValue()) {
-		throw logic_error("RunTimeDTO::getValue()");
+		throw logic_error("RunTimeDTO::getValue(): !hasValue()");
 	}
 
 	return *value.get();

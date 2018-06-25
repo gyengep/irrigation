@@ -1,4 +1,5 @@
 #include "IrrigationDocument.h"
+#include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
@@ -29,8 +30,12 @@ void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
 
 	if (!wateringController.isWateringActive()) {
 		for (auto it = programs->begin(); programs->end() != it; ++it) {
+			const IdType& idType = it->first;
 			const Program* program = it->second;
 			if (program->isScheduled(rawTime)) {
+				LOGGER.debug("Program[%s] (%s) is scheduled",
+						to_string(idType).c_str(),
+						program->getName().c_str());
 				wateringController.start(rawTime, program->getRunTimes());
 				break;
 			}
@@ -62,8 +67,9 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 				throw logic_error("IrrigationDocument::updateFromDTO(): !program.hasId()");
 			}
 
-			ProgramContainer::value_type& idAndProgramPair = programs->insert(programDTO.getId(), new Program());
-			idAndProgramPair.second->updateFromDTO(programDTO);
+			unique_ptr<Program> program(new Program());
+			program->updateFromDTO(programDTO);
+			programs->insert(programDTO.getId(), program.release());
 		}
 	}
 }

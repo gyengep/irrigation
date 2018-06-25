@@ -12,7 +12,7 @@ class WateringController {
 	struct WateringProperties {
 		std::unique_ptr<ZoneHandler> zones;
 		std::time_t zoneStartTime;
-		std::array<unsigned, ZONE_COUNT> runTimes;
+		std::array<RunTime, ZONE_COUNT> runTimes;
 
 		WateringProperties();
 	};

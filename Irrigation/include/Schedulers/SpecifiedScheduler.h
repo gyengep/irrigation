@@ -8,7 +8,7 @@
 class SpecifiedScheduler : public Scheduler {
 public:
 
-	enum Days {
+	enum {
 		SUNDAY,
 		MONDAY,
 		TUESDAY,
@@ -24,17 +24,19 @@ private:
 
 	DayArray days;
 
+	void checkIndex(size_t day) const;
+
 public:
 	SpecifiedScheduler();
 	virtual ~SpecifiedScheduler();
 
-	void enableDay(Days day, bool enable);
-	bool isDayEnabled(Days day) const;
+	void enableDay(size_t day, bool enable);
+	bool isDayEnabled(size_t day) const;
 
 	virtual bool isDayScheduled(const std::tm& timeinfo) const;
 
 	SpecifiedSchedulerDTO getSpecifiedSchedulerDTO() const;
 	void updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO);
 
-	std::string toString() const;
+	friend std::string to_string(const SpecifiedScheduler& specifiedScheduler);
 };

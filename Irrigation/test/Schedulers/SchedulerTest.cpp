@@ -77,6 +77,6 @@ TEST(Scheduler, Time) {
 	EXPECT_EQ(33, tm.tm_sec);
 }
 
-TEST(schedulerType, toString) {
-	EXPECT_EQ("specified", schedulerTypeToString(SchedulerType::SPECIFIED_DAYS));
+TEST(schedulerType, to_string) {
+	EXPECT_EQ("specified", to_string(SchedulerType::SPECIFIED_DAYS));
 }

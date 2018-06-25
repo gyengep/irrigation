@@ -38,7 +38,7 @@ bool StartTimeDTO::hasValue() const {
 
 unsigned StartTimeDTO::getId() const {
 	if (!hasId()) {
-		throw logic_error("StartTimeDTO::getId()");
+		throw logic_error("StartTimeDTO::getId(): !hasId()");
 	}
 
 	return *id.get();
@@ -46,7 +46,7 @@ unsigned StartTimeDTO::getId() const {
 
 unsigned StartTimeDTO::getValue() const {
 	if (!hasValue()) {
-		throw logic_error("StartTimeDTO::getValue()");
+		throw logic_error("StartTimeDTO::getValue(): !hasValue()");
 	}
 
 	return *value.get();

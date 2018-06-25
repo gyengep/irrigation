@@ -1,5 +1,4 @@
 #include <gmock/gmock.h>
-#include "Logic/Exceptions.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/StartTime.h"
@@ -22,15 +21,6 @@ TEST(Program, name) {
 	const char* name = "AbcXyz";
 	program.setName(name);
 	EXPECT_EQ(name, program.getName());
-}
-
-TEST(Program, setSchedulerTypeInvalid) {
-	Program program;
-
-	int specifiedDaysAsInt = static_cast<int>(SchedulerType::SPECIFIED_DAYS);
-	SchedulerType invalidSchedulerType = static_cast<SchedulerType>(specifiedDaysAsInt + 1);
-
-	EXPECT_THROW(program.setSchedulerType(invalidSchedulerType), InvalidSchedulerTypeException);
 }
 
 TEST(Program, getSchedulerType) {

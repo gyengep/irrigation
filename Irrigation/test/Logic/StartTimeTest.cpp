@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include <stdexcept>
+#include "Exceptions/Exceptions.h"
 #include "Logic/StartTime.h"
 
 using namespace std;
@@ -28,7 +28,7 @@ TEST(StartTimeTest, setValue) {
 TEST(StartTimeTest, setValueMax) {
 	StartTime startTime;
 	EXPECT_NO_THROW(StartTime(23, 59, 59));
-	EXPECT_THROW(StartTime(24, 0, 0), out_of_range);
+	EXPECT_THROW(StartTime(24, 0, 0), ValueOutOfBoundsException);
 }
 
 TEST(StartTimeTest, equal) {

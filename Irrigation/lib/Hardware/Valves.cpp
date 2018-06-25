@@ -1,5 +1,7 @@
 #include "Valves.h"
+#include <sstream>
 #include <vector>
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 
@@ -48,7 +50,9 @@ void Valves::activate(const vector<size_t>& valveIDs, bool active) {
 	for (size_t i = 0; i < valveIDs.size(); ++i) {
 		size_t valveID = valveIDs[i];
 		if (pins.size() <= valveID) {
-			throw out_of_range("Invalid valveID: " + to_string(valveID));
+			throw IndexOutOfBoundsException(
+					"Valve index shall be less than " + to_string(pins.size()) +
+					", while actual value is " + to_string(valveID));
 		}
 	}
 

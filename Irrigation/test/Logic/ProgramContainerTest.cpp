@@ -1,7 +1,8 @@
 #include <gmock/gmock.h>
-#include "Logic/Exceptions.h"
+#include "Exceptions/Exceptions.h"
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
+
 
 using namespace std;
 
@@ -66,7 +67,7 @@ TEST(ProgramContainerTest, insertExisting) {
 	ProgramContainer programs;
 	insertToPrograms(programs, required);
 
-	EXPECT_THROW(programs.insert(101, new MockProgram()), ProgramIdExist);
+	EXPECT_THROW(programs.insert(101, new MockProgram()), AlreadyExistException);
 }
 
 TEST(ProgramContainerTest, erase) {
@@ -103,7 +104,7 @@ TEST(ProgramContainerTest, eraseInvalid) {
 	insertToPrograms(programs, required);
 
 	EXPECT_EQ(required.size(), programs.size());
-	EXPECT_THROW(programs.erase(30), InvalidProgramIdException);
+	EXPECT_THROW(programs.erase(30), NoSuchElementException);
 	EXPECT_EQ(required.size(), programs.size());
 }
 
@@ -157,7 +158,7 @@ TEST(ProgramContainerTest, atInvalid) {
 	ProgramContainer programs;
 	insertToPrograms(programs, required);
 
-	EXPECT_THROW(programs.at(6), InvalidProgramIdException);
+	EXPECT_THROW(programs.at(6), NoSuchElementException);
 }
 
 TEST(ProgramContainerTest, atConstInvalid) {
@@ -171,7 +172,7 @@ TEST(ProgramContainerTest, atConstInvalid) {
 	insertToPrograms(programs, required);
 
 	const ProgramContainer& constPrograms = programs;
-	EXPECT_THROW(constPrograms.at(6), InvalidProgramIdException);
+	EXPECT_THROW(constPrograms.at(6), NoSuchElementException);
 }
 
 TEST(ProgramContainerTest, destructed) {

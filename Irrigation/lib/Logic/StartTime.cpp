@@ -1,6 +1,8 @@
 #include "StartTime.h"
+#include <iomanip>
 #include <stdexcept>
 #include <sstream>
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 
@@ -23,7 +25,9 @@ unsigned StartTime::getValue() const {
 
 void StartTime::setValue(unsigned secOfDay) {
 	if (secOfDay >= maxSeconds) {
-		throw out_of_range("StartTime is out of range");
+		throw ValueOutOfBoundsException(
+				"StartTime value shall be less than " + to_string(maxSeconds) +
+				", while actual value is " + to_string(secOfDay));
 	}
 
 	this->secOfDay = secOfDay;
@@ -52,8 +56,10 @@ void StartTime::updateFromDTO(const StartTimeDTO& startTimeDTO) {
 	}
 }
 
-string StartTime::toString() const {
+string to_string(const StartTime& startTime) {
 	ostringstream o;
-	o << "StartTime{secondOfDay=" << secOfDay << "}";
+	o << setfill('0') << setw(2) << (startTime.getValue()/3600) << ":";
+	o << setfill('0') << setw(2) << (startTime.getValue()%3600/60) << ":";
+	o << setfill('0') << setw(2) << (startTime.getValue()%60);
 	return o.str();
 }

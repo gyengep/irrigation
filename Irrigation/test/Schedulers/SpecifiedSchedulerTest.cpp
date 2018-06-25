@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <list>
-#include "Schedulers/Exceptions.h"
+#include "Exceptions/Exceptions.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
@@ -58,12 +58,12 @@ TEST(SpecifiedSchedulerTest, enableDay) {
 
 TEST(SpecifiedSchedulerTest, enableDayInvalid) {
 	SpecifiedScheduler scheduler;
-	EXPECT_THROW(scheduler.enableDay((SpecifiedScheduler::Days)7, true), InvalidDayException);
+	EXPECT_THROW(scheduler.enableDay(7, true), IndexOutOfBoundsException);
 }
 
 TEST(SpecifiedSchedulerTest, isDayEnabledInvalid) {
 	SpecifiedScheduler scheduler;
-	EXPECT_THROW(scheduler.isDayEnabled((SpecifiedScheduler::Days)7), InvalidDayException);
+	EXPECT_THROW(scheduler.isDayEnabled(7), IndexOutOfBoundsException);
 }
 
 TEST(SpecifiedSchedulerTest, isDayScheduled) {

@@ -1,10 +1,10 @@
 #include "Program.h"
-#include "Exceptions.h"
 #include "RunTime.h"
 #include "RunTimeContainer.h"
 #include "StartTime.h"
 #include "StartTimeContainer.h"
 #include "Schedulers/SpecifiedScheduler.h"
+#include "Logger/Logger.h"
 #include <sstream>
 
 using namespace std;
@@ -43,13 +43,7 @@ void Program::setName(const string& newName) {
 }
 
 void Program::setSchedulerType(SchedulerType schedulerType) {
-	switch(schedulerType) {
-	case SchedulerType::SPECIFIED_DAYS:
-		this->schedulerType = schedulerType;
-		break;
-	default:
-		throw InvalidSchedulerTypeException(schedulerType);
-	}
+	this->schedulerType = schedulerType;
 }
 
 SchedulerType Program::getSchedulerType(void) const {
@@ -61,7 +55,7 @@ const Scheduler& Program::getCurrentScheduler() const {
 	case SchedulerType::SPECIFIED_DAYS:
 		return getSpecifiedScheduler();
 	default:
-		throw logic_error("Invalid scheduler type");
+		throw invalid_argument("Program::getCurrentScheduler(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
 	}
 }
 
@@ -112,7 +106,7 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 
 	if (programDTO.hasSchedulerType()) {
 		if (programDTO.getSchedulerType() != "specified") {
-			throw logic_error("Program::updateFromDTO(): invalid schedulerType: " + programDTO.getSchedulerType());
+			throw invalid_argument("Program::updateFromDTO(): invalid SchedulerType: " + programDTO.getSchedulerType());
 		}
 
 		setSchedulerType(SchedulerType::SPECIFIED_DAYS);
@@ -128,7 +122,7 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 
 		for (const RunTimeDTO& runTimeDTO : programDTO.getRunTimes()) {
 			if (!runTimeDTO.hasId()) {
-				throw logic_error("Program::updateFromDTO(): !runTime.hasId()");
+				throw logic_error("Program::updateFromDTO(): !runTimeDTO.hasId()");
 			}
 
 			runTimes->at(runTimeDTO.getId())->updateFromDTO(runTimeDTO);
@@ -140,23 +134,23 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 
 		for (const StartTimeDTO& startTimeDTO : programDTO.getStartTimes()) {
 			if (!startTimeDTO.hasId()) {
-				throw logic_error("Program::updateFromDTO(): !startTime.hasId()");
+				throw logic_error("Program::updateFromDTO(): !startTimeDTO.hasId()");
 			}
 
-			StartTimeContainer::value_type& IdAndStartTimePair = startTimes->insert(startTimeDTO.getId(), new StartTime());
-			IdAndStartTimePair.second->updateFromDTO(startTimeDTO);
+			StartTimeContainer::value_type& idAndStartTimePair = startTimes->insert(startTimeDTO.getId(), new StartTime());
+			idAndStartTimePair.second->updateFromDTO(startTimeDTO);
 		}
 	}
 }
 
-std::string Program::toString() const {
+std::string to_string(const Program& program) {
 	ostringstream o;
 	o << "Program{";
-	o << "name=\"" << name << "\", ";
-	o << "schedulerType=\"" << schedulerTypeToString(schedulerType) << "\", ";
-	o << "specifiedScheduler=" << specifiedScheduler->toString() << ", ";
-	o << "runTimes=" << runTimes->toString() << ", ";
-	o << "startTimes=" << startTimes->toString();
+	o << "name=\"" << program.getName() << "\", ";
+	o << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
+	o << "specifiedScheduler=" << to_string(program.getSpecifiedScheduler()) << ", ";
+	o << "runTimes=" << to_string(program.getRunTimes()) << ", ";
+	o << "startTimes=" << to_string(program.getStartTimes());
 	o << "}";
 
 	return o.str();

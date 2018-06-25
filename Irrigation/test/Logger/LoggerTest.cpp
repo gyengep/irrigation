@@ -19,16 +19,12 @@ static void logEntriesOnAllLevels() {
 	LOGGER.trace(LOG_ENTRY_TRACE);
 }
 
-TEST(LoggerTest, invalidFile) {
-	EXPECT_THROW(LOGGER.setFileName(""), runtime_error);
-}
-
 TEST(LoggerTest, logTextOff) {
 
 	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
-	LOGGER.setLevel(Logger::OFF);
+	LOGGER.setLevel(LogLevel::OFF);
 
 	logEntriesOnAllLevels();
 
@@ -44,7 +40,7 @@ TEST(LoggerTest, logTextError) {
 	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
-	LOGGER.setLevel(Logger::ERROR);
+	LOGGER.setLevel(LogLevel::ERROR);
 
 	logEntriesOnAllLevels();
 
@@ -60,7 +56,7 @@ TEST(LoggerTest, logTextWarning) {
 	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
-	LOGGER.setLevel(Logger::WARNING);
+	LOGGER.setLevel(LogLevel::WARNING);
 
 	logEntriesOnAllLevels();
 
@@ -76,7 +72,7 @@ TEST(LoggerTest, logTextInfo) {
 	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
-	LOGGER.setLevel(Logger::INFO);
+	LOGGER.setLevel(LogLevel::INFO);
 
 	logEntriesOnAllLevels();
 
@@ -92,7 +88,7 @@ TEST(LoggerTest, logTextDebug) {
 	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
-	LOGGER.setLevel(Logger::DEBUG);
+	LOGGER.setLevel(LogLevel::DEBUG);
 
 	logEntriesOnAllLevels();
 
@@ -108,7 +104,7 @@ TEST(LoggerTest, logTextTrace) {
 	ostringstream* o = new ostringstream;
 
 	LOGGER.setOutput(o);
-	LOGGER.setLevel(Logger::TRACE);
+	LOGGER.setLevel(LogLevel::TRACE);
 
 	logEntriesOnAllLevels();
 
@@ -119,75 +115,65 @@ TEST(LoggerTest, logTextTrace) {
 	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
-TEST(LoggerTest, invalidLevel) {
-	Logger::Level level;
-
-	level = static_cast<Logger::Level>(Logger::TRACE + 1);
-	EXPECT_THROW(Logger::getLevelText(level), out_of_range);
-
-	level = static_cast<Logger::Level>(-1);
-	EXPECT_THROW(Logger::getLevelText(level), out_of_range);
-}
-
 TEST(LoggerTest, getLevelText) {
-	EXPECT_STREQ("OFF", Logger::getLevelText(Logger::OFF));
-	EXPECT_STREQ("ERROR", Logger::getLevelText(Logger::ERROR));
-	EXPECT_STREQ("WARNING", Logger::getLevelText(Logger::WARNING));
-	EXPECT_STREQ("INFO", Logger::getLevelText(Logger::INFO));
-	EXPECT_STREQ("DEBUG", Logger::getLevelText(Logger::DEBUG));
-	EXPECT_STREQ("TRACE", Logger::getLevelText(Logger::TRACE));
+	EXPECT_EQ("OFF", to_string(LogLevel::OFF));
+	EXPECT_EQ("ERROR", to_string(LogLevel::ERROR));
+	EXPECT_EQ("WARNING", to_string(LogLevel::WARNING));
+	EXPECT_EQ("INFO", to_string(LogLevel::INFO));
+	EXPECT_EQ("DEBUG", to_string(LogLevel::DEBUG));
+	EXPECT_EQ("TRACE", to_string(LogLevel::TRACE));
 }
 
 TEST(LoggerTest, isLoggableOFF) {
-	LOGGER.setLevel(Logger::OFF);
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::ERROR));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::WARNING));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::INFO));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::DEBUG));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
+	LOGGER.setLevel(LogLevel::OFF);
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::ERROR));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::WARNING));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::INFO));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::DEBUG));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::TRACE));
 }
 
 TEST(LoggerTest, isLoggableError) {
-	LOGGER.setLevel(Logger::ERROR);
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::WARNING));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::INFO));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::DEBUG));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
+	LOGGER.setLevel(LogLevel::ERROR);
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::ERROR));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::WARNING));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::INFO));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::DEBUG));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::TRACE));
 }
 
 TEST(LoggerTest, isLoggableWarning) {
-	LOGGER.setLevel(Logger::WARNING);
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::INFO));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::DEBUG));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
+	LOGGER.setLevel(LogLevel::WARNING);
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::ERROR));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::WARNING));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::INFO));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::DEBUG));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::TRACE));
 }
 
 TEST(LoggerTest, isLoggableInfo) {
-	LOGGER.setLevel(Logger::INFO);
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::INFO));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::DEBUG));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
+	LOGGER.setLevel(LogLevel::INFO);
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::ERROR));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::WARNING));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::INFO));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::DEBUG));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::TRACE));
 }
 
 TEST(LoggerTest, isLoggableDebug) {
-	LOGGER.setLevel(Logger::DEBUG);
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::INFO));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::DEBUG));
-	EXPECT_FALSE(LOGGER.isLoggable(Logger::TRACE));
+	LOGGER.setLevel(LogLevel::DEBUG);
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::ERROR));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::WARNING));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::INFO));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::DEBUG));
+	EXPECT_FALSE(LOGGER.isLoggable(LogLevel::TRACE));
 }
 
 TEST(LoggerTest, isLoggableTrace) {
-	LOGGER.setLevel(Logger::TRACE);
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::ERROR));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::WARNING));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::INFO));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::DEBUG));
-	EXPECT_TRUE(LOGGER.isLoggable(Logger::TRACE));
+	LOGGER.setLevel(LogLevel::TRACE);
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::ERROR));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::WARNING));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::INFO));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::DEBUG));
+	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::TRACE));
 }

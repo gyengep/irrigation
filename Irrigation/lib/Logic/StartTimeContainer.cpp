@@ -1,8 +1,8 @@
 #include "StartTimeContainer.h"
-#include "Exceptions.h"
 #include "StartTime.h"
-#include "Logger/Logger.h"
 #include <sstream>
+#include "Exceptions/Exceptions.h"
+#include "Logger/Logger.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ StartTimeContainer::container_type::iterator StartTimeContainer::find(const key_
 		}
 	}
 
-	throw InvalidStartTimeIdException(key);
+	throw NoSuchElementException("StartTime with id " + to_string(key) + " not found");
 }
 
 StartTimeContainer::container_type::const_iterator StartTimeContainer::find(const key_type& key) const {
@@ -33,7 +33,7 @@ StartTimeContainer::container_type::const_iterator StartTimeContainer::find(cons
 		}
 	}
 
-	throw InvalidStartTimeIdException(key);
+	throw NoSuchElementException("StartTime with id " + to_string(key) + " not found");
 }
 
 const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) const {
@@ -49,12 +49,11 @@ StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
 			delete value;
-			throw StartTimeIdExist(key);
+			throw AlreadyExistException("Program with id " + to_string(key) + " is already exist");
 		}
 	}
 
 	container.push_back(make_pair(key, value));
-	LOGGER.info("StartTime %u added", key);
 	return container.back();
 }
 
@@ -62,7 +61,6 @@ void StartTimeContainer::erase(const key_type& key) {
 	auto it = find(key);
 	delete it->second;
 	container.erase(it);
-	LOGGER.info("StartTime %u deleted", key);
 }
 
 void StartTimeContainer::sort() {
@@ -76,14 +74,14 @@ bool StartTimeContainer::compareStartTime(const value_type& first, const value_t
 	return (firstStartTime < secondStartTime);
 }
 
-string StartTimeContainer::toString() const {
+string to_string(const StartTimeContainer& startTimeContainer) {
 	ostringstream o;
 	o << "[";
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		if (it != container.begin()) {
+	for (auto it = startTimeContainer.begin(); it != startTimeContainer.end(); ++it) {
+		if (it != startTimeContainer.begin()) {
 			o << ", ";
 		}
-		o << "{" << it->first.toString() << ", " << it->second->toString() << "}";
+		o << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
 	}
 	o << "]";
 	return o.str();

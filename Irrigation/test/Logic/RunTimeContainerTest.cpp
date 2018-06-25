@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "Logic/Exceptions.h"
+#include "Exceptions/Exceptions.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/ZoneConfig.h"
@@ -52,12 +52,12 @@ TEST(RunTimeContainerTest, atConst) {
 
 TEST(RunTimeContainerTest, atInvalid) {
 	RunTimeContainer runTimes;
-	EXPECT_THROW(runTimes.at(ZONE_COUNT), InvalidRunTimeIdException);
+	EXPECT_THROW(runTimes.at(ZONE_COUNT), NoSuchElementException);
 }
 
 TEST(RunTimeContainerTest, atConstInvalid) {
 	const RunTimeContainer constRunTimes;
-	EXPECT_THROW(constRunTimes.at(ZONE_COUNT), InvalidRunTimeIdException);
+	EXPECT_THROW(constRunTimes.at(ZONE_COUNT), NoSuchElementException);
 }
 
 

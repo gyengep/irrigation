@@ -1,57 +1,59 @@
 #pragma once
-
 #include <array>
 #include <atomic>
 #include <memory>
 #include <mutex>
 #include <ostream>
 #include <stdarg.h>
+#include <stdexcept>
+#include <string>
+
 
 #define LOGGER Logger::getInstance()
 
 
+enum class LogLevel {
+	OFF,
+	ERROR,
+	WARNING,
+	INFO,
+	DEBUG,
+	TRACE
+};
+
+std::string to_string(LogLevel logLevel);
+
+
 class Logger {
-public:
-
-	enum Level {
-		OFF,
-		ERROR,
-		WARNING,
-		INFO,
-		DEBUG,
-		TRACE
-	};
-
-private:
 	static std::unique_ptr<Logger> instance;
 	static std::mutex initMutex;
-	static const std::array<const char*, 6> levelTexts;
-	static const unsigned bufferSize = 1000;
 
 	mutable std::mutex logMutex;
-	char buffer[bufferSize + 1];
-	std::atomic<Level> level;
+	std::atomic<LogLevel> logLevel;
 	std::unique_ptr<std::ostream> output;
 
 	Logger();
-	void log(Level level, const char * format, va_list args);
+
+	void log(LogLevel logLevel, const char* message, const std::exception* e);
+
+	static std::string logException(const std::exception* e, unsigned level);
 
 public:
 	virtual ~Logger();
 	static Logger& getInstance();
 
-	void setLevel(Level level);
-	void setFileName(const std::string& fileName);
+	LogLevel getLevel() const { return logLevel; }
+	void setLevel(LogLevel logLevel);
 	void setOutput(std::ostream* output);
+	bool isLoggable(LogLevel logLevel) const;
 
-	bool  isLoggable(Level level) const;
-	Level getLevel() const { return level; }
+	void error(const char* message, const std::exception& e);
+	void warning(const char* message, const std::exception& e);
+	void info(const char* message, const std::exception& e);
 
-	void error(const char * format, ...);
-	void warning(const char * format, ...);
-	void info(const char * format, ...);
-	void debug(const char * format, ...);
-	void trace(const char * format, ...);
-
-	static const char* getLevelText(Level level);
+	void error(const char* format, ...);
+	void warning(const char* format, ...);
+	void info(const char* format, ...);
+	void debug(const char* format, ...);
+	void trace(const char* format, ...);
 };

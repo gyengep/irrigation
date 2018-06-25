@@ -1,30 +1,59 @@
 #include "Logger.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <thread>
+#include <vector>
 
 using namespace std;
 
 
-#define LOGGER_FUNCTION(LEVEL)		\
-	if (isLoggable(LEVEL)) {		\
-		va_list args;				\
-		va_start(args, format);		\
-		log(LEVEL, format, args);	\
-		va_end(args);				\
+#define LOGGER_FUNCTION_VA(LEVEL)							\
+	if (isLoggable(LEVEL)) {								\
+		const size_t messageSize = 1000;					\
+		char message[messageSize + 1];						\
+		va_list args;										\
+		va_start(args, format);								\
+		vsnprintf(message, messageSize, format, args);		\
+		va_end(args);										\
+		log(LEVEL, message, nullptr);						\
 	}
 
+//va_list args1, args2;
+//va_start(args1, format);
+//va_copy(args2, args1);
+//vector<char> buffer(1 + std::vsnprintf(nullptr, 0, format, args1));
+//va_end(args1);
+//std::vsnprintf(buffer.data(), buffer.size(), format, args2);
+//va_end(args2);
+
+#define LOGGER_FUNCTION_EXCEPTION(LEVEL)					\
+	if (isLoggable(LEVEL)) {								\
+		log(LEVEL, message, &e);							\
+	}
 
 unique_ptr<Logger> Logger::instance;
 mutex Logger::initMutex;
-const array<const char*, 6> Logger::levelTexts = {
-	"OFF",
-	"ERROR",
-	"WARNING",
-	"INFO",
-	"DEBUG",
-	"TRACE"
-};
+
+
+string to_string(LogLevel logLevel) {
+	switch(logLevel) {
+	case LogLevel::OFF:
+		return "OFF";
+	case LogLevel::ERROR:
+		return "ERROR";
+	case LogLevel::WARNING:
+		return "WARNING";
+	case LogLevel::INFO:
+		return "INFO";
+	case LogLevel::DEBUG:
+		return "DEBUG";
+	case LogLevel::TRACE:
+		return "TRACE";
+	default:
+		throw invalid_argument("Unknown value of enum LogLevel: " + to_string(static_cast<unsigned>(logLevel)));
+	}
+}
 
 
 Logger& Logger::getInstance() {
@@ -41,24 +70,12 @@ Logger& Logger::getInstance() {
 
 Logger::Logger() :
 	logMutex(),
-	level(OFF),
+	logLevel(LogLevel::OFF),
 	output(nullptr)
 {
-	buffer[bufferSize] = '\0';
 }
 
 Logger::~Logger() {
-}
-
-void Logger::setFileName(const string& fileName) {
-	unique_ptr<ofstream> file(new ofstream(fileName, ios::out | ios::app));
-
-	if (!file->is_open()) {
-		throw runtime_error("Could not open file: " + fileName);
-	}
-
-	lock_guard<mutex> lock(logMutex);
-	output.reset(file.release());
 }
 
 void Logger::setOutput(ostream* o) {
@@ -66,61 +83,78 @@ void Logger::setOutput(ostream* o) {
 	output.reset(o);
 }
 
-void Logger::setLevel(Level level) {
-	this->level = level;
+void Logger::setLevel(LogLevel logLevel) {
+	this->logLevel = logLevel;
 }
 
-const char* Logger::getLevelText(Level level) {
-	try {
-		return levelTexts.at(level);
-	} catch (out_of_range& e) {
-		throw out_of_range("Invalid log level: " + to_string(level));
+bool Logger::isLoggable(LogLevel logLevel) const {
+	return (logLevel <= this->logLevel);
+}
+
+string Logger::logException(const exception* e, unsigned level) {
+	ostringstream o;
+
+	if (nullptr != e) {
+		o << endl << string(level * 2, ' ') << "exception: " << e->what();
+
+	    try {
+	        rethrow_if_nested(*e);
+	    } catch(const exception& innerException) {
+	    	o << logException(&innerException, level + 1);
+	    }
 	}
+
+    return o.str();
 }
 
-bool Logger::isLoggable(Level level) const {
-	lock_guard<mutex> lock(logMutex);
-	return (level <= this->level);
-}
-
-void Logger::log(Level level, const char * format, va_list args) {
-
-	time_t rawtime = time(NULL);
-	tm* timeinfo = localtime(&rawtime);
+void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 
 	lock_guard<mutex> lock(logMutex);
 
 	if (output.get() != nullptr) {
-		strftime(buffer, bufferSize, "%Y.%m.%d %H:%M:%S", timeinfo);
-		(*output) << buffer << " ";
+		vector<char> timeBuffer(100);
+		time_t t = time(nullptr);
+		strftime(timeBuffer.data(), timeBuffer.size(), "%Y.%m.%d %H:%M:%S", localtime(&t));
+
+		(*output) << timeBuffer.data() << " ";
 		(*output) << this_thread::get_id() << " ";
-		(*output) << getLevelText(level) << ": ";
-
-		vsnprintf(buffer, bufferSize, format, args);
-		(*output) << buffer;
-
+		(*output) << to_string(logLevel) << ": ";
+		(*output) << message;
+		(*output) << logException(e, 1);
 		(*output) << endl;
 		(*output).flush();
 	}
 }
 
-void Logger::error(const char * format, ...)  {
-	LOGGER_FUNCTION(ERROR);
+void Logger::error(const char* message, const exception& e) {
+	LOGGER_FUNCTION_EXCEPTION(LogLevel::ERROR);
 }
 
-void Logger::warning(const char * format, ...)  {
-	LOGGER_FUNCTION(WARNING);
+void Logger::warning(const char* message, const exception& e) {
+	LOGGER_FUNCTION_EXCEPTION(LogLevel::WARNING);
 }
 
-void Logger::info(const char * format, ...)  {
-	LOGGER_FUNCTION(INFO);
+void Logger::info(const char* message, const exception& e) {
+	LOGGER_FUNCTION_EXCEPTION(LogLevel::INFO);
 }
 
-void Logger::debug(const char * format, ...)  {
-	LOGGER_FUNCTION(DEBUG);
+void Logger::error(const char* format, ...)  {
+	LOGGER_FUNCTION_VA(LogLevel::ERROR);
 }
 
-void Logger::trace(const char * format, ...) {
-	LOGGER_FUNCTION(TRACE);
+void Logger::warning(const char* format, ...)  {
+	LOGGER_FUNCTION_VA(LogLevel::WARNING);
+}
+
+void Logger::info(const char* format, ...)  {
+	LOGGER_FUNCTION_VA(LogLevel::INFO);
+}
+
+void Logger::debug(const char* format, ...)  {
+	LOGGER_FUNCTION_VA(LogLevel::DEBUG);
+}
+
+void Logger::trace(const char* format, ...) {
+	LOGGER_FUNCTION_VA(LogLevel::TRACE);
 }
 

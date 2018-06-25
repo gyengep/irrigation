@@ -51,5 +51,5 @@ public:
 	ProgramDTO getProgramDTO() const;
 	void updateFromDTO(const ProgramDTO& programDTO);
 
-	std::string toString() const;
+	friend std::string to_string(const Program& program);
 };

@@ -1,9 +1,9 @@
 #include "RunTimeContainer.h"
-#include "Exceptions.h"
 #include "RunTime.h"
 #include "ZoneConfig.h"
 #include <memory>
 #include <sstream>
+#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 
 using namespace std;
@@ -40,7 +40,7 @@ void RunTimeContainer::init(unique_ptr<const RunTimeFactory> runTimeFactory) {
 
 const RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) const {
 	if (container.size() <= key) {
-		throw InvalidRunTimeIdException(key);
+		throw NoSuchElementException("RunTime with id " + to_string(key) + " not found");
 	}
 
 	return container[key].second;
@@ -48,20 +48,20 @@ const RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) c
 
 RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) {
 	if (container.size() <= key) {
-		throw InvalidRunTimeIdException(key);
+		throw NoSuchElementException("RunTime with id " + to_string(key) + " not found");
 	}
 
 	return container[key].second;
 }
 
-string RunTimeContainer::toString() const {
+string to_string(const RunTimeContainer& runTimeContainer) {
 	ostringstream o;
 	o << "[";
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		if (it != container.begin()) {
+	for (auto it = runTimeContainer.begin(); it != runTimeContainer.end(); ++it) {
+		if (it != runTimeContainer.begin()) {
 			o << ", ";
 		}
-		o << "{" << it->first.toString() << ", " << it->second->toString() << "}";
+		o << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
 	}
 	o << "]";
 	return o.str();
