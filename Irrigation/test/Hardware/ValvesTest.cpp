@@ -29,7 +29,7 @@ TEST(ValvesTest, activate) {
 	}
 }
 
-TEST(ValvesTest, invalid) {
+TEST(ValvesTest, activateInvalid) {
 	EXPECT_THROW(Valves::getInstance().activate(VALVE_COUNT, true), IndexOutOfBoundsException);
 }
 
@@ -44,8 +44,9 @@ TEST_F(ValvesTestWithMock, setPin_1pc2) {
 }
 
 TEST_F(ValvesTestWithMock, setPin_more_invalid) {
-	vector<size_t> pins {5, 2, 3, 7};
-	EXPECT_THROW(Valves::getInstance().activate(pins, true), IndexOutOfBoundsException);
+	const size_t size = 4;
+	size_t pins[size] { 5, 2, 3, 7 };
+	EXPECT_THROW(Valves::getInstance().activate(pins, size, true), IndexOutOfBoundsException);
 }
 
 TEST_F(ValvesTestWithMock, setPin_more_1) {
@@ -53,16 +54,18 @@ TEST_F(ValvesTestWithMock, setPin_more_1) {
 	EXPECT_CALL(*mockValves, setPin(VALVE2_PIN, 1)).Times(1);
 	EXPECT_CALL(*mockValves, setPin(VALVE3_PIN, 1)).Times(1);
 
-	vector<size_t> pins {5, 2, 3};
-	Valves::getInstance().activate(pins, true);
+	const size_t size = 3;
+	size_t pins[size] { 5, 2, 3 };
+	Valves::getInstance().activate(pins, size, true);
 }
 
 TEST_F(ValvesTestWithMock, setPin_more_2) {
 	EXPECT_CALL(*mockValves, setPin(VALVE0_PIN, 0)).Times(1);
 	EXPECT_CALL(*mockValves, setPin(VALVE4_PIN, 0)).Times(1);
 
-	vector<size_t> pins {0, 4};
-	Valves::getInstance().activate(pins, false);
+	const size_t size = 2;
+	size_t pins[size] { 0, 4 };
+	Valves::getInstance().activate(pins, size, false);
 }
 
 

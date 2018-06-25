@@ -25,8 +25,9 @@ ZoneHandler::~ZoneHandler() {
 }
 
 void ZoneHandler::activateOrDeactivateValves(size_t zoneId, bool activate) {
-	vector<size_t> valves { zoneValves[zoneId], masterValve };
-	Valves::getInstance().activate(valves, activate);
+	const size_t size = 2;
+	size_t valves[size] { zoneValves[zoneId], masterValve };
+	Valves::getInstance().activate(valves, size, activate);
 }
 
 size_t ZoneHandler::getActiveId() const {

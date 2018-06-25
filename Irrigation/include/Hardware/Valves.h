@@ -26,13 +26,14 @@ protected:
 	Valves();
 
 	virtual void setPin(int pin, int mode);
+	virtual void activatePin(size_t valveID, bool active);
 
 public:
 	virtual ~Valves();
 
 	virtual void resetAll();
 	virtual void activate(size_t valveID, bool active);
-	virtual void activate(const std::vector<size_t>& valveIDs, bool active);
+	virtual void activate(size_t* valveIDs, size_t size, bool active);
 	
 	size_t getCount() const { return pins.size(); }
 
