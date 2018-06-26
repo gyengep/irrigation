@@ -16,41 +16,51 @@ void ZoneHandlerTestWithMock::TearDown() {
 	Valves::setNewInstance(nullptr);
 }
 
-TEST_F(ZoneHandlerTestWithMock, activateValves) {
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 0, 6 }, true)).Times(1);
+TEST_F(ZoneHandlerTestWithMock, activate) {
+	Sequence seq;
+
+	EXPECT_CALL(*mockValves, activatePin(0, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, true)).Times(1).InSequence(seq);
 
 	zones.activate(0);
 }
 
-TEST_F(ZoneHandlerTestWithMock, deactivateSetPin) {
+TEST_F(ZoneHandlerTestWithMock, deactivate) {
 	Sequence seq;
 
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 1, 6 }, true)).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 1, 6 }, false)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(1, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(1, false)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, false)).Times(1).InSequence(seq);
 
 	zones.activate(1);
 	zones.deactivate();
 }
 
-TEST_F(ZoneHandlerTestWithMock, activateAgainSetPin) {
+TEST_F(ZoneHandlerTestWithMock, activateAgain) {
 	Sequence seq;
 
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 2, 6 }, true)).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 2, 6 }, false)).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 3, 6 }, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(2, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(2, false)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, false)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(3, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, true)).Times(1).InSequence(seq);
 
 	zones.activate(2);
 	zones.activate(3);
 }
 
-TEST(ZonesTest, deactivateAtDelete) {
+TEST(ZoneHandlerTest, deactivateAtDelete) {
 	MockValves* mockValves = new MockValves();
 	Valves::setNewInstance(mockValves);
 
 	Sequence seq;
 
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 4, 6 }, true)).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValves, activate(vector<size_t> { 4, 6 }, false)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(4, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, true)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(4, false)).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves, activatePin(6, false)).Times(1).InSequence(seq);
 
 	{
 		ZoneHandler zones;
@@ -60,24 +70,22 @@ TEST(ZonesTest, deactivateAtDelete) {
 	Valves::setNewInstance(nullptr);
 }
 
-TEST(ZonesTest, getCount) {
+TEST(ZoneHandlerTest, getCount) {
 	ZoneHandler zones;
 	EXPECT_EQ(6, zones.getCount());
 }
 
-TEST(ZonesTest, getActiveIdDefault) {
+TEST(ZoneHandlerTest, getActiveId) {
 	ZoneHandler zones;
-	EXPECT_EQ(ZoneHandler::invalidZoneId, zones.getActiveId());
-}
 
-TEST(ZonesTest, getActiveIdChanged) {
-	ZoneHandler zones;
+	EXPECT_EQ(ZoneHandler::invalidZoneId, zones.getActiveId());
+
 	zones.activate(0);
 	EXPECT_EQ(0, zones.getActiveId());
 }
 
 
-TEST(ZonesTest, activate) {
+TEST(ZoneHandlerTest, activate) {
 	ZoneHandler zones;
 
 	for (size_t i = 0; i < ZONE_COUNT; i++) {
@@ -85,7 +93,7 @@ TEST(ZonesTest, activate) {
 	}
 }
 
-TEST(ZonesTest, activateInvalid) {
+TEST(ZoneHandlerTest, activateInvalid) {
 	ZoneHandler zones;
 	EXPECT_THROW(zones.activate(ZONE_COUNT), IndexOutOfBoundsException);
 }

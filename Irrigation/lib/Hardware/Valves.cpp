@@ -35,31 +35,40 @@ Valves::~Valves() {
 }
 
 void Valves::resetAll() {
-	vector<size_t> allValves { 0, 1, 2, 3, 4, 5, 6 };
-	activate(allValves, false);
+	const size_t size = 7;
+	size_t allValves[size] { 0, 1, 2, 3, 4, 5, 6 };
+	activate(allValves, size, false);
+}
+
+void Valves::checkId(size_t valveID) {
+	if (pins.size() <= valveID) {
+		throw IndexOutOfBoundsException(
+				"Valve index shall be less than " + to_string(pins.size()) +
+				", while actual value is " + to_string(valveID));
+	}
 }
 
 void Valves::activate(size_t valveID, bool active) {
-	vector<size_t> valveIDs { valveID };
-	activate(valveIDs, active);
-}
-
-void Valves::activate(const vector<size_t>& valveIDs, bool active) {
 	lock_guard<std::mutex> lock(mutex);
 
-	for (size_t i = 0; i < valveIDs.size(); ++i) {
-		size_t valveID = valveIDs[i];
-		if (pins.size() <= valveID) {
-			throw IndexOutOfBoundsException(
-					"Valve index shall be less than " + to_string(pins.size()) +
-					", while actual value is " + to_string(valveID));
-		}
+	checkId(valveID);
+	activatePin(valveID, active);
+}
+
+void Valves::activate(size_t* valveIDs, size_t size, bool active) {
+	lock_guard<std::mutex> lock(mutex);
+
+	for (size_t i = 0; i < size; ++i) {
+		checkId(valveIDs[i]);
 	}
 
-	for (size_t i = 0; i < valveIDs.size(); ++i) {
-		size_t valveID = valveIDs[i];
-		setPin(pins[valveID], active ? 1 : 0);
+	for (size_t i = 0; i < size; ++i) {
+		activatePin(valveIDs[i], active);
 	}
+}
+
+void Valves::activatePin(size_t valveID, bool active) {
+	setPin(pins[valveID], active ? 1 : 0);
 }
 
 #ifdef __arm__
