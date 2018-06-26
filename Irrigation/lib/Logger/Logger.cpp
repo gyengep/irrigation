@@ -138,6 +138,14 @@ void Logger::info(const char* message, const exception& e) {
 	LOGGER_FUNCTION_EXCEPTION(LogLevel::INFO);
 }
 
+void Logger::debug(const char* message, const exception& e) {
+	LOGGER_FUNCTION_EXCEPTION(LogLevel::DEBUG);
+}
+
+void Logger::trace(const char* message, const exception& e) {
+	LOGGER_FUNCTION_EXCEPTION(LogLevel::TRACE);
+}
+
 void Logger::error(const char* format, ...)  {
 	LOGGER_FUNCTION_VA(LogLevel::ERROR);
 }

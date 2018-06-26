@@ -51,7 +51,7 @@ TEST_F(ZoneHandlerTestWithMock, activateAgain) {
 	zones.activate(3);
 }
 
-TEST(ZonesTest, deactivateAtDelete) {
+TEST(ZoneHandlerTest, deactivateAtDelete) {
 	MockValves* mockValves = new MockValves();
 	Valves::setNewInstance(mockValves);
 
@@ -70,12 +70,12 @@ TEST(ZonesTest, deactivateAtDelete) {
 	Valves::setNewInstance(nullptr);
 }
 
-TEST(ZonesTest, getCount) {
+TEST(ZoneHandlerTest, getCount) {
 	ZoneHandler zones;
 	EXPECT_EQ(6, zones.getCount());
 }
 
-TEST(ZonesTest, getActiveId) {
+TEST(ZoneHandlerTest, getActiveId) {
 	ZoneHandler zones;
 
 	EXPECT_EQ(ZoneHandler::invalidZoneId, zones.getActiveId());
@@ -85,7 +85,7 @@ TEST(ZonesTest, getActiveId) {
 }
 
 
-TEST(ZonesTest, activate) {
+TEST(ZoneHandlerTest, activate) {
 	ZoneHandler zones;
 
 	for (size_t i = 0; i < ZONE_COUNT; i++) {
@@ -93,7 +93,7 @@ TEST(ZonesTest, activate) {
 	}
 }
 
-TEST(ZonesTest, activateInvalid) {
+TEST(ZoneHandlerTest, activateInvalid) {
 	ZoneHandler zones;
 	EXPECT_THROW(zones.activate(ZONE_COUNT), IndexOutOfBoundsException);
 }

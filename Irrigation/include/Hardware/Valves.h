@@ -25,6 +25,8 @@ class Valves {
 protected:
 	Valves();
 
+	void checkId(size_t valveID);
+
 	virtual void setPin(int pin, int mode);
 	virtual void activatePin(size_t valveID, bool active);
 

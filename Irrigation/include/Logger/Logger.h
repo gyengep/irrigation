@@ -50,6 +50,8 @@ public:
 	void error(const char* message, const std::exception& e);
 	void warning(const char* message, const std::exception& e);
 	void info(const char* message, const std::exception& e);
+	void debug(const char* message, const std::exception& e);
+	void trace(const char* message, const std::exception& e);
 
 	void error(const char* format, ...);
 	void warning(const char* format, ...);

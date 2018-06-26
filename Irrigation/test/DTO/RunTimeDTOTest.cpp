@@ -15,55 +15,63 @@ TEST(RunTimeDTOTest, defaultConstructor) {
 }
 
 TEST(RunTimeDTOTest, constructor) {
-	RunTimeDTO runTimeDTO(5);
+	const unsigned expectedValue = 5;
+	RunTimeDTO runTimeDTO(expectedValue);
 
 	EXPECT_FALSE(runTimeDTO.hasId());
 	EXPECT_TRUE(runTimeDTO.hasValue());
 
-	EXPECT_THAT(runTimeDTO.getValue(), Eq(5));
+	EXPECT_THAT(runTimeDTO.getValue(), Eq(expectedValue));
 }
 
 TEST(RunTimeDTOTest, copyConstructor) {
-	RunTimeDTO runTimeDTO(RunTimeDTO(5));
+	const unsigned expectedValue = 5;
+	const RunTimeDTO other(expectedValue);
+
+	RunTimeDTO runTimeDTO(other);
 
 	EXPECT_FALSE(runTimeDTO.hasId());
 	EXPECT_TRUE(runTimeDTO.hasValue());
 
-	EXPECT_THAT(runTimeDTO.getValue(), Eq(5));
-}
-
-TEST(RunTimeDTOTest, getId) {
-	RunTimeDTO runTimeDTO;
-
-	EXPECT_THROW(runTimeDTO.getId(), logic_error);
-	runTimeDTO.setId(5);
-	ASSERT_NO_THROW(runTimeDTO.getId());
-	EXPECT_THAT(runTimeDTO.getId(), Eq(5));
-}
-
-TEST(RunTimeDTOTest, getValue) {
-	RunTimeDTO runTimeDTO;
-
-	EXPECT_THROW(runTimeDTO.getValue(), logic_error);
-	runTimeDTO.setValue(5);
-	ASSERT_NO_THROW(runTimeDTO.getValue());
-	EXPECT_THAT(runTimeDTO.getValue(), Eq(5));
+	EXPECT_THAT(runTimeDTO.getValue(), Eq(expectedValue));
 }
 
 TEST(RunTimeDTOTest, hasId) {
+	const unsigned expectedId = 100;
 	RunTimeDTO runTimeDTO;
 
 	EXPECT_FALSE(runTimeDTO.hasId());
-	runTimeDTO.setId(5);
+	runTimeDTO.setId(expectedId);
 	EXPECT_TRUE(runTimeDTO.hasId());
 }
 
+TEST(RunTimeDTOTest, getId) {
+	const unsigned expectedId = 30;
+	RunTimeDTO runTimeDTO;
+
+	EXPECT_THROW(runTimeDTO.getId(), logic_error);
+	runTimeDTO.setId(expectedId);
+	ASSERT_NO_THROW(runTimeDTO.getId());
+	EXPECT_THAT(runTimeDTO.getId(), Eq(expectedId));
+}
+
 TEST(RunTimeDTOTest, hasValue) {
+	const unsigned expectedValue = 150;
 	RunTimeDTO runTimeDTO;
 
 	EXPECT_FALSE(runTimeDTO.hasValue());
-	runTimeDTO.setValue(5);
+	runTimeDTO.setValue(expectedValue);
 	EXPECT_TRUE(runTimeDTO.hasValue());
+}
+
+TEST(RunTimeDTOTest, getValue) {
+	const unsigned expectedValue = 25;
+	RunTimeDTO runTimeDTO;
+
+	EXPECT_THROW(runTimeDTO.getValue(), logic_error);
+	runTimeDTO.setValue(expectedValue);
+	ASSERT_NO_THROW(runTimeDTO.getValue());
+	EXPECT_THAT(runTimeDTO.getValue(), Eq(expectedValue));
 }
 
 TEST(RunTimeDTOTest, equal) {
@@ -71,22 +79,35 @@ TEST(RunTimeDTOTest, equal) {
 	RunTimeDTO runTimeDTO2;
 
 	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setId(10);
+	const unsigned expectedId1 = 100;
+	const unsigned expectedId2 = 200;
+
+	runTimeDTO1.setId(expectedId1);
 	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO2.setId(15);
+	runTimeDTO2.setId(expectedId2);
 	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setId(15);
+	runTimeDTO1.setId(expectedId2);
 	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setValue(20);
+	const unsigned expectedValue1 = 56354;
+	const unsigned expectedValue2 = 5222;
+
+	runTimeDTO1.setValue(expectedValue1);
 	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO2.setValue(25);
+	runTimeDTO2.setValue(expectedValue2);
 	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setValue(25);
+	runTimeDTO1.setValue(expectedValue2);
 	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
 }

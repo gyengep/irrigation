@@ -40,9 +40,18 @@ void Valves::resetAll() {
 	activate(allValves, size, false);
 }
 
+void Valves::checkId(size_t valveID) {
+	if (pins.size() <= valveID) {
+		throw IndexOutOfBoundsException(
+				"Valve index shall be less than " + to_string(pins.size()) +
+				", while actual value is " + to_string(valveID));
+	}
+}
+
 void Valves::activate(size_t valveID, bool active) {
 	lock_guard<std::mutex> lock(mutex);
 
+	checkId(valveID);
 	activatePin(valveID, active);
 }
 
@@ -50,12 +59,7 @@ void Valves::activate(size_t* valveIDs, size_t size, bool active) {
 	lock_guard<std::mutex> lock(mutex);
 
 	for (size_t i = 0; i < size; ++i) {
-		size_t valveID = valveIDs[i];
-		if (pins.size() <= valveID) {
-			throw IndexOutOfBoundsException(
-					"Valve index shall be less than " + to_string(pins.size()) +
-					", while actual value is " + to_string(valveID));
-		}
+		checkId(valveIDs[i]);
 	}
 
 	for (size_t i = 0; i < size; ++i) {
