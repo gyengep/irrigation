@@ -1,6 +1,9 @@
 #include <gmock/gmock.h>
-#include "Model/IrrigationDocument.h"
+#include "IrrigationDocumentTest.h"
 #include "DTO/DocumentDTO.h"
+#include "Hardware/GpioHandler.h"
+#include "Hardware/Valves.h"
+#include "Hardware/ZoneHandler.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/StartTime.h"
@@ -13,7 +16,18 @@ using namespace testing;
 
 
 
-TEST(IrrigationDocument, convertDocumentDTO) {
+void IrrigationDocumentTest::SetUp() {
+	shared_ptr<GpioHandler> gpioHandler;
+	shared_ptr<Valves> valves(new Valves(gpioHandler));
+	shared_ptr<ZoneHandler> zoneHandler(new ZoneHandler(valves));
+	document.reset(new IrrigationDocument(zoneHandler));
+}
+
+void IrrigationDocumentTest::TearDown() {
+}
+
+
+TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 	const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 		ProgramDTO("Abcdefg", "specified",
 			SpecifiedSchedulerDTO(new list<bool>({ false, true, false, false, false, true, false})),
@@ -49,11 +63,10 @@ TEST(IrrigationDocument, convertDocumentDTO) {
 		).setId(25),
 	}));
 
-	IrrigationDocument document;
-	document.updateFromDTO(expectedDocumentDTO);
+	document->updateFromDTO(expectedDocumentDTO);
 
-	EXPECT_THAT(document.getPrograms().size(), Eq(2));
-	EXPECT_THAT(document.getPrograms().at(15)->getProgramDTO().setId(15), *next(expectedDocumentDTO.getPrograms().begin(), 0));
-	EXPECT_THAT(document.getPrograms().at(25)->getProgramDTO().setId(25), *next(expectedDocumentDTO.getPrograms().begin(), 1));
-	EXPECT_EQ(expectedDocumentDTO, document.getDocumentDTO());
+	EXPECT_THAT(document->getPrograms().size(), Eq(2));
+	EXPECT_THAT(document->getPrograms().at(15)->getProgramDTO().setId(15), *next(expectedDocumentDTO.getPrograms().begin(), 0));
+	EXPECT_THAT(document->getPrograms().at(25)->getProgramDTO().setId(25), *next(expectedDocumentDTO.getPrograms().begin(), 1));
+	EXPECT_EQ(expectedDocumentDTO, document->getDocumentDTO());
 }

@@ -1,8 +1,8 @@
 #include "ZoneHandler.h"
+#include "Valves.h"
 #include <limits>
 #include <vector>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/Valves.h"
 
 using namespace std;
 
@@ -12,12 +12,33 @@ using namespace std;
 #endif
 
 
+mutex ZoneHandler::createMutex;
+shared_ptr<ZoneHandler> ZoneHandler::instance;
+
+const shared_ptr<ZoneHandler> ZoneHandler::getInstancePtr() {
+	if (nullptr == instance) {
+		lock_guard<std::mutex> lock(createMutex);
+
+		if (nullptr == instance) {
+			instance.reset(new ZoneHandler(Valves::getInstancePtr()));
+		}
+	}
+
+	return instance;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 const size_t ZoneHandler::invalidZoneId = numeric_limits<size_t>::max();
 
 
-ZoneHandler::ZoneHandler() :
+ZoneHandler::ZoneHandler(std::shared_ptr<Valves> valves) :
+	valves(valves),
 	activeZoneId(invalidZoneId)
 {
+	if (valves == nullptr) {
+		throw invalid_argument("ZoneHandler::ZoneHandler() valves pointer cannot be NULL");
+	}
 }
 
 ZoneHandler::~ZoneHandler() {
@@ -26,8 +47,8 @@ ZoneHandler::~ZoneHandler() {
 
 void ZoneHandler::activateOrDeactivateValves(size_t zoneId, bool activate) {
 	const size_t size = 2;
-	size_t valves[size] { zoneValves[zoneId], masterValve };
-	Valves::getInstance().activate(valves, size, activate);
+	const size_t valveIds[size] { zoneValves[zoneId], masterValve };
+	valves->activate(valveIds, size, activate);
 }
 
 size_t ZoneHandler::getActiveId() const {

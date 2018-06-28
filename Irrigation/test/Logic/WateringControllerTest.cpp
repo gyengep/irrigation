@@ -1,74 +1,81 @@
-#include <gmock/gmock.h>
-#include <list>
-#include "Logic/WateringController.h"
+#include "WateringControllerTest.h"
 
 using namespace std;
 
 
-static void checkActiveZones(WateringController& wateringController, time_t t, const vector<size_t>& requiredZones) {
-	for (size_t i = 0; i < requiredZones.size(); ++i) {
-		wateringController.on1SecTimer(t++);
+void WateringControllerTest::SetUp() {
+	shared_ptr<GpioHandler> gpioHandler;
+	shared_ptr<Valves> valves(new Valves(gpioHandler));
+	shared_ptr<ZoneHandler> zoneHandler(new ZoneHandler(valves));
+	wateringController.reset(new WateringController(zoneHandler));
+}
 
-		EXPECT_TRUE(wateringController.isWateringActive());
-		EXPECT_EQ(requiredZones[i], wateringController.getActiveZoneId());
+void WateringControllerTest::TearDown() {
+}
+
+
+void WateringControllerTest::checkActiveZones(time_t t, const vector<size_t>& requiredZones) {
+	for (size_t i = 0; i < requiredZones.size(); ++i) {
+		wateringController->on1SecTimer(t++);
+
+		EXPECT_TRUE(wateringController->isWateringActive());
+		EXPECT_EQ(requiredZones[i], wateringController->getActiveZoneId());
 	}
 
-	wateringController.on1SecTimer(t++);
-	EXPECT_FALSE(wateringController.isWateringActive());
+	wateringController->on1SecTimer(t++);
+	EXPECT_FALSE(wateringController->isWateringActive());
 }
 
-TEST(WateringController, init) {
-	WateringController wateringController;
-	EXPECT_FALSE(wateringController.isWateringActive());
+TEST_F(WateringControllerTest, initWithNull) {
+	EXPECT_THROW(WateringController(shared_ptr<ZoneHandler>()), invalid_argument);
 }
 
-TEST(WateringController, startWithNotEmpty) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, init) {
+	EXPECT_FALSE(wateringController->isWateringActive());
+}
+
+TEST_F(WateringControllerTest, startWithNotEmpty) {
 	RunTimeContainer runTimeContainer;
 
 	runTimeContainer.at(3)->setValue(1);
-	wateringController.start(10, runTimeContainer);
+	wateringController->start(10, runTimeContainer);
 
-	EXPECT_TRUE(wateringController.isWateringActive());
+	EXPECT_TRUE(wateringController->isWateringActive());
 }
 
-TEST(WateringController, stop) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, stop) {
 	RunTimeContainer runTimeContainer;
 
 	runTimeContainer.at(0)->setValue(1);
-	wateringController.start(10, runTimeContainer);
-	wateringController.stop();
+	wateringController->start(10, runTimeContainer);
+	wateringController->stop();
 
-	EXPECT_FALSE(wateringController.isWateringActive());
+	EXPECT_FALSE(wateringController->isWateringActive());
 }
 
-TEST(WateringController, startWithEmpty) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, startWithEmpty) {
 	RunTimeContainer runTimeContainer;
 
 	time_t t = time(nullptr);
-	wateringController.start(t, runTimeContainer);
+	wateringController->start(t, runTimeContainer);
 
 	const vector<size_t> requiredZones { };
-	checkActiveZones(wateringController, t, requiredZones);
+	checkActiveZones(t, requiredZones);
 }
 
-TEST(WateringController, simpleSimingCheck) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, simpleSimingCheck) {
 	RunTimeContainer runTimeContainer;
 
 	runTimeContainer.at(0)->setValue(2);
 
 	time_t t = time(nullptr);
-	wateringController.start(t, runTimeContainer);
+	wateringController->start(t, runTimeContainer);
 
 	const vector<size_t> requiredZones { 0, 0 };
-	checkActiveZones(wateringController, t, requiredZones);
+	checkActiveZones(t, requiredZones);
 }
 
-TEST(WateringController, timingCheckWith0start) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, timingCheckWith0start) {
 	RunTimeContainer runTimeContainer;
 
 	runTimeContainer.at(3)->setValue(2);
@@ -76,14 +83,13 @@ TEST(WateringController, timingCheckWith0start) {
 	runTimeContainer.at(5)->setValue(3);
 
 	time_t t = time(nullptr);
-	wateringController.start(t, runTimeContainer);
+	wateringController->start(t, runTimeContainer);
 
 	const vector<size_t> requiredZones { 3, 3, 4, 4, 4, 4, 4, 5, 5, 5 };
-	checkActiveZones(wateringController, t, requiredZones);
+	checkActiveZones(t, requiredZones);
 }
 
-TEST(WateringController, timingCheckWith0end) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, timingCheckWith0end) {
 	RunTimeContainer runTimeContainer;
 
 	runTimeContainer.at(0)->setValue(3);
@@ -91,14 +97,13 @@ TEST(WateringController, timingCheckWith0end) {
 	runTimeContainer.at(3)->setValue(1);
 
 	time_t t = time(nullptr);
-	wateringController.start(t, runTimeContainer);
+	wateringController->start(t, runTimeContainer);
 
 	const vector<size_t> requiredZones { 0, 0, 0, 2, 2, 3 };
-	checkActiveZones(wateringController, t, requiredZones);
+	checkActiveZones(t, requiredZones);
 }
 
-TEST(WateringController, timingAdjust) {
-	WateringController wateringController;
+TEST_F(WateringControllerTest, timingAdjust) {
 	RunTimeContainer runTimeContainer;
 
 	runTimeContainer.at(0)->setValue(4);
@@ -106,9 +111,9 @@ TEST(WateringController, timingAdjust) {
 	runTimeContainer.at(3)->setValue(2);
 
 	time_t t = time(nullptr);
-	wateringController.start(t, runTimeContainer, 0.5f);
+	wateringController->start(t, runTimeContainer, 0.5f);
 
 	const vector<size_t> requiredZones { 0, 0, 2, 2, 2, 3 };
-	checkActiveZones(wateringController, t, requiredZones);
+	checkActiveZones(t, requiredZones);
 }
 

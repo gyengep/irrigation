@@ -4,7 +4,7 @@
 #include <mutex>
 #include <sys/unistd.h>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/Valves.h"
+#include "Hardware/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Model/IrrigationDocument.h"
@@ -60,9 +60,9 @@ void Application::initLogger() {
 	}
 }
 
-void Application::initValves() {
+void Application::initGpio() {
 	try {
-		Valves::init();
+		GpioHandler::init();
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize valves"));
 	}
@@ -95,7 +95,7 @@ void Application::init() {
 
 	LOGGER.info("Irrigation System started");
 
-	initValves();
+	initGpio();
 	initDocument();
 }
 

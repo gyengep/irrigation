@@ -6,6 +6,7 @@
 
 enum class LogLevel;
 class IrrigationDocument;
+class ZoneHandler;
 
 
 
@@ -24,7 +25,7 @@ class Application {
 	void saveDocument(const std::string& fileName) const;
 
 	void initLogger();
-	void initValves();
+	void initGpio();
 	void initDocument();
 
 protected:

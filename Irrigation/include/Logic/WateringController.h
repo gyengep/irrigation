@@ -4,13 +4,12 @@
 #include <memory>
 #include "RunTime.h"
 #include "RunTimeContainer.h"
-#include "ZoneHandler.h"
+#include "Hardware/ZoneHandler.h"
 
 
 class WateringController {
 
 	struct WateringProperties {
-		std::unique_ptr<ZoneHandler> zones;
 		std::time_t zoneStartTime;
 		std::array<RunTime, ZONE_COUNT> runTimes;
 
@@ -18,11 +17,12 @@ class WateringController {
 	};
 
 	std::unique_ptr<WateringProperties> wateringProperties;
+	std::shared_ptr<ZoneHandler> zoneHandler;
 
 	void startNextRequiredZone(const std::time_t& rawTime);
 
 public:
-	WateringController();
+	WateringController(std::shared_ptr<ZoneHandler> zoneHandler);
 	virtual ~WateringController();
 
 	void on1SecTimer(const std::time_t& rawTime);

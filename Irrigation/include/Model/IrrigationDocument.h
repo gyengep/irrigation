@@ -16,6 +16,7 @@ class IrrigationDocument : public Document {
 
 public:
 	IrrigationDocument();
+	IrrigationDocument(std::shared_ptr<ZoneHandler> zoneHandler);
 	virtual ~IrrigationDocument();
 
 	void lock() const;

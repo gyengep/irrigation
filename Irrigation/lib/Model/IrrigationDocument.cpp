@@ -10,7 +10,13 @@ using namespace std;
 
 
 IrrigationDocument::IrrigationDocument() :
-	programs(new ProgramContainer())
+	IrrigationDocument(ZoneHandler::getInstancePtr())
+{
+}
+
+IrrigationDocument::IrrigationDocument(shared_ptr<ZoneHandler> zoneHandler) :
+	programs(new ProgramContainer()),
+	wateringController(zoneHandler)
 {
 }
 

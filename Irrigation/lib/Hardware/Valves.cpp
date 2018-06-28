@@ -1,4 +1,5 @@
 #include "Valves.h"
+#include "GpioHandler.h"
 #include <sstream>
 #include <vector>
 #include "Exceptions/Exceptions.h"
@@ -7,37 +8,28 @@ using namespace std;
 
 
 mutex Valves::createMutex;
-unique_ptr<Valves> Valves::instance;
+shared_ptr<Valves> Valves::instance;
 
-Valves& Valves::getInstance() {
+const shared_ptr<Valves> Valves::getInstancePtr() {
 	if (nullptr == instance) {
 		lock_guard<std::mutex> lock(createMutex);
 
 		if (nullptr == instance) {
-			instance.reset(new Valves());
+			instance.reset(new Valves(GpioHandler::getInstancePtr()));
 		}
 	}
 
-	return *instance;
-}
-
-void Valves::setNewInstance(Valves* newInstance) {
-	lock_guard<std::mutex> lock(createMutex);
-	instance.reset(newInstance);
+	return instance;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Valves::Valves() {
+Valves::Valves(shared_ptr<GpioHandler> gpioHandler) :
+	gpioHandler(gpioHandler)
+{
 }
 
 Valves::~Valves() {
-}
-
-void Valves::resetAll() {
-	const size_t size = 7;
-	size_t allValves[size] { 0, 1, 2, 3, 4, 5, 6 };
-	activate(allValves, size, false);
 }
 
 void Valves::checkId(size_t valveID) {
@@ -48,14 +40,20 @@ void Valves::checkId(size_t valveID) {
 	}
 }
 
+void Valves::activateWithoutLock(size_t valveID, bool active) {
+	if (gpioHandler != nullptr) {
+		gpioHandler->setPin(pins[valveID], active ? 1 : 0);
+	}
+}
+
 void Valves::activate(size_t valveID, bool active) {
 	lock_guard<std::mutex> lock(mutex);
 
 	checkId(valveID);
-	activatePin(valveID, active);
+	activateWithoutLock(valveID, active);
 }
 
-void Valves::activate(size_t* valveIDs, size_t size, bool active) {
+void Valves::activate(const size_t* valveIDs, size_t size, bool active) {
 	lock_guard<std::mutex> lock(mutex);
 
 	for (size_t i = 0; i < size; ++i) {
@@ -63,39 +61,8 @@ void Valves::activate(size_t* valveIDs, size_t size, bool active) {
 	}
 
 	for (size_t i = 0; i < size; ++i) {
-		activatePin(valveIDs[i], active);
+		activateWithoutLock(valveIDs[i], active);
 	}
 }
 
-void Valves::activatePin(size_t valveID, bool active) {
-	setPin(pins[valveID], active ? 1 : 0);
-}
 
-#ifdef __arm__
-
-#include <wiringPi.h>
-
-void Valves::init() {
-	if (wiringPiSetup() == -1) {
-		throw runtime_error("GPIO initialization FAILED");
-	}
-
-	for (size_t i = 0; i < PIN_COUNT; ++i) {
-		pinMode(pins[i], OUTPUT);
-	}
-}
-
-void Valves::setPin(int pin, int mode) {
-	digitalWrite(pin, mode);
-}
-
-#else
-
-void Valves::init() {
-}
-
-void Valves::setPin(int pin, int mode) {
-}
-
-
-#endif // __arm__

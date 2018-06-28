@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
+#include "Hardware/ZoneConfig.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
-#include "Logic/ZoneConfig.h"
 
 using namespace std;
 

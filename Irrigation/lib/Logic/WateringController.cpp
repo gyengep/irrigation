@@ -8,12 +8,16 @@ using namespace std;
 
 
 WateringController::WateringProperties::WateringProperties() :
-	zones(new ZoneHandler()),
 	zoneStartTime(0)
 {
 }
 
-WateringController::WateringController() {
+WateringController::WateringController(shared_ptr<ZoneHandler> zoneHandler) :
+	zoneHandler(zoneHandler)
+{
+	if (zoneHandler == nullptr) {
+		throw invalid_argument("ZoneHandler::ZoneHandler() valves pointer cannot be NULL");
+	}
 }
 
 WateringController::~WateringController() {
@@ -21,7 +25,7 @@ WateringController::~WateringController() {
 
 void WateringController::on1SecTimer(const time_t& rawTime) {
 	if (wateringProperties.get() != nullptr) {
-		const IdType id = wateringProperties->zones->getActiveId();
+		const IdType id = zoneHandler->getActiveId();
 		const unsigned zoneRunTime = wateringProperties->runTimes[id].getValue();
 		if (difftime(rawTime, wateringProperties->zoneStartTime) >= zoneRunTime) {
 			startNextRequiredZone(rawTime);
@@ -60,15 +64,11 @@ bool WateringController::isWateringActive() const {
 }
 
 size_t WateringController::getActiveZoneId() const {
-	if (wateringProperties.get() != nullptr) {
-		return wateringProperties->zones->getActiveId();
-	} else {
-		return ZoneHandler::invalidZoneId;
-	}
+	return zoneHandler->getActiveId();
 }
 
 void WateringController::startNextRequiredZone(const time_t& rawTime) {
-	size_t idx = wateringProperties->zones->getActiveId();
+	size_t idx = zoneHandler->getActiveId();
 
 	if (ZoneHandler::invalidZoneId == idx) {
 		idx = 0;
@@ -79,7 +79,7 @@ void WateringController::startNextRequiredZone(const time_t& rawTime) {
 	while (idx < wateringProperties->runTimes.size()) {
 		if (wateringProperties->runTimes[idx].getValue() > 0) {
 			wateringProperties->zoneStartTime = rawTime;
-			wateringProperties->zones->activate(idx);
+			zoneHandler->activate(idx);
 			LOGGER.debug("Zone %u activated", idx);
 			return;
 		}
@@ -87,6 +87,7 @@ void WateringController::startNextRequiredZone(const time_t& rawTime) {
 		idx++;
 	}
 
-	LOGGER.info("Irrigation finished");
+	zoneHandler->deactivate();
 	wateringProperties.reset();
+	LOGGER.info("Irrigation finished");
 }

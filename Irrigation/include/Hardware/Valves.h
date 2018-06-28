@@ -5,10 +5,12 @@
 #include <vector>
 #include "ValveConfig.h"
 
+class GpioHandler;
+
 
 class Valves {
 	static std::mutex createMutex;
-	static std::unique_ptr<Valves> instance;
+	static std::shared_ptr<Valves> instance;
 
 	const std::array<int, VALVE_COUNT> pins {
 		VALVE0_PIN,
@@ -23,26 +25,21 @@ class Valves {
 	mutable std::mutex mutex;
 
 protected:
-	Valves();
+
+	std::shared_ptr<GpioHandler> gpioHandler;
 
 	void checkId(size_t valveID);
-
-	virtual void setPin(int pin, int mode);
-	virtual void activatePin(size_t valveID, bool active);
+	void activateWithoutLock(size_t valveID, bool active);
 
 public:
-	virtual ~Valves();
+	Valves(std::shared_ptr<GpioHandler> gpioHandler);
+	~Valves();
 
-	virtual void resetAll();
-	virtual void activate(size_t valveID, bool active);
-	virtual void activate(size_t* valveIDs, size_t size, bool active);
+	void activate(size_t valveID, bool active);
+	void activate(const size_t* valveIDs, size_t size, bool active);
 	
 	size_t getCount() const { return pins.size(); }
 
-	static void init();
-	static Valves& getInstance();
-
-	// for testing
-	static void setNewInstance(Valves* newInstance);
+	static const std::shared_ptr<Valves> getInstancePtr();
 };
 
