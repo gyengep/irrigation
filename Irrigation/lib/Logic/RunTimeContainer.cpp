@@ -15,43 +15,40 @@ RunTime* RunTimeFactory::createRunTime() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeContainer::RunTimeContainer() {
-	unique_ptr<const RunTimeFactory> ptr(new RunTimeFactory());
-	init(move(ptr));
+RunTimeContainer::RunTimeContainer() :
+	RunTimeContainer(new RunTimeFactory())
+{
 }
 
-RunTimeContainer::RunTimeContainer(const RunTimeFactory* runTimeFactory) {
-	unique_ptr<const RunTimeFactory> ptr(runTimeFactory);
-	init(move(ptr));
+
+RunTimeContainer::RunTimeContainer(RunTimeFactory* runTimeFactory) {
+	unique_ptr<RunTimeFactory> runTimeFactoryPtr(runTimeFactory);
+
+	container.reserve(ZONE_COUNT);
+	for (size_t i = 0; i < ZONE_COUNT; i++) {
+
+		unique_ptr<RunTime> runTime(runTimeFactoryPtr->createRunTime());
+		container.push_back(make_pair(i, move(runTime)));
+	}
 }
 
 RunTimeContainer::~RunTimeContainer() {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		delete it->second;
-	}
 }
 
-void RunTimeContainer::init(unique_ptr<const RunTimeFactory> runTimeFactory) {
-	container.reserve(ZONE_COUNT);
-	for (size_t i = 0; i < ZONE_COUNT; i++) {
-		container.push_back(make_pair(i, runTimeFactory->createRunTime()));
-	}
-}
-
-const RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) const {
+const RunTimeContainer::mapped_type::element_type* RunTimeContainer::at(const key_type& key) const {
 	if (container.size() <= key) {
 		throw NoSuchElementException("RunTime with id " + to_string(key) + " not found");
 	}
 
-	return container[key].second;
+	return container[key].second.get();
 }
 
-RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) {
+RunTimeContainer::mapped_type::element_type* RunTimeContainer::at(const key_type& key) {
 	if (container.size() <= key) {
 		throw NoSuchElementException("RunTime with id " + to_string(key) + " not found");
 	}
 
-	return container[key].second;
+	return container[key].second.get();
 }
 
 string to_string(const RunTimeContainer& runTimeContainer) {

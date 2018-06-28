@@ -17,18 +17,21 @@ public:
 	virtual ~MockProgram() { destructorIsCalled(); }
 };
 
-static void insertToPrograms(ProgramContainer& programs, const vector<ProgramContainer::value_type>& values) {
+typedef vector<pair<const IdType, Program*>> IdTypeProgramPtrVector;
+
+static void insertToPrograms(ProgramContainer& programs, const IdTypeProgramPtrVector& values) {
 	for (unsigned i = 0; i < values.size(); ++i) {
 		programs.insert(values[i].first, values[i].second);
 	}
 }
 
-static void expectPrograms(const ProgramContainer& programs, const vector<ProgramContainer::value_type>& required) {
+static void expectPrograms(const ProgramContainer& programs, const IdTypeProgramPtrVector& required) {
 	ASSERT_EQ(required.size(), programs.size());
 
 	unsigned i = 0;
 	for (auto it = programs.begin(); it != programs.end(); ++it, ++i) {
-		EXPECT_EQ(required[i], *it);
+		EXPECT_EQ(required[i].first, it->first);
+		EXPECT_EQ(required[i].second, it->second.get());
 	}
 }
 
@@ -42,7 +45,7 @@ TEST(ProgramContainerTest, size) {
 }
 
 TEST(ProgramContainerTest, insert) {
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{10, new Program()},
 		{20, new Program()},
 		{15, new Program()},
@@ -50,15 +53,18 @@ TEST(ProgramContainerTest, insert) {
 
 	ProgramContainer programs;
 
-	for (auto& pair : required) {
-		EXPECT_EQ(pair, programs.insert(pair.first, pair.second));
+	for (auto& requiredPair : required) {
+		const ProgramContainer::value_type& insertedPair = programs.insert(requiredPair.first, requiredPair.second);
+
+		EXPECT_EQ(requiredPair.first, insertedPair.first);
+		EXPECT_EQ(requiredPair.second, insertedPair.second.get());
 	}
 
 	expectPrograms(programs, required);
 }
 
 TEST(ProgramContainerTest, insertExisting) {
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{100, new Program()},
 		{101, new Program()},
 		{102, new Program()},
@@ -71,7 +77,7 @@ TEST(ProgramContainerTest, insertExisting) {
 }
 
 TEST(ProgramContainerTest, erase) {
-	const vector<ProgramContainer::value_type> programsToAdd {
+	const IdTypeProgramPtrVector programsToAdd {
 		{50, new Program()},
 		{40, new Program()},
 		{70, new Program()},
@@ -84,7 +90,7 @@ TEST(ProgramContainerTest, erase) {
 
 	programs.erase(40);
 
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{50, programsToAdd[0].second},
 		{70, programsToAdd[2].second},
 		{60, programsToAdd[3].second},
@@ -94,7 +100,7 @@ TEST(ProgramContainerTest, erase) {
 }
 
 TEST(ProgramContainerTest, eraseInvalid) {
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{10, new Program()},
 		{20, new Program()},
 		{15, new Program()},
@@ -115,7 +121,7 @@ TEST(ProgramContainerTest, eraseDestructed) {
 }
 
 TEST(ProgramContainerTest, at) {
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{10, new Program()},
 		{15, new Program()},
 		{20, new Program()},
@@ -126,30 +132,16 @@ TEST(ProgramContainerTest, at) {
 
 	ASSERT_EQ(required.size(), programs.size());
 	for (unsigned i = 0; i < required.size(); ++i) {
-		EXPECT_EQ(required[i].second, programs.at(required[i].first));
-	}
-}
+		const IdType& requiredId = required[i].first;
+		const Program* requiredPtr = required[i].second;
 
-TEST(ProgramContainerTest, atConst) {
-	const vector<ProgramContainer::value_type> required {
-		{10, new Program()},
-		{15, new Program()},
-		{20, new Program()},
-	};
-
-	ProgramContainer programs;
-	const ProgramContainer& constPrograms = programs;
-
-	insertToPrograms(programs, required);
-
-	ASSERT_EQ(required.size(), constPrograms.size());
-	for (unsigned i = 0; i < required.size(); ++i) {
-		EXPECT_EQ(required[i].second, constPrograms.at(required[i].first));
+		Program* actualProgram = programs.at(requiredId);
+		EXPECT_EQ(requiredPtr, actualProgram);
 	}
 }
 
 TEST(ProgramContainerTest, atInvalid) {
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{10, new Program()},
 		{15, new Program()},
 		{20, new Program()},
@@ -161,8 +153,29 @@ TEST(ProgramContainerTest, atInvalid) {
 	EXPECT_THROW(programs.at(6), NoSuchElementException);
 }
 
+TEST(ProgramContainerTest, atConst) {
+	const IdTypeProgramPtrVector required {
+		{10, new Program()},
+		{15, new Program()},
+		{20, new Program()},
+	};
+
+	ProgramContainer programs;
+	insertToPrograms(programs, required);
+
+	const ProgramContainer& constPrograms = programs;
+
+	ASSERT_EQ(required.size(), programs.size());
+	for (unsigned i = 0; i < required.size(); ++i) {
+		const IdType& requiredId = required[i].first;
+		const Program* requiredPtr = required[i].second;
+
+		EXPECT_EQ(requiredPtr, constPrograms.at(requiredId));
+	}
+}
+
 TEST(ProgramContainerTest, atConstInvalid) {
-	const vector<ProgramContainer::value_type> required {
+	const IdTypeProgramPtrVector required {
 		{10, new Program()},
 		{15, new Program()},
 		{20, new Program()},

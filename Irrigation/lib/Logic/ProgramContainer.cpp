@@ -11,19 +11,6 @@ ProgramContainer::ProgramContainer() {
 }
 
 ProgramContainer::~ProgramContainer() {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		delete it->second;
-	}
-}
-
-ProgramContainer::container_type::iterator ProgramContainer::find(const key_type& key) {
-	for (auto it = container.begin(); container.end() != it; ++it) {
-		if (it->first == key) {
-			return it;
-		}
-	}
-
-	throw NoSuchElementException("Program with id " + to_string(key) + " not found");
 }
 
 ProgramContainer::container_type::const_iterator ProgramContainer::find(const key_type& key) const {
@@ -36,26 +23,27 @@ ProgramContainer::container_type::const_iterator ProgramContainer::find(const ke
 	throw NoSuchElementException("Program with id " + to_string(key) + " not found");
 }
 
-const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) const {
-	return find(key)->second;
+const ProgramContainer::mapped_type::element_type* ProgramContainer::at(const key_type& key) const {
+	return find(key)->second.get();
 }
 
-ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) {
-	return find(key)->second;
+ProgramContainer::mapped_type::element_type* ProgramContainer::at(const key_type& key) {
+	return find(key)->second.get();
 }
 
-ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
+ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, mapped_type::element_type* value) {
+	unique_ptr<Program> program(value);
+
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
-			delete value;
 			throw AlreadyExistException("Program with id " + to_string(key) + " is already exist");
 		}
 	}
 
-	container.push_back(make_pair(key, value));
+	container.push_back(make_pair(key, move(program)));
 	LOGGER.debug("Program[%s] added: %s",
 		to_string(key).c_str(),
-		to_string(*value).c_str()
+		to_string(*container.back().second.get()).c_str()
 		);
 	return container.back();
 }
@@ -63,6 +51,5 @@ ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, cons
 void ProgramContainer::erase(const key_type& key) {
 	auto it = find(key);
 	LOGGER.debug("Program[%s] deleted", to_string(key).c_str());
-	delete it->second;
 	container.erase(it);
 }

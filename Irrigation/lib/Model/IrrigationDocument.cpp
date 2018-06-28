@@ -37,7 +37,7 @@ void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
 	if (!wateringController.isWateringActive()) {
 		for (auto it = programs->begin(); programs->end() != it; ++it) {
 			const IdType& idType = it->first;
-			const Program* program = it->second;
+			const Program* program = it->second.get();
 			if (program->isScheduled(rawTime)) {
 				LOGGER.debug("Program[%s] (%s) is scheduled",
 						to_string(idType).c_str(),

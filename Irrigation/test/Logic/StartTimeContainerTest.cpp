@@ -16,18 +16,21 @@ public:
 	virtual ~MockStartTime() { destructorIsCalled(); }
 };
 
-static void insertToStartTimes(StartTimeContainer& startTimes, const vector<StartTimeContainer::value_type>& values) {
+typedef vector<pair<const IdType, StartTime*>> IdTypeStartTimeVector;
+
+static void insertToStartTimes(StartTimeContainer& startTimes, const IdTypeStartTimeVector& values) {
 	for (unsigned i = 0; i < values.size(); ++i) {
 		startTimes.insert(values[i].first, values[i].second);
 	}
 }
 
-static void expectStartTimes(const StartTimeContainer& startTimes, const vector<StartTimeContainer::value_type>& required) {
+static void expectStartTimes(const StartTimeContainer& startTimes, const IdTypeStartTimeVector& required) {
 	ASSERT_EQ(required.size(), startTimes.size());
 
 	unsigned i = 0;
 	for (auto it = startTimes.begin(); it != startTimes.end(); ++it, ++i) {
-		EXPECT_EQ(required[i], *it);
+		EXPECT_EQ(required[i].first, it->first);
+		EXPECT_EQ(required[i].second, it->second.get());
 	}
 }
 
@@ -41,7 +44,7 @@ TEST(StartTimeContainerTest, size) {
 }
 
 TEST(StartTimeContainerTest, insert) {
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -49,15 +52,18 @@ TEST(StartTimeContainerTest, insert) {
 
 	StartTimeContainer startTimes;
 
-	for (auto& pair : required) {
-		EXPECT_EQ(pair, startTimes.insert(pair.first, pair.second));
+	for (auto& requiredPair : required) {
+		StartTimeContainer::value_type& insertedPair = startTimes.insert(requiredPair.first, requiredPair.second);
+
+		EXPECT_EQ(requiredPair.first, insertedPair.first);
+		EXPECT_EQ(requiredPair.second, insertedPair.second.get());
 	}
 
 	expectStartTimes(startTimes, required);
 }
 
 TEST(StartTimeContainerTest, insertExisted) {
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -70,7 +76,7 @@ TEST(StartTimeContainerTest, insertExisted) {
 }
 
 TEST(StartTimeContainerTest, erase) {
-	const vector<StartTimeContainer::value_type> startTimesToAdd {
+	const IdTypeStartTimeVector startTimesToAdd {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{30, new StartTime()},
@@ -83,7 +89,7 @@ TEST(StartTimeContainerTest, erase) {
 
 	startTimes.erase(30);
 
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, startTimesToAdd[0].second},
 		{20, startTimesToAdd[1].second},
 		{15, startTimesToAdd[3].second},
@@ -93,7 +99,7 @@ TEST(StartTimeContainerTest, erase) {
 }
 
 TEST(StartTimeContainerTest, eraseInvalid) {
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, new StartTime()},
 		{20, new StartTime()},
 		{15, new StartTime()},
@@ -114,7 +120,7 @@ TEST(StartTimeContainerTest, eraseDestructed) {
 }
 
 TEST(StartTimeContainerTest, at) {
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, new StartTime()},
 		{15, new StartTime()},
 		{20, new StartTime()},
@@ -125,30 +131,15 @@ TEST(StartTimeContainerTest, at) {
 
 	ASSERT_EQ(required.size(), startTimes.size());
 	for (unsigned i = 0; i < required.size(); ++i) {
-		EXPECT_EQ(required[i].second, startTimes.at(required[i].first));
-	}
-}
+		const IdType& requiredId = required[i].first;
+		const StartTime* requiredPtr = required[i].second;
 
-TEST(StartTimeContainerTest, atConst) {
-	const vector<StartTimeContainer::value_type> required {
-		{10, new StartTime()},
-		{15, new StartTime()},
-		{20, new StartTime()},
-	};
-
-	StartTimeContainer startTimes;
-	const StartTimeContainer& constStartTimes = startTimes;
-
-	insertToStartTimes(startTimes, required);
-
-	ASSERT_EQ(required.size(), constStartTimes.size());
-	for (unsigned i = 0; i < required.size(); ++i) {
-		EXPECT_EQ(required[i].second, constStartTimes.at(required[i].first));
+		EXPECT_EQ(requiredPtr, startTimes.at(requiredId));
 	}
 }
 
 TEST(StartTimeContainerTest, atInvalid) {
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, new StartTime()},
 		{15, new StartTime()},
 		{20, new StartTime()},
@@ -160,8 +151,29 @@ TEST(StartTimeContainerTest, atInvalid) {
 	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
 }
 
+TEST(StartTimeContainerTest, atConst) {
+	const IdTypeStartTimeVector required {
+		{10, new StartTime()},
+		{15, new StartTime()},
+		{20, new StartTime()},
+	};
+
+	StartTimeContainer startTimes;
+	insertToStartTimes(startTimes, required);
+
+	const StartTimeContainer& constStartTimes = startTimes;
+
+	ASSERT_EQ(required.size(), startTimes.size());
+	for (unsigned i = 0; i < required.size(); ++i) {
+		const IdType& requiredId = required[i].first;
+		const StartTime* requiredPtr = required[i].second;
+
+		EXPECT_EQ(requiredPtr, constStartTimes.at(requiredId));
+	}
+}
+
 TEST(StartTimeContainerTest, atConstInvalid) {
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{10, new StartTime()},
 		{15, new StartTime()},
 		{20, new StartTime()},
@@ -181,7 +193,7 @@ TEST(StartTimeContainerTest, destructed) {
 
 TEST(StartTimeContainerTest, sort) {
 
-	const vector<StartTimeContainer::value_type> startTimesToAdd {
+	const IdTypeStartTimeVector startTimesToAdd {
 		{0, new StartTime(0, 0, 15)},
 		{1, new StartTime(0, 0, 25)},
 		{2, new StartTime(0, 0, 10)},
@@ -193,7 +205,7 @@ TEST(StartTimeContainerTest, sort) {
 
 	startTimes.sort();
 
-	const vector<StartTimeContainer::value_type> required {
+	const IdTypeStartTimeVector required {
 		{2, startTimesToAdd[2].second},
 		{0, startTimesToAdd[0].second},
 		{3, startTimesToAdd[3].second},
@@ -202,4 +214,3 @@ TEST(StartTimeContainerTest, sort) {
 
 	expectStartTimes(startTimes, required);
 }
-

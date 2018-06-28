@@ -37,7 +37,7 @@ TEST(RunTimeContainerTest, at) {
 
 	unsigned i = 0;
 	for (auto it = runTimes.begin(); it != runTimes.end(); ++it, ++i) {
-		EXPECT_EQ(it->second, runTimes.at(i));
+		EXPECT_EQ(it->second.get(), runTimes.at(i));
 	}
 }
 
@@ -46,7 +46,7 @@ TEST(RunTimeContainerTest, atConst) {
 
 	unsigned i = 0;
 	for (auto it = constRunTimes.begin(); it != constRunTimes.end(); ++it, ++i) {
-		EXPECT_EQ(it->second, constRunTimes.at(i));
+		EXPECT_EQ(it->second.get(), constRunTimes.at(i));
 	}
 }
 

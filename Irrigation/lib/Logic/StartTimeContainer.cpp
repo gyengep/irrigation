@@ -11,19 +11,6 @@ StartTimeContainer::StartTimeContainer() {
 }
 
 StartTimeContainer::~StartTimeContainer() {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		delete it->second;
-	}
-}
-
-StartTimeContainer::container_type::iterator StartTimeContainer::find(const key_type& key) {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		if (it->first == key) {
-			return it;
-		}
-	}
-
-	throw NoSuchElementException("StartTime with id " + to_string(key) + " not found");
 }
 
 StartTimeContainer::container_type::const_iterator StartTimeContainer::find(const key_type& key) const {
@@ -36,31 +23,29 @@ StartTimeContainer::container_type::const_iterator StartTimeContainer::find(cons
 	throw NoSuchElementException("StartTime with id " + to_string(key) + " not found");
 }
 
-const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) const {
-	return find(key)->second;
+const StartTimeContainer::mapped_type::element_type* StartTimeContainer::at(const key_type& key) const {
+	return find(key)->second.get();
 }
 
-StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) {
-	return find(key)->second;
+StartTimeContainer::mapped_type::element_type* StartTimeContainer::at(const key_type& key) {
+	return find(key)->second.get();
 }
 
-StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
+StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, mapped_type::element_type* value) {
+	unique_ptr<StartTime> startTime(value);
 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
-			delete value;
 			throw AlreadyExistException("Program with id " + to_string(key) + " is already exist");
 		}
 	}
 
-	container.push_back(make_pair(key, value));
+	container.push_back(make_pair(key, move(startTime)));
 	return container.back();
 }
 
 void StartTimeContainer::erase(const key_type& key) {
-	auto it = find(key);
-	delete it->second;
-	container.erase(it);
+	container.erase(find(key));
 }
 
 void StartTimeContainer::sort() {
