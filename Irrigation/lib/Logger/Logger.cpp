@@ -5,6 +5,7 @@
 #include <sstream>
 #include <thread>
 #include <vector>
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 
@@ -82,6 +83,17 @@ Logger::~Logger() {
 void Logger::setOutput(ostream* o) {
 	lock_guard<mutex> lock(logMutex);
 	output.reset(o);
+}
+
+void Logger::setFileName(std::string fileName) {
+	unique_ptr<ofstream> ofs(new ofstream());
+	ofs->open(fileName, ofstream::out | ofstream::app);
+
+	if (ofs->fail()) {
+		throw IOException(errno);
+	}
+
+	setOutput(ofs.release());
 }
 
 void Logger::setLevel(LogLevel logLevel) {

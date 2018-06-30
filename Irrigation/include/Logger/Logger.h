@@ -45,6 +45,7 @@ public:
 	LogLevel getLevel() const { return logLevel; }
 	void setLevel(LogLevel logLevel);
 	void setOutput(std::ostream* output);
+	void setFileName(std::string fileName);
 	bool isLoggable(LogLevel logLevel) const;
 
 	void error(const char* message, const std::exception& e);

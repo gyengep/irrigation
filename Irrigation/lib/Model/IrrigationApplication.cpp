@@ -3,6 +3,7 @@
 #include <fstream>
 #include <mutex>
 #include <sys/unistd.h>
+#include "Configuration.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
 #include "Logger/Logger.h"
@@ -17,10 +18,6 @@ using namespace std;
 
 mutex Application::createMutex;
 unique_ptr<Application> Application::instance;
-
-const string Application::configFileName = "/tmp/irrigation.xml";
-const string Application::logFileName = "/tmp/irrigation.log";
-const LogLevel Application::logLevel = LogLevel::TRACE;
 
 
 Application& Application::getInstance() {
@@ -43,23 +40,6 @@ Application::Application() :
 Application::~Application() {
 }
 
-void Application::initLogger() {
-	try {
-		unique_ptr<ofstream> ofs(new ofstream());
-		ofs->exceptions(ofstream::badbit | ofstream::failbit);
-		ofs->open(logFileName, ofstream::out | ofstream::app);
-
-		if (ofs->fail()) {
-			throw IOException(errno);
-		}
-
-		LOGGER.setOutput(ofs.release());
-		LOGGER.setLevel(logLevel);
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't initialize logger"));
-	}
-}
-
 void Application::initGpio() {
 	try {
 		GpioHandler::init();
@@ -74,7 +54,7 @@ void Application::initDocument() {
 	try {
 		LOGGER.debug("Loading configuration...");
 
-		const string xml = readFile(configFileName);
+		const string xml = readFile(Configuration::getInstance().getConfigFileName());
 		const DocumentDTO documentDTO = XmlReader().loadDocument(xml);
 		document->updateFromDTO(documentDTO);
 
@@ -91,8 +71,6 @@ void Application::initDocument() {
 }
 
 void Application::init() {
-	initLogger();
-
 	LOGGER.info("Irrigation System started");
 
 	initGpio();
@@ -124,7 +102,7 @@ void Application::start() {
 }
 
 void Application::stop() {
-	saveDocument(configFileName);
+	saveDocument(Configuration::getInstance().getConfigFileName());
 	document.reset();
 
 	LOGGER.info("Irrigation System stopped");
