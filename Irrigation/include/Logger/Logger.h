@@ -26,7 +26,7 @@ std::string to_string(LogLevel logLevel);
 
 class Logger {
 	static std::unique_ptr<Logger> instance;
-	static std::mutex initMutex;
+	static std::mutex createMutex;
 
 	mutable std::mutex logMutex;
 	std::atomic<LogLevel> logLevel;

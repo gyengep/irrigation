@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,7 +34,7 @@ using namespace std;
 	}
 
 unique_ptr<Logger> Logger::instance;
-mutex Logger::initMutex;
+mutex Logger::createMutex;
 
 
 string to_string(LogLevel logLevel) {
@@ -58,7 +59,7 @@ string to_string(LogLevel logLevel) {
 
 Logger& Logger::getInstance() {
 	if (nullptr == instance.get()) {
-		lock_guard<mutex> lock(initMutex);
+		lock_guard<mutex> lock(createMutex);
 
 		if (nullptr == instance) {
 			instance.reset(new Logger());
@@ -112,11 +113,9 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 	lock_guard<mutex> lock(logMutex);
 
 	if (output.get() != nullptr) {
-		vector<char> timeBuffer(100);
 		time_t t = time(nullptr);
-		strftime(timeBuffer.data(), timeBuffer.size(), "%Y.%m.%d %H:%M:%S", localtime(&t));
 
-		(*output) << timeBuffer.data() << " ";
+		(*output) << put_time(localtime(&t), "%Y.%m.%d %H:%M:%S") << ' ';
 		(*output) << this_thread::get_id() << " ";
 		(*output) << to_string(logLevel) << ": ";
 		(*output) << message;
