@@ -82,13 +82,14 @@ void Application::start() {
 	auto updateTimePoint = chrono::steady_clock::now();
 	time_t lastTime = 0;
 
-	LOGGER.debug("Main loop is started");
+	LOGGER.debug("Main loop started");
 
 	while (!isTerminated) {
 		time_t currentTime = getTime();
+		int diffTime = currentTime - lastTime;
 
-		if ((currentTime != (lastTime + 1)) && (lastTime != 0)) {
-			LOGGER.warning("Update period failure! different is: %d", (currentTime - lastTime));
+		if ((diffTime != 1) && (lastTime != 0)) {
+			LOGGER.warning("Update period failure! different is: %d", diffTime);
 		}
 
 		lastTime = currentTime;
@@ -98,7 +99,7 @@ void Application::start() {
 		this_thread::sleep_until(updateTimePoint);
 	}
 
-	LOGGER.debug("Main loop is finished");
+	LOGGER.debug("Main loop finished");
 }
 
 void Application::stop() {

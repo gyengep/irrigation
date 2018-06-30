@@ -15,6 +15,18 @@ void signal_handler(int signo) {
 	Application::getInstance().terminate();
 }
 
+bool initLogger() {
+	try {
+		LOGGER.setLevel(Configuration::getInstance().getLogLevel());
+		LOGGER.setFileName(Configuration::getInstance().getLogFileName());
+	} catch (const exception& e) {
+		cerr << "Exception: " << e.what() << endl;
+		return false;
+	}
+
+	return true;
+}
+
 void daemonize() {
 	/* Our process ID and Session ID */
 	pid_t pid, sid;
@@ -34,8 +46,7 @@ void daemonize() {
 	umask(0);
 
 	/* Open any logs here */
-	LOGGER.setLevel(Configuration::getInstance().getLogLevel());
-	if (!LOGGER.setFileName(Configuration::getInstance().getLogFileName())) {
+	if (!initLogger()) {
 		exit(EXIT_FAILURE);
 	}
 
@@ -73,9 +84,9 @@ int main() {
 		return EXIT_SUCCESS;
 
 	} catch (const exception& e) {
-		LOGGER.error("Irrigation system is stopped because of an exception", e);
+		LOGGER.error("Irrigation System stopped because of an exception", e);
 	} catch(...) {
-		LOGGER.error("Irrigation system is stopped because of an unknown error");
+		LOGGER.error("Irrigation System stopped because of an unknown error");
 	}
 
 	return EXIT_FAILURE;
