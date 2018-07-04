@@ -1,9 +1,11 @@
 #include "Logger.h"
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <thread>
 #include <vector>
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 
@@ -33,7 +35,7 @@ using namespace std;
 	}
 
 unique_ptr<Logger> Logger::instance;
-mutex Logger::initMutex;
+mutex Logger::createMutex;
 
 
 string to_string(LogLevel logLevel) {
@@ -58,7 +60,7 @@ string to_string(LogLevel logLevel) {
 
 Logger& Logger::getInstance() {
 	if (nullptr == instance.get()) {
-		lock_guard<mutex> lock(initMutex);
+		lock_guard<mutex> lock(createMutex);
 
 		if (nullptr == instance) {
 			instance.reset(new Logger());
@@ -81,6 +83,17 @@ Logger::~Logger() {
 void Logger::setOutput(ostream* o) {
 	lock_guard<mutex> lock(logMutex);
 	output.reset(o);
+}
+
+void Logger::setFileName(std::string fileName) {
+	unique_ptr<ofstream> ofs(new ofstream());
+	ofs->open(fileName, ofstream::out | ofstream::app);
+
+	if (ofs->fail()) {
+		throw IOException(errno);
+	}
+
+	setOutput(ofs.release());
 }
 
 void Logger::setLevel(LogLevel logLevel) {
@@ -112,11 +125,9 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 	lock_guard<mutex> lock(logMutex);
 
 	if (output.get() != nullptr) {
-		vector<char> timeBuffer(100);
 		time_t t = time(nullptr);
-		strftime(timeBuffer.data(), timeBuffer.size(), "%Y.%m.%d %H:%M:%S", localtime(&t));
 
-		(*output) << timeBuffer.data() << " ";
+		(*output) << put_time(localtime(&t), "%Y.%m.%d %H:%M:%S") << ' ';
 		(*output) << this_thread::get_id() << " ";
 		(*output) << to_string(logLevel) << ": ";
 		(*output) << message;

@@ -1,7 +1,10 @@
 #include <gmock/gmock.h>
+#include <fstream>
+#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 
 using namespace std;
+
 
 
 #define LOG_ENTRY_ERROR 	"log_entry_error"
@@ -358,4 +361,16 @@ TEST(LoggerTest, isLoggableTrace) {
 	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::INFO));
 	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::DEBUG));
 	EXPECT_TRUE(LOGGER.isLoggable(LogLevel::TRACE));
+}
+
+TEST(LoggerTest, setFileName) {
+	std::string fileName = std::tmpnam(nullptr);
+	EXPECT_NO_THROW(LOGGER.setFileName(fileName));
+
+	ifstream is(fileName);
+	EXPECT_TRUE(is.good());
+}
+
+TEST(LoggerTest, setFileNameInvalid) {
+	EXPECT_THROW(LOGGER.setFileName("/////////"), IOException);
 }
