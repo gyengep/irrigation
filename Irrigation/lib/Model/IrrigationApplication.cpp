@@ -3,6 +3,7 @@
 #include <fstream>
 #include <mutex>
 #include <sys/unistd.h>
+#include "Configuration.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
 #include "Logger/Logger.h"
@@ -17,10 +18,6 @@ using namespace std;
 
 mutex Application::createMutex;
 unique_ptr<Application> Application::instance;
-
-const string Application::configFileName = "/tmp/irrigation.xml";
-const string Application::logFileName = "/tmp/irrigation.log";
-const LogLevel Application::logLevel = LogLevel::TRACE;
 
 
 Application& Application::getInstance() {
@@ -43,23 +40,6 @@ Application::Application() :
 Application::~Application() {
 }
 
-void Application::initLogger() {
-	try {
-		unique_ptr<ofstream> ofs(new ofstream());
-		ofs->exceptions(ofstream::badbit | ofstream::failbit);
-		ofs->open(logFileName, ofstream::out | ofstream::app);
-
-		if (ofs->fail()) {
-			throw IOException(errno);
-		}
-
-		LOGGER.setOutput(ofs.release());
-		LOGGER.setLevel(logLevel);
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't initialize logger"));
-	}
-}
-
 void Application::initGpio() {
 	try {
 		GpioHandler::init();
@@ -74,7 +54,7 @@ void Application::initDocument() {
 	try {
 		LOGGER.debug("Loading configuration...");
 
-		const string xml = readFile(configFileName);
+		const string xml = readFile(Configuration::getInstance().getConfigFileName());
 		const DocumentDTO documentDTO = XmlReader().loadDocument(xml);
 		document->updateFromDTO(documentDTO);
 
@@ -91,8 +71,6 @@ void Application::initDocument() {
 }
 
 void Application::init() {
-	initLogger();
-
 	LOGGER.info("Irrigation System started");
 
 	initGpio();
@@ -104,13 +82,14 @@ void Application::start() {
 	auto updateTimePoint = chrono::steady_clock::now();
 	time_t lastTime = 0;
 
-	LOGGER.debug("Main loop is started");
+	LOGGER.debug("Main loop started");
 
 	while (!isTerminated) {
 		time_t currentTime = getTime();
+		int diffTime = currentTime - lastTime;
 
-		if ((currentTime != (lastTime + 1)) && (lastTime != 0)) {
-			LOGGER.warning("Update period failure! different is: %d", (currentTime - lastTime));
+		if ((diffTime != 1) && (lastTime != 0)) {
+			LOGGER.warning("Update period failure! different is: %d", diffTime);
 		}
 
 		lastTime = currentTime;
@@ -120,11 +99,11 @@ void Application::start() {
 		this_thread::sleep_until(updateTimePoint);
 	}
 
-	LOGGER.debug("Main loop is finished");
+	LOGGER.debug("Main loop finished");
 }
 
 void Application::stop() {
-	saveDocument(configFileName);
+	//saveDocument(Configuration::getInstance().getConfigFileName());
 	document.reset();
 
 	LOGGER.info("Irrigation System stopped");
@@ -168,33 +147,33 @@ string Application::readFile(const string& fileName) {
 	return buffer;
 }
 
-void Application::saveDocument(const string& fileName) const {
-	const DocumentDTO documentDTO = document->getDocumentDTO();
-	const string xml = XmlWriter().save(documentDTO);
-
-	try {
-		writeFile(fileName, xml);
-		LOGGER.debug("Configuration successfully saved.");
-	} catch (const IOException& e) {
-		LOGGER.warning("Configuration file saving failed. %s", e.what());
-	}
-}
-
-void Application::writeFile(const string& fileName, const string& text) {
-	ofstream ofs;
-
-	ofs.open(fileName, ofstream::out | ofstream::trunc);
-	if (ofs.fail()) {
-		throw IOException(errno);
-	}
-
-	ofs << text;
-	if (ofs.fail()) {
-		throw IOException(errno);
-	}
-
-	ofs.close();
-	if (ofs.fail()) {
-		throw IOException(errno);
-	}
-}
+//void Application::saveDocument(const string& fileName) const {
+//	const DocumentDTO documentDTO = document->getDocumentDTO();
+//	const string xml = XmlWriter().save(documentDTO);
+//
+//	try {
+//		writeFile(fileName, xml);
+//		LOGGER.debug("Configuration successfully saved.");
+//	} catch (const IOException& e) {
+//		LOGGER.warning("Configuration file saving failed. %s", e.what());
+//	}
+//}
+//
+//void Application::writeFile(const string& fileName, const string& text) {
+//	ofstream ofs;
+//
+//	ofs.open(fileName, ofstream::out | ofstream::trunc);
+//	if (ofs.fail()) {
+//		throw IOException(errno);
+//	}
+//
+//	ofs << text;
+//	if (ofs.fail()) {
+//		throw IOException(errno);
+//	}
+//
+//	ofs.close();
+//	if (ofs.fail()) {
+//		throw IOException(errno);
+//	}
+//}
