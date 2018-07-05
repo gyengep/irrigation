@@ -6,13 +6,16 @@
 			<schedulertype>specified</schedulertype>
 			<schedulers>
 				<scheduler type="specified">
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
@@ -28,17 +31,20 @@
 			</starttimes>
 		</program>
 		<program id="8">
-			<name>paradicsom</name>
+			<name>buxus</name>
 			<schedulertype>specified</schedulertype>
 			<schedulers>
 				<scheduler type="specified">
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
+						<day>false</day>
+						<day>true</day>
+						<day>false</day>
+						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
@@ -54,17 +60,20 @@
 			</starttimes>
 		</program>
 		<program id="10">
-			<name>virag</name>
+			<name>paradicsom</name>
 			<schedulertype>specified</schedulertype>
 			<schedulers>
 				<scheduler type="specified">
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
-					<day>true</day>
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
@@ -72,11 +81,42 @@
 				<runtime id="1">0</runtime>
 				<runtime id="2">0</runtime>
 				<runtime id="3">0</runtime>
-				<runtime id="4">180</runtime>
-				<runtime id="5">60</runtime>
+				<runtime id="4">60</runtime>
+				<runtime id="5">180</runtime>
 			</runtimes>
 			<starttimes>
 				<starttime id="11">23400</starttime>
+			</starttimes>
+		</program>
+		<program id="12">
+			<name>kanikula</name>
+			<schedulertype>specified</schedulertype>
+			<schedulers>
+				<scheduler type="specified">
+					<adjustment>10</adjustment>
+					<days>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+					</days>
+				</scheduler>
+			</schedulers>
+			<runtimes>
+				<runtime id="0">1560</runtime>
+				<runtime id="1">2280</runtime>
+				<runtime id="2">1920</runtime>
+				<runtime id="3">0</runtime>
+				<runtime id="4">0</runtime>
+				<runtime id="5">0</runtime>
+			</runtimes>
+			<starttimes>
+				<starttime id="13">43200</starttime>
+				<starttime id="14">50400</starttime>
+				<starttime id="15">57600</starttime>
 			</starttimes>
 		</program>
 	</programs>
