@@ -111,15 +111,23 @@ void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& sched
 		}
 	}
 
-	unique_ptr<list<bool>> values(new list<bool>());
+	xml_node tmpNode;
 
-	xml_node dayNode = node.child("day");
-	while (dayNode) {
-		values->push_back(dayNode.text().as_bool());
-		dayNode = dayNode.next_sibling();
+	if ((tmpNode = node.child("adjustment")) != nullptr) {
+		scheduler.setAdjustment(tmpNode.text().as_uint());
 	}
 
-	scheduler.setValues(values.release());
+	if ((tmpNode = node.child("days")) != nullptr) {
+		unique_ptr<list<bool>> values(new list<bool>());
+
+		xml_node dayNode = tmpNode.child("day");
+		while (dayNode) {
+			values->push_back(dayNode.text().as_bool());
+			dayNode = dayNode.next_sibling();
+		}
+
+		scheduler.setValues(values.release());
+	}
 }
 
 void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool isIdRequired) const {

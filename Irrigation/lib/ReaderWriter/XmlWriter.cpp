@@ -108,10 +108,15 @@ void XmlWriter::saveScheduler(xml_node* parent, const SpecifiedSchedulerDTO& sch
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("specified");
 
+	if (scheduler.hasAdjustment()) {
+		node.append_child("adjustment").text().set(scheduler.getAdjustment());
+	}
+
 	if (scheduler.hasValues()) {
+		xml_node daysNode = node.append_child("days");
 		const list<bool>& values = scheduler.getValues();
 		for (auto it = values.begin(); it != values.end(); ++it) {
-			node.append_child("day").text().set(*it);
+			daysNode.append_child("day").text().set(*it);
 		}
 	}
 }

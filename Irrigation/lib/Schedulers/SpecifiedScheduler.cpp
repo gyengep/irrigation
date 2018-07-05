@@ -15,7 +15,9 @@ SpecifiedScheduler* SchedulerFactory::createSpecifiedScheduler() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SpecifiedScheduler::SpecifiedScheduler() {
+SpecifiedScheduler::SpecifiedScheduler() :
+	adjustment(100)
+{
 	days.fill(false);
 }
 
@@ -28,6 +30,14 @@ void SpecifiedScheduler::checkIndex(size_t day) const {
 				"Day index shall be less than " + to_string(days.size()) +
 				", while actual value is " + to_string(day));
 	}
+}
+
+void SpecifiedScheduler::setAdjustment(unsigned adjustment) {
+	this->adjustment = adjustment;
+}
+
+unsigned SpecifiedScheduler::getAdjustment() const {
+	return adjustment;
 }
 
 void SpecifiedScheduler::enableDay(size_t day, bool enable) {
@@ -48,10 +58,14 @@ bool SpecifiedScheduler::isDayScheduled(const tm& timeinfo) const {
 }
 
 SpecifiedSchedulerDTO SpecifiedScheduler::getSpecifiedSchedulerDTO() const {
-	return SpecifiedSchedulerDTO(new list<bool>(days.begin(), days.end()));
+	return SpecifiedSchedulerDTO(adjustment, new list<bool>(days.begin(), days.end()));
 }
 
 void SpecifiedScheduler::updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO) {
+	if (schedulerDTO.hasAdjustment()) {
+		setAdjustment(schedulerDTO.getAdjustment());
+	}
+
 	if (schedulerDTO.hasValues()) {
 		const size_t maxIndex = min(days.size(), schedulerDTO.getValues().size());
 		for (size_t i = 0; i < maxIndex; ++i) {
@@ -63,8 +77,9 @@ void SpecifiedScheduler::updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO
 
 std::string to_string(const SpecifiedScheduler& specifiedScheduler) {
 	ostringstream o;
-	o << "SpecifiedScheduler{values=";
-	o << to_string(specifiedScheduler.days.begin(), specifiedScheduler.days.end());
+	o << "SpecifiedScheduler{";
+	o << "adjustment=" << specifiedScheduler.getAdjustment() << "% ";
+	o << "values=" << to_string(specifiedScheduler.days.begin(), specifiedScheduler.days.end());
 	o << "}";
 	return o.str();
 }

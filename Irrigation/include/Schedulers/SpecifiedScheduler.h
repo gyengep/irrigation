@@ -23,6 +23,7 @@ private:
 	typedef std::array<bool, DAY_COUNT> DayArray;
 
 	DayArray days;
+	unsigned adjustment;
 
 	void checkIndex(size_t day) const;
 
@@ -30,10 +31,13 @@ public:
 	SpecifiedScheduler();
 	virtual ~SpecifiedScheduler();
 
+	void setAdjustment(unsigned adjustment);
 	void enableDay(size_t day, bool enable);
 	bool isDayEnabled(size_t day) const;
 
 	virtual bool isDayScheduled(const std::tm& timeinfo) const;
+	virtual unsigned getAdjustment() const;
+
 
 	SpecifiedSchedulerDTO getSpecifiedSchedulerDTO() const;
 	void updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO);

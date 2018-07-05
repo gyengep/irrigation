@@ -22,7 +22,7 @@ TEST(ProgramDTOTest, defaultConstructor) {
 TEST(ProgramDTOTest, constructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
-	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(new list<bool>({ true, false, true }));
+	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(100, new list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(31), StartTimeDTO(18) });
 
@@ -50,7 +50,7 @@ TEST(ProgramDTOTest, constructor) {
 TEST(ProgramDTOTest, copyConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
-	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(new list<bool>({ true, false, true }));
+	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(110, new list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(100), RunTimeDTO(5) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(3), StartTimeDTO(131), StartTimeDTO(18) });
 
@@ -135,7 +135,7 @@ TEST(ProgramDTOTest, getSchedulerType) {
 }
 
 TEST(ProgramDTOTest, hasSpecifiedScheduler) {
-	const SpecifiedSchedulerDTO expectedScheduler(new list<bool>());
+	const SpecifiedSchedulerDTO expectedScheduler(90, new list<bool>());
 	ProgramDTO programDTO;
 
 	EXPECT_FALSE(programDTO.hasSpecifiedScheduler());
@@ -144,7 +144,7 @@ TEST(ProgramDTOTest, hasSpecifiedScheduler) {
 }
 
 TEST(ProgramDTOTest, getSpecifiedScheduler) {
-	const SpecifiedSchedulerDTO expectedScheduler(new list<bool>({ true, false, true, false }));
+	const SpecifiedSchedulerDTO expectedScheduler(80, new list<bool>({ true, false, true, false }));
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getSpecifiedScheduler(), logic_error);
@@ -241,8 +241,8 @@ TEST(ProgramDTOTest, equal) {
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
-	const SpecifiedSchedulerDTO expectedScheduler1(new list<bool>({ true, true, false }));
-	const SpecifiedSchedulerDTO expectedScheduler2(new list<bool>({ true, false, false }));
+	const SpecifiedSchedulerDTO expectedScheduler1(20, new list<bool>({ true, true, false }));
+	const SpecifiedSchedulerDTO expectedScheduler2(25, new list<bool>({ true, false, false }));
 
 	programDTO1.setSpecifiedScheduler(expectedScheduler1);
 	EXPECT_FALSE(programDTO1 == programDTO2);

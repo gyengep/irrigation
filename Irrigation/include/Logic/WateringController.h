@@ -26,7 +26,7 @@ public:
 	virtual ~WateringController();
 
 	void on1SecTimer(const std::time_t& rawTime);
-	void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, float adjustment = 1.0f);
+	void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent = 100);
 	void stop();
 
 	bool isWateringActive() const;

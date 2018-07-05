@@ -24,4 +24,5 @@ class Scheduler {
 public:
 	virtual ~Scheduler() = default;
 	virtual bool isDayScheduled(const std::tm& timeinfo) const = 0;
+	virtual unsigned getAdjustment() const = 0;
 };

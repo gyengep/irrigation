@@ -139,13 +139,47 @@ TEST_F(StartTimeReaderWriterTest, startTimeInvalidXml) {
 TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerAll) {
 	const string expectedXml =
 			"<scheduler type=\"specified\">"
-				"<day>true</day>"
-				"<day>false</day>"
+				"<adjustment>90</adjustment>"
+				"<days>"
+					"<day>true</day>"
+					"<day>false</day>"
+				"</days>"
 			"</scheduler>";
 
 	const SpecifiedSchedulerDTO scheduler = reader.loadSpecifiedScheduler(expectedXml);
 
-	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(new list<bool>({ true, false })));
+	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(90, new list<bool>({ true, false })));
+
+	const string actualXml = writer.save(scheduler, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
+}
+
+TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerAdjustment) {
+	const string expectedXml =
+			"<scheduler type=\"specified\">"
+				"<adjustment>80</adjustment>"
+			"</scheduler>";
+
+	const SpecifiedSchedulerDTO scheduler = reader.loadSpecifiedScheduler(expectedXml);
+
+	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO().setAdjustment(80));
+
+	const string actualXml = writer.save(scheduler, false);
+	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
+}
+
+TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerValues) {
+	const string expectedXml =
+			"<scheduler type=\"specified\">"
+				"<days>"
+					"<day>true</day>"
+					"<day>false</day>"
+				"</days>"
+			"</scheduler>";
+
+	const SpecifiedSchedulerDTO scheduler = reader.loadSpecifiedScheduler(expectedXml);
+
+	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO().setValues(new list<bool>({ true, false })));
 
 	const string actualXml = writer.save(scheduler, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
@@ -155,7 +189,7 @@ TEST_F(SpecifiedSchedulerReaderWriterTest, schedulerEmpty) {
 	const string expectedXml = "<scheduler type=\"specified\"/>";
 	const SpecifiedSchedulerDTO scheduler = reader.loadSpecifiedScheduler(expectedXml);
 
-	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO(new list<bool>()));
+	EXPECT_THAT(scheduler, SpecifiedSchedulerDTO());
 
 	const string actualXml = writer.save(scheduler, false);
 	EXPECT_EQ(expectedXml, remove_xml_tag(actualXml));
@@ -191,8 +225,11 @@ TEST_F(ProgramReaderWriterTest, programAll) {
 				"<schedulertype>specified</schedulertype>"
 				"<schedulers>"
 					"<scheduler type=\"specified\">"
-						"<day>true</day>"
-						"<day>false</day>"
+						"<adjustment>110</adjustment>"
+						"<days>"
+							"<day>true</day>"
+							"<day>false</day>"
+						"</days>"
 					"</scheduler>"
 				"</schedulers>"
 				"<runtimes>"
@@ -212,7 +249,7 @@ TEST_F(ProgramReaderWriterTest, programAll) {
 			ProgramDTO()
 			.setName("abcdefg")
 			.setSchedulerType("specified")
-			.setSpecifiedScheduler(SpecifiedSchedulerDTO(new list<bool>({ true, false})))
+			.setSpecifiedScheduler(SpecifiedSchedulerDTO(110, new list<bool>({ true, false})))
 			.setRunTimes(new list<RunTimeDTO>({
 				RunTimeDTO(20).setId(15),
 				RunTimeDTO(10).setId(25)}))
@@ -259,8 +296,11 @@ TEST_F(ProgramReaderWriterTest, programSchedulers) {
 			"<program>"
 				"<schedulers>"
 					"<scheduler type=\"specified\">"
-						"<day>true</day>"
-						"<day>false</day>"
+						"<adjustment>120</adjustment>"
+						"<days>"
+							"<day>true</day>"
+							"<day>false</day>"
+						"</days>"
 					"</scheduler>"
 				"</schedulers>"
 			"</program>";
@@ -269,7 +309,7 @@ TEST_F(ProgramReaderWriterTest, programSchedulers) {
 
 	EXPECT_THAT(program,
 			ProgramDTO()
-			.setSpecifiedScheduler(SpecifiedSchedulerDTO(new list<bool>({ true, false})))
+			.setSpecifiedScheduler(SpecifiedSchedulerDTO(120, new list<bool>({ true, false})))
 			);
 
 	const string actualXml = writer.save(program, false);
@@ -380,8 +420,11 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 						"<schedulertype>specified</schedulertype>"
 						"<schedulers>"
 							"<scheduler type=\"specified\">"
-								"<day>true</day>"
-								"<day>false</day>"
+								"<adjustment>130</adjustment>"
+								"<days>"
+									"<day>true</day>"
+									"<day>false</day>"
+								"</days>"
 							"</scheduler>"
 						"</schedulers>"
 						"<runtimes>"
@@ -399,10 +442,13 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 						"<schedulertype>specified</schedulertype>"
 						"<schedulers>"
 							"<scheduler type=\"specified\">"
-								"<day>true</day>"
-								"<day>true</day>"
-								"<day>false</day>"
-								"<day>false</day>"
+								"<adjustment>140</adjustment>"
+								"<days>"
+									"<day>true</day>"
+									"<day>true</day>"
+									"<day>false</day>"
+									"<day>false</day>"
+								"</days>"
 							"</scheduler>"
 						"</schedulers>"
 						"<runtimes>"
@@ -426,7 +472,7 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 				.setId(5)
 				.setName("abcdefg")
 				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(new list<bool>({ true, false })))
+				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, new list<bool>({ true, false })))
 				.setRunTimes(new list<RunTimeDTO>({
 					RunTimeDTO(20).setId(15),
 					RunTimeDTO(10).setId(25)}))
@@ -438,7 +484,7 @@ TEST_F(DocumentReaderWriterTest, documentAll) {
 				.setId(6)
 				.setName("123456")
 				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(new list<bool>({ true, true, false, false })))
+				.setSpecifiedScheduler(SpecifiedSchedulerDTO(140, new list<bool>({ true, true, false, false })))
 				.setRunTimes(new list<RunTimeDTO>({
 					RunTimeDTO(200).setId(115),
 					RunTimeDTO(210).setId(125),

@@ -106,14 +106,12 @@ TEST_F(WateringControllerTest, timingCheckWith0end) {
 TEST_F(WateringControllerTest, timingAdjust) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(0)->setValue(4);
-	runTimeContainer.at(2)->setValue(6);
-	runTimeContainer.at(3)->setValue(2);
+	runTimeContainer.at(0)->setValue(10);
+	runTimeContainer.at(2)->setValue(20);
 
 	time_t t = time(nullptr);
-	wateringController->start(t, runTimeContainer, 0.5f);
+	wateringController->start(t, runTimeContainer, 30);
 
-	const vector<size_t> requiredZones { 0, 0, 2, 2, 2, 3 };
+	const vector<size_t> requiredZones { 0, 0, 0, 2, 2, 2, 2, 2, 2 };
 	checkActiveZones(t, requiredZones);
 }
-
