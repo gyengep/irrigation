@@ -42,7 +42,7 @@ void IrrigationDocument::on1SecTimer(const time_t& rawTime) {
 				LOGGER.debug("Program[%s] (%s) is scheduled",
 						to_string(idType).c_str(),
 						program->getName().c_str());
-				wateringController.start(rawTime, program->getRunTimes());
+				wateringController.start(rawTime, program->getRunTimes(), program->getCurrentScheduler().getAdjustment());
 				break;
 			}
 		}

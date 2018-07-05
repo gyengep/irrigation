@@ -33,18 +33,18 @@ void WateringController::on1SecTimer(const time_t& rawTime) {
 	}
 }
 
-void WateringController::start(const time_t& rawTime, const RunTimeContainer& runTimes, float adjustment) {
+void WateringController::start(const time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent) {
 	wateringProperties.reset(new WateringProperties());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
-		wateringProperties->runTimes[i].setValue(runTimes.at(i)->getValue() * adjustment);
+		wateringProperties->runTimes[i].setValue(runTimes.at(i)->getValue() * adjustmentPercent / 100);
 	}
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 		LOGGER.debug("Irrigation started with parameters: \n"
-			"\tadjustment: %f, runTimes: %s\n"
+			"\tadjustment: %u%%, runTimes: %s\n"
 			"\tadjusted runTimes: %s",
-				adjustment, to_string(runTimes).c_str(),
+			adjustmentPercent, to_string(runTimes).c_str(),
 				to_string(
 					wateringProperties->runTimes.begin(),
 					wateringProperties->runTimes.end()).c_str()

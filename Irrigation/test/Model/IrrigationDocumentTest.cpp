@@ -30,7 +30,7 @@ void IrrigationDocumentTest::TearDown() {
 TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 	const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 		ProgramDTO("Abcdefg", "specified",
-			SpecifiedSchedulerDTO(new list<bool>({ false, true, false, false, false, true, false})),
+			SpecifiedSchedulerDTO(39, new list<bool>({ false, true, false, false, false, true, false})),
 			new list<RunTimeDTO>({
 				RunTimeDTO(20).setId(0),
 				RunTimeDTO(21).setId(1),
@@ -46,7 +46,7 @@ TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 			})
 		).setId(15),
 		ProgramDTO("Program2", "specified",
-			SpecifiedSchedulerDTO(new list<bool>({ true, false, false, false, false, false, false})),
+			SpecifiedSchedulerDTO(40, new list<bool>({ true, false, false, false, false, false, false})),
 			new list<RunTimeDTO>({
 				RunTimeDTO(120).setId(0),
 				RunTimeDTO(121).setId(1),

@@ -35,7 +35,7 @@ TEST(Program, getSpecifiedScheduler) {
 
 TEST(Program, convertProgramDTO) {
 	const ProgramDTO expectedProgramDTO("Abcdefg", "specified",
-			SpecifiedSchedulerDTO(new list<bool>({ false, true, false, false, false, true, false})),
+			SpecifiedSchedulerDTO(95, new list<bool>({ false, true, false, false, false, true, false})),
 			new list<RunTimeDTO>({
 				RunTimeDTO(20).setId(0),
 				RunTimeDTO(21).setId(1),
@@ -100,6 +100,7 @@ TEST(DISABLED_Program, updateSchedulerTypeFromProgramDTO) {
 
 TEST(Program, updateSpecifiedSchedulerFromProgramDTO) {
 	Program program;
+	program.getSpecifiedScheduler().setAdjustment(73);
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SUNDAY, true);
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::MONDAY, false);
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::TUESDAY, true);
@@ -110,18 +111,19 @@ TEST(Program, updateSpecifiedSchedulerFromProgramDTO) {
 
 	program.updateFromDTO(ProgramDTO());
 	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(new list<bool>({ true, false, true, false, false, false, false }))));
+		Eq(SpecifiedSchedulerDTO(73, new list<bool>({ true, false, true, false, false, false, false }))));
 
 	program.updateFromDTO(ProgramDTO().setSpecifiedScheduler(
-		SpecifiedSchedulerDTO(new list<bool>({ false, true, false, false, false, true, false}))
+		SpecifiedSchedulerDTO(84, new list<bool>({ false, true, false, false, false, true, false}))
 	));
 
 	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(new list<bool>({ false, true, false, false, false, true, false}))));
+		Eq(SpecifiedSchedulerDTO(84, new list<bool>({ false, true, false, false, false, true, false}))));
 }
 
 TEST(Program, updateLessSpecifiedSchedulerFromProgramDTO) {
 	Program program;
+	program.getSpecifiedScheduler().setAdjustment(34);
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SUNDAY, true);
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::MONDAY, false);
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::TUESDAY, true);
@@ -131,11 +133,11 @@ TEST(Program, updateLessSpecifiedSchedulerFromProgramDTO) {
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SATURDAY, true);
 
 	program.updateFromDTO(ProgramDTO().setSpecifiedScheduler(
-		SpecifiedSchedulerDTO(new list<bool>({ false, true, false, true }))
+		SpecifiedSchedulerDTO(34, new list<bool>({ false, true, false, true }))
 	));
 
 	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(new list<bool>({ false, true, false, true, false, false, false}))));
+		Eq(SpecifiedSchedulerDTO(34, new list<bool>({ false, true, false, true, false, false, false}))));
 }
 
 
