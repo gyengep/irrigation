@@ -2,6 +2,7 @@
 #include <chrono>
 #include <fstream>
 #include <mutex>
+#include <thread>
 #include <sys/unistd.h>
 #include "Configuration.h"
 #include "Exceptions/Exceptions.h"
