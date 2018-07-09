@@ -1,4 +1,10 @@
 #include "GpioHandler.h"
+#include "ValveConfig.h"
+
+#ifdef __arm__
+#include <wiringPi.h>
+#endif
+
 
 using namespace std;
 
@@ -18,20 +24,15 @@ const shared_ptr<GpioHandler> GpioHandler::getInstancePtr() {
 	return instance;
 }
 
-
-
-#ifdef __arm__
-
-#include <wiringPi.h>
-
-void GpioHandler::init() {
-	if (wiringPiSetup() == -1) {
-		throw runtime_error("GPIO initialization FAILED");
-	}
-
 #if VALVE_COUNT != 7
 #error Invalid valve count
 #endif
+
+void GpioHandler::init() {
+#ifdef __arm__
+	if (wiringPiSetup() == -1) {
+		throw runtime_error("GPIO initialization FAILED");
+	}
 
 	pinMode(VALVE0_PIN, OUTPUT);
 	pinMode(VALVE1_PIN, OUTPUT);
@@ -40,19 +41,11 @@ void GpioHandler::init() {
 	pinMode(VALVE4_PIN, OUTPUT);
 	pinMode(VALVE5_PIN, OUTPUT);
 	pinMode(VALVE6_PIN, OUTPUT);
+#endif
 }
 
 void GpioHandler::setPin(int pin, int mode) {
+#ifdef __arm__
 	digitalWrite(pin, mode);
+#endif
 }
-
-#else
-
-void GpioHandler::init() {
-}
-
-void GpioHandler::setPin(int pin, int mode) {
-}
-
-
-#endif // __arm__
