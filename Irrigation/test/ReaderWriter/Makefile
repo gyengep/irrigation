@@ -23,7 +23,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 LOCAL_LIBS      = -l$(TARGET_NAME) -lDTO
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
-LIBS            = $(LOCAL_LIBS) -lgmock -lpugixml
+LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = -isystem $(PROJECT_ROOT)/3p/gmock_gtest $(INCLUDE_PATH) 
