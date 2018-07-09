@@ -25,6 +25,14 @@ INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
 LIBS            = $(LOCAL_LIBS) -pthread -lgmock
 
+# Detect the Raspberry Pi from cpuinfo
+# Count the matches for BCMxxxx in cpuinfo
+RPI            = $(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)
+
+ifeq "$(RPI)" "1"
+LIBS          += -lwiringPi
+endif
+
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = -isystem $(PROJECT_ROOT)/3p/gmock_gtest $(INCLUDE_PATH) 
 
