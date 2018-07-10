@@ -12,7 +12,7 @@ INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/bin
 LIBRARY_DIR     = $(PROJECT_ROOT)/build
 
-TARGET          = $(TARGET_DIR)/$(TARGET_NAME).exe
+TARGET          = $(TARGET_DIR)/$(TARGET_NAME)
 SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
 OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.o))
 DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.d))
