@@ -2,11 +2,10 @@
  
 # Source function library.
 #. /etc/init.d/functions
-. ~/bin/functions
+. /usr/share/irrigation/functions
 
 EXECUTABLE_NAME="Irrigation System service"
-EXECUTABLE_DIR=/cygdrive/c/Work/irrigation/Irrigation/bin
-EXECUTABLE=${EXECUTABLE_DIR}/irrigation
+EXECUTABLE=/usr/share/irrigation/irrigation
 PID_FILE=/var/run/irrigation.pid
 
 

@@ -23,7 +23,15 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 LOCAL_LIBS      = -lLogger -lModel -lHardware -lDocumentView -lLogic -lSchedulers -lDTO -lReaderWriter -lUtils
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -lmicrohttpd -lpugixml
+LIBS            = $(LOCAL_LIBS) -lpugixml
+
+# Detect the Raspberry Pi from cpuinfo
+# Count the matches for BCMxxxx in cpuinfo
+RPI            = $(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)
+
+ifeq "$(RPI)" "1"
+LIBS          += -lwiringPi
+endif
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP  
 CPPFLAGS        = $(INCLUDE_PATH) 

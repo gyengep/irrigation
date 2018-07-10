@@ -6,8 +6,8 @@ using namespace std;
 unique_ptr<Configuration> Configuration::instance;
 mutex Configuration::createMutex;
 
-const string Configuration::defaultConfigFileName = "/tmp/irrigation.xml";
-const string Configuration::defaultLogFileName = "/tmp/irrigation.log";
+const string Configuration::defaultConfigFileName = "/usr/share/irrigation/irrigation.xml";
+const string Configuration::defaultLogFileName = "/usr/share/irrigation/irrigation.log";
 const LogLevel Configuration::defaultLogLevel = LogLevel::TRACE;
 
 

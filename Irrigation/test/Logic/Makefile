@@ -12,7 +12,7 @@ INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build
 LIBRARY_DIR     = $(PROJECT_ROOT)/build
 
-TARGET          = $(TARGET_DIR)/$(TARGET_NAME)_test.exe
+TARGET          = $(TARGET_DIR)/$(TARGET_NAME)_test
 SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
 OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.o))
 DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.d))
@@ -23,7 +23,15 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 LOCAL_LIBS      = -l$(TARGET_NAME) -lHardware -lLogger -lSchedulers -lDTO -lUtils
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
-LIBS            = $(LOCAL_LIBS) -lgmock
+LIBS            = $(LOCAL_LIBS) -pthread -lgmock
+
+# Detect the Raspberry Pi from cpuinfo
+# Count the matches for BCMxxxx in cpuinfo
+RPI            = $(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)
+
+ifeq "$(RPI)" "1"
+LIBS          += -lwiringPi
+endif
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = -isystem $(PROJECT_ROOT)/3p/gmock_gtest $(INCLUDE_PATH) 
