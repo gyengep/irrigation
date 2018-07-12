@@ -13,7 +13,7 @@ PID_FILE=/var/run/irrigation.pid
 wait_for_start() {
 	local timeout=5
 
-	while ! ps ua | grep $EXECUTABLE &>/dev/null; do
+	while ! ps -ef | grep $EXECUTABLE | grep -v grep &>/dev/null; do
 		((counter++))
 		if [ "$counter" -eq "$timeout" ]; then
 			return 1
@@ -26,7 +26,7 @@ wait_for_start() {
 wait_for_stop() {
 	local timeout=5
 	
-	while ps ua | grep $EXECUTABLE &>/dev/null; do
+	while ps -ef | grep $EXECUTABLE | grep -v grep &>/dev/null; do
 		((counter++))
 		if [ "$counter" -eq "$timeout" ]; then
 			return 1
@@ -37,7 +37,7 @@ wait_for_stop() {
 }
 
 killexecutable_if_run() {
-	PID_TO_KILL=`ps ua | grep $EXECUTABLE | awk '{print $1}'`
+	PID_TO_KILL=`ps -ef | grep $EXECUTABLE | grep -v grep | awk '{print $2}'`
 	if [ -n "$PID_TO_KILL" ]; then
 		kill -KILL $PID_TO_KILL
 	fi
@@ -76,7 +76,7 @@ start() {
 		exit 1
 	fi
 
-	ps ua | grep $EXECUTABLE | awk '{print $1}' > $PID_FILE
+	ps -ef | grep $EXECUTABLE | grep -v grep | awk '{print $2}' > $PID_FILE
 }
 
 stop() {
