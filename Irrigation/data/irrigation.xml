@@ -6,7 +6,7 @@
 			<schedulertype>specified</schedulertype>
 			<schedulers>
 				<scheduler type="specified">
-					<adjustment>100</adjustment>
+					<adjustment>75</adjustment>
 					<days>
 						<day>true</day>
 						<day>true</day>
@@ -37,12 +37,12 @@
 				<scheduler type="specified">
 					<adjustment>100</adjustment>
 					<days>
-						<day>true</day>
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
+						<day>true</day>
 						<day>false</day>
 					</days>
 				</scheduler>
@@ -82,7 +82,7 @@
 				<runtime id="2">0</runtime>
 				<runtime id="3">0</runtime>
 				<runtime id="4">60</runtime>
-				<runtime id="5">180</runtime>
+				<runtime id="5">120</runtime>
 			</runtimes>
 			<starttimes>
 				<starttime id="11">23400</starttime>
