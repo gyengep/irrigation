@@ -42,17 +42,24 @@ pugixml:
 
 .PHONY: install-rpi
 install-rpi:
-	mkdir /usr/share/irrigation
-	chown pi:pi /usr/share/irrigation
-	cp .bin/irrigation /usr/share/irrigation/
-	cp .scripts/functions /usr/share/irrigation/
-	cp .data/irrigation.xml /usr/share/irrigation/
+	mkdir -p /usr/share/irrigation
+	mkdir -p /var/run/irrigation
+	chown pi:pi /var/run/irrigation
+	cp ./scripts/irrigation_service /etc/init.d/
+	cp ./bin/irrigation /usr/share/irrigation/
+	cp ./scripts/functions /usr/share/irrigation/
+	cp ./data/irrigation.xml /usr/share/irrigation/
+	chmod +x /etc/init.d/irrigation_service
+	chmod +x /usr/share/irrigation/irrigation
 	
 .PHONY: install-cygwin
 install-cygwin:
 	mkdir -p /usr/share/irrigation
 	mkdir -p /var/run/irrigation
-	cp ./scripts/irrigation_service-cygwin ~/bin/irrigation_service
+	cp ./scripts/irrigation_service ~/bin/
 	cp ./bin/irrigation.exe /usr/share/irrigation/
 	cp ./scripts/functions /usr/share/irrigation/
 	cp ./data/irrigation.xml /usr/share/irrigation/	
+	chmod +x ~/bin/irrigation_service
+	chmod +x /usr/share/irrigation/irrigation
+	

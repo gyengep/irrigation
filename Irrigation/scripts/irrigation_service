@@ -50,7 +50,6 @@ start() {
 	then
 		echo "Creating $PID_DIR."
 		mkdir -p $PID_DIR
-		chown pi:pi $PID_DIR
 	fi
 		
 	# This is used to check if EXECUTABLE is running and kill them 
@@ -61,6 +60,7 @@ start() {
 			echo "$EXECUTABLE_NAME already started."
 			echo -n "Not starting."
 			echo_success
+			echo
 			exit 0
 		else
 			# stale pid file must be deleted
@@ -88,7 +88,6 @@ start() {
 	fi
 
 	ps -ef | grep $EXECUTABLE | grep -v grep | awk '{print $2}' > $PID_FILE
-	chown pi:pi $PID_FILE
 }
 
 stop() {
