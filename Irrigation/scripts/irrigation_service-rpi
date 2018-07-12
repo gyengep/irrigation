@@ -6,7 +6,8 @@
 
 EXECUTABLE_NAME="Irrigation System service"
 EXECUTABLE=/usr/share/irrigation/irrigation
-PID_FILE=/var/run/irrigation.pid
+PID_DIR=/var/run/irrigation
+PID_FILE=$PID_DIR/irrigation.pid
 
 
 
@@ -44,6 +45,14 @@ killexecutable_if_run() {
 }
 
 start() {
+
+	if [ ! -d $PID_DIR ]
+	then
+		echo "Creating $PID_DIR."
+		mkdir -p $PID_DIR
+		chown pi:pi $PID_DIR
+	fi
+		
 	# This is used to check if EXECUTABLE is running and kill them 
 	# because they are not in synch with the pid files
 	if [ -e $PID_FILE ]; then
@@ -71,12 +80,15 @@ start() {
 	if [ $? -eq 0 ]
 	then
 		echo_success
+		echo
 	else
 		echo_failure
+		echo
 		exit 1
 	fi
 
 	ps -ef | grep $EXECUTABLE | grep -v grep | awk '{print $2}' > $PID_FILE
+	chown pi:pi $PID_FILE
 }
 
 stop() {
@@ -101,8 +113,10 @@ stop() {
 	wait_for_stop
 	if [ $? -eq 0 ]; then
 		echo_success
+		echo
 	else
 		echo_failure
+		echo
 		exit 1
 	fi
 }
@@ -121,7 +135,6 @@ case "$1" in
 		;;
 	restart)
 		stop
-		echo
 		start
 		;;
 	*)

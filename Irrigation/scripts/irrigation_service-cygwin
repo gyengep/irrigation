@@ -1,0 +1,143 @@
+#!/bin/bash
+ 
+# Source function library.
+#. /etc/init.d/functions
+. /usr/share/irrigation/functions
+
+EXECUTABLE_NAME="Irrigation System service"
+EXECUTABLE=/usr/share/irrigation/irrigation
+PID_DIR=/var/run/irrigation
+PID_FILE=$PID_DIR/irrigation.pid
+
+
+
+wait_for_start() {
+	local timeout=5
+
+	while ! ps -ef | grep $EXECUTABLE | grep -v grep &>/dev/null; do
+		((counter++))
+		if [ "$counter" -eq "$timeout" ]; then
+			return 1
+		fi
+		sleep 1
+	done
+	return 0
+}
+
+wait_for_stop() {
+	local timeout=5
+	
+	while ps -ef | grep $EXECUTABLE | grep -v grep &>/dev/null; do
+		((counter++))
+		if [ "$counter" -eq "$timeout" ]; then
+			return 1
+		fi
+		sleep 1
+	done
+	return 0
+}
+
+killexecutable_if_run() {
+	PID_TO_KILL=`ps -ef | grep $EXECUTABLE | grep -v grep | awk '{print $2}'`
+	if [ -n "$PID_TO_KILL" ]; then
+		kill -KILL $PID_TO_KILL
+	fi
+}
+
+start() {
+
+	if [ ! -d $PID_DIR ]
+	then
+		echo "Creating $PID_DIR."
+		mkdir -p $PID_DIR
+	fi
+		
+	# This is used to check if EXECUTABLE is running and kill them 
+	# because they are not in synch with the pid files
+	if [ -e $PID_FILE ]; then
+		status -p $PID_FILE $EXECUTABLE &>/dev/null
+		if [ $? -eq 0 ]; then
+			echo "$EXECUTABLE_NAME already started."
+			echo -n "Not starting."
+			echo_success
+			exit 0
+		else
+			# stale pid file must be deleted
+			rm -f $PID_FILE 2>/dev/null
+			# extra check to see if process is running with corrupted pid file
+			killexecutable_if_run
+		fi
+	else
+		# normally in this case the service shouldn't be ran, but extra check is done
+		killexecutable_if_run
+	fi
+
+	echo -n "Starting $EXECUTABLE_NAME"
+	$EXECUTABLE
+
+	wait_for_start
+	if [ $? -eq 0 ]
+	then
+		echo_success
+		echo
+	else
+		echo_failure
+		echo
+		exit 1
+	fi
+
+	ps -ef | grep $EXECUTABLE | grep -v grep | awk '{print $2}' > $PID_FILE
+}
+
+stop() {
+	echo -n "Stopping $EXECUTABLE_NAME "
+	## Stop daemon with killproc(8) and if this fails
+	## killproc sets the return value according to LSB.
+	if [ -e $PID_FILE ]; then
+		status -p $PID_FILE $EXECUTABLE &>/dev/null
+		if [ $? -eq 0 ]; then
+			killproc -p $PID_FILE $EXECUTABLE &>/dev/null
+		else
+			# stale pid file must be deleted
+			rm -f $PID_FILE 2>/dev/null
+			# extra check to see if process is running with corrupted pid file
+			killexecutable_if_run
+		fi
+	else
+		# normally in this case the service shouldn't be ran, but extra check is done
+		killexecutable_if_run
+	fi
+
+	wait_for_stop
+	if [ $? -eq 0 ]; then
+		echo_success
+		echo
+	else
+		echo_failure
+		echo
+		exit 1
+	fi
+}
+
+
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	status)
+		status -p $PID_FILE $EXECUTABLE
+		;;
+	restart)
+		stop
+		start
+		;;
+	*)
+		echo "Usage:  {start|stop|status|restart}"
+		exit 1
+		;;
+esac
+exit $?

@@ -39,3 +39,20 @@ gmock:
 .PHONY: pugixml
 pugixml:
 	@$(MAKE) -C 3p/pugixml all
+
+.PHONY: install-rpi
+install-rpi:
+	mkdir /usr/share/irrigation
+	chown pi:pi /usr/share/irrigation
+	cp .bin/irrigation /usr/share/irrigation/
+	cp .scripts/functions /usr/share/irrigation/
+	cp .data/irrigation.xml /usr/share/irrigation/
+	
+.PHONY: install-cygwin
+install-cygwin:
+	mkdir -p /usr/share/irrigation
+	mkdir -p /var/run/irrigation
+	cp ./scripts/irrigation_service-cygwin ~/bin/irrigation_service
+	cp ./bin/irrigation.exe /usr/share/irrigation/
+	cp ./scripts/functions /usr/share/irrigation/
+	cp ./data/irrigation.xml /usr/share/irrigation/	
