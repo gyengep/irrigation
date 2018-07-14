@@ -51,6 +51,13 @@ install-rpi:
 	cp ./data/irrigation.xml /usr/share/irrigation/
 	chmod +x /etc/init.d/irrigation_service
 	chmod +x /usr/share/irrigation/irrigation
+
+.PHONY: uninstall-rpi
+uninstall-rpi:
+	rm -rf /var/run/irrigation/
+	rm -rf /var/log/irrigation/
+	rm -rf /usr/share/irrigation/
+	rm -f  /etc/init.d/irrigation_service
 	
 .PHONY: install-cygwin
 install-cygwin:
@@ -62,4 +69,11 @@ install-cygwin:
 	cp ./data/irrigation.xml /usr/share/irrigation/	
 	chmod +x ~/bin/irrigation_service
 	chmod +x /usr/share/irrigation/irrigation
+	
+.PHONY: uninstall-cygwin
+uninstall-cygwin:
+	rm -rf /var/run/irrigation/
+	rm -rf /var/log/irrigation/
+	rm -rf /usr/share/irrigation/
+	rm -f  ~/bin/irrigation_service
 	
