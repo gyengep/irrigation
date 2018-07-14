@@ -46,7 +46,7 @@ install-rpi:
 	mkdir -p /var/run/irrigation
 	mkdir -p /var/log/irrigation
 	cp ./scripts/irrigation_service /etc/init.d/irrigation_service
-	chmod 755 ~/bin/irrigation_service
+	chmod 755 /etc/init.d/irrigation_service
 	cp ./bin/irrigation /usr/share/irrigation/irrigation
 	chmod 555 /usr/share/irrigation/irrigation
 	cp ./scripts/functions /usr/share/irrigation/functions
@@ -57,10 +57,10 @@ install-rpi:
 .PHONY: uninstall-rpi
 uninstall-rpi:
 	service irrigation_service stop
+	rm -f  /etc/init.d/irrigation_service
 	rm -rf /var/run/irrigation/
 	rm -rf /var/log/irrigation/
 	rm -rf /usr/share/irrigation/
-	rm -f  /etc/init.d/irrigation_service
 	
 .PHONY: install-cygwin
 install-cygwin:
