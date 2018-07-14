@@ -44,16 +44,19 @@ pugixml:
 install-rpi:
 	mkdir -p /usr/share/irrigation
 	mkdir -p /var/run/irrigation
-	chown pi:pi /var/run/irrigation
-	cp ./scripts/irrigation_service /etc/init.d/
-	cp ./bin/irrigation /usr/share/irrigation/
-	cp ./scripts/functions /usr/share/irrigation/
-	cp ./data/irrigation.xml /usr/share/irrigation/
-	chmod +x /etc/init.d/irrigation_service
-	chmod +x /usr/share/irrigation/irrigation
+	mkdir -p /var/log/irrigation
+	cp ./scripts/irrigation_service /etc/init.d/irrigation_service
+	chmod 755 ~/bin/irrigation_service
+	cp ./bin/irrigation /usr/share/irrigation/irrigation
+	chmod 555 /usr/share/irrigation/irrigation
+	cp ./scripts/functions /usr/share/irrigation/functions
+	chmod 644 /usr/share/irrigation/functions
+	cp ./data/irrigation.xml /usr/share/irrigation/irrigation.xml
+	chmod 644 /usr/share/irrigation/irrigation.xml
 
 .PHONY: uninstall-rpi
 uninstall-rpi:
+	service irrigation_service stop
 	rm -rf /var/run/irrigation/
 	rm -rf /var/log/irrigation/
 	rm -rf /usr/share/irrigation/
@@ -63,17 +66,21 @@ uninstall-rpi:
 install-cygwin:
 	mkdir -p /usr/share/irrigation
 	mkdir -p /var/run/irrigation
-	cp ./scripts/irrigation_service ~/bin/
-	cp ./bin/irrigation.exe /usr/share/irrigation/
-	cp ./scripts/functions /usr/share/irrigation/
-	cp ./data/irrigation.xml /usr/share/irrigation/	
-	chmod +x ~/bin/irrigation_service
-	chmod +x /usr/share/irrigation/irrigation
+	mkdir -p /var/log/irrigation
+	cp ./scripts/irrigation_service ~/bin/irrigation_service
+	chmod 755 ~/bin/irrigation_service
+	cp ./bin/irrigation.exe /usr/share/irrigation/irrigation.exe
+	chmod 555 /usr/share/irrigation/irrigation.exe
+	cp ./scripts/functions /usr/share/irrigation/functions
+	chmod 644 /usr/share/irrigation/functions
+	cp ./data/irrigation.xml /usr/share/irrigation/irrigation.xml
+	chmod 644 /usr/share/irrigation/irrigation.xml
 	
 .PHONY: uninstall-cygwin
 uninstall-cygwin:
+	~/bin/irrigation_service stop
+	rm -f ~/bin/irrigation_service
 	rm -rf /var/run/irrigation/
 	rm -rf /var/log/irrigation/
 	rm -rf /usr/share/irrigation/
-	rm -f  ~/bin/irrigation_service
 	

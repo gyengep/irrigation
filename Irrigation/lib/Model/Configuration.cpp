@@ -7,7 +7,7 @@ unique_ptr<Configuration> Configuration::instance;
 mutex Configuration::createMutex;
 
 const string Configuration::defaultConfigFileName = "/usr/share/irrigation/irrigation.xml";
-const string Configuration::defaultLogFileName = "/var/log/irrigation.log";
+const string Configuration::defaultLogFileName = "/var/log/irrigation/irrigation.log";
 const LogLevel Configuration::defaultLogLevel = LogLevel::TRACE;
 
 
