@@ -41,7 +41,7 @@ void daemonize() {
 	}
 
 	/* Change the file mode mask */
-	umask(S_IRUSR | S_IWUSR | S_IWGRP | S_IWOTH);
+	umask(S_IWGRP | S_IWOTH);
 
 	/* Open any logs here */
 	if (!initLogger()) {
