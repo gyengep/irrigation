@@ -42,45 +42,48 @@ pugixml:
 
 .PHONY: install-rpi
 install-rpi:
+	#################################
+	# DIR /usr/share/irrigation
+	#################################
 	mkdir -p /usr/share/irrigation
-	mkdir -p /var/run/irrigation
-	mkdir -p /var/log/irrigation
-	cp ./scripts/irrigation_service /etc/init.d/irrigation_service
-	chmod 755 /etc/init.d/irrigation_service
+	chown pi:pi /usr/share/irrigation
+	# /usr/share/irrigation/irrigation
 	cp ./bin/irrigation /usr/share/irrigation/irrigation
-	chmod 555 /usr/share/irrigation/irrigation
-	cp ./scripts/functions /usr/share/irrigation/functions
-	chmod 644 /usr/share/irrigation/functions
+	chmod 544 /usr/share/irrigation/irrigation
+	chown pi:pi /usr/share/irrigation/irrigation
+	# /usr/share/irrigation/irrigation.xml
 	cp ./data/irrigation.xml /usr/share/irrigation/irrigation.xml
 	chmod 644 /usr/share/irrigation/irrigation.xml
+	chown pi:pi /usr/share/irrigation/irrigation.xml
+	#################################
+	# DIR /var/log/irrigation
+	#################################
+	mkdir -p /var/log/irrigation
+	chown pi:pi /var/log/irrigation
+	touch /var/log/irrigation/irrigation.log
+	chown pi:pi /var/log/irrigation/irrigation.log
+	#################################
+	# /etc/init.d/irrigation_service
+	#################################
+	cp ./scripts/irrigation_service /etc/init.d/irrigation_service
+	chmod 755 /etc/init.d/irrigation_service
 
 .PHONY: uninstall-rpi
 uninstall-rpi:
 	service irrigation_service stop
 	rm -f  /etc/init.d/irrigation_service
-	rm -rf /var/run/irrigation/
 	rm -rf /var/log/irrigation/
 	rm -rf /usr/share/irrigation/
 	
 .PHONY: install-cygwin
 install-cygwin:
 	mkdir -p /usr/share/irrigation
-	mkdir -p /var/run/irrigation
-	mkdir -p /var/log/irrigation
-	cp ./scripts/irrigation_service ~/bin/irrigation_service
-	chmod 755 ~/bin/irrigation_service
-	cp ./bin/irrigation.exe /usr/share/irrigation/irrigation.exe
-	chmod 555 /usr/share/irrigation/irrigation.exe
-	cp ./scripts/functions /usr/share/irrigation/functions
-	chmod 644 /usr/share/irrigation/functions
 	cp ./data/irrigation.xml /usr/share/irrigation/irrigation.xml
 	chmod 644 /usr/share/irrigation/irrigation.xml
+	mkdir -p /var/log/irrigation
+	touch /var/log/irrigation/irrigation.log
 	
 .PHONY: uninstall-cygwin
 uninstall-cygwin:
-	~/bin/irrigation_service stop
-	rm -f ~/bin/irrigation_service
-	rm -rf /var/run/irrigation/
-	rm -rf /var/log/irrigation/
 	rm -rf /usr/share/irrigation/
-	
+	rm -rf /var/log/irrigation/
