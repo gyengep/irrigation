@@ -39,7 +39,7 @@ void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const 
 			ProgramDTO program;
 			loadProgram(programNode, program, true);
 			programs->push_back(program);
-			programNode = programNode.next_sibling();
+			programNode = programNode.next_sibling("program");
 		}
 
 		document.setPrograms(programs.release());
@@ -82,7 +82,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool isId
 			RunTimeDTO runTimeDTO;
 			loadRunTime(runTimeNode, runTimeDTO, true);
 			runTimes->push_back(runTimeDTO);
-			runTimeNode = runTimeNode.next_sibling();
+			runTimeNode = runTimeNode.next_sibling("runtime");
 		}
 
 		program.setRunTimes(runTimes.release());
@@ -96,7 +96,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool isId
 			StartTimeDTO startTimeDTO;
 			loadStartTime(startTimeNode, startTimeDTO, true);
 			startTimes->push_back(startTimeDTO);
-			startTimeNode = startTimeNode.next_sibling();
+			startTimeNode = startTimeNode.next_sibling("starttime");
 		}
 
 		program.setStartTimes(startTimes.release());
@@ -123,7 +123,7 @@ void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& sched
 		xml_node dayNode = tmpNode.child("day");
 		while (dayNode) {
 			values->push_back(dayNode.text().as_bool());
-			dayNode = dayNode.next_sibling();
+			dayNode = dayNode.next_sibling("day");
 		}
 
 		scheduler.setValues(values.release());
