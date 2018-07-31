@@ -25,11 +25,8 @@ INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
 LIBS            = $(LOCAL_LIBS) -lpugixml
 
-# Detect the Raspberry Pi from cpuinfo
-# Count the matches for BCMxxxx in cpuinfo
-RPI            = $(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)
-
-ifeq "$(RPI)" "1"
+# Detect the Raspberry Pi from uname
+ifneq "$(shell uname -s | grep -c raspberrypi)" "0"
 LIBS          += -lwiringPi
 endif
 

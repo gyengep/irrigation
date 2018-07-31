@@ -77,6 +77,10 @@ int main() {
 			throw runtime_error("Can't catch SIGTERM");
 		}
 
+		if (signal(SIGINT, signal_handler) == SIG_ERR) {
+			throw runtime_error("Can't catch SIGINT");
+		}
+
 		Application::getInstance().init();
 		Application::getInstance().start();
 		Application::getInstance().stop();
