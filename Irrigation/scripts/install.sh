@@ -42,7 +42,7 @@ install_rpi() {
 	#################################
 	# SERVICE
 	#################################	
-	cp ./scripts/irrigation_service_rpi $SERVICE
+	cp ./scripts/irrigation_service $SERVICE
 	chmod 755 $SERVICE
 	update-rc.d irrigation_service defaults	
 	service irrigation_service start
@@ -58,8 +58,8 @@ uninstall_rpi() {
 }
 
 
-install_cygwin() {
-	echo "install_cygwin"
+install_other() {
+	echo "install_other"
 
 	#################################
 	# APPLICATION
@@ -78,28 +78,24 @@ install_cygwin() {
 	chmod 644 $LOG_FILE
 }
 
-uninstall_cygwin() {
-	echo "uninstall_cygwin"
+uninstall_other() {
+	echo "uninstall_other"
 }
 
 
-MACHINE_TYPE=$(uname -s)
-case $MACHINE_TYPE in
-    "Linux raspberrypi"*)     
-		if [ "$1" = "--uninstall" ]; then
-			uninstall_rpi
-		else
-			install_rpi
-		fi
-		;;
-    "CYGWIN"*)    			
-		if [ "$1" = "--uninstall" ]; then
-			uninstall_cygwin
-		else
-			install_cygwin
-		fi
-		;;
-    *)          			
-		echo "Unknown machine type: $MACHINE_TYPE"
-esac
+RPI=$(cat /proc/cpuinfo | grep Hardware | grep BCM)
+if [ -n "$RPI" ]; then
+	if [ "$1" = "--uninstall" ]; then
+		uninstall_rpi
+	else
+		install_rpi
+	fi
+else
+	if [ "$1" = "--uninstall" ]; then
+		uninstall_other
+	else
+		install_other
+	fi
+fi
 
+exit 0

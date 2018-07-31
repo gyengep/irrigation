@@ -25,8 +25,8 @@ INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
 LIBS            = $(LOCAL_LIBS) -lpugixml
 
-# Detect the Raspberry Pi from uname
-ifneq "$(shell uname -s | grep -c raspberrypi)" "0"
+# Detect the Raspberry Pi from cpuinfo
+ifeq ($(cat /proc/cpuinfo | grep Hardware | grep BCM),)
 LIBS          += -lwiringPi
 endif
 
