@@ -25,55 +25,60 @@ bool initLogger() {
 	return true;
 }
 
-void daemonize() {
-	/* Our process ID and Session ID */
-	pid_t pid, sid;
+//void daemonize() {
+//	/* Our process ID and Session ID */
+//	pid_t pid, sid;
+//
+//	/* Fork off the parent process */
+//	pid = fork();
+//	if (pid < 0) {
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	/* If we got a good PID, then we can exit the parent process. */
+//	if (pid > 0) {
+//		exit(EXIT_SUCCESS);
+//	}
+//
+//	/* Change the file mode mask */
+//	umask(S_IWGRP | S_IWOTH);
+//
+//	/* Open any logs here */
+//	if (!initLogger()) {
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	/* Create a new SID for the child process */
+//	sid = setsid();
+//	if (sid < 0) {
+//		LOGGER.error("Can not create SID");
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	/* Change the current working directory */
+//	if ((chdir("/")) < 0) {
+//		LOGGER.error("Can not change working directory");
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	/* Close out the standard file descriptors */
+//	close(STDIN_FILENO);
+//	close(STDOUT_FILENO);
+//	close(STDERR_FILENO);
+//}
 
-	/* Fork off the parent process */
-	pid = fork();
-	if (pid < 0) {
-		exit(EXIT_FAILURE);
-	}
-
-	/* If we got a good PID, then we can exit the parent process. */
-	if (pid > 0) {
-		exit(EXIT_SUCCESS);
-	}
-
-	/* Change the file mode mask */
-	umask(0);
-
-	/* Open any logs here */
+int main() {
 	if (!initLogger()) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* Create a new SID for the child process */
-	sid = setsid();
-	if (sid < 0) {
-		LOGGER.error("Can not create SID");
-		exit(EXIT_FAILURE);
-	}
-
-	/* Change the current working directory */
-	if ((chdir("/")) < 0) {
-		LOGGER.error("Can not change working directory");
-		exit(EXIT_FAILURE);
-	}
-
-	/* Close out the standard file descriptors */
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO);
-	close(STDERR_FILENO);
-}
-
-int main() {
-
-	daemonize();
-
 	try {
 		if (signal(SIGTERM, signal_handler) == SIG_ERR) {
 			throw runtime_error("Can't catch SIGTERM");
+		}
+
+		if (signal(SIGINT, signal_handler) == SIG_ERR) {
+			throw runtime_error("Can't catch SIGINT");
 		}
 
 		Application::getInstance().init();

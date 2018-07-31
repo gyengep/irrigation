@@ -128,7 +128,7 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 		time_t t = time(nullptr);
 
 		(*output) << put_time(localtime(&t), "%Y.%m.%d %H:%M:%S") << ' ';
-		(*output) << this_thread::get_id() << " ";
+		(*output) << "0x" << setw(8) << setfill('0') << hex << this_thread::get_id() << " ";
 		(*output) << to_string(logLevel) << ": ";
 		(*output) << message;
 		(*output) << logException(e, 1);

@@ -1,133 +1,87 @@
-#!/bin/bash
- 
-# Source function library.
-#. /etc/init.d/functions
-. ~/bin/functions
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          Irrigation System
+# Required-Start:    $all
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Manage Irrigation System Service
+### END INIT INFO
 
-EXECUTABLE_NAME="Irrigation System service"
-EXECUTABLE_DIR=/cygdrive/c/Work/irrigation/Irrigation/bin
-EXECUTABLE=${EXECUTABLE_DIR}/irrigation
-PID_FILE=/var/run/irrigation.pid
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin
+DESC="Irrigation System"
+NAME=irrigation
+
+IRRIGATIOND=irrigation
+DAEMON=/usr/share/irrigation/irrigation
+PIDFILE=/var/run/irrigation.pid
+UID=pi
+GID=pi
+
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Define LSB log_* functions.
+. /lib/lsb/init-functions
 
 
-
-wait_for_start() {
-	local timeout=5
-
-	while ! ps ua | grep $EXECUTABLE &>/dev/null; do
-		((counter++))
-		if [ "$counter" -eq "$timeout" ]; then
-			return 1
-		fi
-		sleep 1
-	done
-	return 0
+do_start()
+{
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   other if daemon could not be started or a failure occured
+	start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --exec $DAEMON --chuid $UID:$GID --background
 }
 
-wait_for_stop() {
-	local timeout=5
-	
-	while ps ua | grep $EXECUTABLE &>/dev/null; do
-		((counter++))
-		if [ "$counter" -eq "$timeout" ]; then
-			return 1
-		fi
-		sleep 1
-	done
-	return 0
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   other if daemon could not be stopped or a failure occurred
+	start-stop-daemon --stop --quiet --remove-pidfile --pidfile $PIDFILE --exec $DAEMON --chuid $UID:$GID --retry=TERM/30/KILL/5
 }
-
-killexecutable_if_run() {
-	PID_TO_KILL=`ps ua | grep $EXECUTABLE | awk '{print $1}'`
-	if [ -n "$PID_TO_KILL" ]; then
-		kill -KILL $PID_TO_KILL
-	fi
-}
-
-start() {
-	# This is used to check if EXECUTABLE is running and kill them 
-	# because they are not in synch with the pid files
-	if [ -e $PID_FILE ]; then
-		status -p $PID_FILE $EXECUTABLE &>/dev/null
-		if [ $? -eq 0 ]; then
-			echo "$EXECUTABLE_NAME already started."
-			echo -n "Not starting."
-			echo_success
-			exit 0
-		else
-			# stale pid file must be deleted
-			rm -f $PID_FILE 2>/dev/null
-			# extra check to see if process is running with corrupted pid file
-			killexecutable_if_run
-		fi
-	else
-		# normally in this case the service shouldn't be ran, but extra check is done
-		killexecutable_if_run
-	fi
-
-	echo -n "Starting $EXECUTABLE_NAME"
-	$EXECUTABLE
-
-	wait_for_start
-	if [ $? -eq 0 ]
-	then
-		echo_success
-	else
-		echo_failure
-		exit 1
-	fi
-
-	ps ua | grep $EXECUTABLE | awk '{print $1}' > $PID_FILE
-}
-
-stop() {
-	echo -n "Stopping $EXECUTABLE_NAME "
-	## Stop daemon with killproc(8) and if this fails
-	## killproc sets the return value according to LSB.
-	if [ -e $PID_FILE ]; then
-		status -p $PID_FILE $EXECUTABLE &>/dev/null
-		if [ $? -eq 0 ]; then
-			killproc -p $PID_FILE $EXECUTABLE &>/dev/null
-		else
-			# stale pid file must be deleted
-			rm -f $PID_FILE 2>/dev/null
-			# extra check to see if process is running with corrupted pid file
-			killexecutable_if_run
-		fi
-	else
-		# normally in this case the service shouldn't be ran, but extra check is done
-		killexecutable_if_run
-	fi
-
-	wait_for_stop
-	if [ $? -eq 0 ]; then
-		echo_success
-	else
-		echo_failure
-		exit 1
-	fi
-}
-
-
 
 case "$1" in
-	start)
-		start
-		;;
-	stop)
-		stop
-		;;
-	status)
-		status -p $PID_FILE $EXECUTABLE
-		;;
-	restart)
-		stop
-		echo
-		start
-		;;
-	*)
-		echo "Usage:  {start|stop|status|restart}"
-		exit 1
-		;;
+  start)
+	log_daemon_msg "Starting $DESC" "$IRRIGATIOND"
+	do_start
+	case "$?" in
+		0) log_end_msg 0 ;;
+		1) log_progress_msg "already started"
+		   log_end_msg 0 ;;
+		*) log_end_msg 1 ;;
+	esac
+
+	;;
+  stop)
+	log_daemon_msg "Stopping $DESC" "$IRRIGATIOND"
+	do_stop
+	case "$?" in
+		0) log_end_msg 0 ;;
+		1) log_progress_msg "already stopped"
+		   log_end_msg 0 ;;
+		*) log_end_msg 1 ;;
+	esac
+
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  status)
+	status_of_proc -p $PIDFILE $DAEMON $IRRIGATIOND && exit 0 || exit $?
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|status}" >&2
+	exit 3
+	;;
 esac
-exit $?
+
+:

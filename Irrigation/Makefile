@@ -1,9 +1,9 @@
 
-.PHONY: all-without-test
-all-without-test: library-all src-all
-
 .PHONY: all
 all: library-all test-all src-all
+
+.PHONY: all-without-test
+all-without-test: library-all src-all
 
 .PHONY: clean
 clean: library-clean test-clean src-clean
@@ -39,3 +39,11 @@ gmock:
 .PHONY: pugixml
 pugixml:
 	@$(MAKE) -C 3p/pugixml all
+
+.PHONY: install
+install:
+	@./scripts/install.sh
+	
+.PHONY: uninstall
+uninstall:
+	@./scripts/uninstall.sh
