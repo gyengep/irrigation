@@ -26,7 +26,7 @@ LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
 LIBS            = $(LOCAL_LIBS) -lpugixml
 
 # Detect the Raspberry Pi from cpuinfo
-ifeq ($(cat /proc/cpuinfo | grep Hardware | grep BCM),)
+ifneq "$(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)" "0"
 LIBS          += -lwiringPi
 endif
 
