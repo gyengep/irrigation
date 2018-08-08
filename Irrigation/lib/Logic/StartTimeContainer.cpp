@@ -36,7 +36,7 @@ StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, 
 
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
-			throw AlreadyExistException("Program with id " + to_string(key) + " is already exist");
+			throw AlreadyExistException("StartTime with id " + to_string(key) + " is already exist");
 		}
 	}
 
