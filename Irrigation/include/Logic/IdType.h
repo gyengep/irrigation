@@ -4,13 +4,13 @@
 
 class IdType {
 	static unsigned lastUsedId;
-	const unsigned id;
+	unsigned id;
 
 public:
 	IdType();
 	IdType(unsigned id);
 
-	IdType& operator= (unsigned value) { return *this; }
+	IdType& operator= (const IdType& other);
 	operator unsigned() const { return id; }
 
 	friend std::string to_string(const IdType& idType);

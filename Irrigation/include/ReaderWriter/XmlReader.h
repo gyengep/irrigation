@@ -21,9 +21,9 @@ class XmlReader {
 	static void loadFromString(pugi::xml_document* doc, const std::string& text);
 
 	void loadDocument(const pugi::xml_node& node, DocumentDTO& document) const;
-	void loadProgram(const pugi::xml_node& node, ProgramDTO& program, bool isIdRequired) const;
-	void loadRunTime(const pugi::xml_node& node, RunTimeDTO& runTime, bool isIdRequired) const;
-	void loadStartTime(const pugi::xml_node& node, StartTimeDTO& startTime, bool isIdRequired) const;
+	void loadProgram(const pugi::xml_node& node, ProgramDTO& program) const;
+	void loadRunTime(const pugi::xml_node& node, RunTimeDTO& runTime) const;
+	void loadStartTime(const pugi::xml_node& node, StartTimeDTO& startTime) const;
 	void loadScheduler(const pugi::xml_node& node, SpecifiedSchedulerDTO& scheduler) const;
 
 public:

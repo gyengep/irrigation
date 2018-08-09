@@ -37,7 +37,7 @@ void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const 
 		xml_node programNode = programListNode.child("program");
 		while (programNode) {
 			ProgramDTO program;
-			loadProgram(programNode, program, true);
+			loadProgram(programNode, program);
 			programs->push_back(program);
 			programNode = programNode.next_sibling("program");
 		}
@@ -46,12 +46,10 @@ void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const 
 	}
 }
 
-void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool isIdRequired) const {
+void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		program.setId(idAttribute.as_uint());
-	} else if (isIdRequired) {
-		throw RequiredAttributeMissing("The 'id' attribute is missing");
 	}
 
 	xml_node tmpNode;
@@ -80,7 +78,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool isId
 		xml_node runTimeNode = tmpNode.child("runtime");
 		while (runTimeNode) {
 			RunTimeDTO runTimeDTO;
-			loadRunTime(runTimeNode, runTimeDTO, true);
+			loadRunTime(runTimeNode, runTimeDTO);
 			runTimes->push_back(runTimeDTO);
 			runTimeNode = runTimeNode.next_sibling("runtime");
 		}
@@ -94,7 +92,7 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program, bool isId
 		xml_node startTimeNode = tmpNode.child("starttime");
 		while (startTimeNode) {
 			StartTimeDTO startTimeDTO;
-			loadStartTime(startTimeNode, startTimeDTO, true);
+			loadStartTime(startTimeNode, startTimeDTO);
 			startTimes->push_back(startTimeDTO);
 			startTimeNode = startTimeNode.next_sibling("starttime");
 		}
@@ -130,12 +128,10 @@ void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& sched
 	}
 }
 
-void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool isIdRequired) const {
+void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		runTime.setId(idAttribute.as_uint());
-	} else if (isIdRequired) {
-		throw RequiredAttributeMissing("The 'id' attribute is missing");
 	}
 
 	xml_text nodeText;
@@ -144,12 +140,10 @@ void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime, bool isId
 	}
 }
 
-void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime, bool isIdRequired) const {
+void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) const {
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		startTime.setId(idAttribute.as_uint());
-	} else if (isIdRequired) {
-		throw RequiredAttributeMissing("The 'id' attribute is missing");
 	}
 
 	xml_text nodeText;
@@ -190,7 +184,7 @@ ProgramDTO XmlReader::loadProgram(const string& text) const {
 	}
 
 	ProgramDTO program;
-	loadProgram(node, program, false);
+	loadProgram(node, program);
 	return program;
 }
 
@@ -207,7 +201,7 @@ RunTimeDTO XmlReader::loadRunTime(const string& text) const {
 	}
 
 	RunTimeDTO runTime;
-	loadRunTime(node, runTime, false);
+	loadRunTime(node, runTime);
 	return runTime;
 }
 
@@ -224,7 +218,7 @@ StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 	}
 
 	StartTimeDTO startTime;
-	loadStartTime(node, startTime, false);
+	loadStartTime(node, startTime);
 	return startTime;
 }
 

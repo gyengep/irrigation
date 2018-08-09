@@ -120,12 +120,12 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	if (programDTO.hasRunTimes()) {
 		runTimes.reset(new RunTimeContainer());
 
-		for (const RunTimeDTO& runTimeDTO : programDTO.getRunTimes()) {
-			if (!runTimeDTO.hasId()) {
-				throw logic_error("Program::updateFromDTO(): !runTimeDTO.hasId()");
-			}
+		const size_t maxIndex = min(runTimes->size(), programDTO.getRunTimes().size());
+		for (size_t i = 0; i < maxIndex; ++i) {
+			auto it = next(programDTO.getRunTimes().begin(), i);
+			const RunTimeDTO& runTimeDTO = *it;
 
-			runTimes->at(runTimeDTO.getId())->updateFromDTO(runTimeDTO);
+			runTimes->at(IdType(i))->updateFromDTO(runTimeDTO);
 		}
 	}
 
@@ -133,12 +133,15 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 		startTimes.reset(new StartTimeContainer());
 
 		for (const StartTimeDTO& startTimeDTO : programDTO.getStartTimes()) {
-			if (!startTimeDTO.hasId()) {
-				throw logic_error("Program::updateFromDTO(): !startTimeDTO.hasId()");
-			}
+			unique_ptr<StartTime> startTime(new StartTime());
+			startTime->updateFromDTO(startTimeDTO);
 
-			StartTimeContainer::value_type& idAndStartTimePair = startTimes->insert(startTimeDTO.getId(), new StartTime());
-			idAndStartTimePair.second->updateFromDTO(startTimeDTO);
+			IdType id;
+			if (startTimeDTO.hasId()) {
+				id = IdType(startTimeDTO.getId());
+			}
+			startTimes->insert(id, startTime.release());
+
 		}
 	}
 }

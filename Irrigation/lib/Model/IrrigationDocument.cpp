@@ -69,13 +69,15 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 		programs.reset(new ProgramContainer());
 
 		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
-			if (!programDTO.hasId()) {
-				throw logic_error("IrrigationDocument::updateFromDTO(): !program.hasId()");
-			}
-
 			unique_ptr<Program> program(new Program());
 			program->updateFromDTO(programDTO);
-			programs->insert(programDTO.getId(), program.release());
+
+			IdType id;
+			if (programDTO.hasId()) {
+				id = IdType(programDTO.getId());
+			}
+
+			programs->insert(id, program.release());
 		}
 	}
 }

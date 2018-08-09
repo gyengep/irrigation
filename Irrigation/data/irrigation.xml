@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <irrigation>
 	<programs>
-		<program id="6">
+		<program>
 			<name>fulocsolas</name>
 			<schedulertype>specified</schedulertype>
 			<schedulers>
@@ -19,18 +19,18 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0">1560</runtime>
-				<runtime id="1">2280</runtime>
-				<runtime id="2">1920</runtime>
-				<runtime id="3">0</runtime>
-				<runtime id="4">0</runtime>
-				<runtime id="5">0</runtime>
+				<runtime>1560</runtime>
+				<runtime>2280</runtime>
+				<runtime>1920</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
 			</runtimes>
 			<starttimes>
-				<starttime id="7">14400</starttime>
+				<starttime>14400</starttime>
 			</starttimes>
 		</program>
-		<program id="8">
+		<program>
 			<name>buxus</name>
 			<schedulertype>specified</schedulertype>
 			<schedulers>
@@ -48,18 +48,18 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0">0</runtime>
-				<runtime id="1">0</runtime>
-				<runtime id="2">0</runtime>
-				<runtime id="3">1200</runtime>
-				<runtime id="4">0</runtime>
-				<runtime id="5">0</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>1200</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
 			</runtimes>
 			<starttimes>
-				<starttime id="9">21600</starttime>
+				<starttime>21600</starttime>
 			</starttimes>
 		</program>
-		<program id="10">
+		<program>
 			<name>paradicsom</name>
 			<schedulertype>specified</schedulertype>
 			<schedulers>
@@ -77,18 +77,18 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0">0</runtime>
-				<runtime id="1">0</runtime>
-				<runtime id="2">0</runtime>
-				<runtime id="3">0</runtime>
-				<runtime id="4">60</runtime>
-				<runtime id="5">120</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>60</runtime>
+				<runtime>120</runtime>
 			</runtimes>
 			<starttimes>
-				<starttime id="11">23400</starttime>
+				<starttime>23400</starttime>
 			</starttimes>
 		</program>
-		<program id="12">
+		<program>
 			<name>kanikula</name>
 			<schedulertype>specified</schedulertype>
 			<schedulers>
@@ -106,17 +106,17 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0">1560</runtime>
-				<runtime id="1">2280</runtime>
-				<runtime id="2">1920</runtime>
-				<runtime id="3">0</runtime>
-				<runtime id="4">0</runtime>
-				<runtime id="5">0</runtime>
+				<runtime>1560</runtime>
+				<runtime>2280</runtime>
+				<runtime>1920</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
+				<runtime>0</runtime>
 			</runtimes>
 			<starttimes>
-				<starttime id="13">43200</starttime>
-				<starttime id="14">50400</starttime>
-				<starttime id="15">57600</starttime>
+				<starttime>43200</starttime>
+				<starttime>50400</starttime>
+				<starttime>57600</starttime>
 			</starttimes>
 		</program>
 	</programs>
