@@ -11,13 +11,18 @@ typedef std::pair<string, StartTimeDTO> TestDataType;
 ///////////////////////////////////////////////////////////////////////////////
 
 const TestDataType testData_all(
-		"<starttime id=\"8465\">8647</starttime>",
-		StartTimeDTO(8647).setId(8465)
+		"<starttime id=\"8465\"><hour>1</hour><minute>2</minute></starttime>",
+		StartTimeDTO(1, 2).setId(8465)
 		);
 
-const TestDataType testData_value(
-		"<starttime>9437</starttime>",
-		StartTimeDTO(9437)
+const TestDataType testData_hour(
+		"<starttime><hour>11</hour></starttime>",
+		StartTimeDTO().setHour(11)
+		);
+
+const TestDataType testData_minute(
+		"<starttime><minute>12</minute></starttime>",
+		StartTimeDTO().setMinute(12)
 		);
 
 const TestDataType testData_id(
@@ -60,8 +65,12 @@ TEST_F(StartTimeReaderTest, startTimeAll) {
 	testStartTimeRead(testData_all, reader);
 }
 
-TEST_F(StartTimeReaderTest, startTimeValue) {
-	testStartTimeRead(testData_value, reader);
+TEST_F(StartTimeReaderTest, startTimeHour) {
+	testStartTimeRead(testData_hour, reader);
+}
+
+TEST_F(StartTimeReaderTest, startTimeMinute) {
+	testStartTimeRead(testData_minute, reader);
 }
 
 TEST_F(StartTimeReaderTest, startTimeId) {
@@ -78,8 +87,12 @@ TEST_F(StartTimeWriterTest, startTimeAll) {
 	testStartTimeWrite(testData_all, writer);
 }
 
-TEST_F(StartTimeWriterTest, startTimeValue) {
-	testStartTimeWrite(testData_value, writer);
+TEST_F(StartTimeWriterTest, startTimeHour) {
+	testStartTimeWrite(testData_hour, writer);
+}
+
+TEST_F(StartTimeWriterTest, startTimeMinute) {
+	testStartTimeWrite(testData_minute, writer);
 }
 
 TEST_F(StartTimeWriterTest, startTimeId) {

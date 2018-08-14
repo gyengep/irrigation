@@ -19,15 +19,15 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime>1560</runtime>
-				<runtime>2280</runtime>
-				<runtime>1920</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
+				<runtime><minute>26</minute></runtime>
+				<runtime><minute>38</minute></runtime>
+				<runtime><minute>32</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
 			</runtimes>
 			<starttimes>
-				<starttime>14400</starttime>
+				<starttime><hour>4</hour></starttime>
 			</starttimes>
 		</program>
 		<program>
@@ -48,15 +48,15 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>1200</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>20</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
 			</runtimes>
 			<starttimes>
-				<starttime>21600</starttime>
+				<starttime><hour>6</hour></starttime>
 			</starttimes>
 		</program>
 		<program>
@@ -77,15 +77,15 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>60</runtime>
-				<runtime>120</runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><second>60</second></runtime>
+				<runtime><second>90</second></runtime>
 			</runtimes>
 			<starttimes>
-				<starttime>23400</starttime>
+				<starttime><hour>6</hour><minute>30</minute></starttime>
 			</starttimes>
 		</program>
 		<program>
@@ -106,18 +106,14 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime>1560</runtime>
-				<runtime>2280</runtime>
-				<runtime>1920</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
-				<runtime>0</runtime>
+				<runtime><minute>26</minute></runtime>
+				<runtime><minute>38</minute></runtime>
+				<runtime><minute>32</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
+				<runtime><minute>0</minute></runtime>
 			</runtimes>
-			<starttimes>
-				<starttime>43200</starttime>
-				<starttime>50400</starttime>
-				<starttime>57600</starttime>
-			</starttimes>
+			<starttimes/>
 		</program>
 	</programs>
 </irrigation>

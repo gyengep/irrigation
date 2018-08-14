@@ -26,7 +26,7 @@ WateringController::~WateringController() {
 void WateringController::on1SecTimer(const time_t& rawTime) {
 	if (wateringProperties.get() != nullptr) {
 		const IdType id = zoneHandler->getActiveId();
-		const unsigned zoneRunTime = wateringProperties->runTimes[id].getValue();
+		const unsigned zoneRunTime = wateringProperties->runTimes[id].getSeconds();
 		if (difftime(rawTime, wateringProperties->zoneStartTime) >= zoneRunTime) {
 			startNextRequiredZone(rawTime);
 		}
@@ -37,7 +37,8 @@ void WateringController::start(const time_t& rawTime, const RunTimeContainer& ru
 	wateringProperties.reset(new WateringProperties());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
-		wateringProperties->runTimes[i].setValue(runTimes.at(i)->getValue() * adjustmentPercent / 100);
+		unsigned adjustedSeconds = runTimes.at(i)->getSeconds() * adjustmentPercent / 100;
+		wateringProperties->runTimes[i].setSeconds(adjustedSeconds);
 	}
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
@@ -79,7 +80,7 @@ void WateringController::startNextRequiredZone(const time_t& rawTime) {
 	}
 
 	while (idx < wateringProperties->runTimes.size()) {
-		if (wateringProperties->runTimes[idx].getValue() > 0) {
+		if (wateringProperties->runTimes[idx].getSeconds() > 0) {
 			wateringProperties->zoneStartTime = rawTime;
 			zoneHandler->activate(idx);
 			LOGGER.debug("Zone %u activated", idx);

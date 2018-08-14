@@ -11,29 +11,36 @@ TEST(RunTimeDTOTest, defaultConstructor) {
 	RunTimeDTO runTimeDTO;
 
 	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_FALSE(runTimeDTO.hasValue());
+	EXPECT_FALSE(runTimeDTO.hasMinutes());
+	EXPECT_FALSE(runTimeDTO.hasSeconds());
 }
 
 TEST(RunTimeDTOTest, constructor) {
-	const unsigned expectedValue = 5;
-	RunTimeDTO runTimeDTO(expectedValue);
+	const unsigned expectedMinutes = 5;
+	const unsigned expectedSeconds = 30;
+	RunTimeDTO runTimeDTO(expectedMinutes, expectedSeconds);
 
 	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_TRUE(runTimeDTO.hasValue());
+	EXPECT_TRUE(runTimeDTO.hasMinutes());
+	EXPECT_TRUE(runTimeDTO.hasSeconds());
 
-	EXPECT_THAT(runTimeDTO.getValue(), Eq(expectedValue));
+	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
+	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
 }
 
 TEST(RunTimeDTOTest, copyConstructor) {
-	const unsigned expectedValue = 5;
-	const RunTimeDTO other(expectedValue);
+	const unsigned expectedMinutes = 5;
+	const unsigned expectedSeconds = 30;
+	const RunTimeDTO other(expectedMinutes, expectedSeconds);
 
 	RunTimeDTO runTimeDTO(other);
 
 	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_TRUE(runTimeDTO.hasValue());
+	EXPECT_TRUE(runTimeDTO.hasMinutes());
+	EXPECT_TRUE(runTimeDTO.hasSeconds());
 
-	EXPECT_THAT(runTimeDTO.getValue(), Eq(expectedValue));
+	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
+	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
 }
 
 TEST(RunTimeDTOTest, hasId) {
@@ -55,23 +62,40 @@ TEST(RunTimeDTOTest, getId) {
 	EXPECT_THAT(runTimeDTO.getId(), Eq(expectedId));
 }
 
-TEST(RunTimeDTOTest, hasValue) {
-	const unsigned expectedValue = 150;
+TEST(RunTimeDTOTest, hasMinutes) {
 	RunTimeDTO runTimeDTO;
 
-	EXPECT_FALSE(runTimeDTO.hasValue());
-	runTimeDTO.setValue(expectedValue);
-	EXPECT_TRUE(runTimeDTO.hasValue());
+	EXPECT_FALSE(runTimeDTO.hasMinutes());
+	runTimeDTO.setMinutes(100);
+	EXPECT_TRUE(runTimeDTO.hasMinutes());
 }
 
-TEST(RunTimeDTOTest, getValue) {
-	const unsigned expectedValue = 25;
+TEST(RunTimeDTOTest, getMinutes) {
+	const unsigned expectedMinutes = 25;
 	RunTimeDTO runTimeDTO;
 
-	EXPECT_THROW(runTimeDTO.getValue(), logic_error);
-	runTimeDTO.setValue(expectedValue);
-	ASSERT_NO_THROW(runTimeDTO.getValue());
-	EXPECT_THAT(runTimeDTO.getValue(), Eq(expectedValue));
+	EXPECT_THROW(runTimeDTO.getMinutes(), logic_error);
+	runTimeDTO.setMinutes(expectedMinutes);
+	ASSERT_NO_THROW(runTimeDTO.getMinutes());
+	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
+}
+
+TEST(RunTimeDTOTest, hasSeconds) {
+	RunTimeDTO runTimeDTO;
+
+	EXPECT_FALSE(runTimeDTO.hasSeconds());
+	runTimeDTO.setSeconds(50);
+	EXPECT_TRUE(runTimeDTO.hasSeconds());
+}
+
+TEST(RunTimeDTOTest, getSeconds) {
+	const unsigned expectedSeconds = 25;
+	RunTimeDTO runTimeDTO;
+
+	EXPECT_THROW(runTimeDTO.getSeconds(), logic_error);
+	runTimeDTO.setSeconds(expectedSeconds);
+	ASSERT_NO_THROW(runTimeDTO.getSeconds());
+	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
 }
 
 TEST(RunTimeDTOTest, equal) {
@@ -96,18 +120,33 @@ TEST(RunTimeDTOTest, equal) {
 	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
 	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
 
-	const unsigned expectedValue1 = 56354;
-	const unsigned expectedValue2 = 5222;
+	const unsigned expectedMinutes1= 5;
+	const unsigned expectedMinutes2= 4;
 
-	runTimeDTO1.setValue(expectedValue1);
+	runTimeDTO1.setMinutes(expectedMinutes1);
 	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
 	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO2.setValue(expectedValue2);
+	runTimeDTO2.setMinutes(expectedMinutes2);
 	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
 	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setValue(expectedValue2);
+	runTimeDTO1.setMinutes(expectedMinutes2);
+	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+
+	const unsigned expectedSeconds1= 30;
+	const unsigned expectedSeconds2= 25;
+
+	runTimeDTO1.setSeconds(expectedSeconds1);
+	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+
+	runTimeDTO2.setSeconds(expectedSeconds2);
+	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+
+	runTimeDTO1.setSeconds(expectedSeconds2);
 	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
 	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
 }

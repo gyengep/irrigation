@@ -37,7 +37,7 @@ TEST_F(WateringControllerTest, init) {
 TEST_F(WateringControllerTest, startWithNotEmpty) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(3)->setValue(1);
+	runTimeContainer.at(3)->setSeconds(1);
 	wateringController->start(10, runTimeContainer);
 
 	EXPECT_TRUE(wateringController->isWateringActive());
@@ -46,7 +46,7 @@ TEST_F(WateringControllerTest, startWithNotEmpty) {
 TEST_F(WateringControllerTest, stop) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(0)->setValue(1);
+	runTimeContainer.at(0)->setSeconds(1);
 	wateringController->start(10, runTimeContainer);
 	wateringController->stop();
 
@@ -66,7 +66,7 @@ TEST_F(WateringControllerTest, startWithEmpty) {
 TEST_F(WateringControllerTest, simpleSimingCheck) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(0)->setValue(2);
+	runTimeContainer.at(0)->setSeconds(2);
 
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
@@ -78,9 +78,9 @@ TEST_F(WateringControllerTest, simpleSimingCheck) {
 TEST_F(WateringControllerTest, timingCheckWith0start) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(3)->setValue(2);
-	runTimeContainer.at(4)->setValue(5);
-	runTimeContainer.at(5)->setValue(3);
+	runTimeContainer.at(3)->setSeconds(2);
+	runTimeContainer.at(4)->setSeconds(5);
+	runTimeContainer.at(5)->setSeconds(3);
 
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
@@ -92,9 +92,9 @@ TEST_F(WateringControllerTest, timingCheckWith0start) {
 TEST_F(WateringControllerTest, timingCheckWith0end) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(0)->setValue(3);
-	runTimeContainer.at(2)->setValue(2);
-	runTimeContainer.at(3)->setValue(1);
+	runTimeContainer.at(0)->setSeconds(3);
+	runTimeContainer.at(2)->setSeconds(2);
+	runTimeContainer.at(3)->setSeconds(1);
 
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
@@ -106,8 +106,8 @@ TEST_F(WateringControllerTest, timingCheckWith0end) {
 TEST_F(WateringControllerTest, timingAdjust) {
 	RunTimeContainer runTimeContainer;
 
-	runTimeContainer.at(0)->setValue(10);
-	runTimeContainer.at(2)->setValue(20);
+	runTimeContainer.at(0)->setSeconds(10);
+	runTimeContainer.at(2)->setSeconds(20);
 
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer, 30);

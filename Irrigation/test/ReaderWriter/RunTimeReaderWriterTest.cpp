@@ -11,13 +11,18 @@ typedef std::pair<string, RunTimeDTO> TestDataType;
 ///////////////////////////////////////////////////////////////////////////////
 
 const TestDataType testData_all(
-		"<runtime id=\"547\">500</runtime>",
-		RunTimeDTO(500).setId(547)
+		"<runtime id=\"547\"><minute>52</minute><second>43</second></runtime>",
+		RunTimeDTO(52, 43).setId(547)
 		);
 
-const TestDataType testData_value(
-		"<runtime>654</runtime>",
-		RunTimeDTO(654)
+const TestDataType testData_minute(
+		"<runtime><minute>17</minute></runtime>",
+		RunTimeDTO().setMinutes(17)
+		);
+
+const TestDataType testData_second(
+		"<runtime><second>34</second></runtime>",
+		RunTimeDTO().setSeconds(34)
 		);
 
 const TestDataType testData_id(
@@ -60,8 +65,12 @@ TEST_F(RunTimeReaderTest, runTimeAll) {
 	testRunTimeRead(testData_all, reader);
 }
 
-TEST_F(RunTimeReaderTest, runTimeValue) {
-	testRunTimeRead(testData_value, reader);
+TEST_F(RunTimeReaderTest, runTimeMinute) {
+	testRunTimeRead(testData_minute, reader);
+}
+
+TEST_F(RunTimeReaderTest, runTimeSecond) {
+	testRunTimeRead(testData_second, reader);
 }
 
 TEST_F(RunTimeReaderTest, runTimeId) {
@@ -78,8 +87,12 @@ TEST_F(RunTimeWriterTest, runTimeAll) {
 	testRunTimeWrite(testData_all, writer);
 }
 
-TEST_F(RunTimeWriterTest, runTimeValue) {
-	testRunTimeWrite(testData_value, writer);
+TEST_F(RunTimeWriterTest, runTimeMinute) {
+	testRunTimeWrite(testData_minute, writer);
+}
+
+TEST_F(RunTimeWriterTest, runTimeSecond) {
+	testRunTimeWrite(testData_second, writer);
 }
 
 TEST_F(RunTimeWriterTest, runTimeId) {

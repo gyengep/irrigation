@@ -24,13 +24,13 @@ const TestDataType testData_all(
 				"</scheduler>"
 			"</schedulers>"
 			"<runtimes>"
-				"<runtime id=\"15\">20</runtime>"
-				"<runtime id=\"25\">10</runtime>"
+				"<runtime id=\"15\"><minute>19</minute><second>23</second></runtime>"
+				"<runtime id=\"25\"><minute>31</minute><second>46</second></runtime>"
 			"</runtimes>"
 			"<starttimes>"
-				"<starttime id=\"35\">50</starttime>"
-				"<starttime id=\"45\">30</starttime>"
-				"<starttime id=\"55\">100</starttime>"
+				"<starttime id=\"35\"><hour>19</hour><minute>26</minute></starttime>"
+				"<starttime id=\"45\"><hour>18</hour><minute>25</minute></starttime>"
+				"<starttime id=\"55\"><hour>17</hour><minute>24</minute></starttime>"
 			"</starttimes>"
 		"</program>",
 		ProgramDTO()
@@ -38,12 +38,12 @@ const TestDataType testData_all(
 		.setSchedulerType("specified")
 		.setSpecifiedScheduler(SpecifiedSchedulerDTO(110, new list<bool>({ true, false})))
 		.setRunTimes(new list<RunTimeDTO>({
-			RunTimeDTO(20).setId(15),
-			RunTimeDTO(10).setId(25)}))
+			RunTimeDTO(19, 23).setId(15),
+			RunTimeDTO(31, 46).setId(25)}))
 		.setStartTimes(new list<StartTimeDTO>({
-			StartTimeDTO(50).setId(35),
-			StartTimeDTO(30).setId(45),
-			StartTimeDTO(100).setId(55)}))
+			StartTimeDTO(19, 26).setId(35),
+			StartTimeDTO(18, 25).setId(45),
+			StartTimeDTO(17, 24).setId(55)}))
 		);
 
 const TestDataType testData_name(
@@ -79,57 +79,29 @@ const TestDataType testData_schedulers(
 const TestDataType testData_runTimes(
 		"<program>"
 			"<runtimes>"
-				"<runtime id=\"15\">20</runtime>"
-				"<runtime id=\"25\">10</runtime>"
+				"<runtime id=\"15\"><minute>3</minute><second>15</second></runtime>"
+				"<runtime id=\"25\"><minute>7</minute><second>35</second></runtime>"
 			"</runtimes>"
 		"</program>",
 		ProgramDTO()
 		.setRunTimes(new list<RunTimeDTO>({
-			RunTimeDTO(20).setId(15),
-			RunTimeDTO(10).setId(25)}))
-		);
-
-const TestDataType testData_runTimesWithoutId(
-		"<program>"
-			"<runtimes>"
-				"<runtime>20</runtime>"
-				"<runtime>10</runtime>"
-			"</runtimes>"
-		"</program>",
-		ProgramDTO()
-		.setRunTimes(new list<RunTimeDTO>({
-			RunTimeDTO(20),
-			RunTimeDTO(10)}))
+			RunTimeDTO(3, 15).setId(15),
+			RunTimeDTO(7, 35).setId(25)}))
 		);
 
 const TestDataType testData_startTimes(
 		"<program>"
 			"<starttimes>"
-				"<starttime id=\"35\">50</starttime>"
-				"<starttime id=\"45\">30</starttime>"
-				"<starttime id=\"55\">100</starttime>"
+				"<starttime id=\"35\"><hour>9</hour><minute>6</minute></starttime>"
+				"<starttime id=\"45\"><hour>8</hour><minute>5</minute></starttime>"
+				"<starttime id=\"55\"><hour>7</hour><minute>4</minute></starttime>"
 			"</starttimes>"
 		"</program>",
 		ProgramDTO()
 		.setStartTimes(new list<StartTimeDTO>({
-			StartTimeDTO(50).setId(35),
-			StartTimeDTO(30).setId(45),
-			StartTimeDTO(100).setId(55)}))
-		);
-
-const TestDataType testData_startTimesWithoutId(
-		"<program>"
-			"<starttimes>"
-				"<starttime>50</starttime>"
-				"<starttime>30</starttime>"
-				"<starttime>100</starttime>"
-			"</starttimes>"
-		"</program>",
-		ProgramDTO()
-		.setStartTimes(new list<StartTimeDTO>({
-			StartTimeDTO(50),
-			StartTimeDTO(30),
-			StartTimeDTO(100)}))
+			StartTimeDTO(9, 6).setId(35),
+			StartTimeDTO(8, 5).setId(45),
+			StartTimeDTO(7, 4).setId(55)}))
 		);
 
 const TestDataType testData_empty(
@@ -164,10 +136,38 @@ TEST_F(ProgramReaderTest, programInvalidXml) {
 }
 
 TEST_F(ProgramReaderTest, programRunTimeWithoutId) {
+	const TestDataType testData_runTimesWithoutId(
+			"<program>"
+				"<runtimes>"
+					"<runtime><minute>3</minute><second>15</second></runtime>"
+					"<runtime><minute>7</minute><second>35</second></runtime>"
+				"</runtimes>"
+			"</program>",
+			ProgramDTO()
+			.setRunTimes(new list<RunTimeDTO>({
+				RunTimeDTO(3, 15),
+				RunTimeDTO(7, 35)}))
+			);
+
 	testProgramRead(testData_runTimesWithoutId, reader);
 }
 
 TEST_F(ProgramReaderTest, programStartTimeWithoutId) {
+	const TestDataType testData_startTimesWithoutId(
+			"<program>"
+				"<starttimes>"
+					"<starttime><hour>9</hour><minute>6</minute></starttime>"
+					"<starttime><hour>8</hour><minute>5</minute></starttime>"
+					"<starttime><hour>7</hour><minute>4</minute></starttime>"
+				"</starttimes>"
+			"</program>",
+			ProgramDTO()
+			.setStartTimes(new list<StartTimeDTO>({
+				StartTimeDTO(9, 6),
+				StartTimeDTO(8, 5),
+				StartTimeDTO(7, 4)}))
+			);
+
 	testProgramRead(testData_startTimesWithoutId, reader);
 }
 

@@ -37,17 +37,17 @@ TEST(Program, convertProgramDTO) {
 	const ProgramDTO expectedProgramDTO("Abcdefg", "specified",
 			SpecifiedSchedulerDTO(95, new list<bool>({ false, true, false, false, false, true, false})),
 			new list<RunTimeDTO>({
-				RunTimeDTO(20).setId(0),
-				RunTimeDTO(21).setId(1),
-				RunTimeDTO(22).setId(2),
-				RunTimeDTO(23).setId(3),
-				RunTimeDTO(24).setId(4),
-				RunTimeDTO(25).setId(5)
+				RunTimeDTO(20, 30).setId(0),
+				RunTimeDTO(21, 31).setId(1),
+				RunTimeDTO(22, 32).setId(2),
+				RunTimeDTO(23, 33).setId(3),
+				RunTimeDTO(24, 34).setId(4),
+				RunTimeDTO(25, 35).setId(5)
 			}),
 			new list<StartTimeDTO>({
-				StartTimeDTO(3600).setId(100),
-				StartTimeDTO(3601).setId(101),
-				StartTimeDTO(3602).setId(102)
+				StartTimeDTO(10, 20).setId(100),
+				StartTimeDTO(11, 21).setId(101),
+				StartTimeDTO(12, 22).setId(102)
 			})
 		);
 
@@ -143,66 +143,66 @@ TEST(Program, updateLessSpecifiedSchedulerFromProgramDTO) {
 
 TEST(Program, updateRunTimesFromProgramDTO) {
 	Program program;
-	program.getRunTimes().at(0)->setValue(10);
-	program.getRunTimes().at(1)->setValue(11);
-	program.getRunTimes().at(2)->setValue(12);
-	program.getRunTimes().at(3)->setValue(13);
-	program.getRunTimes().at(4)->setValue(14);
-	program.getRunTimes().at(5)->setValue(15);
+	program.getRunTimes().at(0)->setSeconds(60);
+	program.getRunTimes().at(1)->setSeconds(61);
+	program.getRunTimes().at(2)->setSeconds(62);
+	program.getRunTimes().at(3)->setSeconds(63);
+	program.getRunTimes().at(4)->setSeconds(64);
+	program.getRunTimes().at(5)->setSeconds(65);
 
 	program.updateFromDTO(ProgramDTO());
 	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
-	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(10)));
-	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(11)));
-	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(12)));
-	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(13)));
-	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(14)));
-	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(15)));
+	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(1, 0)));
+	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(1, 1)));
+	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(1, 2)));
+	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(1, 3)));
+	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(1, 4)));
+	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(1, 5)));
 
 	program.updateFromDTO(ProgramDTO().setRunTimes(
 		new list<RunTimeDTO>({
-			RunTimeDTO(20).setId(0),
-			RunTimeDTO(21).setId(1),
-			RunTimeDTO(22).setId(2),
-			RunTimeDTO(23).setId(3),
-			RunTimeDTO(24).setId(4),
-			RunTimeDTO(25).setId(5)
+			RunTimeDTO(2, 0).setId(0),
+			RunTimeDTO(2, 1).setId(1),
+			RunTimeDTO(2, 2).setId(2),
+			RunTimeDTO(2, 3).setId(3),
+			RunTimeDTO(2, 4).setId(4),
+			RunTimeDTO(2, 5).setId(5)
 		})
 	));
 
 	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
-	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(20)));
-	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(21)));
-	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(22)));
-	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(23)));
-	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(24)));
-	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(25)));
+	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(2, 0)));
+	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(2, 1)));
+	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(2, 2)));
+	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(2, 3)));
+	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(2, 4)));
+	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(2, 5)));
 }
 
 TEST(Program, updateStartTimesFromProgramDTO) {
 	Program program;
-	program.getStartTimes().insert(100, new StartTime()).second->setValue(10);
-	program.getStartTimes().insert(101, new StartTime()).second->setValue(11);
-	program.getStartTimes().insert(102, new StartTime()).second->setValue(12);
+	program.getStartTimes().insert(100, new StartTime()).second->set(1, 0);
+	program.getStartTimes().insert(101, new StartTime()).second->set(1, 1);
+	program.getStartTimes().insert(102, new StartTime()).second->set(1, 2);
 
 	program.updateFromDTO(ProgramDTO());
 	EXPECT_THAT(program.getStartTimes().size(), Eq(3));
-	EXPECT_THAT(program.getStartTimes().at(100)->getStartTimeDTO(), Eq(StartTimeDTO(10)));
-	EXPECT_THAT(program.getStartTimes().at(101)->getStartTimeDTO(), Eq(StartTimeDTO(11)));
-	EXPECT_THAT(program.getStartTimes().at(102)->getStartTimeDTO(), Eq(StartTimeDTO(12)));
+	EXPECT_THAT(program.getStartTimes().at(100)->getStartTimeDTO(), Eq(StartTimeDTO(1, 0)));
+	EXPECT_THAT(program.getStartTimes().at(101)->getStartTimeDTO(), Eq(StartTimeDTO(1, 1)));
+	EXPECT_THAT(program.getStartTimes().at(102)->getStartTimeDTO(), Eq(StartTimeDTO(1, 2)));
 
 	program.updateFromDTO(ProgramDTO().setStartTimes(
 		new list<StartTimeDTO>({
-			StartTimeDTO(20).setId(200),
-			StartTimeDTO(21).setId(201),
-			StartTimeDTO(22).setId(202)
+			StartTimeDTO(2, 0).setId(200),
+			StartTimeDTO(2, 1).setId(201),
+			StartTimeDTO(2, 2).setId(202)
 		})
 	));
 
 	EXPECT_THAT(program.getStartTimes().size(), Eq(3));
-	EXPECT_THAT(program.getStartTimes().at(200)->getStartTimeDTO(), Eq(StartTimeDTO(20)));
-	EXPECT_THAT(program.getStartTimes().at(201)->getStartTimeDTO(), Eq(StartTimeDTO(21)));
-	EXPECT_THAT(program.getStartTimes().at(202)->getStartTimeDTO(), Eq(StartTimeDTO(22)));
+	EXPECT_THAT(program.getStartTimes().at(200)->getStartTimeDTO(), Eq(StartTimeDTO(2, 0)));
+	EXPECT_THAT(program.getStartTimes().at(201)->getStartTimeDTO(), Eq(StartTimeDTO(2, 1)));
+	EXPECT_THAT(program.getStartTimes().at(202)->getStartTimeDTO(), Eq(StartTimeDTO(2, 2)));
 }
 
 

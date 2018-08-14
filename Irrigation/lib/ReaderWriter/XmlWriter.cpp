@@ -83,8 +83,12 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 void XmlWriter::saveRunTime(xml_node* parent, const RunTimeDTO& runTime) {
 	xml_node node = parent->append_child("runtime");
 
-	if (runTime.hasValue()) {
-		node.text().set(runTime.getValue());
+	if (runTime.hasMinutes()) {
+		node.append_child("minute").text().set(runTime.getMinutes());
+	}
+
+	if (runTime.hasSeconds()) {
+		node.append_child("second").text().set(runTime.getSeconds());
 	}
 
 	if (runTime.hasId()) {
@@ -95,8 +99,12 @@ void XmlWriter::saveRunTime(xml_node* parent, const RunTimeDTO& runTime) {
 void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDTO& startTime) {
 	xml_node node = parent->append_child("starttime");
 
-	if (startTime.hasValue()) {
-		node.text().set(startTime.getValue());
+	if (startTime.hasHour()) {
+		node.append_child("hour").text().set(startTime.getHour());
+	}
+
+	if (startTime.hasMinute()) {
+		node.append_child("minute").text().set(startTime.getMinute());
 	}
 
 	if (startTime.hasId()) {

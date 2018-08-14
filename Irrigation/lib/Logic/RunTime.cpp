@@ -8,17 +8,17 @@ using namespace std;
 
 
 RunTime::RunTime() {
-	setValue(0);
+	setSeconds(0);
 }
 
 RunTime::~RunTime() {
 }
 
-unsigned RunTime::getValue() const {
+unsigned RunTime::getSeconds() const {
 	return seconds;
 }
 
-void RunTime::setValue(unsigned seconds) {
+void RunTime::setSeconds(unsigned seconds) {
 	if (seconds > maxSeconds) {
 		throw ValueOutOfBoundsException(
 				"RunTime value shall not be greater than " + to_string(maxSeconds) +
@@ -29,18 +29,29 @@ void RunTime::setValue(unsigned seconds) {
 }
 
 RunTimeDTO RunTime::getRunTimeDTO() const {
-	return RunTimeDTO(getValue());
+	return RunTimeDTO(seconds / 60, seconds % 60);
 }
 
 void RunTime::updateFromDTO(const RunTimeDTO& runTimeDTO) {
-	if (runTimeDTO.hasValue()) {
-		setValue(runTimeDTO.getValue());
+	if (runTimeDTO.hasMinutes() || runTimeDTO.hasSeconds()) {
+		unsigned minutes = 0;
+		unsigned seconds = 0;
+
+		if (runTimeDTO.hasMinutes()) {
+			minutes = runTimeDTO.getMinutes();
+		}
+
+		if (runTimeDTO.hasSeconds()) {
+			seconds = runTimeDTO.getSeconds();
+		}
+
+		setSeconds(60 * minutes + seconds);
 	}
 }
 
 string to_string(const RunTime& runTime) {
 	ostringstream o;
-	o << setfill('0') << setw(2) << (runTime.getValue()/60) << ":";
-	o << setfill('0') << setw(2) << (runTime.getValue()%60);
+	o << setfill('0') << setw(2) << (runTime.getSeconds() / 60) << ":";
+	o << setfill('0') << setw(2) << (runTime.getSeconds() % 60);
 	return o.str();
 }

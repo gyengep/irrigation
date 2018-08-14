@@ -31,13 +31,13 @@ const TestDataType testData_programs(
 						"</scheduler>"
 					"</schedulers>"
 					"<runtimes>"
-						"<runtime id=\"15\">20</runtime>"
-						"<runtime id=\"25\">10</runtime>"
+						"<runtime id=\"15\"><minute>25</minute><second>54</second></runtime>"
+						"<runtime id=\"25\"><minute>35</minute><second>44</second></runtime>"
 					"</runtimes>"
 					"<starttimes>"
-						"<starttime id=\"35\">50</starttime>"
-						"<starttime id=\"45\">30</starttime>"
-						"<starttime id=\"55\">100</starttime>"
+						"<starttime id=\"35\"><hour>15</hour><minute>51</minute></starttime>"
+						"<starttime id=\"45\"><hour>16</hour><minute>52</minute></starttime>"
+						"<starttime id=\"55\"><hour>17</hour><minute>53</minute></starttime>"
 					"</starttimes>"
 				"</program>"
 				"<program id=\"6\">"
@@ -55,13 +55,13 @@ const TestDataType testData_programs(
 						"</scheduler>"
 					"</schedulers>"
 					"<runtimes>"
-						"<runtime id=\"115\">200</runtime>"
-						"<runtime id=\"125\">210</runtime>"
-						"<runtime id=\"135\">205</runtime>"
+						"<runtime id=\"115\"><minute>30</minute><second>15</second></runtime>"
+						"<runtime id=\"125\"><minute>40</minute><second>25</second></runtime>"
+						"<runtime id=\"135\"><minute>50</minute><second>35</second></runtime>"
 					"</runtimes>"
 					"<starttimes>"
-						"<starttime id=\"145\">130</starttime>"
-						"<starttime id=\"155\">150</starttime>"
+						"<starttime id=\"145\"><hour>20</hour><minute>30</minute></starttime>"
+						"<starttime id=\"155\"><hour>15</hour><minute>25</minute></starttime>"
 					"</starttimes>"
 				"</program>"
 			"</programs>"
@@ -73,24 +73,24 @@ const TestDataType testData_programs(
 				.setSchedulerType("specified")
 				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, new list<bool>({ true, false })))
 				.setRunTimes(new list<RunTimeDTO>({
-					RunTimeDTO(20).setId(15),
-					RunTimeDTO(10).setId(25)}))
+					RunTimeDTO(25, 54).setId(15),
+					RunTimeDTO(35, 44).setId(25)}))
 				.setStartTimes(new list<StartTimeDTO>({
-					StartTimeDTO(50).setId(35),
-					StartTimeDTO(30).setId(45),
-					StartTimeDTO(100).setId(55)})),
+					StartTimeDTO(15, 51).setId(35),
+					StartTimeDTO(16, 52).setId(45),
+					StartTimeDTO(17, 53).setId(55)})),
 			ProgramDTO()
 				.setId(6)
 				.setName("123456")
 				.setSchedulerType("specified")
 				.setSpecifiedScheduler(SpecifiedSchedulerDTO(140, new list<bool>({ true, true, false, false })))
 				.setRunTimes(new list<RunTimeDTO>({
-					RunTimeDTO(200).setId(115),
-					RunTimeDTO(210).setId(125),
-					RunTimeDTO(205).setId(135)}))
+					RunTimeDTO(30, 15).setId(115),
+					RunTimeDTO(40, 25).setId(125),
+					RunTimeDTO(50, 35).setId(135)}))
 				.setStartTimes(new list<StartTimeDTO>({
-					StartTimeDTO(130).setId(145),
-					StartTimeDTO(150).setId(155)}))
+					StartTimeDTO(20, 30).setId(145),
+					StartTimeDTO(15, 25).setId(155)}))
 			}))
 		);
 
@@ -110,13 +110,13 @@ const TestDataType testData_programsWithoutId(
 						"</scheduler>"
 					"</schedulers>"
 					"<runtimes>"
-						"<runtime>20</runtime>"
-						"<runtime>10</runtime>"
+						"<runtime><minute>25</minute><second>54</second></runtime>"
+						"<runtime><minute>52</minute><second>45</second></runtime>"
 					"</runtimes>"
 					"<starttimes>"
-						"<starttime>50</starttime>"
-						"<starttime>30</starttime>"
-						"<starttime>100</starttime>"
+						"<starttime><hour>20</hour><minute>30</minute></starttime>"
+						"<starttime><hour>19</hour><minute>32</minute></starttime>"
+						"<starttime><hour>18</hour><minute>36</minute></starttime>"
 					"</starttimes>"
 				"</program>"
 			"</programs>"
@@ -127,12 +127,12 @@ const TestDataType testData_programsWithoutId(
 				.setSchedulerType("specified")
 				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, new list<bool>({ true, false })))
 				.setRunTimes(new list<RunTimeDTO>({
-					RunTimeDTO(20),
-					RunTimeDTO(10)}))
+					RunTimeDTO(25, 54),
+					RunTimeDTO(52, 45)}))
 				.setStartTimes(new list<StartTimeDTO>({
-					StartTimeDTO(50),
-					StartTimeDTO(30),
-					StartTimeDTO(100)}))
+					StartTimeDTO(20, 30),
+					StartTimeDTO(19, 32),
+					StartTimeDTO(18, 36)}))
 
 			}))
 		);

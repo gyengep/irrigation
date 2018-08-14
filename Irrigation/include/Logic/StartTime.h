@@ -4,24 +4,25 @@
 
 
 class StartTime {
-	static const unsigned maxSeconds = 60 * 60 * 24;
-
 	// disable copy constructor and copy operator
 	StartTime(const StartTime&);
 	StartTime& operator= (const StartTime&);
 
-	unsigned secOfDay;
+	unsigned hour, minute, second;
 
 public:
 	StartTime();
-	StartTime(unsigned hour, unsigned min, unsigned sec);
+	StartTime(unsigned hour, unsigned minute, unsigned second = 0);
 	virtual ~StartTime();
 
 	bool operator< (const StartTime& other) const;
 	bool operator== (const StartTime& other) const;
 
-	virtual unsigned getValue() const;
-	virtual void setValue(unsigned secOfDay);
+	void set(unsigned hour, unsigned minute, unsigned second = 0);
+
+	unsigned getHours() const;
+	unsigned getMinutes() const;
+	unsigned getSeconds() const;
 
 	StartTimeDTO getStartTimeDTO() const;
 	void updateFromDTO(const StartTimeDTO& startTimeDTO);

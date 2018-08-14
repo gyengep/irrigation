@@ -32,33 +32,33 @@ TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 		ProgramDTO("Abcdefg", "specified",
 			SpecifiedSchedulerDTO(39, new list<bool>({ false, true, false, false, false, true, false})),
 			new list<RunTimeDTO>({
-				RunTimeDTO(20).setId(0),
-				RunTimeDTO(21).setId(1),
-				RunTimeDTO(22).setId(2),
-				RunTimeDTO(23).setId(3),
-				RunTimeDTO(24).setId(4),
-				RunTimeDTO(25).setId(5)
+				RunTimeDTO(2, 0).setId(0),
+				RunTimeDTO(2, 1).setId(1),
+				RunTimeDTO(2, 2).setId(2),
+				RunTimeDTO(2, 3).setId(3),
+				RunTimeDTO(2, 4).setId(4),
+				RunTimeDTO(2, 5).setId(5)
 			}),
 			new list<StartTimeDTO>({
-				StartTimeDTO(3600).setId(100),
-				StartTimeDTO(3601).setId(101),
-				StartTimeDTO(3602).setId(102)
+				StartTimeDTO(3, 20).setId(100),
+				StartTimeDTO(4, 21).setId(101),
+				StartTimeDTO(5, 22).setId(102)
 			})
 		).setId(15),
 		ProgramDTO("Program2", "specified",
 			SpecifiedSchedulerDTO(40, new list<bool>({ true, false, false, false, false, false, false})),
 			new list<RunTimeDTO>({
-				RunTimeDTO(120).setId(0),
-				RunTimeDTO(121).setId(1),
-				RunTimeDTO(122).setId(2),
-				RunTimeDTO(123).setId(3),
-				RunTimeDTO(124).setId(4),
-				RunTimeDTO(125).setId(5)
+				RunTimeDTO(1, 20).setId(0),
+				RunTimeDTO(1, 21).setId(1),
+				RunTimeDTO(1, 22).setId(2),
+				RunTimeDTO(1, 23).setId(3),
+				RunTimeDTO(1, 24).setId(4),
+				RunTimeDTO(1, 25).setId(5)
 			}),
 			new list<StartTimeDTO>({
-				StartTimeDTO(7200).setId(110),
-				StartTimeDTO(7201).setId(111),
-				StartTimeDTO(7202).setId(112)
+				StartTimeDTO(7, 20).setId(110),
+				StartTimeDTO(7, 21).setId(111),
+				StartTimeDTO(7, 22).setId(112)
 			})
 		).setId(25),
 	}));

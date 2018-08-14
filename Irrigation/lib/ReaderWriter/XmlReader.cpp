@@ -134,9 +134,13 @@ void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime) const {
 		runTime.setId(idAttribute.as_uint());
 	}
 
-	xml_text nodeText;
-	if ((nodeText = node.text()) != nullptr) {
-		runTime.setValue(nodeText.as_uint());
+	xml_node tmpNode;
+	if ((tmpNode = node.child("minute")) != nullptr) {
+		runTime.setMinutes(tmpNode.text().as_uint());
+	}
+
+	if ((tmpNode = node.child("second")) != nullptr) {
+		runTime.setSeconds(tmpNode.text().as_uint());
 	}
 }
 
@@ -146,9 +150,13 @@ void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) con
 		startTime.setId(idAttribute.as_uint());
 	}
 
-	xml_text nodeText;
-	if ((nodeText = node.text()) != nullptr) {
-		startTime.setValue(nodeText.as_uint());
+	xml_node tmpNode;
+	if ((tmpNode = node.child("hour")) != nullptr) {
+		startTime.setHour(tmpNode.text().as_uint());
+	}
+
+	if ((tmpNode = node.child("minute")) != nullptr) {
+		startTime.setMinute(tmpNode.text().as_uint());
 	}
 }
 

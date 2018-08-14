@@ -16,8 +16,8 @@ public:
 	RunTime();
 	virtual ~RunTime();
 
-	virtual unsigned getValue() const;
-	virtual void setValue(unsigned seconds);
+	unsigned getSeconds() const;
+	void setSeconds(unsigned seconds);
 
 	RunTimeDTO getRunTimeDTO() const;
 	void updateFromDTO(const RunTimeDTO& runTimeDTO);

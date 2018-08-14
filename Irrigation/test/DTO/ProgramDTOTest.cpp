@@ -23,8 +23,8 @@ TEST(ProgramDTOTest, constructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
 	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(100, new list<bool>({ true, false, true }));
-	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10), RunTimeDTO(15), RunTimeDTO(20) });
-	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(31), StartTimeDTO(18) });
+	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10, 0), RunTimeDTO(15, 0), RunTimeDTO(20, 0) });
+	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(5, 0), StartTimeDTO(6, 0) });
 
 	ProgramDTO programDTO(
 			expectedName,
@@ -51,8 +51,8 @@ TEST(ProgramDTOTest, copyConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
 	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(110, new list<bool>({ true, false, true }));
-	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(100), RunTimeDTO(5) });
-	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(3), StartTimeDTO(131), StartTimeDTO(18) });
+	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
+	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
 
 	const ProgramDTO other(
 			expectedName,
@@ -162,7 +162,7 @@ TEST(ProgramDTOTest, hasRunTimes) {
 }
 
 TEST(ProgramDTOTest, getRunTimes) {
-	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(1100), RunTimeDTO(1155), RunTimeDTO(120) });
+	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(11, 10), RunTimeDTO(11, 55), RunTimeDTO(12, 0) });
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getRunTimes(), logic_error);
@@ -180,7 +180,7 @@ TEST(ProgramDTOTest, hasStartTimes) {
 }
 
 TEST(ProgramDTOTest, getStartTimes) {
-	list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(2100), StartTimeDTO(100), StartTimeDTO(120) });
+	list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(21, 20), StartTimeDTO(22, 40), StartTimeDTO(1, 23) });
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getStartTimes(), logic_error);
@@ -256,8 +256,8 @@ TEST(ProgramDTOTest, equal) {
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
-	const list<RunTimeDTO> expectedRunTimes1({ RunTimeDTO(10), RunTimeDTO(20) });
-	const list<RunTimeDTO> expectedRunTimes2({ RunTimeDTO(10), RunTimeDTO(210), RunTimeDTO(20) });
+	const list<RunTimeDTO> expectedRunTimes1({ RunTimeDTO(10, 11), RunTimeDTO(20, 21) });
+	const list<RunTimeDTO> expectedRunTimes2({ RunTimeDTO(12, 13), RunTimeDTO(22, 23), RunTimeDTO(32, 33) });
 
 	programDTO1.setRunTimes(new list<RunTimeDTO>(expectedRunTimes1));
 	EXPECT_FALSE(programDTO1 == programDTO2);
@@ -271,8 +271,8 @@ TEST(ProgramDTOTest, equal) {
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
-	const list<StartTimeDTO> expectedStartTimes1({ StartTimeDTO(10), StartTimeDTO(20), StartTimeDTO(50) });
-	const list<StartTimeDTO> expectedStartTimes2({ StartTimeDTO(10), StartTimeDTO(500), StartTimeDTO(2) });
+	const list<StartTimeDTO> expectedStartTimes1({ StartTimeDTO(17, 23), StartTimeDTO(4, 26), StartTimeDTO(5, 12) });
+	const list<StartTimeDTO> expectedStartTimes2({ StartTimeDTO(16, 17), StartTimeDTO(18, 19), StartTimeDTO(20, 21) });
 
 	programDTO1.setStartTimes(new list<StartTimeDTO>(expectedStartTimes1));
 	EXPECT_FALSE(programDTO1 == programDTO2);
