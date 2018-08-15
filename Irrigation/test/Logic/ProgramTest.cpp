@@ -160,13 +160,28 @@ TEST(Program, updateRunTimesFromProgramDTO) {
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(1, 5)));
 
 	program.updateFromDTO(ProgramDTO().setRunTimes(
+		new list<RunTimeDTO>()
+	));
+
+	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+}
+
+TEST(Program, updateRunTimesFromProgramDTOWithoutId) {
+	Program program;
+	program.updateFromDTO(ProgramDTO().setRunTimes(
 		new list<RunTimeDTO>({
-			RunTimeDTO(2, 0).setId(0),
-			RunTimeDTO(2, 1).setId(1),
-			RunTimeDTO(2, 2).setId(2),
-			RunTimeDTO(2, 3).setId(3),
-			RunTimeDTO(2, 4).setId(4),
-			RunTimeDTO(2, 5).setId(5)
+			RunTimeDTO(2, 0),
+			RunTimeDTO(2, 1),
+			RunTimeDTO(2, 2),
+			RunTimeDTO(2, 3),
+			RunTimeDTO(2, 4),
+			RunTimeDTO(2, 5)
 		})
 	));
 
@@ -177,6 +192,47 @@ TEST(Program, updateRunTimesFromProgramDTO) {
 	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(2, 3)));
 	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(2, 4)));
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(2, 5)));
+}
+
+TEST(Program, updateRunTimesFromProgramDTOWithId) {
+	Program program;
+	program.updateFromDTO(ProgramDTO().setRunTimes(
+		new list<RunTimeDTO>({
+		RunTimeDTO(2, 3).setId(3),
+			RunTimeDTO(2, 1).setId(1),
+			RunTimeDTO(2, 0).setId(0),
+			RunTimeDTO(2, 2).setId(2),
+			RunTimeDTO(2, 5).setId(5),
+			RunTimeDTO(2, 4).setId(4)
+		})
+	));
+
+	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(2, 0)));
+	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(2, 1)));
+	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(2, 2)));
+	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(2, 3)));
+	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(2, 4)));
+	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(2, 5)));
+}
+
+TEST(Program, updateRunTimesFromDTOWithAndWithoutId) {
+	Program program;
+	program.updateFromDTO(ProgramDTO().setRunTimes(
+		new list<RunTimeDTO>({
+			RunTimeDTO(3, 53).setId(3),
+			RunTimeDTO(3, 54),
+			RunTimeDTO(3, 51).setId(1)
+		})
+	));
+
+	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(3, 51)));
+	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(program.getRunTimes().at(3)->getRunTimeDTO(), Eq(RunTimeDTO(3, 53)));
+	EXPECT_THAT(program.getRunTimes().at(4)->getRunTimeDTO(), Eq(RunTimeDTO(3, 54)));
+	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
 }
 
 TEST(Program, updateStartTimesFromProgramDTO) {

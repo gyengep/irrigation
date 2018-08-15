@@ -120,12 +120,14 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	if (programDTO.hasRunTimes()) {
 		runTimes.reset(new RunTimeContainer());
 
-		const size_t maxIndex = min(runTimes->size(), programDTO.getRunTimes().size());
-		for (size_t i = 0; i < maxIndex; ++i) {
-			auto it = next(programDTO.getRunTimes().begin(), i);
-			const RunTimeDTO& runTimeDTO = *it;
+		unsigned id = 0;
+		for (const RunTimeDTO& runTimeDTO : programDTO.getRunTimes()) {
+			if (runTimeDTO.hasId()) {
+				id = runTimeDTO.getId();
+			}
 
-			runTimes->at(IdType(i))->updateFromDTO(runTimeDTO);
+			runTimes->at(IdType(id))->updateFromDTO(runTimeDTO);
+			id++;
 		}
 	}
 

@@ -19,12 +19,9 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime><minute>26</minute></runtime>
-				<runtime><minute>38</minute></runtime>
-				<runtime><minute>32</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
+				<runtime id="0"><minute>26</minute></runtime>
+				<runtime id="1"><minute>38</minute></runtime>
+				<runtime id="2"><minute>32</minute></runtime>
 			</runtimes>
 			<starttimes>
 				<starttime><hour>4</hour></starttime>
@@ -48,12 +45,7 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>20</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
+				<runtime id="3"><minute>20</minute></runtime>
 			</runtimes>
 			<starttimes>
 				<starttime><hour>6</hour></starttime>
@@ -77,15 +69,12 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><second>60</second></runtime>
-				<runtime><second>90</second></runtime>
+				<runtime id="4"><second>60</second></runtime>
+				<runtime id="5"><second>90</second></runtime>
 			</runtimes>
 			<starttimes>
 				<starttime><hour>6</hour><minute>30</minute></starttime>
+				<starttime><hour>20</hour><minute>30</minute></starttime>
 			</starttimes>
 		</program>
 		<program>
@@ -106,12 +95,9 @@
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime><minute>26</minute></runtime>
-				<runtime><minute>38</minute></runtime>
-				<runtime><minute>32</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
-				<runtime><minute>0</minute></runtime>
+				<runtime id="0"><minute>26</minute></runtime>
+				<runtime id="1"><minute>38</minute></runtime>
+				<runtime id="2"><minute>32</minute></runtime>
 			</runtimes>
 			<starttimes/>
 		</program>
