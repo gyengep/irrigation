@@ -1,5 +1,6 @@
 #include "IrrigationApplication.h"
 #include <chrono>
+#include <ctime>
 #include <fstream>
 #include <mutex>
 #include <thread>
@@ -78,26 +79,67 @@ void Application::init() {
 	initDocument();
 }
 
+chrono::milliseconds getDiffBetweenSystemClockAndSteadyClock() {
+	chrono::milliseconds steady = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch());
+	chrono::milliseconds system = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
+
+	int64_t msSteady = chrono::milliseconds(steady).count();
+	int64_t msSystem = chrono::milliseconds(system).count();
+
+	return chrono::milliseconds(msSystem - msSteady);
+
+}
+
+chrono::milliseconds abs(const chrono::milliseconds& ms) {
+	return chrono::milliseconds(abs(ms.count()));
+}
+
 void Application::start() {
 
-	auto updateTimePoint = chrono::steady_clock::now();
-	time_t lastTime = 0;
+	chrono::steady_clock::time_point updateTimePoint = chrono::steady_clock::now();
+	chrono::system_clock::time_point currentTimePoint = chrono::system_clock::now();
+	chrono::milliseconds expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
 
 	LOGGER.debug("Main loop started");
 
 	while (!isTerminated) {
-		time_t currentTime = getTime();
-		int diffTime = currentTime - lastTime;
-
-		if ((diffTime != 1) && (lastTime != 0)) {
-			LOGGER.warning("Update period failure! different is: %d", diffTime);
-		}
-
-		lastTime = currentTime;
-		document->on1SecTimer(currentTime);
 
 		updateTimePoint += chrono::seconds(1);
+		currentTimePoint += chrono::seconds(1);
+
 		this_thread::sleep_until(updateTimePoint);
+
+		chrono::milliseconds currentDiff = getDiffBetweenSystemClockAndSteadyClock();
+		chrono::milliseconds diffOfDiff = currentDiff - expectedDiff;
+
+		LOGGER.debug("DiffOfDiff: %ld", diffOfDiff.count());
+
+
+		if (abs(diffOfDiff) > chrono::milliseconds(100)) {
+			if (abs(diffOfDiff) > chrono::seconds(1)) {
+				time_t previousTime = chrono::system_clock::to_time_t(currentTimePoint);
+				time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+
+				const int BUFFER_SIZE = 100;
+				char previousTimeStr[BUFFER_SIZE];
+				char currentTimeStr[BUFFER_SIZE];
+
+				strftime(previousTimeStr, BUFFER_SIZE, "%Y.%m.%d %H:%M:%S", localtime(&previousTime));
+				strftime(currentTimeStr, BUFFER_SIZE, "%Y.%m.%d %H:%M:%S", localtime(&currentTime));
+
+				LOGGER.warning("Update period failure! time is changed from %s to %s",
+						previousTimeStr, currentTimeStr);
+			} else {
+				LOGGER.warning("Update period failure! different is: %ld ms", diffOfDiff.count());
+			}
+
+			updateTimePoint = chrono::steady_clock::now();
+			currentTimePoint = chrono::system_clock::now();
+
+			expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
+		}
+
+		document->on1SecTimer(chrono::system_clock::to_time_t(currentTimePoint));
 	}
 
 	LOGGER.debug("Main loop finished");
