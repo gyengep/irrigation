@@ -14,6 +14,8 @@
 #include "ReaderWriter/XmlReader.h"
 #include "ReaderWriter/XmlWriter.h"
 
+#include <iostream>
+
 
 using namespace std;
 
@@ -102,6 +104,8 @@ void Application::start() {
 
 	LOGGER.debug("Main loop started");
 
+	chrono::milliseconds maxDiff(0);
+
 	while (!isTerminated) {
 
 		updateTimePoint += chrono::seconds(1);
@@ -112,9 +116,15 @@ void Application::start() {
 		chrono::milliseconds currentDiff = getDiffBetweenSystemClockAndSteadyClock();
 		chrono::milliseconds diffOfDiff = currentDiff - expectedDiff;
 
-		LOGGER.debug("DiffOfDiff: %ld", diffOfDiff.count());
+		//LOGGER.debug("DiffOfDiff: %ld", diffOfDiff.count());
+		cout << "DiffOfDiff: " << diffOfDiff.count() << endl;
 
+		if (diffOfDiff > maxDiff) {
+			maxDiff = diffOfDiff;
+			LOGGER.debug("maxDiff: %ld", maxDiff.count());
+		}
 
+/*
 		if (abs(diffOfDiff) > chrono::milliseconds(100)) {
 			if (abs(diffOfDiff) > chrono::seconds(1)) {
 				time_t previousTime = chrono::system_clock::to_time_t(currentTimePoint);
@@ -138,7 +148,7 @@ void Application::start() {
 
 			expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
 		}
-
+*/
 		document->on1SecTimer(chrono::system_clock::to_time_t(currentTimePoint));
 	}
 
