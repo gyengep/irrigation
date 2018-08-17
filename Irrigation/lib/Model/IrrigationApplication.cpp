@@ -15,6 +15,7 @@
 #include "ReaderWriter/XmlWriter.h"
 
 #include <iostream>
+#include <inttypes.h>
 
 
 using namespace std;
@@ -119,14 +120,15 @@ void Application::start() {
 		//LOGGER.debug("DiffOfDiff: %ld", diffOfDiff.count());
 		cout << "DiffOfDiff: " << diffOfDiff.count() << endl;
 
+
 		if (diffOfDiff > maxDiff) {
 			maxDiff = diffOfDiff;
-			LOGGER.debug("maxDiff: %5ld, minDiff: %5ld", maxDiff.count(), minDiff.count());
+			LOGGER.debug("maxDiff: %5" PRId64 ", minDiff: %5" PRId64, maxDiff.count(), minDiff.count());
 		}
 
 		if (diffOfDiff < minDiff) {
 			minDiff = diffOfDiff;
-			LOGGER.debug("maxDiff: %5ld, minDiff: %5ld", maxDiff.count(), minDiff.count());
+			LOGGER.debug("maxDiff: %5" PRId64 ", minDiff: %5" PRId64, maxDiff.count(), minDiff.count());
 		}
 
 /*
