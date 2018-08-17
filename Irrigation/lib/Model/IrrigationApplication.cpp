@@ -104,7 +104,7 @@ void Application::start() {
 
 	LOGGER.debug("Main loop started");
 
-	chrono::milliseconds maxDiff(0);
+	chrono::milliseconds maxDiff(0), minDiff(0);
 
 	while (!isTerminated) {
 
@@ -121,7 +121,12 @@ void Application::start() {
 
 		if (diffOfDiff > maxDiff) {
 			maxDiff = diffOfDiff;
-			LOGGER.debug("maxDiff: %ld", maxDiff.count());
+			LOGGER.debug("maxDiff: %5ld, minDiff: %5ld", maxDiff.count(), minDiff.count());
+		}
+
+		if (diffOfDiff < minDiff) {
+			minDiff = diffOfDiff;
+			LOGGER.debug("maxDiff: %5ld, minDiff: %5ld", maxDiff.count(), minDiff.count());
 		}
 
 /*
