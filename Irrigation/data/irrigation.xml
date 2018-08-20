@@ -6,7 +6,7 @@
 			<schedulertype>specified</schedulertype>
 			<schedulers>
 				<scheduler type="specified">
-					<adjustment>75</adjustment>
+					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>
 						<day>true</day>
@@ -34,18 +34,18 @@
 				<scheduler type="specified">
 					<adjustment>100</adjustment>
 					<days>
-						<day>false</day>
 						<day>true</day>
-						<day>false</day>
 						<day>true</day>
-						<day>false</day>
 						<day>true</day>
-						<day>false</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
 					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="3"><minute>20</minute></runtime>
+				<runtime id="3"><minute>15</minute></runtime>
 			</runtimes>
 			<starttimes>
 				<starttime><hour>6</hour></starttime>
@@ -99,7 +99,36 @@
 				<runtime id="1"><minute>38</minute></runtime>
 				<runtime id="2"><minute>32</minute></runtime>
 			</runtimes>
-			<starttimes/>
+			<starttimes>
+			</starttimes>
+		</program>
+		<program>
+			<name>test</name>
+			<schedulertype>specified</schedulertype>
+			<schedulers>
+				<scheduler type="specified">
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+						<day>true</day>
+					</days>
+				</scheduler>
+			</schedulers>
+			<runtimes>
+				<runtime id="0"><second>10</second></runtime>
+				<runtime id="1"><second>10</second></runtime>
+				<runtime id="2"><second>10</second></runtime>
+				<runtime id="3"><second>10</second></runtime>
+				<runtime id="4"><second>10</second></runtime>
+				<runtime id="5"><second>10</second></runtime>
+			</runtimes>
+			<starttimes>
+			</starttimes>
 		</program>
 	</programs>
 </irrigation>
