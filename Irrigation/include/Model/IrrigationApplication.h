@@ -22,6 +22,9 @@ class Application {
 	void initGpio();
 	void initDocument();
 
+	std::chrono::milliseconds getDiffBetweenSystemClockAndSteadyClock();
+	std::chrono::milliseconds abs(const std::chrono::milliseconds& ms);
+
 protected:
 
 	Application();

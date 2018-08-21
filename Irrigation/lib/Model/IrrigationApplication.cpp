@@ -1,12 +1,10 @@
 #include "IrrigationApplication.h"
 #include <chrono>
-#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <mutex>
 #include <sstream>
 #include <thread>
-#include <sys/unistd.h>
 #include "Configuration.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
@@ -15,8 +13,6 @@
 #include "Model/IrrigationDocument.h"
 #include "ReaderWriter/XmlReader.h"
 #include "ReaderWriter/XmlWriter.h"
-
-#include <inttypes.h>
 
 
 using namespace std;
@@ -83,7 +79,7 @@ void Application::init() {
 	initDocument();
 }
 
-chrono::milliseconds getDiffBetweenSystemClockAndSteadyClock() {
+chrono::milliseconds Application::getDiffBetweenSystemClockAndSteadyClock() {
 	chrono::milliseconds steady = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch());
 	chrono::milliseconds system = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
 
@@ -94,8 +90,8 @@ chrono::milliseconds getDiffBetweenSystemClockAndSteadyClock() {
 
 }
 
-chrono::milliseconds abs(const chrono::milliseconds& ms) {
-	return chrono::milliseconds(abs(ms.count()));
+chrono::milliseconds Application::abs(const chrono::milliseconds& ms) {
+	return chrono::milliseconds(::abs(ms.count()));
 }
 
 void Application::start() {
