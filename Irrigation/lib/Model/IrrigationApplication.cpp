@@ -83,8 +83,8 @@ chrono::milliseconds Application::getDiffBetweenSystemClockAndSteadyClock() {
 	chrono::milliseconds steady = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch());
 	chrono::milliseconds system = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
 
-	int64_t msSteady = chrono::milliseconds(steady).count();
-	int64_t msSystem = chrono::milliseconds(system).count();
+	chrono::milliseconds::rep msSteady = chrono::milliseconds(steady).count();
+	chrono::milliseconds::rep msSystem = chrono::milliseconds(system).count();
 
 	return chrono::milliseconds(msSystem - msSteady);
 
