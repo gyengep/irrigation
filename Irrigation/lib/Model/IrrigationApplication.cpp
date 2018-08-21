@@ -2,7 +2,9 @@
 #include <chrono>
 #include <ctime>
 #include <fstream>
+#include <iomanip>
 #include <mutex>
+#include <sstream>
 #include <thread>
 #include <sys/unistd.h>
 #include "Configuration.h"
@@ -14,7 +16,6 @@
 #include "ReaderWriter/XmlReader.h"
 #include "ReaderWriter/XmlWriter.h"
 
-#include <iostream>
 #include <inttypes.h>
 
 
@@ -99,64 +100,45 @@ chrono::milliseconds abs(const chrono::milliseconds& ms) {
 
 void Application::start() {
 
-	chrono::steady_clock::time_point updateTimePoint = chrono::steady_clock::now();
-	chrono::system_clock::time_point currentTimePoint = chrono::system_clock::now();
+	chrono::steady_clock::time_point monotonicTime = chrono::steady_clock::now();
+	chrono::system_clock::time_point systemTime = chrono::system_clock::now();
 	chrono::milliseconds expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
 
 	LOGGER.debug("Main loop started");
 
-	chrono::milliseconds maxDiff(0), minDiff(0);
-
 	while (!isTerminated) {
 
-		updateTimePoint += chrono::seconds(1);
-		currentTimePoint += chrono::seconds(1);
+		monotonicTime += chrono::seconds(1);
+		systemTime += chrono::seconds(1);
 
-		this_thread::sleep_until(updateTimePoint);
+		this_thread::sleep_until(monotonicTime);
 
-		chrono::milliseconds currentDiff = getDiffBetweenSystemClockAndSteadyClock();
-		chrono::milliseconds diffOfDiff = currentDiff - expectedDiff;
+		chrono::milliseconds actualDiff = getDiffBetweenSystemClockAndSteadyClock();
+		chrono::milliseconds diffOfDiff = actualDiff - expectedDiff;
 
-		//LOGGER.debug("DiffOfDiff: %ld", diffOfDiff.count());
-		cout << "DiffOfDiff: " << diffOfDiff.count() << endl;
-
-
-		if (diffOfDiff > maxDiff) {
-			maxDiff = diffOfDiff;
-			LOGGER.debug("maxDiff: %5" PRId64 ", minDiff: %5" PRId64, maxDiff.count(), minDiff.count());
-		}
-
-		if (diffOfDiff < minDiff) {
-			minDiff = diffOfDiff;
-			LOGGER.debug("maxDiff: %5" PRId64 ", minDiff: %5" PRId64, maxDiff.count(), minDiff.count());
-		}
-
-/*
 		if (abs(diffOfDiff) > chrono::milliseconds(100)) {
+			ostringstream o;
+			o << "Update period failure!";
+
 			if (abs(diffOfDiff) > chrono::seconds(1)) {
-				time_t previousTime = chrono::system_clock::to_time_t(currentTimePoint);
+				time_t previousTime = chrono::system_clock::to_time_t(systemTime);
 				time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
 
-				const int BUFFER_SIZE = 100;
-				char previousTimeStr[BUFFER_SIZE];
-				char currentTimeStr[BUFFER_SIZE];
-
-				strftime(previousTimeStr, BUFFER_SIZE, "%Y.%m.%d %H:%M:%S", localtime(&previousTime));
-				strftime(currentTimeStr, BUFFER_SIZE, "%Y.%m.%d %H:%M:%S", localtime(&currentTime));
-
-				LOGGER.warning("Update period failure! time is changed from %s to %s",
-						previousTimeStr, currentTimeStr);
+				o << " time is changed";
+				o << " from " << put_time(localtime(&previousTime), "%Y.%m.%d %H:%M:%S");
+				o << " to " << put_time(localtime(&currentTime), "%Y.%m.%d %H:%M:%S");
 			} else {
-				LOGGER.warning("Update period failure! different is: %ld ms", diffOfDiff.count());
+				o << " different is: " << diffOfDiff.count() << " ms";
 			}
 
-			updateTimePoint = chrono::steady_clock::now();
-			currentTimePoint = chrono::system_clock::now();
+			LOGGER.warning(o.str().c_str());
 
+			monotonicTime = chrono::steady_clock::now();
+			systemTime = chrono::system_clock::now();
 			expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
 		}
-*/
-		document->on1SecTimer(chrono::system_clock::to_time_t(currentTimePoint));
+
+		document->on1SecTimer(chrono::system_clock::to_time_t(systemTime));
 	}
 
 	LOGGER.debug("Main loop finished");
