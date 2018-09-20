@@ -4,16 +4,15 @@ class Document;
 
 
 class View {
-	friend Document;
-	Document* document;
+	Document& document;
 
 public:
-	View() : document(NULL) {}
-	virtual ~View() {}
+	View(Document& document) : document(document) {}
+	virtual ~View() = default;
 
-	virtual void init() {}
+	virtual void initialize() {}
 	virtual void terminate() {}
 
-	Document* getDocument() { return document; }
-	const Document* getDocument() const { return document; }
+	Document& getDocument() { return document; }
+	const Document& getDocument() const { return document; }
 };

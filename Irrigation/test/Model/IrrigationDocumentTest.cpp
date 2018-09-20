@@ -15,6 +15,12 @@ using namespace std;
 using namespace testing;
 
 
+ostream& operator <<(ostream& os, const chrono::milliseconds& value) {
+	os << value.count() << "ms";
+	return os;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void IrrigationDocumentTest::SetUp() {
 	shared_ptr<GpioHandler> gpioHandler;
@@ -26,6 +32,26 @@ void IrrigationDocumentTest::SetUp() {
 void IrrigationDocumentTest::TearDown() {
 }
 
+void IrrigationDocumentTest::waitAndUnlock(IrrigationDocument* document, unsigned waitMs) {
+	this_thread::sleep_for(chrono::milliseconds(waitMs));
+	document->unlock();
+}
+
+TEST_F(IrrigationDocumentTest, lockUnlock) {
+	const unsigned waitMs = 100;
+
+	document->lock();
+	thread lockAndUnlockThread(&IrrigationDocumentTest::waitAndUnlock, this, document.get(), waitMs);
+
+	auto start = std::chrono::steady_clock::now();
+	document->lock();
+	document->unlock();
+	auto end = std::chrono::steady_clock::now();
+
+	EXPECT_THAT(chrono::duration_cast<chrono::milliseconds>(end - start), Ge(chrono::milliseconds(waitMs)));
+
+	lockAndUnlockThread.join();
+}
 
 TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 	const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
@@ -68,5 +94,5 @@ TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 	EXPECT_THAT(document->getPrograms().size(), Eq(2));
 	EXPECT_THAT(document->getPrograms().at(15)->getProgramDTO().setId(15), *next(expectedDocumentDTO.getPrograms().begin(), 0));
 	EXPECT_THAT(document->getPrograms().at(25)->getProgramDTO().setId(25), *next(expectedDocumentDTO.getPrograms().begin(), 1));
-	EXPECT_EQ(expectedDocumentDTO, document->getDocumentDTO());
+	EXPECT_THAT(expectedDocumentDTO, document->getDocumentDTO());
 }

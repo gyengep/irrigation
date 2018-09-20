@@ -20,25 +20,13 @@ Document::~Document() {
 }
 
 void Document::addView(View* view) {
-	lock_guard<std::mutex> lockView(mutex);
-	views.push_back(unique_ptr<View>(view));
-	view->document = this;
-	view->init();
-}
-
-void Document::removeView(View* view) {
+	unique_ptr<View> viewPtr(view);
 	lock_guard<std::mutex> lockView(mutex);
 
-	for (auto it = views.begin(); views.end() != it; ++it) {
-		if (it->get() == view) {
-			(*it)->terminate();
-			views.erase(it);
-			return;
-		}
+	if (&view->getDocument() != this) {
+		throw logic_error("Document::addView()  view->getDocument() != this");
 	}
 
-	ostringstream o;
-	o << "Document::removeView(): " << view << " doesn't exist";
-	throw logic_error(o.str());
+	views.push_back(move(viewPtr));
+	view->initialize();
 }
-

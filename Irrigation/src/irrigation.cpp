@@ -11,7 +11,7 @@ using namespace std;
 
 
 void signal_handler(int signo) {
-	Application::getInstance().terminate();
+	IrrigationApplication::getInstance().exit();
 }
 
 bool initLogger() {
@@ -81,9 +81,7 @@ int main() {
 			throw runtime_error("Can't catch SIGINT");
 		}
 
-		Application::getInstance().init();
-		Application::getInstance().start();
-		Application::getInstance().stop();
+		IrrigationApplication::getInstance().run();
 		return EXIT_SUCCESS;
 
 	} catch (const exception& e) {

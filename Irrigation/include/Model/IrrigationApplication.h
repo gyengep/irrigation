@@ -1,46 +1,33 @@
 #pragma once
-#include <atomic>
-#include <ctime>
 #include <memory>
 #include <mutex>
+#include "Application.h"
 
 class IrrigationDocument;
-class ZoneHandler;
 
 
+class IrrigationApplication : public Application {
 
-class Application {
-
-	static std::unique_ptr<Application> instance;
+	static std::unique_ptr<IrrigationApplication> instance;
 	static std::mutex createMutex;
 
 	std::unique_ptr<IrrigationDocument> document;
-	std::atomic_bool isTerminated;
 
 	//void saveDocument(const std::string& fileName) const;
 
 	void initGpio();
 	void initDocument();
 
-	std::chrono::milliseconds getDiffBetweenSystemClockAndSteadyClock();
-	std::chrono::milliseconds abs(const std::chrono::milliseconds& ms);
+	virtual void onInitialize() override;
+	virtual void onTerminate() override;
 
 protected:
-
-	Application();
+	IrrigationApplication() = default;
 
 public:
-	virtual ~Application();
-
-	void init();
-	void start();
-	void stop();
-
-	void terminate();
+	virtual ~IrrigationApplication() = default;
 	
-	std::time_t getTime() const;
-
-	static Application& getInstance();
+	static IrrigationApplication& getInstance();
 	static std::string readFile(const std::string& fileName);
 	//static void writeFile(const std::string& fileName, const std::string& text);
 };

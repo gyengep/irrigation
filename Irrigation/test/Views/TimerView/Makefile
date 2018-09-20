@@ -4,9 +4,9 @@ TARGET_NAME     = $(shell basename $(CURDIR))
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ../..
+PROJECT_ROOT    = ../../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+SOURCE_DIR      = $(PROJECT_ROOT)/test/Views/$(TARGET_NAME)
 OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build
@@ -20,10 +20,10 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -l$(TARGET_NAME) -lLogic -lSchedulers -lDTO -lDocumentView -lLogger -lHardware -lUtils -lReaderWriter -lTimerView
+LOCAL_LIBS      = -l$(TARGET_NAME) -lDocumentView -lLogger
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
-LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml
+LIBS            = $(LOCAL_LIBS) -pthread -lgmock
 
 # Detect the Raspberry Pi from cpuinfo
 # Count the matches for BCMxxxx in cpuinfo

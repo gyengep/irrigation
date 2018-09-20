@@ -9,40 +9,32 @@
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
 #include "Logger/Logger.h"
-#include "Logic/Program.h"
 #include "Model/IrrigationDocument.h"
 #include "ReaderWriter/XmlReader.h"
 #include "ReaderWriter/XmlWriter.h"
+#include "Views/TimerView/TimerView.h"
 
 
 using namespace std;
 
 
-mutex Application::createMutex;
-unique_ptr<Application> Application::instance;
+mutex IrrigationApplication::createMutex;
+unique_ptr<IrrigationApplication> IrrigationApplication::instance;
 
 
-Application& Application::getInstance() {
+IrrigationApplication& IrrigationApplication::getInstance() {
 	if (nullptr == instance) {
 		lock_guard<mutex> lock(createMutex);
 
 		if (nullptr == instance) {
-			instance.reset(new Application());
+			instance.reset(new IrrigationApplication());
 		}
 	}
 
 	return *instance.get();
 }
 
-Application::Application() :
-	isTerminated(false)
-{
-}
-
-Application::~Application() {
-}
-
-void Application::initGpio() {
+void IrrigationApplication::initGpio() {
 	try {
 		GpioHandler::init();
 	} catch (const exception& e) {
@@ -50,7 +42,7 @@ void Application::initGpio() {
 	}
 }
 
-void Application::initDocument() {
+void IrrigationApplication::initDocument() {
 	document.reset(new IrrigationDocument());
 
 	try {
@@ -70,93 +62,29 @@ void Application::initDocument() {
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize document"));
 	}
+
+	document->addView(new TimerView(*document.get()));
 }
 
-void Application::init() {
-	LOGGER.info("Irrigation System started");
+void IrrigationApplication::onInitialize() {
+	LOGGER.debug("Irrigation System starting ...");
 
 	initGpio();
 	initDocument();
+
+	LOGGER.info("Irrigation System started");
 }
 
-chrono::milliseconds Application::getDiffBetweenSystemClockAndSteadyClock() {
-	chrono::milliseconds steady = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch());
-	chrono::milliseconds system = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
+void IrrigationApplication::onTerminate() {
+	LOGGER.debug("Irrigation System stopping ... ");
 
-	chrono::milliseconds::rep msSteady = chrono::milliseconds(steady).count();
-	chrono::milliseconds::rep msSystem = chrono::milliseconds(system).count();
-
-	return chrono::milliseconds(msSystem - msSteady);
-
-}
-
-chrono::milliseconds Application::abs(const chrono::milliseconds& ms) {
-	return chrono::milliseconds(::abs(ms.count()));
-}
-
-void Application::start() {
-
-	chrono::steady_clock::time_point monotonicTime = chrono::steady_clock::now();
-	chrono::system_clock::time_point systemTime = chrono::system_clock::now();
-	chrono::milliseconds expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
-
-	LOGGER.debug("Main loop started");
-
-	while (!isTerminated) {
-
-		monotonicTime += chrono::seconds(1);
-		systemTime += chrono::seconds(1);
-
-		this_thread::sleep_until(monotonicTime);
-
-		chrono::milliseconds actualDiff = getDiffBetweenSystemClockAndSteadyClock();
-		chrono::milliseconds diffOfDiff = actualDiff - expectedDiff;
-
-		if (abs(diffOfDiff) > chrono::milliseconds(100)) {
-			ostringstream o;
-			o << "Update period failure!";
-
-			if (abs(diffOfDiff) > chrono::seconds(1)) {
-				time_t previousTime = chrono::system_clock::to_time_t(systemTime);
-				time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-
-				o << " time is changed";
-				o << " from " << put_time(localtime(&previousTime), "%Y.%m.%d %H:%M:%S");
-				o << " to " << put_time(localtime(&currentTime), "%Y.%m.%d %H:%M:%S");
-			} else {
-				o << " different is: " << diffOfDiff.count() << " ms";
-			}
-
-			LOGGER.warning(o.str().c_str());
-
-			monotonicTime = chrono::steady_clock::now();
-			systemTime = chrono::system_clock::now();
-			expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
-		}
-
-		document->on1SecTimer(chrono::system_clock::to_time_t(systemTime));
-	}
-
-	LOGGER.debug("Main loop finished");
-}
-
-void Application::stop() {
 	//saveDocument(Configuration::getInstance().getConfigFileName());
 	document.reset();
 
 	LOGGER.info("Irrigation System stopped");
 }
 
-void Application::terminate() { 
-	LOGGER.debug("Terminate called");
-	isTerminated = true;
-}
-
-time_t Application::getTime() const {
-	return time(nullptr);
-}
-
-string Application::readFile(const string& fileName) {
+string IrrigationApplication::readFile(const string& fileName) {
 	ifstream ifs(fileName);
 
 	if (ifs.fail()) {
@@ -185,7 +113,7 @@ string Application::readFile(const string& fileName) {
 	return buffer;
 }
 
-//void Application::saveDocument(const string& fileName) const {
+//void IrrigationApplication::saveDocument(const string& fileName) const {
 //	const DocumentDTO documentDTO = document->getDocumentDTO();
 //	const string xml = XmlWriter().save(documentDTO);
 //
@@ -197,7 +125,7 @@ string Application::readFile(const string& fileName) {
 //	}
 //}
 //
-//void Application::writeFile(const string& fileName, const string& text) {
+//void IrrigationApplication::writeFile(const string& fileName, const string& text) {
 //	ofstream ofs;
 //
 //	ofs.open(fileName, ofstream::out | ofstream::trunc);

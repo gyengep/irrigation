@@ -12,4 +12,7 @@ protected:
 
     virtual void SetUp();
     virtual void TearDown();
+
+public:
+    void waitAndUnlock(IrrigationDocument* document, unsigned waitMs);
 };

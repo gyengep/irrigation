@@ -1,5 +1,4 @@
 #pragma once
-#include <ctime>
 #include <memory>
 #include <mutex>
 #include "DocumentView/Document.h"
@@ -27,8 +26,6 @@ public:
 
 	const WateringController& getWateringController() const { return wateringController; }
 	WateringController& getWateringController() { return wateringController; }
-
-	void on1SecTimer(const std::time_t& rawTime);
 
 	DocumentDTO getDocumentDTO() const;
 	void updateFromDTO(const DocumentDTO& documentDTO);
