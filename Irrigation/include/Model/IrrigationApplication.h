@@ -28,6 +28,4 @@ public:
 	virtual ~IrrigationApplication() = default;
 	
 	static IrrigationApplication& getInstance();
-	static std::string readFile(const std::string& fileName);
-	//static void writeFile(const std::string& fileName, const std::string& text);
 };

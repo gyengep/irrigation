@@ -1,4 +1,4 @@
-#include <ReaderWriter/XmlReader.h>
+#include "XmlReader.h"
 #include <sstream>
 #include <string.h>
 #include "pugixml.hpp"

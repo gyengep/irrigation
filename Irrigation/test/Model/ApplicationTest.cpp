@@ -6,11 +6,9 @@ using namespace std;
 using namespace testing;
 
 
-extern ostream& operator <<(ostream& os, const chrono::milliseconds& value);
-
 
 void ApplicationTest::waitAndExit(Application* application, unsigned waitMs) {
-	this_thread::sleep_for(chrono::milliseconds(waitMs));
+	this_thread::sleep_for(chrono::milliseconds(waitMs + 10));
 	application->exit();
 }
 
@@ -18,13 +16,13 @@ TEST_F(ApplicationTest, exit) {
 	const unsigned waitMs = 100;
 	Application application;
 
+	auto start = std::chrono::high_resolution_clock::now();
 	thread waitAndExitThread(&ApplicationTest::waitAndExit, this, &application, waitMs);
 
-	auto start = std::chrono::steady_clock::now();
 	application.run();
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::chrono::high_resolution_clock::now();
 
-	EXPECT_THAT(chrono::duration_cast<chrono::milliseconds>(end - start), Ge(chrono::milliseconds(waitMs)));
+	EXPECT_THAT(chrono::duration_cast<chrono::milliseconds>(end - start).count(), Ge(waitMs));
 
 	waitAndExitThread.join();
 }

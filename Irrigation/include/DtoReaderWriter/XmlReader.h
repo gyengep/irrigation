@@ -1,14 +1,9 @@
 #pragma once
 #include <string>
 #include <memory>
+#include "DtoReaderWriterFactory.h"
 #include "XMLParseException.h"
 
-
-class DocumentDTO;
-class ProgramDTO;
-class RunTimeDTO;
-class StartTimeDTO;
-class SpecifiedSchedulerDTO;
 
 namespace pugi {
 	class xml_document;
@@ -17,7 +12,7 @@ namespace pugi {
 
 
 
-class XmlReader {
+class XmlReader : public DtoReader {
 	static void loadFromString(pugi::xml_document* doc, const std::string& text);
 
 	void loadDocument(const pugi::xml_node& node, DocumentDTO& document) const;
@@ -30,9 +25,9 @@ public:
 	XmlReader();
 	virtual ~XmlReader();
 
-	virtual DocumentDTO loadDocument(const std::string& text) const;
-	virtual ProgramDTO loadProgram(const std::string& text) const;
-	virtual RunTimeDTO loadRunTime(const std::string& text) const;
-	virtual StartTimeDTO loadStartTime(const std::string& text) const;
-	virtual SpecifiedSchedulerDTO loadSpecifiedScheduler(const std::string& text) const;
+	virtual DocumentDTO loadDocument(const std::string& text) const override;
+	virtual ProgramDTO loadProgram(const std::string& text) const override;
+	virtual RunTimeDTO loadRunTime(const std::string& text) const override;
+	virtual StartTimeDTO loadStartTime(const std::string& text) const override;
+	virtual SpecifiedSchedulerDTO loadSpecifiedScheduler(const std::string& text) const override;
 };

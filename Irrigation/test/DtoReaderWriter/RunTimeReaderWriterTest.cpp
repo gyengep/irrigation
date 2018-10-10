@@ -43,7 +43,7 @@ void testRunTimeRead(const TestDataType& testData, XmlReader& reader) {
 }
 
 void testRunTimeWrite(const TestDataType& testData, XmlWriter& writer) {
-	const string actualXml = writer.save(testData.second, false);
+	const string actualXml = writer.save(testData.second);
 	EXPECT_EQ(testData.first, remove_xml_tag(actualXml));
 }
 

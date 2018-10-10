@@ -12,7 +12,7 @@ using namespace pugi;
 
 
 
-XmlWriter::XmlWriter() {
+XmlWriter::XmlWriter(bool humanReadable) : humanReadable(humanReadable) {
 }
 
 XmlWriter::~XmlWriter() {
@@ -131,31 +131,31 @@ void XmlWriter::saveScheduler(xml_node* parent, const SpecifiedSchedulerDTO& sch
 
 ///////////////////////////////////////////////////////////////////////////////
 
-string XmlWriter::save(const DocumentDTO& document, bool humanReadable) {
+string XmlWriter::save(const DocumentDTO& document) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveDocument(doc.get(), document);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const ProgramDTO& program, bool humanReadable) {
+string XmlWriter::save(const ProgramDTO& program) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveProgram(doc.get(), program);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const RunTimeDTO& runTime, bool humanReadable) {
+string XmlWriter::save(const RunTimeDTO& runTime) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveRunTime(doc.get(), runTime);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const StartTimeDTO& startTime, bool humanReadable) {
+string XmlWriter::save(const StartTimeDTO& startTime) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveStartTime(doc.get(), startTime);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const SpecifiedSchedulerDTO& scheduler, bool humanReadable) {
+string XmlWriter::save(const SpecifiedSchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);

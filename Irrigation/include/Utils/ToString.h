@@ -10,8 +10,11 @@ template <typename TYPE>
 std::string to_string(const TYPE& value);
 
 template <>
-std::string to_string(const bool& value);
-
+inline std::string to_string(const bool& value) {
+	std::ostringstream o;
+	o << (value ? "true" : "false");
+	return o.str();
+}
 
 template <class InputIterator>
 std::string to_string(const InputIterator&  first, const InputIterator&  last) {

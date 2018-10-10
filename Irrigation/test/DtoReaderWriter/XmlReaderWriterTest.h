@@ -1,13 +1,12 @@
 #pragma once
-#include <ReaderWriter/XmlReader.h>
-
 #include <gmock/gmock.h>
 #include "DTO/DocumentDTO.h"
 #include "DTO/ProgramDTO.h"
 #include "DTO/RunTimeDTO.h"
 #include "DTO/StartTimeDTO.h"
 #include "DTO/SchedulersDTO.h"
-#include "ReaderWriter/XmlWriter.h"
+#include "DtoReaderWriter/XmlReader.h"
+#include "DtoReaderWriter/XmlWriter.h"
 
 
 std::string remove_xml_tag(const std::string& text);
@@ -29,6 +28,8 @@ protected:
 
 	XmlWriter writer;
 
+	RunTimeWriterTest() : writer(false) {}
+
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
@@ -48,6 +49,8 @@ class StartTimeWriterTest : public ::testing::Test {
 protected:
 
 	XmlWriter writer;
+
+	StartTimeWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}
@@ -69,6 +72,8 @@ protected:
 
 	XmlWriter writer;
 
+	SpecifiedSchedulerWriterTest() : writer(false) {}
+
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
@@ -89,6 +94,8 @@ protected:
 
 	XmlWriter writer;
 
+	ProgramWriterTest() : writer(false) {}
+
     virtual void SetUp() {}
     virtual void TearDown() {}
 };
@@ -108,6 +115,8 @@ class DocumentWriterTest : public ::testing::Test {
 protected:
 
 	XmlWriter writer;
+
+	DocumentWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}
