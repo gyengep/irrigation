@@ -12,7 +12,7 @@ shared_ptr<Valves> Valves::instance;
 
 const shared_ptr<Valves> Valves::getInstancePtr() {
 	if (nullptr == instance) {
-		lock_guard<std::mutex> lock(createMutex);
+		lock_guard<mutex> lock(createMutex);
 
 		if (nullptr == instance) {
 			instance.reset(new Valves(GpioHandler::getInstancePtr()));
@@ -47,14 +47,14 @@ void Valves::activateWithoutLock(size_t valveID, bool active) {
 }
 
 void Valves::activate(size_t valveID, bool active) {
-	lock_guard<std::mutex> lock(mutex);
+	lock_guard<mutex> lock(mtx);
 
 	checkId(valveID);
 	activateWithoutLock(valveID, active);
 }
 
 void Valves::activate(const size_t* valveIDs, size_t size, bool active) {
-	lock_guard<std::mutex> lock(mutex);
+	lock_guard<mutex> lock(mtx);
 
 	for (size_t i = 0; i < size; ++i) {
 		checkId(valveIDs[i]);

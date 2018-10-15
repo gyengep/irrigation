@@ -83,7 +83,7 @@ void WateringController::startNextRequiredZone(const time_t& rawTime) {
 		if (wateringProperties->runTimes[idx].getSeconds() > 0) {
 			wateringProperties->zoneStartTime = rawTime;
 			zoneHandler->activate(idx);
-			LOGGER.debug("Zone %u activated", idx);
+			LOGGER.debug("Zone[%u] activated", idx);
 			return;
 		}
 

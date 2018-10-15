@@ -7,7 +7,7 @@ class View;
 
 
 class Document {
-	mutable std::mutex mutex;
+	mutable std::mutex mtx;
 	std::list<std::unique_ptr<View>> views;
 
 public:

@@ -14,7 +14,7 @@ shared_ptr<GpioHandler> GpioHandler::instance;
 
 const shared_ptr<GpioHandler> GpioHandler::getInstancePtr() {
 	if (nullptr == instance) {
-		lock_guard<std::mutex> lock(createMutex);
+		lock_guard<mutex> lock(createMutex);
 
 		if (nullptr == instance) {
 			instance.reset(new GpioHandler());

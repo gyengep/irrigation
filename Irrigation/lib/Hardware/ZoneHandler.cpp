@@ -17,7 +17,7 @@ shared_ptr<ZoneHandler> ZoneHandler::instance;
 
 const shared_ptr<ZoneHandler> ZoneHandler::getInstancePtr() {
 	if (nullptr == instance) {
-		lock_guard<std::mutex> lock(createMutex);
+		lock_guard<mutex> lock(createMutex);
 
 		if (nullptr == instance) {
 			instance.reset(new ZoneHandler(Valves::getInstancePtr()));
@@ -32,7 +32,7 @@ const shared_ptr<ZoneHandler> ZoneHandler::getInstancePtr() {
 const size_t ZoneHandler::invalidZoneId = numeric_limits<size_t>::max();
 
 
-ZoneHandler::ZoneHandler(std::shared_ptr<Valves> valves) :
+ZoneHandler::ZoneHandler(shared_ptr<Valves> valves) :
 	valves(valves),
 	activeZoneId(invalidZoneId)
 {

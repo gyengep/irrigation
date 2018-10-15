@@ -28,7 +28,7 @@ class Logger {
 	static std::unique_ptr<Logger> instance;
 	static std::mutex createMutex;
 
-	mutable std::mutex logMutex;
+	mutable std::mutex mtx;
 	std::atomic<LogLevel> logLevel;
 	std::unique_ptr<std::ostream> output;
 

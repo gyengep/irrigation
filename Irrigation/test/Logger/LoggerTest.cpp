@@ -364,7 +364,7 @@ TEST(LoggerTest, isLoggableTrace) {
 }
 
 TEST(LoggerTest, setFileName) {
-	std::string fileName = std::tmpnam(nullptr);
+	string fileName = tmpnam(nullptr);
 	EXPECT_NO_THROW(LOGGER.setFileName(fileName));
 
 	ifstream is(fileName);

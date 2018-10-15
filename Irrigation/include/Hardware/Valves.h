@@ -22,7 +22,7 @@ class Valves {
 		VALVE6_PIN
 	};
 
-	mutable std::mutex mutex;
+	mutable std::mutex mtx;
 
 protected:
 

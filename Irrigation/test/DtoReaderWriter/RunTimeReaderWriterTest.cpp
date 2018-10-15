@@ -6,7 +6,7 @@ using namespace std;
 using namespace testing;
 
 
-typedef std::pair<string, RunTimeDTO> TestDataType;
+typedef pair<string, RunTimeDTO> TestDataType;
 
 ///////////////////////////////////////////////////////////////////////////////
 

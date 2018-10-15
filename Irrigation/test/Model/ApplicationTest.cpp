@@ -16,11 +16,11 @@ TEST_F(ApplicationTest, exit) {
 	const unsigned waitMs = 100;
 	Application application;
 
-	auto start = std::chrono::high_resolution_clock::now();
+	auto start = chrono::high_resolution_clock::now();
 	thread waitAndExitThread(&ApplicationTest::waitAndExit, this, &application, waitMs);
 
 	application.run();
-	auto end = std::chrono::high_resolution_clock::now();
+	auto end = chrono::high_resolution_clock::now();
 
 	EXPECT_THAT(chrono::duration_cast<chrono::milliseconds>(end - start).count(), Ge(waitMs));
 

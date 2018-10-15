@@ -148,7 +148,7 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	}
 }
 
-std::string to_string(const Program& program) {
+string to_string(const Program& program) {
 	ostringstream o;
 	o << "Program{";
 	o << "name=\"" << program.getName() << "\", ";

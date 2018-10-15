@@ -19,7 +19,7 @@ IrrigationDocument::IrrigationDocument() :
 {
 }
 
-IrrigationDocument::IrrigationDocument(std::shared_ptr<ZoneHandler> zoneHandler) :
+IrrigationDocument::IrrigationDocument(shared_ptr<ZoneHandler> zoneHandler) :
 	IrrigationDocument(
 			zoneHandler,
 			new XmlReaderWriterFactory(),
@@ -50,15 +50,15 @@ IrrigationDocument::~IrrigationDocument() {
 }
 
 void IrrigationDocument::lock() const {
-	mutex.lock();
+	mtx.lock();
 }
 
 void IrrigationDocument::unlock() const {
-	mutex.unlock();
+	mtx.unlock();
 }
 
 DocumentDTO IrrigationDocument::getDocumentDTO() const {
-	lock_guard<std::mutex> lock(mutex);
+	lock_guard<mutex> lock(mtx);
 
 	unique_ptr<list<ProgramDTO>> programDTOs(new list<ProgramDTO>());
 	for (auto it = programs->begin(); it != programs->end(); ++it) {
@@ -69,7 +69,7 @@ DocumentDTO IrrigationDocument::getDocumentDTO() const {
 }
 
 void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
-	lock_guard<std::mutex> lock(mutex);
+	lock_guard<mutex> lock(mtx);
 
 	if (documentDTO.hasPrograms()) {
 		programs.reset(new ProgramContainer());

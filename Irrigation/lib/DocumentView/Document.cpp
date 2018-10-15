@@ -10,7 +10,7 @@ Document::Document() {
 }
 
 Document::~Document() {
-	lock_guard<std::mutex> lockView(mutex);
+	lock_guard<mutex> lockView(mtx);
 
 	for (auto it = views.begin(); views.end() != it; ++it) {
 		(*it)->terminate();
@@ -21,7 +21,7 @@ Document::~Document() {
 
 void Document::addView(View* view) {
 	unique_ptr<View> viewPtr(view);
-	lock_guard<std::mutex> lockView(mutex);
+	lock_guard<mutex> lockView(mtx);
 
 	if (&view->getDocument() != this) {
 		throw logic_error("Document::addView()  view->getDocument() != this");

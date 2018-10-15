@@ -24,9 +24,9 @@ using namespace std;
 //va_list args1, args2;
 //va_start(args1, format);
 //va_copy(args2, args1);
-//vector<char> buffer(1 + std::vsnprintf(nullptr, 0, format, args1));
+//vector<char> buffer(1 + vsnprintf(nullptr, 0, format, args1));
 //va_end(args1);
-//std::vsnprintf(buffer.data(), buffer.size(), format, args2);
+//vsnprintf(buffer.data(), buffer.size(), format, args2);
 //va_end(args2);
 
 #define LOGGER_FUNCTION_EXCEPTION(LEVEL)					\
@@ -71,7 +71,7 @@ Logger& Logger::getInstance() {
 }
 
 Logger::Logger() :
-	logMutex(),
+	mtx(),
 	logLevel(LogLevel::OFF),
 	output(nullptr)
 {
@@ -81,11 +81,11 @@ Logger::~Logger() {
 }
 
 void Logger::setOutput(ostream* o) {
-	lock_guard<mutex> lock(logMutex);
+	lock_guard<mutex> lock(mtx);
 	output.reset(o);
 }
 
-void Logger::setFileName(std::string fileName) {
+void Logger::setFileName(string fileName) {
 	unique_ptr<ofstream> ofs(new ofstream());
 	ofs->open(fileName, ofstream::out | ofstream::app);
 
@@ -122,7 +122,7 @@ string Logger::logException(const exception* e, unsigned level) {
 
 void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 
-	lock_guard<mutex> lock(logMutex);
+	lock_guard<mutex> lock(mtx);
 
 	if (output.get() != nullptr) {
 		time_t t = time(nullptr);

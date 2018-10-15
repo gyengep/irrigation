@@ -75,7 +75,7 @@ void SpecifiedScheduler::updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO
 	}
 }
 
-std::string to_string(const SpecifiedScheduler& specifiedScheduler) {
+string to_string(const SpecifiedScheduler& specifiedScheduler) {
 	ostringstream o;
 	o << "SpecifiedScheduler{";
 	o << "adjustment=" << specifiedScheduler.getAdjustment() << "% ";

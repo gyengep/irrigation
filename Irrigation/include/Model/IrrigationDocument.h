@@ -13,7 +13,7 @@ class FileReaderWriterFactory;
 
 class IrrigationDocument : public Document {
 
-	mutable std::mutex mutex;
+	mutable std::mutex mtx;
 	std::unique_ptr<ProgramContainer> programs;
 	WateringController wateringController;
 	std::unique_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
