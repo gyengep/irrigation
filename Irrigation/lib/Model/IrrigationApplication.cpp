@@ -1,9 +1,10 @@
 #include "IrrigationApplication.h"
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <mutex>
+#include <sstream>
 #include <thread>
-#include <sys/unistd.h>
 #include "Configuration.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
@@ -78,26 +79,62 @@ void Application::init() {
 	initDocument();
 }
 
+chrono::milliseconds Application::getDiffBetweenSystemClockAndSteadyClock() {
+	chrono::milliseconds steady = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch());
+	chrono::milliseconds system = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
+
+	chrono::milliseconds::rep msSteady = chrono::milliseconds(steady).count();
+	chrono::milliseconds::rep msSystem = chrono::milliseconds(system).count();
+
+	return chrono::milliseconds(msSystem - msSteady);
+
+}
+
+chrono::milliseconds Application::abs(const chrono::milliseconds& ms) {
+	return chrono::milliseconds(::abs(ms.count()));
+}
+
 void Application::start() {
 
-	auto updateTimePoint = chrono::steady_clock::now();
-	time_t lastTime = 0;
+	chrono::steady_clock::time_point monotonicTime = chrono::steady_clock::now();
+	chrono::system_clock::time_point systemTime = chrono::system_clock::now();
+	chrono::milliseconds expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
 
 	LOGGER.debug("Main loop started");
 
 	while (!isTerminated) {
-		time_t currentTime = getTime();
-		int diffTime = currentTime - lastTime;
 
-		if ((diffTime != 1) && (lastTime != 0)) {
-			LOGGER.warning("Update period failure! different is: %d", diffTime);
+		monotonicTime += chrono::seconds(1);
+		systemTime += chrono::seconds(1);
+
+		this_thread::sleep_until(monotonicTime);
+
+		chrono::milliseconds actualDiff = getDiffBetweenSystemClockAndSteadyClock();
+		chrono::milliseconds diffOfDiff = actualDiff - expectedDiff;
+
+		if (abs(diffOfDiff) > chrono::milliseconds(100)) {
+			ostringstream o;
+			o << "Update period failure!";
+
+			if (abs(diffOfDiff) > chrono::seconds(1)) {
+				time_t previousTime = chrono::system_clock::to_time_t(systemTime);
+				time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+
+				o << " time is changed";
+				o << " from " << put_time(localtime(&previousTime), "%Y.%m.%d %H:%M:%S");
+				o << " to " << put_time(localtime(&currentTime), "%Y.%m.%d %H:%M:%S");
+			} else {
+				o << " different is: " << diffOfDiff.count() << " ms";
+			}
+
+			LOGGER.warning(o.str().c_str());
+
+			monotonicTime = chrono::steady_clock::now();
+			systemTime = chrono::system_clock::now();
+			expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
 		}
 
-		lastTime = currentTime;
-		document->on1SecTimer(currentTime);
-
-		updateTimePoint += chrono::seconds(1);
-		this_thread::sleep_until(updateTimePoint);
+		document->on1SecTimer(chrono::system_clock::to_time_t(systemTime));
 	}
 
 	LOGGER.debug("Main loop finished");
