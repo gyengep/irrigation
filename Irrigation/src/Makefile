@@ -23,7 +23,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 LOCAL_LIBS      = -lLogger -lModel -lHardware -lDocumentView -lLogic -lSchedulers -lDTO -lDtoReaderWriter -lUtils -lTimerView
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -lpugixml
+LIBS            = $(LOCAL_LIBS) -pthread -lpugixml
 
 # Detect the Raspberry Pi from cpuinfo
 ifneq "$(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)" "0"

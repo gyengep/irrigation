@@ -15,18 +15,18 @@ class IrrigationDocument : public Document {
 
 	mutable std::mutex mtx;
 	std::unique_ptr<ProgramContainer> programs;
-	WateringController wateringController;
+	std::unique_ptr<WateringController> wateringController;
 	std::unique_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
 	std::unique_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
 
 	IrrigationDocument(
-			std::shared_ptr<ZoneHandler> zoneHandler,
+			WateringController* wateringController,
 			DtoReaderWriterFactory* readerWriterFactory,
 			FileReaderWriterFactory* fileReaderWriterFactory);
 
 public:
 	IrrigationDocument();
-	IrrigationDocument(std::shared_ptr<ZoneHandler> zoneHandler);
+	IrrigationDocument(WateringController* wateringController);
 	IrrigationDocument(DtoReaderWriterFactory* readerWriterFactory, FileReaderWriterFactory* fileReaderWriterFactory);
 	virtual ~IrrigationDocument();
 
@@ -36,8 +36,8 @@ public:
 	const ProgramContainer& getPrograms() const { return *programs; }
 	ProgramContainer& getPrograms() { return *programs; }
 
-	const WateringController& getWateringController() const { return wateringController; }
-	WateringController& getWateringController() { return wateringController; }
+	const WateringController& getWateringController() const { return *wateringController; }
+	WateringController& getWateringController() { return *wateringController; }
 
 	DocumentDTO getDocumentDTO() const;
 	void updateFromDTO(const DocumentDTO& documentDTO);

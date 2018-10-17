@@ -15,10 +15,10 @@ public:
 
 	MockTimerCallback();
 
-	void checkTimeDiff(time_t rawTime);
-	void checkIfTerminateCalled(time_t rawTime);
+	void checkTimeDiff();
+	void checkIfTerminateCalled();
 
-	MOCK_METHOD1(onTimer, void(time_t rawTime));
+	MOCK_METHOD0(onTimer, void());
 };
 
 

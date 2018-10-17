@@ -6,10 +6,11 @@
 #include <thread>
 #include "Logger/Logger.h"
 
-
 using namespace std;
+using namespace std::chrono;
 
-Timer::Timer(TimerCallback& callback, const chrono::seconds& deltaT) :
+
+Timer::Timer(TimerCallback& callback, const seconds& deltaT) :
 	callback(callback),
 	isTerminated(false),
 	deltaT(deltaT)
@@ -18,8 +19,15 @@ Timer::Timer(TimerCallback& callback, const chrono::seconds& deltaT) :
 
 Timer::~Timer() {
 	if (nullptr != worker) {
+		LOGGER.warning("Timer::~Timer(): worker thread is running");
+
+		unique_lock<mutex> lock1(terminatedMutex, defer_lock);
+		unique_lock<mutex> lock2(threadMutex, defer_lock);
+
+		lock(lock1, lock2);
+
 		isTerminated = true;
-		terminatedMutex.unlock();
+		lock1.unlock();
 
 		condition.notify_all();
 		worker->join();
@@ -27,11 +35,9 @@ Timer::~Timer() {
 }
 
 void Timer::start() {
-	// don't actually take the locks yet
 	unique_lock<mutex> lock1(terminatedMutex, defer_lock);
 	unique_lock<mutex> lock2(threadMutex, defer_lock);
 
-	// lock both unique_locks without deadlock
 	lock(lock1, lock2);
 
 	if (nullptr != worker) {
@@ -39,19 +45,17 @@ void Timer::start() {
 	}
 
 	isTerminated = false;
-	terminatedMutex.unlock();
+	lock1.unlock();
 
 	worker.reset(new thread(&Timer::workerFunc, this));
 
-	LOGGER.debug("1sec timer started");
+	LOGGER.debug("%ld sec timer started", (long int)deltaT.count());
 }
 
 void Timer::stop() {
-	// don't actually take the locks yet
 	unique_lock<mutex> lock1(terminatedMutex, defer_lock);
 	unique_lock<mutex> lock2(threadMutex, defer_lock);
 
-	// lock both unique_locks without deadlock
 	lock(lock1, lock2);
 
 	if (nullptr == worker) {
@@ -59,65 +63,34 @@ void Timer::stop() {
 	}
 
 	isTerminated = true;
-	terminatedMutex.unlock();
+	lock1.unlock();
 
 	condition.notify_all();
 	worker->join();
 	worker.reset();
 
-	LOGGER.debug("1sec timer stopped");
+	LOGGER.debug("%ld sec timer stopped", (long int)deltaT.count());
 }
 
-bool Timer::waitForTerminateOrTimeout(const chrono::steady_clock::time_point& wakeupTime) {
+bool Timer::waitForTerminateOrTimeout(const steady_clock::time_point& wakeupTime) {
 	unique_lock<mutex> lock(terminatedMutex);
 	return condition.wait_until(lock, wakeupTime, [this]() { return isTerminated; });
 }
 
-bool Timer::checkDeltaT(const chrono::steady_clock::time_point& expectedWakeupTime) {
-	const chrono::milliseconds maxDiff = chrono::milliseconds(100);
-	const chrono::steady_clock::time_point currentTime = chrono::steady_clock::now();
-	const chrono::milliseconds actualDiff = chrono::duration_cast<chrono::milliseconds>(currentTime - expectedWakeupTime);
+bool Timer::checkDeltaT(const steady_clock::time_point& expectedWakeupTime) {
+	const steady_clock::time_point currentTime = steady_clock::now();
+	const milliseconds actualDiff = duration_cast<milliseconds>(currentTime - expectedWakeupTime);
 
-	if (maxDiff < abs(actualDiff)) {
+	if (actualDiff < milliseconds(-1000) || milliseconds(1000) < actualDiff) {
+		TimeConverter timeConverter(actualDiff);
 		ostringstream o;
+
 		o << "Update period failure! ";
-
-		if (chrono::seconds(1) < abs(actualDiff)) {
-			TimeConverter timeConverter(actualDiff);
-
-			o << timeConverter.getDays() << " days " <<
-				timeConverter.getHours() << " hours " <<
-				timeConverter.getMinutes() << " minutes " <<
-				timeConverter.getSeconds() << " seconds";
-		} else {
-			o << actualDiff.count() << " ms";
-		}
-
-		LOGGER.warning(o.str().c_str());
-		return false;
-	}
-
-	return true;
-}
-
-bool Timer::checkSystemTime(const chrono::system_clock::time_point& systemTime, const chrono::milliseconds& expectedDiff) {
-
-	chrono::milliseconds actualDiff = getDiffBetweenSystemClockAndSteadyClock();
-	chrono::milliseconds diffOfDiff = actualDiff - expectedDiff;
-
-	if (abs(diffOfDiff) > chrono::milliseconds(100)) {
-		ostringstream o;
-		o << "Time is changed! ";
-
-		if (abs(diffOfDiff) > chrono::seconds(1)) {
-			time_t previousTime = chrono::system_clock::to_time_t(systemTime);
-			time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-
-			o << "from " << put_time(localtime(&previousTime), "%Y.%m.%d %H:%M:%S") << " ";
-			o << "to " << put_time(localtime(&currentTime), "%Y.%m.%d %H:%M:%S");
-		} else {
-			o << "different is: " << diffOfDiff.count() << " ms";
-		}
+		o << timeConverter.getDays() << " days ";
+		o << setw(2) << setfill('0') << timeConverter.getHours() << ":";
+		o << setw(2) << setfill('0') << timeConverter.getMinutes() << ":";
+		o << setw(2) << setfill('0') << timeConverter.getSeconds() << ".";
+		o << setw(3) << setfill('0') << timeConverter.getMillis();
 
 		LOGGER.warning(o.str().c_str());
 		return false;
@@ -127,26 +100,16 @@ bool Timer::checkSystemTime(const chrono::system_clock::time_point& systemTime, 
 }
 
 void Timer::workerFunc() {
-	chrono::steady_clock::time_point wakeupTime = chrono::steady_clock::now();
-
-	systemTime = chrono::system_clock::now();
-	expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
+	steady_clock::time_point wakeupTime = steady_clock::now();
 
 	while (!waitForTerminateOrTimeout(wakeupTime)) {
 
 		if (!checkDeltaT(wakeupTime)) {
-			wakeupTime = chrono::steady_clock::now();
+			wakeupTime = steady_clock::now();
 		}
 
-		if (!checkSystemTime(systemTime, expectedDiff)) {
-			systemTime = chrono::system_clock::now();
-			expectedDiff = getDiffBetweenSystemClockAndSteadyClock();
-		}
-
-		callback.onTimer(chrono::system_clock::to_time_t(systemTime));
-
+		callback.onTimer();
 		wakeupTime += deltaT;
-		systemTime += deltaT;
 	}
 }
 

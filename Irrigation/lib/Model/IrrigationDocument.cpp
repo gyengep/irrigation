@@ -13,15 +13,15 @@ using namespace std;
 
 IrrigationDocument::IrrigationDocument() :
 	IrrigationDocument(
-			ZoneHandler::getInstancePtr(),
+			new WateringController(ZoneHandler::getInstancePtr()),
 			new XmlReaderWriterFactory(),
 			new FileReaderWriterFactoryImpl())
 {
 }
 
-IrrigationDocument::IrrigationDocument(shared_ptr<ZoneHandler> zoneHandler) :
+IrrigationDocument::IrrigationDocument(WateringController* wateringController) :
 	IrrigationDocument(
-			zoneHandler,
+			wateringController,
 			new XmlReaderWriterFactory(),
 			new FileReaderWriterFactoryImpl())
 {
@@ -29,18 +29,18 @@ IrrigationDocument::IrrigationDocument(shared_ptr<ZoneHandler> zoneHandler) :
 
 IrrigationDocument::IrrigationDocument(DtoReaderWriterFactory* readerWriterFactory, FileReaderWriterFactory* fileReaderWriterFactory) :
 	IrrigationDocument(
-			ZoneHandler::getInstancePtr(),
+			new WateringController(ZoneHandler::getInstancePtr()),
 			readerWriterFactory,
 			fileReaderWriterFactory)
 {
 }
 
 IrrigationDocument::IrrigationDocument(
-		shared_ptr<ZoneHandler> zoneHandler,
+		WateringController* wateringController,
 		DtoReaderWriterFactory* dtoReaderWriterFactory,
 		FileReaderWriterFactory* fileReaderWriterFactory) :
 	programs(new ProgramContainer()),
-	wateringController(zoneHandler),
+	wateringController(wateringController),
 	dtoReaderWriterFactory(dtoReaderWriterFactory),
 	fileReaderWriterFactory(fileReaderWriterFactory)
 {

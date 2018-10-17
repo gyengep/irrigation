@@ -9,6 +9,7 @@ class TimeConverter {
 	std::chrono::hours hours;
 	std::chrono::minutes minutes;
 	std::chrono::seconds seconds;
+	std::chrono::milliseconds millis;
 
 public:
 	TimeConverter(std::chrono::milliseconds ms);
@@ -17,7 +18,5 @@ public:
 	size_t getHours() const { return hours.count(); }
 	size_t getMinutes() const { return minutes.count(); }
 	size_t getSeconds() const { return seconds.count(); }
+	size_t getMillis() const { return millis.count(); }
 };
-
-std::chrono::milliseconds getDiffBetweenSystemClockAndSteadyClock();
-std::chrono::milliseconds abs(const std::chrono::milliseconds& ms);

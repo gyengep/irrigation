@@ -12,6 +12,7 @@ all:
 	@$(MAKE) -C Model all
 	@$(MAKE) -C Schedulers all
 	@$(MAKE) -C Utils all
+	@$(MAKE) -C Views/TimerView all
 
 .PHONY: clean
 clean:
@@ -24,6 +25,7 @@ clean:
 	@$(MAKE) -C Model clean
 	@$(MAKE) -C Schedulers clean
 	@$(MAKE) -C Utils clean
+	@$(MAKE) -C Views/TimerView clean
 
 .PHONY: all-with-libraries
 all-with-libraries: library-all all

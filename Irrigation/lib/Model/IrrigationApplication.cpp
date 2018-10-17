@@ -1,6 +1,7 @@
 #include "IrrigationApplication.h"
 #include "Configuration.h"
 #include <stdexcept>
+#include <thread>
 #include "DtoReaderWriter/XMLParseException.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
