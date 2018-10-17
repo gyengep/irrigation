@@ -8,6 +8,7 @@
 #include "Model/IrrigationDocument.h"
 #include "Views/TimerView/TimerView.h"
 
+#define VERSION "v0.1.1"
 using namespace std;
 
 
@@ -25,6 +26,10 @@ IrrigationApplication& IrrigationApplication::getInstance() {
 	}
 
 	return *instance.get();
+}
+
+std::string IrrigationApplication::getVersion() {
+	return VERSION;
 }
 
 void IrrigationApplication::initGpio() {
@@ -55,12 +60,12 @@ void IrrigationApplication::initDocument() {
 }
 
 void IrrigationApplication::onInitialize() {
-	LOGGER.debug("Irrigation System starting ...");
+	LOGGER.debug("Irrigation System " VERSION "starting ...");
 
 	initGpio();
 	initDocument();
 
-	LOGGER.info("Irrigation System started");
+	LOGGER.info("Irrigation System " VERSION " started");
 }
 
 void IrrigationApplication::onTerminate() {

@@ -28,4 +28,5 @@ public:
 	virtual ~IrrigationApplication() = default;
 	
 	static IrrigationApplication& getInstance();
+	static std::string getVersion();
 };

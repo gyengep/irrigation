@@ -1,3 +1,4 @@
+#include <iostream>
 #include <signal.h>
 #include <stdexcept>
 #include <sys/stat.h>
@@ -7,7 +8,6 @@
 #include "Model/Configuration.h"
 
 using namespace std;
-
 
 
 void signal_handler(int signo) {
@@ -67,7 +67,20 @@ bool initLogger() {
 //	close(STDERR_FILENO);
 //}
 
-int main() {
+int main(int argc, char* argv[]) {
+
+	if (argc > 1) {
+		if (argc == 2) {
+			if (string("--version") == argv[1]) {
+				cout << "Irrigation System " << IrrigationApplication::getInstance().getVersion() << endl;
+				return EXIT_SUCCESS;
+			}
+		}
+
+		cerr << "Usage: " << argv[0] << " [--version]" << endl;
+		exit(EXIT_FAILURE);
+	}
+
 	if (!initLogger()) {
 		exit(EXIT_FAILURE);
 	}
