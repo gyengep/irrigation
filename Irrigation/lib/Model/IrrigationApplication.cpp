@@ -61,7 +61,7 @@ void IrrigationApplication::initDocument() {
 }
 
 void IrrigationApplication::onInitialize() {
-	LOGGER.debug("Irrigation System " VERSION "starting ...");
+	LOGGER.debug("Irrigation System " VERSION " starting ...");
 
 	initGpio();
 	initDocument();
