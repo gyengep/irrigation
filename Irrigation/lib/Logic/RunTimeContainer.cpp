@@ -26,7 +26,7 @@ RunTimeContainer::RunTimeContainer(const RunTimeContainer& other) :
 	 this->operator =(other);
 }
 
-RunTimeContainer::RunTimeContainer(std::initializer_list<unsigned> initializer) :
+RunTimeContainer::RunTimeContainer(initializer_list<unsigned> initializer) :
 	RunTimeContainer()
 {
 	if (container.size() != initializer.size()) {

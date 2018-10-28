@@ -29,7 +29,7 @@ IrrigationApplication& IrrigationApplication::getInstance() {
 	return *instance.get();
 }
 
-std::string IrrigationApplication::getVersion() {
+string IrrigationApplication::getVersion() {
 	return VERSION;
 }
 
