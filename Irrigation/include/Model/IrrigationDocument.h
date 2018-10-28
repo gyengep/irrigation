@@ -17,7 +17,7 @@ public:
 
 private:
 	mutable std::mutex mtx;
-	std::unique_ptr<ProgramContainer> programContainer;
+	std::unique_ptr<ProgramContainer> programs;
 	std::unique_ptr<WateringController> wateringController;
 	std::unique_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
 	std::unique_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
@@ -34,8 +34,8 @@ public:
 	void lock() const;
 	void unlock() const;
 
-	const ProgramContainer& getPrograms() const { return *programContainer; }
-	ProgramContainer& getPrograms() { return *programContainer; }
+	const ProgramContainer& getPrograms() const { return *programs; }
+	ProgramContainer& getPrograms() { return *programs; }
 
 	const WateringController& getWateringController() const { return *wateringController; }
 	WateringController& getWateringController() { return *wateringController; }

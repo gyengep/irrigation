@@ -18,7 +18,7 @@ IrrigationDocument::IrrigationDocument(
 		unique_ptr<WateringController>&& wateringController,
 		unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory,
 		unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) :
-	programContainer(move(programContainer)),
+	programs(move(programContainer)),
 	wateringController(move(wateringController)),
 	dtoReaderWriterFactory(move(dtoReaderWriterFactory)),
 	fileReaderWriterFactory(move(fileReaderWriterFactory))
@@ -40,7 +40,7 @@ DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<mutex> lock(mtx);
 
 	unique_ptr<list<ProgramDTO>> programDTOs(new list<ProgramDTO>());
-	for (auto it = programContainer->begin(); it != programContainer->end(); ++it) {
+	for (auto it = programs->begin(); it != programs->end(); ++it) {
 		programDTOs->push_back(it->second->getProgramDTO().setId(it->first));
 	}
 
@@ -51,7 +51,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 	lock_guard<mutex> lock(mtx);
 
 	if (documentDTO.hasPrograms()) {
-		programContainer.reset(new ProgramContainer());
+		programs.reset(new ProgramContainer());
 
 		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
 			unique_ptr<Program> program(new Program());
@@ -62,7 +62,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 				id = IdType(programDTO.getId());
 			}
 
-			programContainer->insert(id, program.release());
+			programs->insert(id, program.release());
 		}
 	}
 }
@@ -70,7 +70,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 void IrrigationDocument::load(const string& fileName) {
 	LOGGER.debug("Loading configuration...");
 
-	programContainer.reset(new ProgramContainer());
+	programs.reset(new ProgramContainer());
 
 	unique_ptr<FileReader> fileReader(fileReaderWriterFactory->createFileReader());
 	const string text = fileReader->read(fileName);
