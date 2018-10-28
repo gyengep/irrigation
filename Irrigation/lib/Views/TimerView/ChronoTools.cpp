@@ -12,3 +12,11 @@ TimeConverter::TimeConverter(milliseconds ms) {
 	seconds = duration_cast<chrono::seconds>(ms - days - hours - minutes);
 	millis = duration_cast<chrono::milliseconds>(ms - days - hours - minutes - seconds);
 }
+
+seconds abs(const seconds& t) {
+	return seconds(abs(t.count()));
+}
+
+milliseconds abs(const milliseconds& t) {
+	return milliseconds(abs(t.count()));
+}

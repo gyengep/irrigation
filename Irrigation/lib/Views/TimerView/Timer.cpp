@@ -79,10 +79,9 @@ bool Timer::waitForTerminateOrTimeout(const steady_clock::time_point& scheduledE
 }
 
 bool Timer::checkPeriod(const steady_clock::time_point& scheduledExecutionTime) {
-
 	const milliseconds actualDiff = duration_cast<milliseconds>(steady_clock::now() - scheduledExecutionTime);
 
-	if (actualDiff > maxTardiness) {
+	if (abs(actualDiff) > maxTardiness) {
 		TimeConverter timeConverter(actualDiff);
 		ostringstream o;
 
@@ -104,7 +103,6 @@ void Timer::workerFunc() {
 	steady_clock::time_point scheduledExecutionTime = steady_clock::now();
 
 	while (!waitForTerminateOrTimeout(scheduledExecutionTime)) {
-
 		if (!checkPeriod(scheduledExecutionTime)) {
 			scheduledExecutionTime = steady_clock::now();
 		}

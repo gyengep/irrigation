@@ -20,3 +20,6 @@ public:
 	size_t getSeconds() const { return seconds.count(); }
 	size_t getMillis() const { return millis.count(); }
 };
+
+std::chrono::seconds abs(const std::chrono::seconds& t);
+std::chrono::milliseconds abs(const std::chrono::milliseconds& t);

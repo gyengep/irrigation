@@ -10,7 +10,8 @@ class TimerViewTest;
 class TimerView : public View, public TimerCallback {
 	friend TimerViewTest;
 
-	const std::chrono::seconds deltaT;
+	const std::chrono::seconds period;
+	const std::chrono::seconds maxTardiness;
 	std::chrono::system_clock::time_point expectedSystemTime;
 
 	IrrigationDocument& irrigationDocument;

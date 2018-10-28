@@ -14,9 +14,10 @@ using namespace std::chrono;
 
 TimerView::TimerView(IrrigationDocument& irrigationDocument) :
 	View(irrigationDocument),
-	deltaT(seconds(1)),
+	period(seconds(1)),
+	maxTardiness(seconds(1)),
 	irrigationDocument(irrigationDocument),
-	timer(*this, deltaT)
+	timer(*this, period)
 {
 }
 
@@ -68,14 +69,13 @@ void TimerView::onTimer() {
 
 	onTimer(system_clock::to_time_t(expectedSystemTime));
 
-	expectedSystemTime += deltaT;
+	expectedSystemTime += period;
 }
 
 bool TimerView::checkSystemTime(const system_clock::time_point& expectedSystemTime) {
-	const system_clock::time_point currentTime = system_clock::now();
-	const seconds actualDiff = duration_cast<seconds>(currentTime - expectedSystemTime);
+	const seconds actualDiff = duration_cast<seconds>(system_clock::now() - expectedSystemTime);
 
-	if (actualDiff < seconds(-1) || seconds(1) < actualDiff) {
+	if (abs(actualDiff) > seconds(1)) {
 		const time_t previousTime = system_clock::to_time_t(expectedSystemTime);
 		const time_t currentTime = system_clock::to_time_t(system_clock::now());
 

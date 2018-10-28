@@ -72,3 +72,17 @@ TEST(TimeConverterTest, getDays) {
 	EXPECT_EQ(8, timeConverter.getSeconds());
 	EXPECT_EQ(54, timeConverter.getMillis());
 }
+
+TEST(TimeConverterTest, absSeconds) {
+	EXPECT_EQ(seconds(5), abs(seconds(5)));
+	EXPECT_EQ(seconds(5), abs(seconds(-5)));
+	EXPECT_EQ(seconds(5000000), abs(seconds(5000000)));
+	EXPECT_EQ(seconds(5000000), abs(seconds(-5000000)));
+}
+
+TEST(TimeConverterTest, absMilliseconds) {
+	EXPECT_EQ(milliseconds(8), abs(milliseconds(8)));
+	EXPECT_EQ(milliseconds(8), abs(milliseconds(-8)));
+	EXPECT_EQ(milliseconds(80000000000), abs(milliseconds(80000000000)));
+	EXPECT_EQ(milliseconds(80000000000), abs(milliseconds(-80000000000)));
+}
