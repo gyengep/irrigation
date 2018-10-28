@@ -7,8 +7,18 @@
 using namespace std;
 
 
-RunTime::RunTime() {
-	setSeconds(0);
+RunTime::RunTime() :
+	RunTime(0)
+{
+}
+
+RunTime::RunTime(unsigned seconds) :
+	seconds(seconds)
+{
+}
+
+RunTime::RunTime(const RunTime& other) {
+	this->operator =(other);
 }
 
 RunTime::~RunTime() {
@@ -26,6 +36,18 @@ void RunTime::setSeconds(unsigned seconds) {
 	}
 
 	this->seconds = seconds;
+}
+
+RunTime& RunTime::operator= (const RunTime& other) {
+	if (this != &other) {
+		seconds = other.seconds;
+	}
+
+	return *this;
+}
+
+bool RunTime::operator== (const RunTime& other) const {
+	return (seconds == other.seconds);
 }
 
 RunTimeDTO RunTime::getRunTimeDTO() const {

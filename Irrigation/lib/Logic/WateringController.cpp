@@ -12,6 +12,11 @@ WateringController::WateringProperties::WateringProperties() :
 {
 }
 
+WateringController::WateringController() :
+	WateringController(ZoneHandler::getInstancePtr())
+{
+}
+
 WateringController::WateringController(shared_ptr<ZoneHandler> zoneHandler) :
 	zoneHandler(zoneHandler)
 {

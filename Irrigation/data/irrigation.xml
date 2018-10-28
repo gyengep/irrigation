@@ -6,7 +6,7 @@
 			<schedulertype>specified</schedulertype>
 			<schedulers>
 				<scheduler type="specified">
-					<adjustment>100</adjustment>
+					<adjustment>30</adjustment>
 					<days>
 						<day>true</day>
 						<day>true</day>
@@ -34,13 +34,13 @@
 				<scheduler type="specified">
 					<adjustment>100</adjustment>
 					<days>
+						<day>false</day>
 						<day>true</day>
+						<day>false</day>
 						<day>true</day>
+						<day>false</day>
 						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
+						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
@@ -58,13 +58,13 @@
 				<scheduler type="specified">
 					<adjustment>100</adjustment>
 					<days>
+						<day>false</day>
 						<day>true</day>
+						<day>false</day>
 						<day>true</day>
+						<day>false</day>
 						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
+						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>

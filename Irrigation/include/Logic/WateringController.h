@@ -22,13 +22,14 @@ class WateringController {
 	void startNextRequiredZone(const std::time_t& rawTime);
 
 public:
+	WateringController();
 	WateringController(std::shared_ptr<ZoneHandler> zoneHandler);
 	virtual ~WateringController();
 
-	void on1SecTimer(const std::time_t& rawTime);
-	void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent = 100);
-	void stop();
+	virtual void on1SecTimer(const std::time_t& rawTime);
+	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent = 100);
+	virtual void stop();
 
-	bool isWateringActive() const;
+	virtual bool isWateringActive() const;
 	size_t getActiveZoneId() const;
 };

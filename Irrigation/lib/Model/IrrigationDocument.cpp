@@ -6,43 +6,22 @@
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/ProgramContainer.h"
+#include "Logic/WateringController.h"
 #include "Utils/FileReaderWriterImpl.h"
 
 using namespace std;
 
 
-IrrigationDocument::IrrigationDocument() :
-	IrrigationDocument(
-			ZoneHandler::getInstancePtr(),
-			new XmlReaderWriterFactory(),
-			new FileReaderWriterFactoryImpl())
-{
-}
-
-IrrigationDocument::IrrigationDocument(shared_ptr<ZoneHandler> zoneHandler) :
-	IrrigationDocument(
-			zoneHandler,
-			new XmlReaderWriterFactory(),
-			new FileReaderWriterFactoryImpl())
-{
-}
-
-IrrigationDocument::IrrigationDocument(DtoReaderWriterFactory* readerWriterFactory, FileReaderWriterFactory* fileReaderWriterFactory) :
-	IrrigationDocument(
-			ZoneHandler::getInstancePtr(),
-			readerWriterFactory,
-			fileReaderWriterFactory)
-{
-}
-
 IrrigationDocument::IrrigationDocument(
-		shared_ptr<ZoneHandler> zoneHandler,
-		DtoReaderWriterFactory* dtoReaderWriterFactory,
-		FileReaderWriterFactory* fileReaderWriterFactory) :
-	programs(new ProgramContainer()),
-	wateringController(zoneHandler),
-	dtoReaderWriterFactory(dtoReaderWriterFactory),
-	fileReaderWriterFactory(fileReaderWriterFactory)
+		unique_ptr<ProgramContainer>&& programContainer,
+		unique_ptr<WateringController>&& wateringController,
+		unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory,
+		unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) :
+	programs(move(programContainer)),
+	wateringController(move(wateringController)),
+	dtoReaderWriterFactory(move(dtoReaderWriterFactory)),
+	fileReaderWriterFactory(move(fileReaderWriterFactory))
 {
 }
 
@@ -116,4 +95,57 @@ void IrrigationDocument::save(const string& fileName) const {
 	//	} catch (const IOException& e) {
 	//		LOGGER.warning("Configuration file saving failed. %s", e.what());
 	//	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+IrrigationDocument::Builder::Builder() {
+}
+
+IrrigationDocument::Builder::~Builder() {
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramContainer(unique_ptr<ProgramContainer>&& programContainer) {
+	this->programContainer = move(programContainer);
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(unique_ptr<WateringController>&& wateringController) {
+	this->wateringController = move(wateringController);
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory) {
+	this->dtoReaderWriterFactory = move(dtoReaderWriterFactory);
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) {
+	this->fileReaderWriterFactory = move(fileReaderWriterFactory);
+	return *this;
+}
+
+unique_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
+
+	if (nullptr == programContainer) {
+		programContainer.reset(new ProgramContainer());
+	}
+
+	if (nullptr == wateringController) {
+		wateringController.reset(new WateringController());
+	}
+
+	if (nullptr == dtoReaderWriterFactory) {
+		dtoReaderWriterFactory.reset(new XmlReaderWriterFactory());
+	}
+
+	if (nullptr == fileReaderWriterFactory) {
+		fileReaderWriterFactory.reset(new FileReaderWriterFactoryImpl());
+	}
+
+	return unique_ptr<IrrigationDocument>(new IrrigationDocument(
+			move(programContainer),
+			move(wateringController),
+			move(dtoReaderWriterFactory),
+			move(fileReaderWriterFactory)));
 }

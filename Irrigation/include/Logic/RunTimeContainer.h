@@ -24,14 +24,12 @@ public:
 
 private:
 
-	// Disable copy constructor and operator
-	RunTimeContainer(const RunTimeContainer&);
-	RunTimeContainer& operator= (const RunTimeContainer&);
-
 	container_type container;
 
 public:
 	RunTimeContainer();
+	RunTimeContainer(const RunTimeContainer& other);
+	RunTimeContainer(std::initializer_list<unsigned> initializer);
 	virtual ~RunTimeContainer();
 
 	// for testing
@@ -43,6 +41,9 @@ public:
 
 	const mapped_type::element_type* at(const key_type& key) const;
 	mapped_type::element_type* at(const key_type& key);
+
+	RunTimeContainer& operator= (const RunTimeContainer& other);
+	bool operator== (const RunTimeContainer& other) const;
 
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
 };

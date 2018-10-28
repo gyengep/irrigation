@@ -14,7 +14,7 @@ MockTimerCallback::MockTimerCallback() :
 {
 }
 
-void MockTimerCallback::checkTimeDiff(time_t) {
+void MockTimerCallback::checkTimeDiff() {
 	const chrono::steady_clock::time_point currentTime = chrono::steady_clock::now();
 
 	if (lastCalled == chrono::steady_clock::time_point()) {
@@ -29,7 +29,7 @@ void MockTimerCallback::checkTimeDiff(time_t) {
 	lastCalled = currentTime;
 }
 
-void MockTimerCallback::checkIfTerminateCalled(time_t) {
+void MockTimerCallback::checkIfTerminateCalled() {
 	EXPECT_FALSE(isTerminateCalled);
 }
 
@@ -50,10 +50,10 @@ void TimerTest::waitAndCallStop(Timer* timer, MockTimerCallback* mockTimerCallba
 }
 
 TEST_F(TimerTest, onTimerTiming) {
-	ON_CALL(mockTimerCallback, onTimer(_)).WillByDefault(Invoke(&mockTimerCallback, &MockTimerCallback::checkTimeDiff));
-	EXPECT_CALL(mockTimerCallback, onTimer(_)).Times(4);
+	ON_CALL(mockTimerCallback, onTimer()).WillByDefault(Invoke(&mockTimerCallback, &MockTimerCallback::checkTimeDiff));
+	EXPECT_CALL(mockTimerCallback, onTimer()).Times(4);
 
-    std::thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
+    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
     		timer.get(), &mockTimerCallback, 3500);
 
     timer->start();
@@ -61,16 +61,16 @@ TEST_F(TimerTest, onTimerTiming) {
 }
 
 TEST_F(TimerTest, onTimerAfterTerminate) {
-	ON_CALL(mockTimerCallback, onTimer(_)).WillByDefault(Invoke(&mockTimerCallback, &MockTimerCallback::checkIfTerminateCalled));
-	EXPECT_CALL(mockTimerCallback, onTimer(_)).Times(2);
+	ON_CALL(mockTimerCallback, onTimer()).WillByDefault(Invoke(&mockTimerCallback, &MockTimerCallback::checkIfTerminateCalled));
+	EXPECT_CALL(mockTimerCallback, onTimer()).Times(2);
 
-    std::thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
+    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
     		timer.get(), &mockTimerCallback, 1500);
 
     timer->start();
 	waitAndCallTerminateThread.join();
 }
-
+/*
 TEST_F(TimerTest, onTimerParameter) {
 	auto currentTime = chrono::system_clock::now();
 	chrono::seconds currentTimeInSec = chrono::duration_cast<chrono::seconds>(currentTime.time_since_epoch());
@@ -81,10 +81,11 @@ TEST_F(TimerTest, onTimerParameter) {
 	EXPECT_CALL(mockTimerCallback, onTimer(chrono::system_clock::to_time_t(startTime + chrono::seconds(2)))).Times(1);
 	EXPECT_CALL(mockTimerCallback, onTimer(chrono::system_clock::to_time_t(startTime + chrono::seconds(3)))).Times(1);
 
-	std::this_thread::sleep_until(startTime);
-    std::thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
+	this_thread::sleep_until(startTime);
+    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
     		timer.get(), &mockTimerCallback, 3500);
 
     timer->start();
 	waitAndCallTerminateThread.join();
 }
+*/

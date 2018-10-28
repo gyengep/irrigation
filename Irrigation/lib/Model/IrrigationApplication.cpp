@@ -1,6 +1,7 @@
 #include "IrrigationApplication.h"
 #include "Configuration.h"
 #include <stdexcept>
+#include <thread>
 #include "DtoReaderWriter/XMLParseException.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
@@ -28,7 +29,7 @@ IrrigationApplication& IrrigationApplication::getInstance() {
 	return *instance.get();
 }
 
-std::string IrrigationApplication::getVersion() {
+string IrrigationApplication::getVersion() {
 	return VERSION;
 }
 
@@ -41,7 +42,7 @@ void IrrigationApplication::initGpio() {
 }
 
 void IrrigationApplication::initDocument() {
-	document.reset(new IrrigationDocument());
+	document = IrrigationDocument::Builder().build();
 
 	try {
 		document->load(Configuration::getInstance().getConfigFileName());
@@ -60,7 +61,7 @@ void IrrigationApplication::initDocument() {
 }
 
 void IrrigationApplication::onInitialize() {
-	LOGGER.debug("Irrigation System " VERSION "starting ...");
+	LOGGER.debug("Irrigation System " VERSION " starting ...");
 
 	initGpio();
 	initDocument();

@@ -6,14 +6,12 @@
 class RunTime {
 	static const unsigned maxSeconds = 60 * 60 * 24;
 
-	// disable copy constructor and copy operator
-	RunTime(const RunTime&);
-	RunTime& operator= (const RunTime&);
-
 	unsigned seconds;
 
 public:
 	RunTime();
+	RunTime(unsigned seconds);
+	RunTime(const RunTime& other);
 	virtual ~RunTime();
 
 	unsigned getSeconds() const;
@@ -21,6 +19,9 @@ public:
 
 	RunTimeDTO getRunTimeDTO() const;
 	void updateFromDTO(const RunTimeDTO& runTimeDTO);
+
+	RunTime& operator= (const RunTime& other);
+	bool operator== (const RunTime& other) const;
 
 	friend std::string to_string(const RunTime& runTime);
 };
