@@ -5,6 +5,7 @@
 #include "Logger/Logger.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/Program.h"
+#include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 
 using namespace std;

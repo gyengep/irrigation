@@ -36,12 +36,12 @@ public:
 
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
-	const Scheduler& getCurrentScheduler() const;
+	virtual const Scheduler& getCurrentScheduler() const;
 
 	const SpecifiedScheduler& getSpecifiedScheduler() const;
 	SpecifiedScheduler& getSpecifiedScheduler();
 
-	bool isScheduled(const std::time_t& rawTime) const;
+	virtual bool isScheduled(const std::time_t& rawTime) const;
 
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
 	RunTimeContainer& getRunTimes() { return *runTimes; }

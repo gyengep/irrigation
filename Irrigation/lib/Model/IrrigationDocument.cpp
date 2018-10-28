@@ -6,43 +6,22 @@
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/ProgramContainer.h"
+#include "Logic/WateringController.h"
 #include "Utils/FileReaderWriterImpl.h"
 
 using namespace std;
 
 
-IrrigationDocument::IrrigationDocument() :
-	IrrigationDocument(
-			new WateringController(ZoneHandler::getInstancePtr()),
-			new XmlReaderWriterFactory(),
-			new FileReaderWriterFactoryImpl())
-{
-}
-
-IrrigationDocument::IrrigationDocument(WateringController* wateringController) :
-	IrrigationDocument(
-			wateringController,
-			new XmlReaderWriterFactory(),
-			new FileReaderWriterFactoryImpl())
-{
-}
-
-IrrigationDocument::IrrigationDocument(DtoReaderWriterFactory* readerWriterFactory, FileReaderWriterFactory* fileReaderWriterFactory) :
-	IrrigationDocument(
-			new WateringController(ZoneHandler::getInstancePtr()),
-			readerWriterFactory,
-			fileReaderWriterFactory)
-{
-}
-
 IrrigationDocument::IrrigationDocument(
-		WateringController* wateringController,
-		DtoReaderWriterFactory* dtoReaderWriterFactory,
-		FileReaderWriterFactory* fileReaderWriterFactory) :
-	programs(new ProgramContainer()),
-	wateringController(wateringController),
-	dtoReaderWriterFactory(dtoReaderWriterFactory),
-	fileReaderWriterFactory(fileReaderWriterFactory)
+		unique_ptr<ProgramContainer>&& programContainer,
+		unique_ptr<WateringController>&& wateringController,
+		unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory,
+		unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) :
+	programContainer(move(programContainer)),
+	wateringController(move(wateringController)),
+	dtoReaderWriterFactory(move(dtoReaderWriterFactory)),
+	fileReaderWriterFactory(move(fileReaderWriterFactory))
 {
 }
 
@@ -61,7 +40,7 @@ DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<mutex> lock(mtx);
 
 	unique_ptr<list<ProgramDTO>> programDTOs(new list<ProgramDTO>());
-	for (auto it = programs->begin(); it != programs->end(); ++it) {
+	for (auto it = programContainer->begin(); it != programContainer->end(); ++it) {
 		programDTOs->push_back(it->second->getProgramDTO().setId(it->first));
 	}
 
@@ -72,7 +51,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 	lock_guard<mutex> lock(mtx);
 
 	if (documentDTO.hasPrograms()) {
-		programs.reset(new ProgramContainer());
+		programContainer.reset(new ProgramContainer());
 
 		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
 			unique_ptr<Program> program(new Program());
@@ -83,7 +62,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 				id = IdType(programDTO.getId());
 			}
 
-			programs->insert(id, program.release());
+			programContainer->insert(id, program.release());
 		}
 	}
 }
@@ -91,7 +70,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 void IrrigationDocument::load(const string& fileName) {
 	LOGGER.debug("Loading configuration...");
 
-	programs.reset(new ProgramContainer());
+	programContainer.reset(new ProgramContainer());
 
 	unique_ptr<FileReader> fileReader(fileReaderWriterFactory->createFileReader());
 	const string text = fileReader->read(fileName);
@@ -116,4 +95,57 @@ void IrrigationDocument::save(const string& fileName) const {
 	//	} catch (const IOException& e) {
 	//		LOGGER.warning("Configuration file saving failed. %s", e.what());
 	//	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+IrrigationDocument::Builder::Builder() {
+}
+
+IrrigationDocument::Builder::~Builder() {
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramContainer(unique_ptr<ProgramContainer>&& programContainer) {
+	this->programContainer = move(programContainer);
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(unique_ptr<WateringController>&& wateringController) {
+	this->wateringController = move(wateringController);
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory) {
+	this->dtoReaderWriterFactory = move(dtoReaderWriterFactory);
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) {
+	this->fileReaderWriterFactory = move(fileReaderWriterFactory);
+	return *this;
+}
+
+unique_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
+
+	if (nullptr == programContainer) {
+		programContainer.reset(new ProgramContainer());
+	}
+
+	if (nullptr == wateringController) {
+		wateringController.reset(new WateringController());
+	}
+
+	if (nullptr == dtoReaderWriterFactory) {
+		dtoReaderWriterFactory.reset(new XmlReaderWriterFactory());
+	}
+
+	if (nullptr == fileReaderWriterFactory) {
+		fileReaderWriterFactory.reset(new FileReaderWriterFactoryImpl());
+	}
+
+	return unique_ptr<IrrigationDocument>(new IrrigationDocument(
+			move(programContainer),
+			move(wateringController),
+			move(dtoReaderWriterFactory),
+			move(fileReaderWriterFactory)));
 }

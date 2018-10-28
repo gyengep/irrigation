@@ -3,15 +3,12 @@
 #include "Timer.h"
 #include "DocumentView/View.h"
 
-#if not defined(FRIEND_TEST)
-#define FRIEND_TEST(TestCaseName, TestName)
-#endif
-
 class IrrigationDocument;
+class TimerViewTest;
 
 
 class TimerView : public View, public TimerCallback {
-	FRIEND_TEST(TimerViewTest, TestName);
+	friend TimerViewTest;
 
 	const std::chrono::seconds deltaT;
 	std::chrono::system_clock::time_point expectedSystemTime;

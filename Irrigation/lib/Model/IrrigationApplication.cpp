@@ -42,7 +42,7 @@ void IrrigationApplication::initGpio() {
 }
 
 void IrrigationApplication::initDocument() {
-	document.reset(new IrrigationDocument());
+	document = IrrigationDocument::Builder().build();
 
 	try {
 		document->load(Configuration::getInstance().getConfigFileName());

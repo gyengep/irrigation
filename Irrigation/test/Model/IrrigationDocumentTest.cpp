@@ -10,6 +10,7 @@
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/StartTime.h"
+#include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
 #include "Schedulers/SpecifiedScheduler.h"
@@ -55,7 +56,7 @@ const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 }));
 
 void IrrigationDocumentTest::SetUp() {
-	document.reset(new IrrigationDocument());
+	document = IrrigationDocument::Builder().build();
 }
 
 void IrrigationDocumentTest::TearDown() {
@@ -100,10 +101,10 @@ TEST_F(IrrigationDocumentTest, load) {
 	MockDtoReader* dtoReader = new MockDtoReader();
 	MockFileReader* fileReader = new MockFileReader();
 
-	document.reset(new IrrigationDocument(
-			new MockDtoReaderWriterFactory(dtoReader),
-			new MockFileReaderWriterFactory(fileReader)
-			));
+	document = IrrigationDocument::Builder()
+			.setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>(new MockDtoReaderWriterFactory(dtoReader)))
+			.setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>(new MockFileReaderWriterFactory(fileReader)))
+			.build();
 
 	const string fileName("12345678");
 	const string text("abcdefg");

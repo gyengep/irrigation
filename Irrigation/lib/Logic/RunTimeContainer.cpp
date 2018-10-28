@@ -20,6 +20,25 @@ RunTimeContainer::RunTimeContainer() :
 {
 }
 
+RunTimeContainer::RunTimeContainer(const RunTimeContainer& other) :
+	RunTimeContainer()
+{
+	 this->operator =(other);
+}
+
+RunTimeContainer::RunTimeContainer(std::initializer_list<unsigned> initializer) :
+	RunTimeContainer()
+{
+	if (container.size() != initializer.size()) {
+		throw logic_error("container.size() != initializer.size()");
+	}
+
+	for (size_t i = 0; i < container.size(); ++i) {
+		RunTime& target = *next(container.begin(), i)->second;
+		unsigned value = *next(initializer.begin(), i);
+		target = RunTime(value);
+	}
+}
 
 RunTimeContainer::RunTimeContainer(RunTimeFactory* runTimeFactory) {
 	unique_ptr<RunTimeFactory> runTimeFactoryPtr(runTimeFactory);
@@ -49,6 +68,31 @@ RunTimeContainer::mapped_type::element_type* RunTimeContainer::at(const key_type
 	}
 
 	return container[key].second.get();
+}
+
+RunTimeContainer& RunTimeContainer::operator= (const RunTimeContainer& other) {
+	if (this != &other) {
+		for (size_t i = 0; i < container.size(); ++i) {
+			RunTime& target = *at(i);
+			const RunTime& source = *other.at(i);
+			target = source;
+		}
+	}
+
+	return *this;
+}
+
+bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
+	for (size_t i = 0; i < container.size(); ++i) {
+		const RunTime& runTime1 = *at(i);
+		const RunTime& runTime2 = *other.at(i);
+
+		if (!(runTime1 == runTime2)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 string to_string(const RunTimeContainer& runTimeContainer) {

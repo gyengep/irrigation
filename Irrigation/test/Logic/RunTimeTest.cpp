@@ -6,10 +6,32 @@ using namespace std;
 using namespace testing;
 
 
-
-TEST(RunTimeTest, init) {
+TEST(RunTimeTest, initDefault) {
 	RunTime runTime;
 	EXPECT_EQ(0, runTime.getSeconds());
+}
+
+TEST(RunTimeTest, initConversion) {
+	RunTime runTime(10);
+	EXPECT_EQ(10, runTime.getSeconds());
+}
+
+TEST(RunTimeTest, initCopy) {
+	RunTime runTime(RunTime(20));
+	EXPECT_EQ(20, runTime.getSeconds());
+}
+
+TEST(RunTimeTest, copy) {
+	RunTime source(20);
+	RunTime target;
+	target = source;
+	EXPECT_EQ(20, source.getSeconds());
+}
+
+TEST(RunTimeTest, equals) {
+	EXPECT_TRUE(RunTime(10) == RunTime(10));
+	EXPECT_FALSE(RunTime(10) == RunTime(11));
+	EXPECT_FALSE(RunTime(11) == RunTime(10));
 }
 
 TEST(RunTimeTest, setValue) {
