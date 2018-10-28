@@ -22,15 +22,16 @@ class Timer {
 	TimerCallback& callback;
 	bool isTerminated;
 
-	const std::chrono::seconds deltaT;
+	const std::chrono::seconds period;
+	const std::chrono::milliseconds maxTardiness;
 
 	void workerFunc();
-	bool waitForTerminateOrTimeout(const std::chrono::steady_clock::time_point& wakeupTime);
+	bool waitForTerminateOrTimeout(const std::chrono::steady_clock::time_point& scheduledExecutionTime);
 
-	static bool checkDeltaT(const std::chrono::steady_clock::time_point& wakeupTime);
+	bool checkPeriod(const std::chrono::steady_clock::time_point& scheduledExecutionTime);
 
 public:
-	Timer(TimerCallback& callback, const std::chrono::seconds& deltaT);
+	Timer(TimerCallback& callback, const std::chrono::seconds& period);
 	~Timer();
 
 	void start();

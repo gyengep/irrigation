@@ -10,10 +10,11 @@ using namespace std;
 using namespace std::chrono;
 
 
-Timer::Timer(TimerCallback& callback, const seconds& deltaT) :
+Timer::Timer(TimerCallback& callback, const seconds& period) :
 	callback(callback),
 	isTerminated(false),
-	deltaT(deltaT)
+	period(period),
+	maxTardiness(milliseconds(1000))
 {
 }
 
@@ -49,7 +50,7 @@ void Timer::start() {
 
 	worker.reset(new thread(&Timer::workerFunc, this));
 
-	LOGGER.debug("%ld sec timer started", (long int)deltaT.count());
+	LOGGER.debug("%ld sec timer started", (long int)period.count());
 }
 
 void Timer::stop() {
@@ -69,19 +70,19 @@ void Timer::stop() {
 	worker->join();
 	worker.reset();
 
-	LOGGER.debug("%ld sec timer stopped", (long int)deltaT.count());
+	LOGGER.debug("%ld sec timer stopped", (long int)period.count());
 }
 
-bool Timer::waitForTerminateOrTimeout(const steady_clock::time_point& wakeupTime) {
+bool Timer::waitForTerminateOrTimeout(const steady_clock::time_point& scheduledExecutionTime) {
 	unique_lock<mutex> lock(terminatedMutex);
-	return condition.wait_until(lock, wakeupTime, [this]() { return isTerminated; });
+	return condition.wait_until(lock, scheduledExecutionTime, [this]() { return isTerminated; });
 }
 
-bool Timer::checkDeltaT(const steady_clock::time_point& expectedWakeupTime) {
-	const steady_clock::time_point currentTime = steady_clock::now();
-	const milliseconds actualDiff = duration_cast<milliseconds>(currentTime - expectedWakeupTime);
+bool Timer::checkPeriod(const steady_clock::time_point& scheduledExecutionTime) {
 
-	if (actualDiff < milliseconds(-1000) || milliseconds(1000) < actualDiff) {
+	const milliseconds actualDiff = duration_cast<milliseconds>(steady_clock::now() - scheduledExecutionTime);
+
+	if (actualDiff > maxTardiness) {
 		TimeConverter timeConverter(actualDiff);
 		ostringstream o;
 
@@ -100,16 +101,16 @@ bool Timer::checkDeltaT(const steady_clock::time_point& expectedWakeupTime) {
 }
 
 void Timer::workerFunc() {
-	steady_clock::time_point wakeupTime = steady_clock::now();
+	steady_clock::time_point scheduledExecutionTime = steady_clock::now();
 
-	while (!waitForTerminateOrTimeout(wakeupTime)) {
+	while (!waitForTerminateOrTimeout(scheduledExecutionTime)) {
 
-		if (!checkDeltaT(wakeupTime)) {
-			wakeupTime = steady_clock::now();
+		if (!checkPeriod(scheduledExecutionTime)) {
+			scheduledExecutionTime = steady_clock::now();
 		}
 
 		callback.onTimer();
-		wakeupTime += deltaT;
+		scheduledExecutionTime += period;
 	}
 }
 
