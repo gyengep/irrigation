@@ -2,7 +2,6 @@
 #include <gmock/gmock.h>
 #include <memory>
 #include <vector>
-#include "Hardware/Valves.h"
 #include "Logic/WateringController.h"
 
 

@@ -62,5 +62,7 @@ public:
 	Builder& setDtoReaderWriterFactory(std::unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory);
 	Builder& setFileReaderWriterFactory(std::unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory);
 
+	Builder& setFakeWateringController();
+
 	std::unique_ptr<IrrigationDocument> build();
 };

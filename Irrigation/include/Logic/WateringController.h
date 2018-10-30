@@ -1,7 +1,7 @@
 #pragma once
-#include <array>
 #include <ctime>
 #include <memory>
+#include <vector>
 #include "RunTime.h"
 #include "RunTimeContainer.h"
 #include "Hardware/ZoneHandler.h"
@@ -11,7 +11,7 @@ class WateringController {
 
 	struct WateringProperties {
 		std::time_t zoneStartTime;
-		std::array<RunTime, ZONE_COUNT> runTimes;
+		std::vector<RunTime> runTimes;
 
 		WateringProperties();
 	};

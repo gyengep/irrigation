@@ -1,6 +1,7 @@
 #include "WateringController.h"
 #include <stdexcept>
 #include <thread>
+#include "Hardware/ZoneHandler.h"
 #include "Logger/Logger.h"
 #include "Utils/ToString.h"
 
@@ -8,7 +9,8 @@ using namespace std;
 
 
 WateringController::WateringProperties::WateringProperties() :
-	zoneStartTime(0)
+	zoneStartTime(0),
+	runTimes(ZoneHandler::getZoneCount())
 {
 }
 

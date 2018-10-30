@@ -1,54 +1,38 @@
 #include "ZoneHandler.h"
-#include "Valves.h"
-#include <limits>
+#include "GpioValve.h"
+#include "FakeValve.h"
+#include "ValveConfig.h"
+#include "Valve.h"
 #include <vector>
 #include "Exceptions/Exceptions.h"
 
 using namespace std;
 
 
-#if (ZONE_COUNT + 1) != (VALVE_COUNT)
-#error (ZONE_COUNT + 1) != (VALVE_COUNT)
-#endif
-
-
-mutex ZoneHandler::createMutex;
-shared_ptr<ZoneHandler> ZoneHandler::instance;
-
 const shared_ptr<ZoneHandler> ZoneHandler::getInstancePtr() {
-	if (nullptr == instance) {
-		lock_guard<mutex> lock(createMutex);
-
-		if (nullptr == instance) {
-			instance.reset(new ZoneHandler(Valves::getInstancePtr()));
-		}
-	}
-
+	static shared_ptr<ZoneHandler> instance = Builder().build();
 	return instance;
+}
+
+size_t ZoneHandler::getZoneCount() {
+	return VALVE_COUNT - 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const size_t ZoneHandler::invalidZoneId = numeric_limits<size_t>::max();
-
-
-ZoneHandler::ZoneHandler(shared_ptr<Valves> valves) :
-	valves(valves),
+ZoneHandler::ZoneHandler(unique_ptr<ValveFactory>&& valveFactory) :
+	zoneValves(getZoneCount()),
 	activeZoneId(invalidZoneId)
 {
-	if (valves == nullptr) {
-		throw invalid_argument("ZoneHandler::ZoneHandler() valves pointer cannot be NULL");
+	for (size_t i = 0; i < zoneValves.size(); i++) {
+		zoneValves[i] = valveFactory->createValve(i);
 	}
+
+	masterValve = valveFactory->createValve(getZoneCount());
 }
 
 ZoneHandler::~ZoneHandler() {
 	deactivate();
-}
-
-void ZoneHandler::activateOrDeactivateValves(size_t zoneId, bool activate) {
-	const size_t size = 2;
-	const size_t valveIds[size] { zoneValves[zoneId], masterValve };
-	valves->activate(valveIds, size, activate);
 }
 
 size_t ZoneHandler::getActiveId() const {
@@ -62,17 +46,38 @@ void ZoneHandler::activate(size_t zoneId) {
 				", while actual value is " + to_string(zoneId));
 	}
 
-	if (invalidZoneId != activeZoneId) {
-		activateOrDeactivateValves(activeZoneId, false);
-	}
+	deactivate();
 
 	activeZoneId = zoneId;
-	activateOrDeactivateValves(activeZoneId, true);
+	zoneValves[activeZoneId]->activate();
+	masterValve->activate();
 }
 
 void ZoneHandler::deactivate() {
 	if (invalidZoneId != activeZoneId) {
-		activateOrDeactivateValves(activeZoneId, false);
+		zoneValves[activeZoneId]->deactivate();
+		masterValve->deactivate();
 		activeZoneId = invalidZoneId;
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+ZoneHandler::Builder& ZoneHandler::Builder::setValveFactory(unique_ptr<ValveFactory>&& valveFactory) {
+	this->valveFactory = move(valveFactory);
+	return *this;
+}
+
+ZoneHandler::Builder& ZoneHandler::Builder::setFakeValveFactory() {
+	valveFactory = unique_ptr<ValveFactory>(new FakeValveFactory());
+	return *this;
+}
+
+shared_ptr<ZoneHandler> ZoneHandler::Builder::build() {
+	if (nullptr == valveFactory) {
+		valveFactory = unique_ptr<ValveFactory>(new GpioValveFactory());
+	}
+
+	return shared_ptr<ZoneHandler>(new ZoneHandler(
+			move(valveFactory)));
 }

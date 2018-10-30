@@ -1,12 +1,11 @@
 #include "WateringControllerTest.h"
+#include "Hardware/ZoneHandler.h"
 
 using namespace std;
 
 
 void WateringControllerTest::SetUp() {
-	shared_ptr<GpioHandler> gpioHandler;
-	shared_ptr<Valves> valves(new Valves(gpioHandler));
-	shared_ptr<ZoneHandler> zoneHandler(new ZoneHandler(valves));
+	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder().setFakeValveFactory().build();
 	wateringController.reset(new WateringController(zoneHandler));
 }
 

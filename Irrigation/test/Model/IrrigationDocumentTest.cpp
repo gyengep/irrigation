@@ -5,7 +5,6 @@
 #include "DTO/DocumentDTO.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/GpioHandler.h"
-#include "Hardware/Valves.h"
 #include "Hardware/ZoneHandler.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
@@ -13,6 +12,7 @@
 #include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/WateringController.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
@@ -56,7 +56,7 @@ const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 }));
 
 void IrrigationDocumentTest::SetUp() {
-	document = IrrigationDocument::Builder().build();
+	document = IrrigationDocument::Builder().setFakeWateringController().build();
 }
 
 void IrrigationDocumentTest::TearDown() {
@@ -102,6 +102,7 @@ TEST_F(IrrigationDocumentTest, load) {
 	MockFileReader* fileReader = new MockFileReader();
 
 	document = IrrigationDocument::Builder()
+			.setFakeWateringController()
 			.setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>(new MockDtoReaderWriterFactory(dtoReader)))
 			.setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>(new MockFileReaderWriterFactory(fileReader)))
 			.build();

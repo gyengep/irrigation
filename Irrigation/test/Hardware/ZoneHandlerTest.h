@@ -1,17 +1,23 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <memory>
-#include "MockGpioHandler.h"
+#include "Hardware/Valve.h"
 #include "Hardware/ZoneHandler.h"
 
 
+class MockValve : public Valve {
+public:
+	MOCK_METHOD0(activate, void());
+	MOCK_METHOD0(deactivate, void());
+};
 
-class ZoneHandlerTest : public ::testing::Test {
-protected:
 
-	std::shared_ptr<MockGpioHandler> mockGpioHandler;
-	std::unique_ptr<ZoneHandler> zoneHandler;
+class MockValveFactory : public ValveFactory {
+public:
+	MockValve* mockMasterValve;
+	std::vector<MockValve*> mockZoneValves;
 
-    virtual void SetUp();
-    virtual void TearDown();
+	MockValveFactory();
+
+	virtual std::unique_ptr<Valve> createValve(size_t id);
 };
