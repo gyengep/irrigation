@@ -6,7 +6,7 @@ all:
 	@$(MAKE) -C DocumentView all
 	@$(MAKE) -C DTO all
 	@$(MAKE) -C DtoReaderWriter all
-	@$(MAKE) -C Hardware all
+	@$(MAKE) -C Hardware/Valves all
 	@$(MAKE) -C Logger all
 	@$(MAKE) -C Logic all
 	@$(MAKE) -C Model all
@@ -19,7 +19,7 @@ clean:
 	@$(MAKE) -C DocumentView clean
 	@$(MAKE) -C DTO clean
 	@$(MAKE) -C DtoReaderWriter clean
-	@$(MAKE) -C Hardware clean
+	@$(MAKE) -C Hardware/Valves clean
 	@$(MAKE) -C Logger clean
 	@$(MAKE) -C Logic clean
 	@$(MAKE) -C Model clean

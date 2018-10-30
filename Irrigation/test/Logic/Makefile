@@ -20,7 +20,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -l$(TARGET_NAME) -lHardware -lLogger -lSchedulers -lDTO -lUtils
+LOCAL_LIBS      = -l$(TARGET_NAME) -lValves -lLogger -lSchedulers -lDTO -lUtils
 INCLUDE_PATH    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
 LIBS            = $(LOCAL_LIBS) -pthread -lgmock

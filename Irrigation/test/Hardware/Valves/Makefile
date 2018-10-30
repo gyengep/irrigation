@@ -4,9 +4,9 @@ TARGET_NAME     = $(shell basename $(CURDIR))
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ../..
+PROJECT_ROOT    = ../../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+SOURCE_DIR      = $(PROJECT_ROOT)/test/Hardware/$(TARGET_NAME)
 OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build

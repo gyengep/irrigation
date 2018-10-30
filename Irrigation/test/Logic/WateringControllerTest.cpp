@@ -1,5 +1,5 @@
 #include "WateringControllerTest.h"
-#include "Hardware/ZoneHandler.h"
+#include "Hardware/Valves/ZoneHandler.h"
 
 using namespace std;
 

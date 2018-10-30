@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/ZoneHandler.h"
+#include "Hardware/Valves/ZoneHandler.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
 

@@ -1,7 +1,7 @@
 #include "ZoneHandlerTest.h"
 #include <stdexcept>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/ValveConfig.h"
+#include "Hardware/Valves/ValveConfig.h"
 
 using namespace std;
 using ::testing::Sequence;

@@ -3,7 +3,7 @@
 #include <memory>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/ZoneHandler.h"
+#include "Hardware/Valves/ZoneHandler.h"
 #include "Logger/Logger.h"
 
 using namespace std;
