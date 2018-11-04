@@ -115,7 +115,7 @@ IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(
 	return *this;
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setFakeWateringController() {
+IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringControllerWithFakeValves() {
 	unique_ptr<WateringController> wateringController(new WateringController(
 			ZoneHandler::Builder().setFakeValveFactory().build()
 			));

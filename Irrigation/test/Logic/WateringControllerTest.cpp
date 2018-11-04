@@ -42,6 +42,10 @@ TEST_F(WateringControllerTest, startWithNotEmpty) {
 	EXPECT_TRUE(wateringController->isWateringActive());
 }
 
+TEST_F(WateringControllerTest, DISABLED_startAndStartAgain) {
+	FAIL();
+}
+
 TEST_F(WateringControllerTest, stop) {
 	RunTimeContainer runTimeContainer;
 

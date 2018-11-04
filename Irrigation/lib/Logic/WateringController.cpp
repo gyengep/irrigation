@@ -23,7 +23,7 @@ WateringController::WateringController(shared_ptr<ZoneHandler> zoneHandler) :
 	zoneHandler(zoneHandler)
 {
 	if (zoneHandler == nullptr) {
-		throw invalid_argument("ZoneHandler::ZoneHandler() valves pointer cannot be NULL");
+		throw invalid_argument("WateringController::WateringController() zoneHandler pointer cannot be NULL");
 	}
 }
 
