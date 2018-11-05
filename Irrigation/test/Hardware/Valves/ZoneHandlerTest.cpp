@@ -5,29 +5,8 @@
 
 using namespace std;
 using ::testing::Sequence;
+using ::testing::NiceMock;
 
-
-MockValveFactory::MockValveFactory() {
-	mockZoneValves.resize(ZoneHandler::getZoneCount());
-
-	for (size_t i = 0; i < mockZoneValves.size(); i++) {
-		mockZoneValves[i] = new MockValve();
-	}
-
-	mockMasterValve = new MockValve();
-}
-
-unique_ptr<Valve> MockValveFactory::createValve(size_t id) {
-	if (id < mockZoneValves.size()) {
-		return unique_ptr<MockValve>(mockZoneValves[id]);
-	} else if (id == mockZoneValves.size()) {
-		return unique_ptr<MockValve>(mockMasterValve);
-	} else {
-		throw logic_error("MockValveFactory::createValve() id > mockZoneValves.size()");
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
 
 TEST(ZoneHandlerTest, getZoneCount) {
 	EXPECT_EQ(6, ZoneHandler::getZoneCount());
@@ -35,7 +14,7 @@ TEST(ZoneHandlerTest, getZoneCount) {
 
 TEST(ZoneHandlerTest, activate) {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
-		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory()))
+		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory<NiceMock<MockValve>>()))
 		.build();
 
 	for (size_t i = 0; i < zoneHandler->getZoneCount(); i++) {
@@ -45,7 +24,7 @@ TEST(ZoneHandlerTest, activate) {
 
 TEST(ZoneHandlerTest, activateInvalid) {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
-		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory()))
+		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory<NiceMock<MockValve>>()))
 		.build();
 
 	EXPECT_THROW(zoneHandler->activate(zoneHandler->getZoneCount()), IndexOutOfBoundsException);
@@ -53,7 +32,7 @@ TEST(ZoneHandlerTest, activateInvalid) {
 
 TEST(ZoneHandlerTest, getActiveId) {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
-		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory()))
+		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory<NiceMock<MockValve>>()))
 		.build();
 
 	EXPECT_EQ(ZoneHandler::invalidZoneId, zoneHandler->getActiveId());
@@ -64,7 +43,7 @@ TEST(ZoneHandlerTest, getActiveId) {
 
 TEST(ZoneHandlerTest, activateValve) {
 	Sequence seq;
-	unique_ptr<MockValveFactory> mockValveFactory(new MockValveFactory());
+	unique_ptr<MockValveFactory<MockValve>> mockValveFactory(new MockValveFactory<MockValve>());
 
 	EXPECT_CALL(*mockValveFactory->mockZoneValves[0], activate()).Times(1).InSequence(seq);
 	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
@@ -80,7 +59,7 @@ TEST(ZoneHandlerTest, activateValve) {
 
 TEST(ZoneHandlerTest, deactivateValve) {
 	Sequence seq;
-	unique_ptr<MockValveFactory> mockValveFactory(new MockValveFactory());
+	unique_ptr<MockValveFactory<MockValve>> mockValveFactory(new MockValveFactory<MockValve>());
 
 	EXPECT_CALL(*mockValveFactory->mockZoneValves[1], activate()).Times(1).InSequence(seq);
 	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
@@ -102,7 +81,7 @@ TEST(ZoneHandlerTest, deactivateValve) {
 
 TEST(ZoneHandlerTest, activateValveAgain) {
 	Sequence seq;
-	unique_ptr<MockValveFactory> mockValveFactory(new MockValveFactory());
+	unique_ptr<MockValveFactory<MockValve>> mockValveFactory(new MockValveFactory<MockValve>());
 
 	EXPECT_CALL(*mockValveFactory->mockZoneValves[1], activate()).Times(1).InSequence(seq);
 	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
