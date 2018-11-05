@@ -115,15 +115,6 @@ IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(
 	return *this;
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringControllerWithFakeValves() {
-	unique_ptr<WateringController> wateringController(new WateringController(
-			ZoneHandler::Builder().setFakeValveFactory().build()
-			));
-
-	this->wateringController = move(wateringController);
-	return *this;
-}
-
 IrrigationDocument::Builder& IrrigationDocument::Builder::setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory) {
 	this->dtoReaderWriterFactory = move(dtoReaderWriterFactory);
 	return *this;

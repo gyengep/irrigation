@@ -56,9 +56,7 @@ const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 }));
 
 void IrrigationDocumentTest::SetUp() {
-	document = IrrigationDocument::Builder()
-			.setWateringControllerWithFakeValves()
-			.build();
+	document = IrrigationDocument::Builder().build();
 }
 
 void IrrigationDocumentTest::TearDown() {
@@ -104,7 +102,6 @@ TEST_F(IrrigationDocumentTest, load) {
 	MockFileReader* fileReader = new MockFileReader();
 
 	document = IrrigationDocument::Builder()
-			.setWateringControllerWithFakeValves()
 			.setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>(new MockDtoReaderWriterFactory(dtoReader)))
 			.setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>(new MockFileReaderWriterFactory(fileReader)))
 			.build();

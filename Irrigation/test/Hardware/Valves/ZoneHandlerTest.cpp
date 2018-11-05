@@ -35,7 +35,7 @@ TEST(ZoneHandlerTest, getZoneCount) {
 
 TEST(ZoneHandlerTest, activate) {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
-		.setFakeValveFactory()
+		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory()))
 		.build();
 
 	for (size_t i = 0; i < zoneHandler->getZoneCount(); i++) {
@@ -45,7 +45,7 @@ TEST(ZoneHandlerTest, activate) {
 
 TEST(ZoneHandlerTest, activateInvalid) {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
-		.setFakeValveFactory()
+		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory()))
 		.build();
 
 	EXPECT_THROW(zoneHandler->activate(zoneHandler->getZoneCount()), IndexOutOfBoundsException);
@@ -53,7 +53,7 @@ TEST(ZoneHandlerTest, activateInvalid) {
 
 TEST(ZoneHandlerTest, getActiveId) {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
-		.setFakeValveFactory()
+		.setValveFactory(unique_ptr<ValveFactory>(new MockValveFactory()))
 		.build();
 
 	EXPECT_EQ(ZoneHandler::invalidZoneId, zoneHandler->getActiveId());

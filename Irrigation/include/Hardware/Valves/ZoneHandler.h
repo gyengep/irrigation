@@ -38,7 +38,5 @@ class ZoneHandler::Builder {
 public:
 	Builder& setValveFactory(std::unique_ptr<ValveFactory>&& valveFactory);
 
-	Builder& setFakeValveFactory();
-
 	std::shared_ptr<ZoneHandler> build();
 };

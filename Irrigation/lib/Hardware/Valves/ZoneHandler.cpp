@@ -1,6 +1,5 @@
 #include "ZoneHandler.h"
 #include "GpioValve.h"
-#include "FakeValve.h"
 #include "ValveConfig.h"
 #include "Valve.h"
 #include <vector>
@@ -65,11 +64,6 @@ void ZoneHandler::deactivate() {
 
 ZoneHandler::Builder& ZoneHandler::Builder::setValveFactory(unique_ptr<ValveFactory>&& valveFactory) {
 	this->valveFactory = move(valveFactory);
-	return *this;
-}
-
-ZoneHandler::Builder& ZoneHandler::Builder::setFakeValveFactory() {
-	valveFactory = unique_ptr<ValveFactory>(new FakeValveFactory());
 	return *this;
 }
 

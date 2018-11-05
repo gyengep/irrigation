@@ -9,11 +9,6 @@ const time_t TimerViewTest::rawTime = chrono::system_clock::to_time_t(chrono::sy
 const RunTimeContainer TimerViewTest::runTimes1 { 110, 120, 130, 140, 150, 160 };
 const RunTimeContainer TimerViewTest::runTimes2 { 210, 220, 230, 240, 250, 260 };
 
-MockWateringController::MockWateringController() :
-		WateringController(ZoneHandler::Builder().setFakeValveFactory().build())
-{
-}
-
 void TimerViewTest::SetUp() {
 	wateringController.reset(new MockWateringController());
 	ON_CALL(*wateringController, isWateringActive()).WillByDefault(Return(false));

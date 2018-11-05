@@ -5,7 +5,9 @@ using namespace std;
 
 
 void WateringControllerTest::SetUp() {
-	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder().setFakeValveFactory().build();
+	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
+		.setValveFactory(unique_ptr<ValveFactory>(new FakeValveFactory()))
+		.build();
 	wateringController.reset(new WateringController(zoneHandler));
 }
 
