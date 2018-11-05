@@ -4,7 +4,7 @@
 #include <thread>
 #include "DtoReaderWriter/XMLParseException.h"
 #include "Exceptions/Exceptions.h"
-#include "Hardware/GpioHandler.h"
+#include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
 #include "Views/TimerView/TimerView.h"

@@ -3,7 +3,7 @@
 #include <memory>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/ZoneConfig.h"
+#include "Hardware/Valves/ZoneHandler.h"
 #include "Logger/Logger.h"
 
 using namespace std;
@@ -43,9 +43,8 @@ RunTimeContainer::RunTimeContainer(initializer_list<unsigned> initializer) :
 RunTimeContainer::RunTimeContainer(RunTimeFactory* runTimeFactory) {
 	unique_ptr<RunTimeFactory> runTimeFactoryPtr(runTimeFactory);
 
-	container.reserve(ZONE_COUNT);
-	for (size_t i = 0; i < ZONE_COUNT; i++) {
-
+	container.reserve(ZoneHandler::getZoneCount());
+	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
 		unique_ptr<RunTime> runTime(runTimeFactoryPtr->createRunTime());
 		container.push_back(make_pair(i, move(runTime)));
 	}

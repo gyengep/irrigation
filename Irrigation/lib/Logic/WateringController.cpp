@@ -1,6 +1,7 @@
 #include "WateringController.h"
 #include <stdexcept>
 #include <thread>
+#include "Hardware/Valves/ZoneHandler.h"
 #include "Logger/Logger.h"
 #include "Utils/ToString.h"
 
@@ -8,7 +9,8 @@ using namespace std;
 
 
 WateringController::WateringProperties::WateringProperties() :
-	zoneStartTime(0)
+	zoneStartTime(0),
+	runTimes(ZoneHandler::getZoneCount())
 {
 }
 
@@ -21,7 +23,7 @@ WateringController::WateringController(shared_ptr<ZoneHandler> zoneHandler) :
 	zoneHandler(zoneHandler)
 {
 	if (zoneHandler == nullptr) {
-		throw invalid_argument("ZoneHandler::ZoneHandler() valves pointer cannot be NULL");
+		throw invalid_argument("WateringController::WateringController() zoneHandler pointer cannot be NULL");
 	}
 }
 

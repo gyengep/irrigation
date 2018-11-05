@@ -4,15 +4,15 @@
 #include "IrrigationDocumentTest.h"
 #include "DTO/DocumentDTO.h"
 #include "Exceptions/Exceptions.h"
-#include "Hardware/GpioHandler.h"
-#include "Hardware/Valves.h"
-#include "Hardware/ZoneHandler.h"
+#include "Hardware/Valves/GpioHandler.h"
+#include "Hardware/Valves/ZoneHandler.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/StartTime.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/WateringController.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;

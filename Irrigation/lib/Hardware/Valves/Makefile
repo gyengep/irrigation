@@ -4,10 +4,10 @@ TARGET_NAME     = $(shell basename $(CURDIR))
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ../..
+PROJECT_ROOT    = ../../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/lib/$(TARGET_NAME)
-OBJECT_DIR      = $(PROJECT_ROOT)/build/lib/$(TARGET_NAME)
+SOURCE_DIR      = $(PROJECT_ROOT)/lib/Hardware/$(TARGET_NAME)
+OBJECT_DIR      = $(PROJECT_ROOT)/build/lib/Hardware/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build
 
@@ -19,7 +19,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
+INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Hardware/$(TARGET_NAME)
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = $(INCLUDE_PATH) 

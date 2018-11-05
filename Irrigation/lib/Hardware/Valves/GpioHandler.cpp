@@ -1,35 +1,28 @@
 #include "GpioHandler.h"
 #include "ValveConfig.h"
 
-#ifdef __arm__
-#include <wiringPi.h>
-#endif
-
-
-using namespace std;
-
-
-mutex GpioHandler::createMutex;
-shared_ptr<GpioHandler> GpioHandler::instance;
-
-const shared_ptr<GpioHandler> GpioHandler::getInstancePtr() {
-	if (nullptr == instance) {
-		lock_guard<mutex> lock(createMutex);
-
-		if (nullptr == instance) {
-			instance.reset(new GpioHandler());
-		}
-	}
-
-	return instance;
-}
-
 #if VALVE_COUNT != 7
 #error Invalid valve count
 #endif
 
-void GpioHandler::init() {
+using namespace std;
+
+
+GpioHandler& GpioHandler::getInstance() {
+	static GpioHandler instance;
+	return instance;
+}
+
+GpioHandler::GpioHandler() {
+}
+
+GpioHandler::~GpioHandler() {
+}
+
 #ifdef __arm__
+#include <wiringPi.h>
+
+void GpioHandler::init() {
 	if (wiringPiSetup() == -1) {
 		throw runtime_error("GPIO initialization FAILED");
 	}
@@ -41,11 +34,20 @@ void GpioHandler::init() {
 	pinMode(VALVE4_PIN, OUTPUT);
 	pinMode(VALVE5_PIN, OUTPUT);
 	pinMode(VALVE6_PIN, OUTPUT);
-#endif
 }
 
 void GpioHandler::setPin(int pin, int mode) {
-#ifdef __arm__
 	digitalWrite(pin, mode);
-#endif
 }
+
+#else
+
+void GpioHandler::init() {
+}
+
+void GpioHandler::setPin(int pin, int mode) {
+}
+
+#endif
+
+

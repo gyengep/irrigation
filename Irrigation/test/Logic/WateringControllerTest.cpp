@@ -1,12 +1,13 @@
 #include "WateringControllerTest.h"
+#include "Hardware/Valves/ZoneHandler.h"
 
 using namespace std;
 
 
 void WateringControllerTest::SetUp() {
-	shared_ptr<GpioHandler> gpioHandler;
-	shared_ptr<Valves> valves(new Valves(gpioHandler));
-	shared_ptr<ZoneHandler> zoneHandler(new ZoneHandler(valves));
+	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
+		.setValveFactory(unique_ptr<ValveFactory>(new FakeValveFactory()))
+		.build();
 	wateringController.reset(new WateringController(zoneHandler));
 }
 
@@ -41,6 +42,10 @@ TEST_F(WateringControllerTest, startWithNotEmpty) {
 	wateringController->start(10, runTimeContainer);
 
 	EXPECT_TRUE(wateringController->isWateringActive());
+}
+
+TEST_F(WateringControllerTest, DISABLED_startAndStartAgain) {
+	FAIL();
 }
 
 TEST_F(WateringControllerTest, stop) {

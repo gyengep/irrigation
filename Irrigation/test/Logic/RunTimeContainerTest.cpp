@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
-#include "Hardware/ZoneConfig.h"
+#include "Hardware/Valves/ZoneHandler.h"
 #include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
 
@@ -79,7 +79,7 @@ TEST(RunTimeContainerTest, equals) {
 
 TEST(RunTimeContainerTest, size) {
 	RunTimeContainer runTimes;
-	EXPECT_EQ(ZONE_COUNT, runTimes.size());
+	EXPECT_EQ(ZoneHandler::getZoneCount(), runTimes.size());
 }
 
 TEST(RunTimeContainerTest, id) {
@@ -111,12 +111,12 @@ TEST(RunTimeContainerTest, atConst) {
 
 TEST(RunTimeContainerTest, atInvalid) {
 	RunTimeContainer runTimes;
-	EXPECT_THROW(runTimes.at(ZONE_COUNT), NoSuchElementException);
+	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
 
 TEST(RunTimeContainerTest, atConstInvalid) {
 	const RunTimeContainer constRunTimes;
-	EXPECT_THROW(constRunTimes.at(ZONE_COUNT), NoSuchElementException);
+	EXPECT_THROW(constRunTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
 
 
