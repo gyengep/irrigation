@@ -7,10 +7,6 @@ class IrrigationDocument;
 
 
 class IrrigationApplication : public Application {
-
-	static std::unique_ptr<IrrigationApplication> instance;
-	static std::mutex createMutex;
-
 	std::unique_ptr<IrrigationDocument> document;
 
 	//void saveDocument(const std::string& fileName) const;

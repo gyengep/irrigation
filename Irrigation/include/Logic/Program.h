@@ -10,13 +10,8 @@ class RunTimeContainer;
 class StartTimeContainer;
 
 
-
 class Program {
-	// disable copy constructor and copy operator
-	Program(const Program&);
-	void operator= (const Program&);
-
-	std::unique_ptr<const SchedulerFactory> schedulerFactory;
+	SchedulerFactory schedulerFactory;
 
 	std::string name;
 	SchedulerType schedulerType;
@@ -25,31 +20,34 @@ class Program {
 	std::unique_ptr<StartTimeContainer> startTimes;
 
 public:
-	Program(const std::string& name = std::string());
+	Program();
+	Program(Program&&) = delete;
+	Program(const Program&) = delete;
 	virtual ~Program();
 
-	// for testing
-	Program(const SchedulerFactory* schedulerFactory);
+	virtual bool isScheduled(const std::time_t& rawTime) const;
+	virtual const Scheduler& getCurrentScheduler() const;
 
-	std::string getName() const;
-	virtual void setName(const std::string& name);
+	void setName(const std::string& name);
+	const std::string& getName() const;
 
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
-	virtual const Scheduler& getCurrentScheduler() const;
 
 	const SpecifiedScheduler& getSpecifiedScheduler() const;
 	SpecifiedScheduler& getSpecifiedScheduler();
 
-	virtual bool isScheduled(const std::time_t& rawTime) const;
-
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
 	RunTimeContainer& getRunTimes() { return *runTimes; }
+
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
 	ProgramDTO getProgramDTO() const;
 	void updateFromDTO(const ProgramDTO& programDTO);
+
+	void operator= (Program&&) = delete;
+	void operator= (const Program&) = delete;
 
 	friend std::string to_string(const Program& program);
 };

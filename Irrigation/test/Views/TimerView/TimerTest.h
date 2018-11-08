@@ -7,7 +7,6 @@
 
 
 class MockTimerCallback : public TimerCallback {
-
 public:
 	std::chrono::steady_clock::time_point lastCalled;
 	time_t lastRawTime;
@@ -21,6 +20,7 @@ public:
 	MOCK_METHOD0(onTimer, void());
 };
 
+///////////////////////////////////////////////////////////////////////////////
 
 class TimerTest : public ::testing::Test {
 protected:

@@ -17,25 +17,25 @@ public:
 
 private:
 
-	// Disable copy constructor and operator
-	ProgramContainer(const ProgramContainer&);
-	ProgramContainer& operator= (const ProgramContainer&);
+	container_type container;
 
 	container_type::const_iterator find(const key_type& key) const;
 
-	container_type container;
-
 public:
-	ProgramContainer();
-	virtual ~ProgramContainer();
+	ProgramContainer() = default;
+	ProgramContainer(ProgramContainer&&) = delete;
+	ProgramContainer(const ProgramContainer&) = delete;
+	virtual ~ProgramContainer() = default;
 
-	virtual value_type& insert(const key_type& key, mapped_type::element_type* value);
+	virtual value_type& insert(const key_type& key, mapped_type&& value);
 	virtual void erase(const key_type& key);
 
 	const_iterator begin() const 		{ return container.begin(); }
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
 
-	const mapped_type::element_type* at(const key_type& key) const;
-	mapped_type::element_type* at(const key_type& key);
+	ProgramContainer& operator= (ProgramContainer&&) = delete;
+	ProgramContainer& operator= (const ProgramContainer&) = delete;
+
+	const mapped_type& at(const key_type& key) const;
 };

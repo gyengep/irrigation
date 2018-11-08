@@ -3,25 +3,23 @@
 #include "FileReaderWriter.h"
 
 
-
 class FileReaderImpl : public FileReader {
 public:
-	virtual ~FileReaderImpl() = default;
 	virtual std::string read(const std::string& fileName) const override;
 };
 
-
 class FileWriterImpl : public FileWriter {
 public:
-	virtual ~FileWriterImpl() = default;
 	virtual void write(const std::string& fileName, const std::string& text) const override;
 };
 
-
 class FileReaderWriterFactoryImpl : public FileReaderWriterFactory {
 public:
-	virtual ~FileReaderWriterFactoryImpl() = default;
+	virtual std::unique_ptr<FileReader> createFileReader() const override {
+		return std::unique_ptr<FileReader>(new FileReaderImpl());
+	}
 
-	virtual FileReader* createFileReader() const override { return new FileReaderImpl(); }
-	virtual FileWriter* createFileWriter() const override { return new FileWriterImpl(); }
+	virtual std::unique_ptr<FileWriter> createFileWriter() const override {
+		return std::unique_ptr<FileWriter>(new FileWriterImpl());
+	}
 };

@@ -10,9 +10,13 @@ class SpecifiedSchedulerDTO {
 	std::unique_ptr<const std::list<bool>> values;
 
 public:
-	SpecifiedSchedulerDTO();
+	SpecifiedSchedulerDTO() = default;
+	SpecifiedSchedulerDTO(SpecifiedSchedulerDTO&& other) = default;
 	SpecifiedSchedulerDTO(const SpecifiedSchedulerDTO& other);
-	SpecifiedSchedulerDTO(unsigned adjustment, const std::list<bool>* values);
+	SpecifiedSchedulerDTO(unsigned adjustment, std::list<bool>&& values);
+
+	SpecifiedSchedulerDTO& operator= (SpecifiedSchedulerDTO&& other) = delete;
+	SpecifiedSchedulerDTO& operator= (const SpecifiedSchedulerDTO& other) = delete;
 
 	bool operator== (const SpecifiedSchedulerDTO& other) const;
 
@@ -23,7 +27,7 @@ public:
 	const std::list<bool>& getValues() const;
 
 	SpecifiedSchedulerDTO& setAdjustment(unsigned adjustment);
-	SpecifiedSchedulerDTO& setValues(const std::list<bool>* values);
+	SpecifiedSchedulerDTO& setValues(std::list<bool>&& values);
 
 	friend std::ostream& operator<<(std::ostream& os, const SpecifiedSchedulerDTO& scheduler);
 };

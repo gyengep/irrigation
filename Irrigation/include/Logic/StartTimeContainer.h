@@ -17,21 +17,18 @@ public:
 
 private:
 
-	// Disable copy constructor and operator
-	StartTimeContainer(const StartTimeContainer&);
-	StartTimeContainer& operator= (const StartTimeContainer&);
-
-	container_type::const_iterator find(const key_type& key) const;
-
-	static bool compareStartTime(const value_type& first, const value_type& second);
-
 	container_type container;
 
-public:
-	StartTimeContainer();
-	virtual ~StartTimeContainer();
+	container_type::const_iterator find(const key_type& key) const;
+	static bool compareStartTime(const value_type& first, const value_type& second);
 
-	virtual value_type& insert(const key_type& key, mapped_type::element_type* value);
+public:
+	StartTimeContainer() = default;
+	StartTimeContainer(StartTimeContainer&&) = delete;
+	StartTimeContainer(const StartTimeContainer&) = delete;
+	virtual ~StartTimeContainer() = default;
+
+	virtual value_type& insert(const key_type& key, mapped_type&& value);
 	virtual void erase(const key_type& key);
 	virtual void sort();
 
@@ -39,8 +36,10 @@ public:
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
 
-	const mapped_type::element_type* at(const key_type& key) const;
-	mapped_type::element_type* at(const key_type& key);
+	const mapped_type& at(const key_type& key) const;
+
+	StartTimeContainer& operator= (StartTimeContainer&&) = delete;
+	StartTimeContainer& operator= (const StartTimeContainer&) = delete;
 
 	friend std::string to_string(const StartTimeContainer& startTimeContainer);
 };

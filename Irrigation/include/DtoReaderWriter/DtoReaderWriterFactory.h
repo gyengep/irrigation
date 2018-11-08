@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 
 class DocumentDTO;
@@ -33,6 +34,6 @@ public:
 class DtoReaderWriterFactory {
 public:
 	virtual ~DtoReaderWriterFactory() = default;
-	virtual DtoReader* createDtoReader() const = 0;
-	virtual DtoWriter* createDtoWriter() const = 0;
+	virtual std::unique_ptr<DtoReader> createDtoReader() const = 0;
+	virtual std::unique_ptr<DtoWriter> createDtoWriter() const = 0;
 };

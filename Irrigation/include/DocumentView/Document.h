@@ -15,6 +15,5 @@ public:
 	Document();
 	virtual ~Document();
 
-	void addView(View* view);
-	void removeView(View* view);
+	void addView(std::unique_ptr<View>&& view);
 };

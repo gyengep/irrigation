@@ -6,6 +6,11 @@
 
 class XmlReaderWriterFactory : public DtoReaderWriterFactory {
 public:
-	virtual DtoReader* createDtoReader() const override { return new XmlReader(); }
-	virtual DtoWriter* createDtoWriter() const override { return new XmlWriter(); }
+	virtual std::unique_ptr<DtoReader> createDtoReader() const override {
+		return std::unique_ptr<DtoReader>(new XmlReader());
+	}
+
+	virtual std::unique_ptr<DtoWriter> createDtoWriter() const override {
+		return std::unique_ptr<DtoWriter>(new XmlWriter());
+	}
 };

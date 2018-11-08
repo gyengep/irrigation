@@ -23,8 +23,10 @@ class WateringController {
 
 public:
 	WateringController();
+	WateringController(WateringController&&) = delete;
+	WateringController(const WateringController&) = delete;
 	WateringController(std::shared_ptr<ZoneHandler> zoneHandler);
-	virtual ~WateringController();
+	virtual ~WateringController() = default;
 
 	virtual void on1SecTimer(const std::time_t& rawTime);
 	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent = 100);
@@ -32,4 +34,7 @@ public:
 
 	virtual bool isWateringActive() const;
 	size_t getActiveZoneId() const;
+
+	WateringController& operator= (WateringController&&) = delete;
+	WateringController& operator= (const WateringController&) = delete;
 };

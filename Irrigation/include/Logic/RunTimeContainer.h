@@ -9,8 +9,8 @@ class RunTime;
 
 class RunTimeFactory {
 public:
-	virtual ~RunTimeFactory() {}
-	virtual RunTime* createRunTime() const;
+	virtual ~RunTimeFactory() = default;
+	virtual std::unique_ptr<RunTime> createRunTime() const;
 };
 
 
@@ -28,9 +28,10 @@ private:
 
 public:
 	RunTimeContainer();
+	RunTimeContainer(RunTimeContainer&&) = delete;
 	RunTimeContainer(const RunTimeContainer& other);
-	RunTimeContainer(std::initializer_list<unsigned> initializer);
-	virtual ~RunTimeContainer();
+	RunTimeContainer(std::initializer_list<RunTime> initializer);
+	virtual ~RunTimeContainer() = default;
 
 	// for testing
 	RunTimeContainer(RunTimeFactory* runTimeFactory);
@@ -39,9 +40,9 @@ public:
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
 
-	const mapped_type::element_type* at(const key_type& key) const;
-	mapped_type::element_type* at(const key_type& key);
+	const mapped_type& at(const key_type& key) const;
 
+	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
 	RunTimeContainer& operator= (const RunTimeContainer& other);
 	bool operator== (const RunTimeContainer& other) const;
 

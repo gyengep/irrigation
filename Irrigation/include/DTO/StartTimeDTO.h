@@ -10,9 +10,13 @@ class StartTimeDTO {
 	std::unique_ptr<const unsigned> minute;
 
 public:
-	StartTimeDTO();
+	StartTimeDTO() = default;
+	StartTimeDTO(StartTimeDTO&& other) = default;
 	StartTimeDTO(const StartTimeDTO& other);
 	StartTimeDTO(unsigned hour, unsigned minute);
+
+	StartTimeDTO& operator= (StartTimeDTO&& other) = delete;
+	StartTimeDTO& operator= (const StartTimeDTO& other) = delete;
 
 	bool operator== (const StartTimeDTO& other) const;
 

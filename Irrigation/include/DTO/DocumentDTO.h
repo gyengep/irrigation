@@ -5,20 +5,23 @@
 #include "ProgramDTO.h"
 
 
-
 class DocumentDTO {
 	std::unique_ptr<const std::list<ProgramDTO>> programs;
 
 public:
-	DocumentDTO();
+	DocumentDTO() = default;
+	DocumentDTO(DocumentDTO&& other) = default;
 	DocumentDTO(const DocumentDTO& other);
-	DocumentDTO(std::list<ProgramDTO>* programs);
+	DocumentDTO(std::list<ProgramDTO>&& programs);
+
+	DocumentDTO& operator= (DocumentDTO&& other) = delete;
+	DocumentDTO& operator= (const DocumentDTO& other) = delete;
 
 	bool operator== (const DocumentDTO& other) const;
 
 	bool hasPrograms() const;
 	const std::list<ProgramDTO>& getPrograms() const;
-	DocumentDTO& setPrograms(const std::list<ProgramDTO>* programs);
+	DocumentDTO& setPrograms(std::list<ProgramDTO>&& programs);
 
 	friend std::ostream& operator<<(std::ostream& os, const DocumentDTO& document);
 };
