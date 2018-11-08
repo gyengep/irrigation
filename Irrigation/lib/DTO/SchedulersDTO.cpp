@@ -6,22 +6,19 @@
 using namespace std;
 
 
-SpecifiedSchedulerDTO::SpecifiedSchedulerDTO() {
-}
-
 SpecifiedSchedulerDTO::SpecifiedSchedulerDTO(const SpecifiedSchedulerDTO& other) {
 	if (other.hasAdjustment()) {
 		setAdjustment(other.getAdjustment());
 	}
 
 	if (other.hasValues()) {
-		setValues(new list<bool>(other.getValues()));
+		setValues(list<bool>(other.getValues()));
 	}
 }
 
-SpecifiedSchedulerDTO::SpecifiedSchedulerDTO(unsigned adjustment, const list<bool>* values) {
+SpecifiedSchedulerDTO::SpecifiedSchedulerDTO(unsigned adjustment, list<bool>&& values) {
 	setAdjustment(adjustment);
-	setValues(values);
+	setValues(move(values));
 }
 
 bool SpecifiedSchedulerDTO::operator== (const SpecifiedSchedulerDTO& other) const {
@@ -58,8 +55,8 @@ SpecifiedSchedulerDTO& SpecifiedSchedulerDTO::setAdjustment(unsigned adjustment)
 	return *this;
 }
 
-SpecifiedSchedulerDTO& SpecifiedSchedulerDTO::setValues(const list<bool>* values) {
-	this->values.reset(values);
+SpecifiedSchedulerDTO& SpecifiedSchedulerDTO::setValues(list<bool>&& values) {
+	this->values.reset(new list<bool>(move(values)));
 	return *this;
 }
 

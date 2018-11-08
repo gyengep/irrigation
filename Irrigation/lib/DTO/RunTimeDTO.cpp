@@ -6,9 +6,6 @@
 using namespace std;
 
 
-RunTimeDTO::RunTimeDTO() {
-}
-
 RunTimeDTO::RunTimeDTO(const RunTimeDTO& other) {
 	if (other.hasId()) {
 		setId(other.getId());

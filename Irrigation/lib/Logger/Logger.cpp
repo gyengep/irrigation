@@ -34,9 +34,6 @@ using namespace std;
 		log(LEVEL, message, &e);							\
 	}
 
-unique_ptr<Logger> Logger::instance;
-mutex Logger::createMutex;
-
 
 string to_string(LogLevel logLevel) {
 	switch(logLevel) {
@@ -59,15 +56,8 @@ string to_string(LogLevel logLevel) {
 
 
 Logger& Logger::getInstance() {
-	if (nullptr == instance.get()) {
-		lock_guard<mutex> lock(createMutex);
-
-		if (nullptr == instance) {
-			instance.reset(new Logger());
-		}
-	}
-
-	return *instance;
+	static Logger instance;
+	return instance;
 }
 
 Logger::Logger() :

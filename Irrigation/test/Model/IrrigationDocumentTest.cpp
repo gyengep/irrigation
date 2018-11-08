@@ -18,12 +18,12 @@
 using namespace std;
 using namespace testing;
 
+///////////////////////////////////////////////////////////////////////////////
 
-
-const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
+const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	ProgramDTO("Abcdefg", "specified",
-		SpecifiedSchedulerDTO(39, new list<bool>({ false, true, false, false, false, true, false})),
-		new list<RunTimeDTO>({
+		SpecifiedSchedulerDTO(39, list<bool>({ false, true, false, false, false, true, false})),
+		list<RunTimeDTO>({
 			RunTimeDTO(2, 0).setId(0),
 			RunTimeDTO(2, 1).setId(1),
 			RunTimeDTO(2, 2).setId(2),
@@ -31,15 +31,15 @@ const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 			RunTimeDTO(2, 4).setId(4),
 			RunTimeDTO(2, 5).setId(5)
 		}),
-		new list<StartTimeDTO>({
+		list<StartTimeDTO>({
 			StartTimeDTO(3, 20).setId(100),
 			StartTimeDTO(4, 21).setId(101),
 			StartTimeDTO(5, 22).setId(102)
 		})
 	).setId(15),
 	ProgramDTO("Program2", "specified",
-		SpecifiedSchedulerDTO(40, new list<bool>({ true, false, false, false, false, false, false})),
-		new list<RunTimeDTO>({
+		SpecifiedSchedulerDTO(40, list<bool>({ true, false, false, false, false, false, false})),
+		list<RunTimeDTO>({
 			RunTimeDTO(1, 20).setId(0),
 			RunTimeDTO(1, 21).setId(1),
 			RunTimeDTO(1, 22).setId(2),
@@ -47,7 +47,7 @@ const DocumentDTO expectedDocumentDTO(new list<ProgramDTO>({
 			RunTimeDTO(1, 24).setId(4),
 			RunTimeDTO(1, 25).setId(5)
 		}),
-		new list<StartTimeDTO>({
+		list<StartTimeDTO>({
 			StartTimeDTO(7, 20).setId(110),
 			StartTimeDTO(7, 21).setId(111),
 			StartTimeDTO(7, 22).setId(112)
@@ -66,6 +66,8 @@ void IrrigationDocumentTest::waitAndUnlock(IrrigationDocument* document, unsigne
 	this_thread::sleep_for(chrono::milliseconds(waitMs + 10));
 	document->unlock();
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(IrrigationDocumentTest, lockUnlock) {
 	const unsigned waitMs = 100;
@@ -98,16 +100,11 @@ TEST_F(IrrigationDocumentTest, loadInvalidFile) {
 }
 
 TEST_F(IrrigationDocumentTest, load) {
-	MockDtoReader* dtoReader = new MockDtoReader();
-	MockFileReader* fileReader = new MockFileReader();
-
-	document = IrrigationDocument::Builder()
-			.setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>(new MockDtoReaderWriterFactory(dtoReader)))
-			.setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>(new MockFileReaderWriterFactory(fileReader)))
-			.build();
-
 	const string fileName("12345678");
 	const string text("abcdefg");
+
+	unique_ptr<MockDtoReader> dtoReader(new MockDtoReader());
+	unique_ptr<MockFileReader> fileReader(new MockFileReader());
 
 	EXPECT_CALL(*fileReader, read(fileName))
 			.Times(1)
@@ -116,6 +113,11 @@ TEST_F(IrrigationDocumentTest, load) {
 	EXPECT_CALL(*dtoReader, loadDocument(text))
 			.Times(1)
 			.WillOnce(Return(expectedDocumentDTO));
+
+	document = IrrigationDocument::Builder()
+			.setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>(new MockDtoReaderWriterFactory(move(dtoReader))))
+			.setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>(new MockFileReaderWriterFactory(move(fileReader))))
+			.build();
 
 	EXPECT_NO_THROW(document->load(fileName));
 	EXPECT_THAT(document->getDocumentDTO(), Eq(expectedDocumentDTO));

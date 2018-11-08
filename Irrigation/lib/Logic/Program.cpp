@@ -3,29 +3,17 @@
 #include "RunTimeContainer.h"
 #include "StartTime.h"
 #include "StartTimeContainer.h"
+#include <sstream>
 #include "Schedulers/SpecifiedScheduler.h"
 #include "Logger/Logger.h"
-#include <sstream>
 
 using namespace std;
 
 
-
-Program::Program(const string& name) :
-	schedulerFactory(new SchedulerFactory()),
-	name(name),
-	schedulerType(SchedulerType::SPECIFIED_DAYS),
-	specifiedScheduler(schedulerFactory->createSpecifiedScheduler()),
-	runTimes(new RunTimeContainer()),
-	startTimes(new StartTimeContainer())
-{
-}
-
-Program::Program(const SchedulerFactory* schedulerFactory) :
-	schedulerFactory(schedulerFactory),
+Program::Program() :
 	name(),
 	schedulerType(SchedulerType::SPECIFIED_DAYS),
-	specifiedScheduler(schedulerFactory->createSpecifiedScheduler()),
+	specifiedScheduler(schedulerFactory.createSpecifiedScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
@@ -34,7 +22,7 @@ Program::Program(const SchedulerFactory* schedulerFactory) :
 Program::~Program() {
 }
 
-string Program::getName() const {
+const string& Program::getName() const {
 	return name;
 }
 
@@ -82,21 +70,21 @@ SpecifiedScheduler& Program::getSpecifiedScheduler() {
 }
 
 ProgramDTO Program::getProgramDTO() const {
-	unique_ptr<list<RunTimeDTO>> runTimeDTOs(new list<RunTimeDTO>());
-	unique_ptr<list<StartTimeDTO>> startTimeDTOs(new list<StartTimeDTO>());
+	list<RunTimeDTO> runTimeDTOs;
+	list<StartTimeDTO> startTimeDTOs;
 
 	for (auto it = runTimes->begin(); it != runTimes->end(); ++it) {
-		runTimeDTOs->push_back(it->second->getRunTimeDTO().setId(it->first));
+		runTimeDTOs.push_back(it->second->getRunTimeDTO().setId(it->first));
 	}
 
 	for (auto it = startTimes->begin(); it != startTimes->end(); ++it) {
-		startTimeDTOs->push_back(it->second->getStartTimeDTO().setId(it->first));
+		startTimeDTOs.push_back(it->second->getStartTimeDTO().setId(it->first));
 	}
 
 	return ProgramDTO(name.c_str(), "specified",
 			move(getSpecifiedScheduler().getSpecifiedSchedulerDTO()),
-			runTimeDTOs.release(),
-			startTimeDTOs.release());
+			move(runTimeDTOs),
+			move(startTimeDTOs));
 }
 
 void Program::updateFromDTO(const ProgramDTO& programDTO) {
@@ -113,7 +101,7 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasSpecifiedScheduler()) {
-		specifiedScheduler.reset(schedulerFactory->createSpecifiedScheduler());
+		specifiedScheduler = schedulerFactory.createSpecifiedScheduler();
 		specifiedScheduler->updateFromDTO(programDTO.getSpecifiedScheduler());
 	}
 
@@ -142,7 +130,7 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 			if (startTimeDTO.hasId()) {
 				id = IdType(startTimeDTO.getId());
 			}
-			startTimes->insert(id, startTime.release());
+			startTimes->insert(id, move(startTime));
 
 		}
 	}

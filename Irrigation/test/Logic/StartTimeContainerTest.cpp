@@ -5,22 +5,25 @@
 
 using namespace std;
 
+typedef vector<pair<const IdType, StartTime*>> IdTypeStartTimeVector;
+
+///////////////////////////////////////////////////////////////////////////////
 
 class MockStartTime : public StartTime {
 public:
 	MockStartTime() {
-		EXPECT_CALL(*this, destructorIsCalled()).Times(1);
+		EXPECT_CALL(*this, destructed()).Times(1);
 	}
 
-	MOCK_METHOD0(destructorIsCalled, bool());
-	virtual ~MockStartTime() { destructorIsCalled(); }
+	MOCK_METHOD0(destructed, void());
+	virtual ~MockStartTime() { destructed(); }
 };
 
-typedef vector<pair<const IdType, StartTime*>> IdTypeStartTimeVector;
+///////////////////////////////////////////////////////////////////////////////
 
 static void insertToStartTimes(StartTimeContainer& startTimes, const IdTypeStartTimeVector& values) {
 	for (unsigned i = 0; i < values.size(); ++i) {
-		startTimes.insert(values[i].first, values[i].second);
+		startTimes.insert(values[i].first, unique_ptr<StartTime>(values[i].second));
 	}
 }
 
@@ -34,12 +37,13 @@ static void expectStartTimes(const StartTimeContainer& startTimes, const IdTypeS
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeContainerTest, size) {
 	StartTimeContainer startTimes;
 	EXPECT_EQ(0, startTimes.size());
 
-	startTimes.insert(0, new StartTime());
+	startTimes.insert(0, unique_ptr<StartTime>(new StartTime()));
 	EXPECT_EQ(1, startTimes.size());
 }
 
@@ -53,7 +57,8 @@ TEST(StartTimeContainerTest, insert) {
 	StartTimeContainer startTimes;
 
 	for (auto& requiredPair : required) {
-		StartTimeContainer::value_type& insertedPair = startTimes.insert(requiredPair.first, requiredPair.second);
+		StartTimeContainer::value_type& insertedPair =
+				startTimes.insert(requiredPair.first, unique_ptr<StartTime>(requiredPair.second));
 
 		EXPECT_EQ(requiredPair.first, insertedPair.first);
 		EXPECT_EQ(requiredPair.second, insertedPair.second.get());
@@ -72,7 +77,7 @@ TEST(StartTimeContainerTest, insertExisted) {
 	StartTimeContainer startTimes;
 	insertToStartTimes(startTimes, required);
 
-	EXPECT_THROW(startTimes.insert(20, new MockStartTime()), AlreadyExistException);
+	EXPECT_THROW(startTimes.insert(20, unique_ptr<StartTime>(new MockStartTime())), AlreadyExistException);
 }
 
 TEST(StartTimeContainerTest, erase) {
@@ -115,7 +120,7 @@ TEST(StartTimeContainerTest, eraseInvalid) {
 
 TEST(StartTimeContainerTest, eraseDestructed) {
 	StartTimeContainer startTimes;
-	startTimes.insert(0, new MockStartTime());
+	startTimes.insert(0, unique_ptr<StartTime>(new MockStartTime()));
 	startTimes.erase(0);
 }
 
@@ -134,7 +139,7 @@ TEST(StartTimeContainerTest, at) {
 		const IdType& requiredId = required[i].first;
 		const StartTime* requiredPtr = required[i].second;
 
-		EXPECT_EQ(requiredPtr, startTimes.at(requiredId));
+		EXPECT_EQ(requiredPtr, startTimes.at(requiredId).get());
 	}
 }
 
@@ -151,44 +156,9 @@ TEST(StartTimeContainerTest, atInvalid) {
 	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
 }
 
-TEST(StartTimeContainerTest, atConst) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{15, new StartTime()},
-		{20, new StartTime()},
-	};
-
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
-
-	const StartTimeContainer& constStartTimes = startTimes;
-
-	ASSERT_EQ(required.size(), startTimes.size());
-	for (unsigned i = 0; i < required.size(); ++i) {
-		const IdType& requiredId = required[i].first;
-		const StartTime* requiredPtr = required[i].second;
-
-		EXPECT_EQ(requiredPtr, constStartTimes.at(requiredId));
-	}
-}
-
-TEST(StartTimeContainerTest, atConstInvalid) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{15, new StartTime()},
-		{20, new StartTime()},
-	};
-
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
-
-	const StartTimeContainer& constStartTimes = startTimes;
-	EXPECT_THROW(constStartTimes.at(6), NoSuchElementException);
-}
-
 TEST(StartTimeContainerTest, destructed) {
 	StartTimeContainer startTimes;
-	startTimes.insert(0, new MockStartTime());
+	startTimes.insert(0, unique_ptr<StartTime>(new MockStartTime()));
 }
 
 TEST(StartTimeContainerTest, sort) {

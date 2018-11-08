@@ -6,19 +6,14 @@
 using namespace std;
 
 
-DocumentDTO::DocumentDTO() {
-}
-
-DocumentDTO::DocumentDTO(list<ProgramDTO>* programs) {
-	if (programs != nullptr) {
-		setPrograms(programs);
-	}
-}
-
 DocumentDTO::DocumentDTO(const DocumentDTO& other) {
 	if (other.hasPrograms()) {
-		setPrograms(new list<ProgramDTO>(other.getPrograms()));
+		setPrograms(list<ProgramDTO>(other.getPrograms()));
 	}
+}
+
+DocumentDTO::DocumentDTO(list<ProgramDTO>&& programs) {
+	setPrograms(move(programs));
 }
 
 bool DocumentDTO::operator== (const DocumentDTO& other) const {
@@ -37,8 +32,8 @@ const list<ProgramDTO>& DocumentDTO::getPrograms() const {
 	return *programs.get();
 }
 
-DocumentDTO& DocumentDTO::setPrograms(const list<ProgramDTO>* programs) {
-	this->programs.reset(programs);
+DocumentDTO& DocumentDTO::setPrograms(list<ProgramDTO>&& programs) {
+	this->programs.reset(new list<ProgramDTO>(move(programs)));
 	return *this;
 }
 

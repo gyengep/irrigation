@@ -19,14 +19,13 @@ Document::~Document() {
 	views.clear();
 }
 
-void Document::addView(View* view) {
-	unique_ptr<View> viewPtr(view);
+void Document::addView(std::unique_ptr<View>&& view) {
 	lock_guard<mutex> lockView(mtx);
 
 	if (&view->getDocument() != this) {
-		throw logic_error("Document::addView()  view->getDocument() != this");
+		throw logic_error("Document::addView(): view->getDocument() != this");
 	}
 
-	views.push_back(move(viewPtr));
 	view->initialize();
+	views.push_back(move(view));
 }

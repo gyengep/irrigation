@@ -102,7 +102,7 @@ TEST(SpecifiedSchedulerTest, getSpecifiedSchedulerDTO) {
 
 	const SpecifiedSchedulerDTO expectedSchedulerDTO(
 			123,
-			new list<bool>({false, true, true, false, false, true, false })
+			list<bool>({false, true, true, false, false, true, false })
 			);
 
 	EXPECT_EQ(expectedSchedulerDTO, scheduler.getSpecifiedSchedulerDTO());
@@ -111,7 +111,7 @@ TEST(SpecifiedSchedulerTest, getSpecifiedSchedulerDTO) {
 TEST(SpecifiedSchedulerTest, convertSpecifiedSchedulerDTO) {
 	const SpecifiedSchedulerDTO expectedSchedulerDTO(
 		120,
-		new list<bool>({false, true, false, true, true, false, false})
+		list<bool>({false, true, false, true, true, false, false})
 		);
 
 	SpecifiedScheduler scheduler;
@@ -140,7 +140,7 @@ TEST(SpecifiedSchedulerTest, updateLessValueFromDTO) {
 
 	scheduler.updateFromDTO(SpecifiedSchedulerDTO(
 			100,
-			new list<bool>({false, false, false})
+			list<bool>({false, false, false})
 			));
 
 	EXPECT_FALSE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));
@@ -157,7 +157,7 @@ TEST(SpecifiedSchedulerTest, updateMoreValueFromDTO) {
 
 	scheduler.updateFromDTO(SpecifiedSchedulerDTO(
 		100,
-		new list<bool>({true, true, true, true, true, true, true, true, true, true})
+		list<bool>({true, true, true, true, true, true, true, true, true, true})
 		));
 
 	EXPECT_TRUE(scheduler.isDayEnabled(SpecifiedScheduler::SUNDAY));

@@ -27,9 +27,6 @@ WateringController::WateringController(shared_ptr<ZoneHandler> zoneHandler) :
 	}
 }
 
-WateringController::~WateringController() {
-}
-
 void WateringController::on1SecTimer(const time_t& rawTime) {
 	if (wateringProperties.get() != nullptr) {
 		const IdType id = zoneHandler->getActiveId();

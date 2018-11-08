@@ -3,25 +3,27 @@
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
 
-
 using namespace std;
 
+typedef vector<pair<const IdType, Program*>> IdTypeProgramPtrVector;
+
+///////////////////////////////////////////////////////////////////////////////
 
 class MockProgram : public Program {
 public:
 	MockProgram() {
-		EXPECT_CALL(*this, destructorIsCalled()).Times(1);
+		EXPECT_CALL(*this, destructed()).Times(1);
 	}
 
-	MOCK_METHOD0(destructorIsCalled, bool());
-	virtual ~MockProgram() { destructorIsCalled(); }
+	MOCK_METHOD0(destructed, void());
+	virtual ~MockProgram() { destructed(); }
 };
 
-typedef vector<pair<const IdType, Program*>> IdTypeProgramPtrVector;
+///////////////////////////////////////////////////////////////////////////////
 
 static void insertToPrograms(ProgramContainer& programs, const IdTypeProgramPtrVector& values) {
 	for (unsigned i = 0; i < values.size(); ++i) {
-		programs.insert(values[i].first, values[i].second);
+		programs.insert(values[i].first, unique_ptr<Program>(values[i].second));
 	}
 }
 
@@ -35,12 +37,13 @@ static void expectPrograms(const ProgramContainer& programs, const IdTypeProgram
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramContainerTest, size) {
 	ProgramContainer programs;
 	EXPECT_EQ(0, programs.size());
 
-	programs.insert(0, new Program());
+	programs.insert(0, unique_ptr<Program>(new Program()));
 	EXPECT_EQ(1, programs.size());
 }
 
@@ -54,7 +57,8 @@ TEST(ProgramContainerTest, insert) {
 	ProgramContainer programs;
 
 	for (auto& requiredPair : required) {
-		const ProgramContainer::value_type& insertedPair = programs.insert(requiredPair.first, requiredPair.second);
+		const ProgramContainer::value_type& insertedPair =
+				programs.insert(requiredPair.first, unique_ptr<Program>(requiredPair.second));
 
 		EXPECT_EQ(requiredPair.first, insertedPair.first);
 		EXPECT_EQ(requiredPair.second, insertedPair.second.get());
@@ -73,7 +77,7 @@ TEST(ProgramContainerTest, insertExisting) {
 	ProgramContainer programs;
 	insertToPrograms(programs, required);
 
-	EXPECT_THROW(programs.insert(101, new MockProgram()), AlreadyExistException);
+	EXPECT_THROW(programs.insert(101, unique_ptr<Program>(new MockProgram())), AlreadyExistException);
 }
 
 TEST(ProgramContainerTest, erase) {
@@ -116,7 +120,7 @@ TEST(ProgramContainerTest, eraseInvalid) {
 
 TEST(ProgramContainerTest, eraseDestructed) {
 	ProgramContainer programs;
-	programs.insert(0, new MockProgram());
+	programs.insert(0, unique_ptr<Program>(new MockProgram()));
 	programs.erase(0);
 }
 
@@ -135,8 +139,7 @@ TEST(ProgramContainerTest, at) {
 		const IdType& requiredId = required[i].first;
 		const Program* requiredPtr = required[i].second;
 
-		Program* actualProgram = programs.at(requiredId);
-		EXPECT_EQ(requiredPtr, actualProgram);
+		EXPECT_EQ(requiredPtr, programs.at(requiredId).get());
 	}
 }
 
@@ -151,27 +154,6 @@ TEST(ProgramContainerTest, atInvalid) {
 	insertToPrograms(programs, required);
 
 	EXPECT_THROW(programs.at(6), NoSuchElementException);
-}
-
-TEST(ProgramContainerTest, atConst) {
-	const IdTypeProgramPtrVector required {
-		{10, new Program()},
-		{15, new Program()},
-		{20, new Program()},
-	};
-
-	ProgramContainer programs;
-	insertToPrograms(programs, required);
-
-	const ProgramContainer& constPrograms = programs;
-
-	ASSERT_EQ(required.size(), programs.size());
-	for (unsigned i = 0; i < required.size(); ++i) {
-		const IdType& requiredId = required[i].first;
-		const Program* requiredPtr = required[i].second;
-
-		EXPECT_EQ(requiredPtr, constPrograms.at(requiredId));
-	}
 }
 
 TEST(ProgramContainerTest, atConstInvalid) {
@@ -190,5 +172,5 @@ TEST(ProgramContainerTest, atConstInvalid) {
 
 TEST(ProgramContainerTest, destructed) {
 	ProgramContainer programs;
-	programs.insert(0, new MockProgram());
+	programs.insert(0, unique_ptr<Program>(new MockProgram()));
 }

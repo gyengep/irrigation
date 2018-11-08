@@ -6,9 +6,6 @@
 using namespace std;
 
 
-StartTimeDTO::StartTimeDTO() {
-}
-
 StartTimeDTO::StartTimeDTO(const StartTimeDTO& other) {
 	if (other.hasId()) {
 		setId(other.getId());

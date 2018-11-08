@@ -7,12 +7,6 @@
 using namespace std;
 
 
-StartTimeContainer::StartTimeContainer() {
-}
-
-StartTimeContainer::~StartTimeContainer() {
-}
-
 StartTimeContainer::container_type::const_iterator StartTimeContainer::find(const key_type& key) const {
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
@@ -20,32 +14,31 @@ StartTimeContainer::container_type::const_iterator StartTimeContainer::find(cons
 		}
 	}
 
-	throw NoSuchElementException("StartTime with id " + to_string(key) + " not found");
+	throw NoSuchElementException("StartTime[" + to_string(key) + "] not found");
 }
 
-const StartTimeContainer::mapped_type::element_type* StartTimeContainer::at(const key_type& key) const {
-	return find(key)->second.get();
+const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) const {
+	return find(key)->second;
 }
 
-StartTimeContainer::mapped_type::element_type* StartTimeContainer::at(const key_type& key) {
-	return find(key)->second.get();
-}
-
-StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, mapped_type::element_type* value) {
-	unique_ptr<StartTime> startTime(value);
-
+StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, mapped_type&& value) {
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
-			throw AlreadyExistException("StartTime with id " + to_string(key) + " is already exist");
+			throw AlreadyExistException("StartTime[" + to_string(key) + "] is already exist");
 		}
 	}
 
-	container.push_back(make_pair(key, move(startTime)));
+	container.push_back(make_pair(key, move(value)));
+	LOGGER.debug("StartTime[%s] added: %s",
+		to_string(key).c_str(),
+		to_string(*container.back().second.get()).c_str()
+		);
 	return container.back();
 }
 
 void StartTimeContainer::erase(const key_type& key) {
 	container.erase(find(key));
+	LOGGER.debug("StartTime[%s] deleted", to_string(key).c_str());
 }
 
 void StartTimeContainer::sort() {

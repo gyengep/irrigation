@@ -36,11 +36,11 @@ const TestDataType testData_all(
 		ProgramDTO()
 		.setName("abcdefg")
 		.setSchedulerType("specified")
-		.setSpecifiedScheduler(SpecifiedSchedulerDTO(110, new list<bool>({ true, false})))
-		.setRunTimes(new list<RunTimeDTO>({
+		.setSpecifiedScheduler(SpecifiedSchedulerDTO(110, list<bool>({ true, false})))
+		.setRunTimes(list<RunTimeDTO>({
 			RunTimeDTO(19, 23).setId(15),
 			RunTimeDTO(31, 46).setId(25)}))
-		.setStartTimes(new list<StartTimeDTO>({
+		.setStartTimes(list<StartTimeDTO>({
 			StartTimeDTO(19, 26).setId(35),
 			StartTimeDTO(18, 25).setId(45),
 			StartTimeDTO(17, 24).setId(55)}))
@@ -73,7 +73,7 @@ const TestDataType testData_schedulers(
 			"</schedulers>"
 		"</program>",
 		ProgramDTO()
-		.setSpecifiedScheduler(SpecifiedSchedulerDTO(120, new list<bool>({ true, false})))
+		.setSpecifiedScheduler(SpecifiedSchedulerDTO(120, list<bool>({ true, false})))
 		);
 
 const TestDataType testData_runTimes(
@@ -84,7 +84,7 @@ const TestDataType testData_runTimes(
 			"</runtimes>"
 		"</program>",
 		ProgramDTO()
-		.setRunTimes(new list<RunTimeDTO>({
+		.setRunTimes(list<RunTimeDTO>({
 			RunTimeDTO(3, 15).setId(15),
 			RunTimeDTO(7, 35).setId(25)}))
 		);
@@ -98,7 +98,7 @@ const TestDataType testData_startTimes(
 			"</starttimes>"
 		"</program>",
 		ProgramDTO()
-		.setStartTimes(new list<StartTimeDTO>({
+		.setStartTimes(list<StartTimeDTO>({
 			StartTimeDTO(9, 6).setId(35),
 			StartTimeDTO(8, 5).setId(45),
 			StartTimeDTO(7, 4).setId(55)}))
@@ -144,7 +144,7 @@ TEST_F(ProgramReaderTest, programRunTimeWithoutId) {
 				"</runtimes>"
 			"</program>",
 			ProgramDTO()
-			.setRunTimes(new list<RunTimeDTO>({
+			.setRunTimes(list<RunTimeDTO>({
 				RunTimeDTO(3, 15),
 				RunTimeDTO(7, 35)}))
 			);
@@ -162,7 +162,7 @@ TEST_F(ProgramReaderTest, programStartTimeWithoutId) {
 				"</starttimes>"
 			"</program>",
 			ProgramDTO()
-			.setStartTimes(new list<StartTimeDTO>({
+			.setStartTimes(list<StartTimeDTO>({
 				StartTimeDTO(9, 6),
 				StartTimeDTO(8, 5),
 				StartTimeDTO(7, 4)}))
