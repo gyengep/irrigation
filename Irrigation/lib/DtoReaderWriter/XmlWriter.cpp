@@ -36,8 +36,8 @@ void XmlWriter::saveDocument(xml_node* parent, const DocumentDTO& document) {
 	if (document.hasPrograms()) {
 		xml_node programListNode = node.append_child("programs");
 		const list<ProgramDTO>& programs = document.getPrograms();
-		for (auto it = programs.begin(); it != programs.end(); ++it) {
-			saveProgram(&programListNode, *it);
+		for (auto& program : programs) {
+			saveProgram(&programListNode, program);
 		}
 	}
 }
@@ -66,16 +66,16 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 	if (program.hasRunTimes()) {
 		const list<RunTimeDTO>& runTimes = program.getRunTimes();
 		xml_node runTimeListNode = node.append_child("runtimes");
-		for (auto it = runTimes.begin(); it != runTimes.end(); ++it) {
-			saveRunTime(&runTimeListNode, *it);
+		for (auto& runTime : runTimes) {
+			saveRunTime(&runTimeListNode, runTime);
 		}
 	}
 
 	if (program.hasStartTimes()) {
 		const list<StartTimeDTO>& startTimes = program.getStartTimes();
 		xml_node startTimeListNode = node.append_child("starttimes");
-		for (auto it = startTimes.begin(); it != startTimes.end(); ++it) {
-			saveStartTime(&startTimeListNode, *it);
+		for (auto& startTime : startTimes) {
+			saveStartTime(&startTimeListNode, startTime);
 		}
 	}
 }
@@ -123,8 +123,8 @@ void XmlWriter::saveScheduler(xml_node* parent, const SpecifiedSchedulerDTO& sch
 	if (scheduler.hasValues()) {
 		xml_node daysNode = node.append_child("days");
 		const list<bool>& values = scheduler.getValues();
-		for (auto it = values.begin(); it != values.end(); ++it) {
-			daysNode.append_child("day").text().set(*it);
+		for (auto value : values) {
+			daysNode.append_child("day").text().set(value);
 		}
 	}
 }

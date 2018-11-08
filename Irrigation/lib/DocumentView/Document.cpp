@@ -12,8 +12,8 @@ Document::Document() {
 Document::~Document() {
 	lock_guard<mutex> lockView(mtx);
 
-	for (auto it = views.begin(); views.end() != it; ++it) {
-		(*it)->terminate();
+	for (auto& view : views) {
+		view->terminate();
 	}
 
 	views.clear();

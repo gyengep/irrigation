@@ -40,8 +40,8 @@ DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<mutex> lock(mtx);
 
 	list<ProgramDTO> programDTOs;
-	for (auto it = programs->begin(); it != programs->end(); ++it) {
-		programDTOs.push_back(it->second->getProgramDTO().setId(it->first));
+	for (auto& program : *programs) {
+		programDTOs.push_back(program.second->getProgramDTO().setId(program.first));
 	}
 
 	return DocumentDTO(move(programDTOs));

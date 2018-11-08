@@ -51,8 +51,8 @@ bool Program::isScheduled(const time_t& rawTime) const {
 	tm timeinfo = *localtime(&rawTime);
 	StartTime currentTime(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 
-	for (auto it = startTimes->begin(); startTimes->end() != it; ++it) {
-		const StartTime& startTime = *it->second;
+	for (auto& startTimeAndIdPair : *startTimes) {
+		const StartTime& startTime = *startTimeAndIdPair.second;
 		if (startTime == currentTime) {
 			return getCurrentScheduler().isDayScheduled(timeinfo);
 		}
@@ -73,12 +73,12 @@ ProgramDTO Program::getProgramDTO() const {
 	list<RunTimeDTO> runTimeDTOs;
 	list<StartTimeDTO> startTimeDTOs;
 
-	for (auto it = runTimes->begin(); it != runTimes->end(); ++it) {
-		runTimeDTOs.push_back(it->second->getRunTimeDTO().setId(it->first));
+	for (auto& runTimeAndIdPair : *runTimes) {
+		runTimeDTOs.push_back(runTimeAndIdPair.second->getRunTimeDTO().setId(runTimeAndIdPair.first));
 	}
 
-	for (auto it = startTimes->begin(); it != startTimes->end(); ++it) {
-		startTimeDTOs.push_back(it->second->getStartTimeDTO().setId(it->first));
+	for (auto& startTimeAndIdPair : *startTimes) {
+		startTimeDTOs.push_back(startTimeAndIdPair.second->getStartTimeDTO().setId(startTimeAndIdPair.first));
 	}
 
 	return ProgramDTO(name.c_str(), "specified",
