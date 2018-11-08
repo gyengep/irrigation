@@ -9,13 +9,13 @@ class SpecifiedScheduler : public Scheduler {
 public:
 
 	enum {
-		SUNDAY,
 		MONDAY,
 		TUESDAY,
 		WEDNESDAY,
 		THURSDAY,
 		FRIDAY,
-		SATURDAY
+		SATURDAY,
+		SUNDAY
 	};
 
 private:

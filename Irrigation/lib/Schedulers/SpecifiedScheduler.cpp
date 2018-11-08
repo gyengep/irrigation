@@ -51,7 +51,7 @@ bool SpecifiedScheduler::isDayEnabled(size_t day) const {
 }
 
 bool SpecifiedScheduler::isDayScheduled(const tm& timeinfo) const {
-	const size_t weekDay = (size_t)timeinfo.tm_wday;
+	const size_t weekDay = (size_t)(timeinfo.tm_wday + 6) % 7;
 
 	checkIndex(weekDay);
 	return days[weekDay];

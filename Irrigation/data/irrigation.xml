@@ -34,12 +34,12 @@
 				<scheduler type="specified">
 					<adjustment>100</adjustment>
 					<days>
-						<day>false</day>
 						<day>true</day>
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
 						<day>true</day>
+						<day>false</day>
 						<day>false</day>
 					</days>
 				</scheduler>
@@ -58,23 +58,22 @@
 				<scheduler type="specified">
 					<adjustment>100</adjustment>
 					<days>
-						<day>false</day>
 						<day>true</day>
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
 						<day>true</day>
+						<day>false</day>
 						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="4"><second>60</second></runtime>
-				<runtime id="5"><second>90</second></runtime>
+				<runtime id="4"><second>120</second></runtime>
+				<runtime id="5"><second>120</second></runtime>
 			</runtimes>
 			<starttimes>
 				<starttime><hour>6</hour><minute>30</minute></starttime>
-				<starttime><hour>20</hour><minute>30</minute></starttime>
 			</starttimes>
 		</program>
 		<program>
