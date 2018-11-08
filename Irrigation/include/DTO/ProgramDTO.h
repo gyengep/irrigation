@@ -17,12 +17,16 @@ class ProgramDTO {
 	std::unique_ptr<const std::list<StartTimeDTO>> startTimes;
 
 public:
-	ProgramDTO();
+	ProgramDTO() = default;
+	ProgramDTO(ProgramDTO&& other) = default;
 	ProgramDTO(const ProgramDTO& other);
 	ProgramDTO(const std::string& name, const std::string& schedulerType,
-			const SpecifiedSchedulerDTO& specifiedScheduler,
-			const std::list<RunTimeDTO>* runTimes,
-			const std::list<StartTimeDTO>* startTimes);
+			SpecifiedSchedulerDTO&& specifiedScheduler,
+			std::list<RunTimeDTO>&& runTimes,
+			std::list<StartTimeDTO>&& startTimes);
+
+	ProgramDTO& operator= (ProgramDTO&& other) = delete;
+	ProgramDTO& operator= (const ProgramDTO& other) = delete;
 
 	bool operator== (const ProgramDTO& other) const;
 
@@ -41,11 +45,11 @@ public:
 	const std::list<StartTimeDTO>& getStartTimes() const;
 
 	ProgramDTO& setId(unsigned id);
-	ProgramDTO& setName(const char* name);
-	ProgramDTO& setSchedulerType(const char* schedulerType);
-	ProgramDTO& setSpecifiedScheduler(const SpecifiedSchedulerDTO& specifiedScheduler);
-	ProgramDTO& setRunTimes(const std::list<RunTimeDTO>* runTimes);
-	ProgramDTO& setStartTimes(const std::list<StartTimeDTO>* startTimes);
+	ProgramDTO& setName(const std::string& name);
+	ProgramDTO& setSchedulerType(const std::string& schedulerType);
+	ProgramDTO& setSpecifiedScheduler(SpecifiedSchedulerDTO&& specifiedScheduler);
+	ProgramDTO& setRunTimes(std::list<RunTimeDTO>&& runTimes);
+	ProgramDTO& setStartTimes(std::list<StartTimeDTO>&& startTimes);
 
 	friend std::ostream& operator<<(std::ostream& os, const ProgramDTO& program);
 };

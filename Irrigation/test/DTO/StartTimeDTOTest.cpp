@@ -15,7 +15,7 @@ TEST(StartTimeDTOTest, defaultConstructor) {
 	EXPECT_FALSE(startTimeDTO.hasMinute());
 }
 
-TEST(StartTimeDTOTest, constructor) {
+TEST(StartTimeDTOTest, parametrizedConstructor) {
 	const unsigned expectedHour = 5;
 	const unsigned expectedMinute = 30;
 	StartTimeDTO startTimeDTO(expectedHour, expectedMinute);
@@ -31,9 +31,24 @@ TEST(StartTimeDTOTest, constructor) {
 TEST(StartTimeDTOTest, copyConstructor) {
 	const unsigned expectedHour = 15;
 	const unsigned expectedMinute = 55;
-	const StartTimeDTO other(expectedHour, expectedMinute);
+	const StartTimeDTO source(expectedHour, expectedMinute);
 
-	StartTimeDTO startTimeDTO(other);
+	StartTimeDTO startTimeDTO(source);
+
+	EXPECT_FALSE(startTimeDTO.hasId());
+	EXPECT_TRUE(startTimeDTO.hasHour());
+	EXPECT_TRUE(startTimeDTO.hasMinute());
+
+	EXPECT_THAT(startTimeDTO.getHour(), Eq(expectedHour));
+	EXPECT_THAT(startTimeDTO.getMinute(), Eq(expectedMinute));
+}
+
+TEST(StartTimeDTOTest, moveConstructor) {
+	const unsigned expectedHour = 15;
+	const unsigned expectedMinute = 55;
+	StartTimeDTO source(expectedHour, expectedMinute);
+
+	StartTimeDTO startTimeDTO(move(source));
 
 	EXPECT_FALSE(startTimeDTO.hasId());
 	EXPECT_TRUE(startTimeDTO.hasHour());

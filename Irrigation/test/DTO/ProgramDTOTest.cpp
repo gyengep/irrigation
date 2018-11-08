@@ -19,19 +19,19 @@ TEST(ProgramDTOTest, defaultConstructor) {
 	EXPECT_FALSE(programDTO.hasStartTimes());
 }
 
-TEST(ProgramDTOTest, constructor) {
+TEST(ProgramDTOTest, parametrizedConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
-	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(100, new list<bool>({ true, false, true }));
+	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(100, list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10, 0), RunTimeDTO(15, 0), RunTimeDTO(20, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(5, 0), StartTimeDTO(6, 0) });
 
 	ProgramDTO programDTO(
 			expectedName,
 			expectedSchedulerType,
-			expectedSpecifiedScheduler,
-			new list<RunTimeDTO>(expectedRunTimes),
-			new list<StartTimeDTO>(expectedStartTimes));
+			SpecifiedSchedulerDTO(expectedSpecifiedScheduler),
+			list<RunTimeDTO>(expectedRunTimes),
+			list<StartTimeDTO>(expectedStartTimes));
 
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
@@ -50,18 +50,48 @@ TEST(ProgramDTOTest, constructor) {
 TEST(ProgramDTOTest, copyConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
-	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(110, new list<bool>({ true, false, true }));
+	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(110, list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
 
-	const ProgramDTO other(
+	const ProgramDTO source(
 			expectedName,
 			expectedSchedulerType,
-			expectedSpecifiedScheduler,
-			new list<RunTimeDTO>(expectedRunTimes),
-			new list<StartTimeDTO>(expectedStartTimes));
+			SpecifiedSchedulerDTO(expectedSpecifiedScheduler),
+			list<RunTimeDTO>(expectedRunTimes),
+			list<StartTimeDTO>(expectedStartTimes));
 
-	const ProgramDTO programDTO(other);
+	ProgramDTO programDTO(source);
+
+	EXPECT_FALSE(programDTO.hasId());
+	EXPECT_TRUE(programDTO.hasName());
+	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasSpecifiedScheduler());
+	EXPECT_TRUE(programDTO.hasRunTimes());
+	EXPECT_TRUE(programDTO.hasStartTimes());
+
+	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
+	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getSpecifiedScheduler(), Eq(expectedSpecifiedScheduler));
+	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
+	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
+}
+
+TEST(ProgramDTOTest, moveConstructor) {
+	const string expectedName("name");
+	const string expectedSchedulerType("scheduler");
+	const SpecifiedSchedulerDTO expectedSpecifiedScheduler(110, list<bool>({ true, false, true }));
+	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
+	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
+
+	ProgramDTO source(
+			expectedName,
+			expectedSchedulerType,
+			SpecifiedSchedulerDTO(expectedSpecifiedScheduler),
+			list<RunTimeDTO>(expectedRunTimes),
+			list<StartTimeDTO>(expectedStartTimes));
+
+	ProgramDTO programDTO(move(source));
 
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
@@ -101,7 +131,7 @@ TEST(ProgramDTOTest, hasName) {
 	ProgramDTO programDTO;
 
 	EXPECT_FALSE(programDTO.hasName());
-	programDTO.setName(expectedName.c_str());
+	programDTO.setName(expectedName);
 	EXPECT_TRUE(programDTO.hasName());
 }
 
@@ -110,7 +140,7 @@ TEST(ProgramDTOTest, getName) {
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getName(), logic_error);
-	programDTO.setName(expectedName.c_str());
+	programDTO.setName(expectedName);
 	ASSERT_NO_THROW(programDTO.getName());
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 }
@@ -120,7 +150,7 @@ TEST(ProgramDTOTest, hasSchedulerType) {
 	ProgramDTO programDTO;
 
 	EXPECT_FALSE(programDTO.hasSchedulerType());
-	programDTO.setSchedulerType(expectedSchedulerType.c_str());
+	programDTO.setSchedulerType(expectedSchedulerType);
 	EXPECT_TRUE(programDTO.hasSchedulerType());
 }
 
@@ -129,26 +159,26 @@ TEST(ProgramDTOTest, getSchedulerType) {
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getSchedulerType(), logic_error);
-	programDTO.setSchedulerType(expectedSchedulerType.c_str());
+	programDTO.setSchedulerType(expectedSchedulerType);
 	ASSERT_NO_THROW(programDTO.getSchedulerType());
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
 }
 
 TEST(ProgramDTOTest, hasSpecifiedScheduler) {
-	const SpecifiedSchedulerDTO expectedScheduler(90, new list<bool>());
+	const SpecifiedSchedulerDTO expectedScheduler(90, list<bool>());
 	ProgramDTO programDTO;
 
 	EXPECT_FALSE(programDTO.hasSpecifiedScheduler());
-	programDTO.setSpecifiedScheduler(expectedScheduler);
+	programDTO.setSpecifiedScheduler(SpecifiedSchedulerDTO(expectedScheduler));
 	EXPECT_TRUE(programDTO.hasSpecifiedScheduler());
 }
 
 TEST(ProgramDTOTest, getSpecifiedScheduler) {
-	const SpecifiedSchedulerDTO expectedScheduler(80, new list<bool>({ true, false, true, false }));
+	const SpecifiedSchedulerDTO expectedScheduler(80, list<bool>({ true, false, true, false }));
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getSpecifiedScheduler(), logic_error);
-	programDTO.setSpecifiedScheduler(expectedScheduler);
+	programDTO.setSpecifiedScheduler(SpecifiedSchedulerDTO(expectedScheduler));
 	ASSERT_NO_THROW(programDTO.getSpecifiedScheduler());
 	EXPECT_THAT(programDTO.getSpecifiedScheduler(), Eq(expectedScheduler));
 }
@@ -157,7 +187,7 @@ TEST(ProgramDTOTest, hasRunTimes) {
 	ProgramDTO programDTO;
 
 	EXPECT_FALSE(programDTO.hasRunTimes());
-	programDTO.setRunTimes(new list<RunTimeDTO>());
+	programDTO.setRunTimes(list<RunTimeDTO>());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 }
 
@@ -166,7 +196,7 @@ TEST(ProgramDTOTest, getRunTimes) {
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getRunTimes(), logic_error);
-	programDTO.setRunTimes(new list<RunTimeDTO>(expectedRunTimes));
+	programDTO.setRunTimes(list<RunTimeDTO>(expectedRunTimes));
 	ASSERT_NO_THROW(programDTO.getRunTimes());
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 }
@@ -175,7 +205,7 @@ TEST(ProgramDTOTest, hasStartTimes) {
 	ProgramDTO programDTO;
 
 	EXPECT_FALSE(programDTO.hasStartTimes());
-	programDTO.setStartTimes(new list<StartTimeDTO>());
+	programDTO.setStartTimes(list<StartTimeDTO>());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 }
 
@@ -184,7 +214,7 @@ TEST(ProgramDTOTest, getStartTimes) {
 	ProgramDTO programDTO;
 
 	EXPECT_THROW(programDTO.getStartTimes(), logic_error);
-	programDTO.setStartTimes(new list<StartTimeDTO>(expectedStartTimes));
+	programDTO.setStartTimes(list<StartTimeDTO>(expectedStartTimes));
 	ASSERT_NO_THROW(programDTO.getStartTimes());
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
 }
@@ -214,75 +244,75 @@ TEST(ProgramDTOTest, equal) {
 	const string expectedName1("1234");
 	const string expectedName2("QWERTZUIO");
 
-	programDTO1.setName(expectedName1.c_str());
+	programDTO1.setName(expectedName1);
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO2.setName(expectedName2.c_str());
+	programDTO2.setName(expectedName2);
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO1.setName(expectedName2.c_str());
+	programDTO1.setName(expectedName2);
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
 	const string expectedSchedulerType1("987654321");
 	const string expectedSchedulerType2("schedulerType");
 
-	programDTO1.setSchedulerType(expectedSchedulerType1.c_str());
+	programDTO1.setSchedulerType(expectedSchedulerType1);
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO2.setSchedulerType(expectedSchedulerType2.c_str());
+	programDTO2.setSchedulerType(expectedSchedulerType2);
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO1.setSchedulerType(expectedSchedulerType2.c_str());
+	programDTO1.setSchedulerType(expectedSchedulerType2);
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
-	const SpecifiedSchedulerDTO expectedScheduler1(20, new list<bool>({ true, true, false }));
-	const SpecifiedSchedulerDTO expectedScheduler2(25, new list<bool>({ true, false, false }));
+	const SpecifiedSchedulerDTO expectedScheduler1(20, list<bool>({ true, true, false }));
+	const SpecifiedSchedulerDTO expectedScheduler2(25, list<bool>({ true, false, false }));
 
-	programDTO1.setSpecifiedScheduler(expectedScheduler1);
+	programDTO1.setSpecifiedScheduler(SpecifiedSchedulerDTO(expectedScheduler1));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO2.setSpecifiedScheduler(expectedScheduler2);
+	programDTO2.setSpecifiedScheduler(SpecifiedSchedulerDTO(expectedScheduler2));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO1.setSpecifiedScheduler(expectedScheduler2);
+	programDTO1.setSpecifiedScheduler(SpecifiedSchedulerDTO(expectedScheduler2));
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
 	const list<RunTimeDTO> expectedRunTimes1({ RunTimeDTO(10, 11), RunTimeDTO(20, 21) });
 	const list<RunTimeDTO> expectedRunTimes2({ RunTimeDTO(12, 13), RunTimeDTO(22, 23), RunTimeDTO(32, 33) });
 
-	programDTO1.setRunTimes(new list<RunTimeDTO>(expectedRunTimes1));
+	programDTO1.setRunTimes(list<RunTimeDTO>(expectedRunTimes1));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO2.setRunTimes(new list<RunTimeDTO>(expectedRunTimes2));
+	programDTO2.setRunTimes(list<RunTimeDTO>(expectedRunTimes2));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO1.setRunTimes(new list<RunTimeDTO>(expectedRunTimes2));
+	programDTO1.setRunTimes(list<RunTimeDTO>(expectedRunTimes2));
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
 	const list<StartTimeDTO> expectedStartTimes1({ StartTimeDTO(17, 23), StartTimeDTO(4, 26), StartTimeDTO(5, 12) });
 	const list<StartTimeDTO> expectedStartTimes2({ StartTimeDTO(16, 17), StartTimeDTO(18, 19), StartTimeDTO(20, 21) });
 
-	programDTO1.setStartTimes(new list<StartTimeDTO>(expectedStartTimes1));
+	programDTO1.setStartTimes(list<StartTimeDTO>(expectedStartTimes1));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO2.setStartTimes(new list<StartTimeDTO>(expectedStartTimes2));
+	programDTO2.setStartTimes(list<StartTimeDTO>(expectedStartTimes2));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO1.setStartTimes(new list<StartTimeDTO>(expectedStartTimes2));
+	programDTO1.setStartTimes(list<StartTimeDTO>(expectedStartTimes2));
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 }

@@ -21,7 +21,7 @@ const TestDataType testData_all(
 				"<day>true</day>"
 			"</days>"
 		"</scheduler>",
-		SpecifiedSchedulerDTO(2390, new list<bool>({ true, false, false, true, true }))
+		SpecifiedSchedulerDTO(2390, list<bool>({ true, false, false, true, true }))
 		);
 
 const TestDataType testData_adjustment(
@@ -41,7 +41,7 @@ const TestDataType testData_values(
 				"<day>false</day>"
 			"</days>"
 		"</scheduler>",
-		SpecifiedSchedulerDTO().setValues(new list<bool>({ true, true, true, false, false }))
+		SpecifiedSchedulerDTO().setValues(list<bool>({ true, true, true, false, false }))
 		);
 
 const TestDataType testData_empty(

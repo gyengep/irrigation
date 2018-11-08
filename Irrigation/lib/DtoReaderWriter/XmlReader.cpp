@@ -29,24 +29,26 @@ void XmlReader::loadFromString(xml_document* doc, const string& text) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void XmlReader::loadDocument(const xml_node& node, DocumentDTO& document) const {
+DocumentDTO XmlReader::loadDocument(const xml_node& node) const {
+	DocumentDTO document;
 	xml_node programListNode;
 	if ((programListNode = node.child("programs")) != nullptr) {
-		unique_ptr<list<ProgramDTO>> programs(new list<ProgramDTO>());
+		list<ProgramDTO> programs;
 
 		xml_node programNode = programListNode.child("program");
 		while (programNode) {
-			ProgramDTO program;
-			loadProgram(programNode, program);
-			programs->push_back(program);
+			programs.push_back(loadProgram(programNode));
 			programNode = programNode.next_sibling("program");
 		}
 
-		document.setPrograms(programs.release());
+		document.setPrograms(move(programs));
 	}
+
+	return document;
 }
 
-void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
+ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
+	ProgramDTO program;
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		program.setId(idAttribute.as_uint());
@@ -66,42 +68,39 @@ void XmlReader::loadProgram(const xml_node& node, ProgramDTO& program) const {
 		xml_node schedulerNode;
 
 		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "specified")) != nullptr) {
-			SpecifiedSchedulerDTO scheduler;
-			loadScheduler(schedulerNode, scheduler);
-			program.setSpecifiedScheduler(scheduler);
+			program.setSpecifiedScheduler(loadScheduler(schedulerNode));
 		}
 	}
 
 	if ((tmpNode = node.child("runtimes")) != nullptr) {
-		unique_ptr<list<RunTimeDTO>> runTimes(new list<RunTimeDTO>());
+		list<RunTimeDTO> runTimes;
 
 		xml_node runTimeNode = tmpNode.child("runtime");
 		while (runTimeNode) {
-			RunTimeDTO runTimeDTO;
-			loadRunTime(runTimeNode, runTimeDTO);
-			runTimes->push_back(runTimeDTO);
+			runTimes.push_back(loadRunTime(runTimeNode));
 			runTimeNode = runTimeNode.next_sibling("runtime");
 		}
 
-		program.setRunTimes(runTimes.release());
+		program.setRunTimes(move(runTimes));
 	}
 
 	if ((tmpNode = node.child("starttimes")) != nullptr) {
-		unique_ptr<list<StartTimeDTO>> startTimes(new list<StartTimeDTO>());
+		list<StartTimeDTO> startTimes;
 
 		xml_node startTimeNode = tmpNode.child("starttime");
 		while (startTimeNode) {
-			StartTimeDTO startTimeDTO;
-			loadStartTime(startTimeNode, startTimeDTO);
-			startTimes->push_back(startTimeDTO);
+			startTimes.push_back(loadStartTime(startTimeNode));
 			startTimeNode = startTimeNode.next_sibling("starttime");
 		}
 
-		program.setStartTimes(startTimes.release());
+		program.setStartTimes(move(startTimes));
 	}
+
+	return program;
 }
 
-void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& scheduler) const {
+SpecifiedSchedulerDTO XmlReader::loadScheduler(const xml_node& node) const {
+	SpecifiedSchedulerDTO scheduler;
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
 		if (strcmp(typeAttribute.as_string(), "specified") != 0) {
@@ -116,19 +115,22 @@ void XmlReader::loadScheduler(const xml_node& node, SpecifiedSchedulerDTO& sched
 	}
 
 	if ((tmpNode = node.child("days")) != nullptr) {
-		unique_ptr<list<bool>> values(new list<bool>());
+		list<bool> values;
 
 		xml_node dayNode = tmpNode.child("day");
 		while (dayNode) {
-			values->push_back(dayNode.text().as_bool());
+			values.push_back(dayNode.text().as_bool());
 			dayNode = dayNode.next_sibling("day");
 		}
 
-		scheduler.setValues(values.release());
+		scheduler.setValues(move(values));
 	}
+
+	return scheduler;
 }
 
-void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime) const {
+RunTimeDTO XmlReader::loadRunTime(const xml_node& node) const {
+	RunTimeDTO runTime;
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		runTime.setId(idAttribute.as_uint());
@@ -142,9 +144,12 @@ void XmlReader::loadRunTime(const xml_node& node, RunTimeDTO& runTime) const {
 	if ((tmpNode = node.child("second")) != nullptr) {
 		runTime.setSeconds(tmpNode.text().as_uint());
 	}
+
+	return runTime;
 }
 
-void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) const {
+StartTimeDTO XmlReader::loadStartTime(const xml_node& node) const {
+	StartTimeDTO startTime;
 	xml_attribute idAttribute;
 	if ((idAttribute = node.attribute("id")) != nullptr) {
 		startTime.setId(idAttribute.as_uint());
@@ -158,6 +163,8 @@ void XmlReader::loadStartTime(const xml_node& node, StartTimeDTO& startTime) con
 	if ((tmpNode = node.child("minute")) != nullptr) {
 		startTime.setMinute(tmpNode.text().as_uint());
 	}
+
+	return startTime;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,9 +181,7 @@ DocumentDTO XmlReader::loadDocument(const string& text) const {
 		throw RequiredTagMissing("The 'irrigation' element tag not found");
 	}
 
-	DocumentDTO document;
-	loadDocument(node, document);
-	return document;
+	return loadDocument(node);
 }
 
 ProgramDTO XmlReader::loadProgram(const string& text) const {
@@ -191,9 +196,7 @@ ProgramDTO XmlReader::loadProgram(const string& text) const {
 		throw RequiredTagMissing("The 'program' element tag not found");
 	}
 
-	ProgramDTO program;
-	loadProgram(node, program);
-	return program;
+	return loadProgram(node);
 }
 
 RunTimeDTO XmlReader::loadRunTime(const string& text) const {
@@ -208,9 +211,7 @@ RunTimeDTO XmlReader::loadRunTime(const string& text) const {
 		throw RequiredTagMissing("The 'runtime' element tag not found");
 	}
 
-	RunTimeDTO runTime;
-	loadRunTime(node, runTime);
-	return runTime;
+	return loadRunTime(node);
 }
 
 StartTimeDTO XmlReader::loadStartTime(const string& text) const {
@@ -225,9 +226,7 @@ StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 		throw RequiredTagMissing("The 'starttime' element tag not found");
 	}
 
-	StartTimeDTO startTime;
-	loadStartTime(node, startTime);
-	return startTime;
+	return loadStartTime(node);
 }
 
 SpecifiedSchedulerDTO XmlReader::loadSpecifiedScheduler(const string& text) const {
@@ -242,7 +241,5 @@ SpecifiedSchedulerDTO XmlReader::loadSpecifiedScheduler(const string& text) cons
 		throw RequiredTagMissing("The 'scheduler' element tag not found");
 	}
 
-	SpecifiedSchedulerDTO scheduler;
-	loadScheduler(node, scheduler);
-	return scheduler;
+	return loadScheduler(node);
 }

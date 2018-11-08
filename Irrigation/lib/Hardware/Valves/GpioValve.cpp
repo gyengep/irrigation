@@ -1,7 +1,7 @@
 #include "GpioValve.h"
 #include "GpioHandler.h"
 #include "ValveConfig.h"
-#include "Exceptions/IndexOutOfBoundsException.h"
+#include "Exceptions/Exceptions.h"
 
 using namespace std;
 

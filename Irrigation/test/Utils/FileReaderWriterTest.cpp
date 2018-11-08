@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <cstdio>
-#include "Exceptions/FileNotFoundException.h"
+#include "Exceptions/Exceptions.h"
 #include "Utils/FileReaderWriterImpl.h"
 
 using namespace std;

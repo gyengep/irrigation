@@ -1,4 +1,5 @@
 #include <gmock/gmock.h>
+#include <memory>
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
 #include "Logic/RunTime.h"
@@ -7,16 +8,26 @@
 using namespace std;
 using namespace testing;
 
+///////////////////////////////////////////////////////////////////////////////
 
 class MockRunTime : public RunTime {
 public:
 	MockRunTime() {
-		EXPECT_CALL(*this, destructorIsCalled()).Times(1);
+		EXPECT_CALL(*this, destructed()).Times(1);
 	}
 
-	MOCK_METHOD0(destructorIsCalled, bool());
-	virtual ~MockRunTime() { destructorIsCalled(); }
+	MOCK_METHOD0(destructed, void());
+	virtual ~MockRunTime() { destructed(); }
 };
+
+class MockRunTimeFactory : public RunTimeFactory {
+public:
+	virtual unique_ptr<RunTime> createRunTime() const {
+		return unique_ptr<RunTime>(new MockRunTime());
+	}
+};
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeContainerTest, initDefault) {
 	const RunTimeContainer runTimes;
@@ -38,6 +49,11 @@ TEST(RunTimeContainerTest, initWithInitializer) {
 	EXPECT_THAT(*runTimes.at(3), Eq(RunTime(13)));
 	EXPECT_THAT(*runTimes.at(4), Eq(RunTime(14)));
 	EXPECT_THAT(*runTimes.at(5), Eq(RunTime(15)));
+}
+
+TEST(RunTimeContainerTest, initWithNotCorrectInitializer) {
+	EXPECT_THROW(RunTimeContainer({ 10, 11, 12, 13, 14 }), logic_error);
+	EXPECT_THROW(RunTimeContainer({ 10, 11, 12, 13, 14, 15, 16 }), logic_error);
 }
 
 TEST(RunTimeContainerTest, initCopy) {
@@ -85,27 +101,16 @@ TEST(RunTimeContainerTest, size) {
 TEST(RunTimeContainerTest, id) {
 	RunTimeContainer runTimes;
 
-	unsigned id = 0;
-	for (auto it = runTimes.begin(); it != runTimes.end(); ++it, ++id) {
-		EXPECT_EQ(id, it->first);
+	for (size_t i = 0; i < runTimes.size(); ++i) {
+		EXPECT_EQ(i, next(runTimes.begin(), i)->first);
 	}
 }
 
 TEST(RunTimeContainerTest, at) {
 	RunTimeContainer runTimes;
 
-	unsigned i = 0;
-	for (auto it = runTimes.begin(); it != runTimes.end(); ++it, ++i) {
-		EXPECT_EQ(it->second.get(), runTimes.at(i));
-	}
-}
-
-TEST(RunTimeContainerTest, atConst) {
-	const RunTimeContainer constRunTimes;
-
-	unsigned i = 0;
-	for (auto it = constRunTimes.begin(); it != constRunTimes.end(); ++it, ++i) {
-		EXPECT_EQ(it->second.get(), constRunTimes.at(i));
+	for (size_t i = 0; i < runTimes.size(); ++i) {
+		EXPECT_EQ(*next(runTimes.begin(), i)->second, *runTimes.at(i));
 	}
 }
 
@@ -113,20 +118,6 @@ TEST(RunTimeContainerTest, atInvalid) {
 	RunTimeContainer runTimes;
 	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
-
-TEST(RunTimeContainerTest, atConstInvalid) {
-	const RunTimeContainer constRunTimes;
-	EXPECT_THROW(constRunTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
-}
-
-
-class MockRunTimeFactory : public RunTimeFactory {
-public:
-	virtual RunTime* createRunTime() const {
-		return new MockRunTime();
-	}
-};
-
 TEST(RunTimeContainerTest, destructed) {
 	RunTimeContainer runTimes(new MockRunTimeFactory());
 }

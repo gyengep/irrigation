@@ -9,8 +9,8 @@
 using namespace std;
 
 
-RunTime* RunTimeFactory::createRunTime() const {
-	return new RunTime();
+unique_ptr<RunTime> RunTimeFactory::createRunTime() const {
+	return unique_ptr<RunTime>(new RunTime());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ RunTimeContainer::RunTimeContainer(const RunTimeContainer& other) :
 	 this->operator =(other);
 }
 
-RunTimeContainer::RunTimeContainer(initializer_list<unsigned> initializer) :
+RunTimeContainer::RunTimeContainer(initializer_list<RunTime> initializer) :
 	RunTimeContainer()
 {
 	if (container.size() != initializer.size()) {
@@ -35,8 +35,8 @@ RunTimeContainer::RunTimeContainer(initializer_list<unsigned> initializer) :
 
 	for (size_t i = 0; i < container.size(); ++i) {
 		RunTime& target = *next(container.begin(), i)->second;
-		unsigned value = *next(initializer.begin(), i);
-		target = RunTime(value);
+		const RunTime& source = *next(initializer.begin(), i);
+		target = source;
 	}
 }
 
@@ -45,35 +45,23 @@ RunTimeContainer::RunTimeContainer(RunTimeFactory* runTimeFactory) {
 
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		unique_ptr<RunTime> runTime(runTimeFactoryPtr->createRunTime());
-		container.push_back(make_pair(i, move(runTime)));
+		container.push_back(make_pair(i, runTimeFactoryPtr->createRunTime()));
 	}
 }
 
-RunTimeContainer::~RunTimeContainer() {
-}
-
-const RunTimeContainer::mapped_type::element_type* RunTimeContainer::at(const key_type& key) const {
+const RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) const {
 	if (container.size() <= key) {
-		throw NoSuchElementException("RunTime with id " + to_string(key) + " not found");
+		throw NoSuchElementException("RunTime[" + to_string(key) + "] not found");
 	}
 
-	return container[key].second.get();
-}
-
-RunTimeContainer::mapped_type::element_type* RunTimeContainer::at(const key_type& key) {
-	if (container.size() <= key) {
-		throw NoSuchElementException("RunTime with id " + to_string(key) + " not found");
-	}
-
-	return container[key].second.get();
+	return container[key].second;
 }
 
 RunTimeContainer& RunTimeContainer::operator= (const RunTimeContainer& other) {
 	if (this != &other) {
 		for (size_t i = 0; i < container.size(); ++i) {
-			RunTime& target = *at(i);
-			const RunTime& source = *other.at(i);
+			RunTime& target = *container.at(i).second;
+			const RunTime& source = *other.container.at(i).second;
 			target = source;
 		}
 	}
@@ -83,8 +71,8 @@ RunTimeContainer& RunTimeContainer::operator= (const RunTimeContainer& other) {
 
 bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
 	for (size_t i = 0; i < container.size(); ++i) {
-		const RunTime& runTime1 = *at(i);
-		const RunTime& runTime2 = *other.at(i);
+		const RunTime& runTime1 = *container.at(i).second;
+		const RunTime& runTime2 = *other.container.at(i).second;
 
 		if (!(runTime1 == runTime2)) {
 			return false;

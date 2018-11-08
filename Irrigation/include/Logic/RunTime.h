@@ -10,8 +10,8 @@ class RunTime {
 
 public:
 	RunTime();
+	RunTime(const RunTime& other) = default;
 	RunTime(unsigned seconds);
-	RunTime(const RunTime& other);
 	virtual ~RunTime();
 
 	unsigned getSeconds() const;
@@ -20,7 +20,7 @@ public:
 	RunTimeDTO getRunTimeDTO() const;
 	void updateFromDTO(const RunTimeDTO& runTimeDTO);
 
-	RunTime& operator= (const RunTime& other);
+	RunTime& operator= (const RunTime& other) = default;
 	bool operator== (const RunTime& other) const;
 
 	friend std::string to_string(const RunTime& runTime);

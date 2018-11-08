@@ -66,16 +66,16 @@ const TestDataType testData_programs(
 				"</program>"
 			"</programs>"
 		"</irrigation>",
-		DocumentDTO(new list<ProgramDTO>({
+		DocumentDTO(list<ProgramDTO>({
 			ProgramDTO()
 				.setId(5)
 				.setName("abcdefg")
 				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, new list<bool>({ true, false })))
-				.setRunTimes(new list<RunTimeDTO>({
+				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, list<bool>({ true, false })))
+				.setRunTimes(list<RunTimeDTO>({
 					RunTimeDTO(25, 54).setId(15),
 					RunTimeDTO(35, 44).setId(25)}))
-				.setStartTimes(new list<StartTimeDTO>({
+				.setStartTimes(list<StartTimeDTO>({
 					StartTimeDTO(15, 51).setId(35),
 					StartTimeDTO(16, 52).setId(45),
 					StartTimeDTO(17, 53).setId(55)})),
@@ -83,12 +83,12 @@ const TestDataType testData_programs(
 				.setId(6)
 				.setName("123456")
 				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(140, new list<bool>({ true, true, false, false })))
-				.setRunTimes(new list<RunTimeDTO>({
+				.setSpecifiedScheduler(SpecifiedSchedulerDTO(140, list<bool>({ true, true, false, false })))
+				.setRunTimes(list<RunTimeDTO>({
 					RunTimeDTO(30, 15).setId(115),
 					RunTimeDTO(40, 25).setId(125),
 					RunTimeDTO(50, 35).setId(135)}))
-				.setStartTimes(new list<StartTimeDTO>({
+				.setStartTimes(list<StartTimeDTO>({
 					StartTimeDTO(20, 30).setId(145),
 					StartTimeDTO(15, 25).setId(155)}))
 			}))
@@ -121,15 +121,15 @@ const TestDataType testData_programsWithoutId(
 				"</program>"
 			"</programs>"
 		"</irrigation>",
-		DocumentDTO(new list<ProgramDTO>({
+		DocumentDTO(list<ProgramDTO>({
 			ProgramDTO()
 				.setName("abcdefg")
 				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, new list<bool>({ true, false })))
-				.setRunTimes(new list<RunTimeDTO>({
+				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, list<bool>({ true, false })))
+				.setRunTimes(list<RunTimeDTO>({
 					RunTimeDTO(25, 54),
 					RunTimeDTO(52, 45)}))
-				.setStartTimes(new list<StartTimeDTO>({
+				.setStartTimes(list<StartTimeDTO>({
 					StartTimeDTO(20, 30),
 					StartTimeDTO(19, 32),
 					StartTimeDTO(18, 36)}))

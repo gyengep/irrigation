@@ -10,9 +10,13 @@ class RunTimeDTO {
 	std::unique_ptr<const unsigned> seconds;
 
 public:
-	RunTimeDTO();
+	RunTimeDTO() = default;
+	RunTimeDTO(RunTimeDTO&& other) = default;
 	RunTimeDTO(const RunTimeDTO& other);
 	RunTimeDTO(unsigned minutes, unsigned seconds);
+
+	RunTimeDTO& operator= (RunTimeDTO&& other) = delete;
+	RunTimeDTO& operator= (const RunTimeDTO& other) = delete;
 
 	bool operator== (const RunTimeDTO& other) const;
 

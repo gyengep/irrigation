@@ -13,20 +13,9 @@
 using namespace std;
 
 
-mutex IrrigationApplication::createMutex;
-unique_ptr<IrrigationApplication> IrrigationApplication::instance;
-
-
 IrrigationApplication& IrrigationApplication::getInstance() {
-	if (nullptr == instance) {
-		lock_guard<mutex> lock(createMutex);
-
-		if (nullptr == instance) {
-			instance.reset(new IrrigationApplication());
-		}
-	}
-
-	return *instance.get();
+	static IrrigationApplication instance;
+	return instance;
 }
 
 string IrrigationApplication::getVersion() {
@@ -57,7 +46,7 @@ void IrrigationApplication::initDocument() {
 		throw_with_nested(runtime_error("Can't initialize document"));
 	}
 
-	document->addView(new TimerView(*document.get()));
+	document->addView(unique_ptr<View>(new TimerView(*document.get())));
 }
 
 void IrrigationApplication::onInitialize() {

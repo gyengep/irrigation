@@ -4,21 +4,36 @@
 #include "Logic/StartTime.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
+#include "Schedulers/Scheduler.h"
 #include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
 using namespace testing;
 using ::testing::_;
-using ::testing::AnyNumber;
+using ::testing::NiceMock;
 using ::testing::Return;
 
+///////////////////////////////////////////////////////////////////////////////
+
+class MockProgram : public Program {
+public:
+	MOCK_CONST_METHOD0(getCurrentScheduler, const Scheduler&());
+};
+
+class MockScheduler : public Scheduler {
+public:
+	MOCK_CONST_METHOD1(isDayScheduled, bool(const tm&));
+	MOCK_CONST_METHOD0(getAdjustment, unsigned());
+};
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Program, name) {
 	Program program;
 
 	EXPECT_TRUE(program.getName().empty());
 
-	const char* name = "AbcXyz";
+	const string name("AbcXyz");
 	program.setName(name);
 	EXPECT_EQ(name, program.getName());
 }
@@ -30,13 +45,13 @@ TEST(Program, getSchedulerType) {
 
 TEST(Program, getSpecifiedScheduler) {
 	Program program;
-	EXPECT_NE(nullptr, &program.getSpecifiedScheduler());
+	EXPECT_NO_THROW(program.getSpecifiedScheduler());
 }
 
 TEST(Program, convertProgramDTO) {
 	const ProgramDTO expectedProgramDTO("Abcdefg", "specified",
-			SpecifiedSchedulerDTO(95, new list<bool>({ false, true, false, false, false, true, false})),
-			new list<RunTimeDTO>({
+			SpecifiedSchedulerDTO(95, list<bool>({ false, true, false, false, false, true, false})),
+			list<RunTimeDTO>({
 				RunTimeDTO(20, 30).setId(0),
 				RunTimeDTO(21, 31).setId(1),
 				RunTimeDTO(22, 32).setId(2),
@@ -44,7 +59,7 @@ TEST(Program, convertProgramDTO) {
 				RunTimeDTO(24, 34).setId(4),
 				RunTimeDTO(25, 35).setId(5)
 			}),
-			new list<StartTimeDTO>({
+			list<StartTimeDTO>({
 				StartTimeDTO(10, 20).setId(100),
 				StartTimeDTO(11, 21).setId(101),
 				StartTimeDTO(12, 22).setId(102)
@@ -111,14 +126,14 @@ TEST(Program, updateSpecifiedSchedulerFromProgramDTO) {
 
 	program.updateFromDTO(ProgramDTO());
 	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(73, new list<bool>({ true, false, true, false, false, false, false }))));
+		Eq(SpecifiedSchedulerDTO(73, list<bool>({ true, false, true, false, false, false, false }))));
 
 	program.updateFromDTO(ProgramDTO().setSpecifiedScheduler(
-		SpecifiedSchedulerDTO(84, new list<bool>({ false, true, false, false, false, true, false}))
+		SpecifiedSchedulerDTO(84, list<bool>({ false, true, false, false, false, true, false}))
 	));
 
 	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(84, new list<bool>({ false, true, false, false, false, true, false}))));
+		Eq(SpecifiedSchedulerDTO(84, list<bool>({ false, true, false, false, false, true, false}))));
 }
 
 TEST(Program, updateLessSpecifiedSchedulerFromProgramDTO) {
@@ -133,11 +148,11 @@ TEST(Program, updateLessSpecifiedSchedulerFromProgramDTO) {
 	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SATURDAY, true);
 
 	program.updateFromDTO(ProgramDTO().setSpecifiedScheduler(
-		SpecifiedSchedulerDTO(34, new list<bool>({ false, true, false, true }))
+		SpecifiedSchedulerDTO(34, list<bool>({ false, true, false, true }))
 	));
 
 	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(34, new list<bool>({ false, true, false, true, false, false, false}))));
+		Eq(SpecifiedSchedulerDTO(34, list<bool>({ false, true, false, true, false, false, false}))));
 }
 
 
@@ -160,7 +175,7 @@ TEST(Program, updateRunTimesFromProgramDTO) {
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(1, 5)));
 
 	program.updateFromDTO(ProgramDTO().setRunTimes(
-		new list<RunTimeDTO>()
+		list<RunTimeDTO>()
 	));
 
 	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
@@ -175,7 +190,7 @@ TEST(Program, updateRunTimesFromProgramDTO) {
 TEST(Program, updateRunTimesFromProgramDTOWithoutId) {
 	Program program;
 	program.updateFromDTO(ProgramDTO().setRunTimes(
-		new list<RunTimeDTO>({
+		list<RunTimeDTO>({
 			RunTimeDTO(2, 0),
 			RunTimeDTO(2, 1),
 			RunTimeDTO(2, 2),
@@ -197,7 +212,7 @@ TEST(Program, updateRunTimesFromProgramDTOWithoutId) {
 TEST(Program, updateRunTimesFromProgramDTOWithId) {
 	Program program;
 	program.updateFromDTO(ProgramDTO().setRunTimes(
-		new list<RunTimeDTO>({
+		list<RunTimeDTO>({
 		RunTimeDTO(2, 3).setId(3),
 			RunTimeDTO(2, 1).setId(1),
 			RunTimeDTO(2, 0).setId(0),
@@ -219,7 +234,7 @@ TEST(Program, updateRunTimesFromProgramDTOWithId) {
 TEST(Program, updateRunTimesFromDTOWithAndWithoutId) {
 	Program program;
 	program.updateFromDTO(ProgramDTO().setRunTimes(
-		new list<RunTimeDTO>({
+		list<RunTimeDTO>({
 			RunTimeDTO(3, 53).setId(3),
 			RunTimeDTO(3, 54),
 			RunTimeDTO(3, 51).setId(1)
@@ -237,9 +252,9 @@ TEST(Program, updateRunTimesFromDTOWithAndWithoutId) {
 
 TEST(Program, updateStartTimesFromProgramDTO) {
 	Program program;
-	program.getStartTimes().insert(100, new StartTime()).second->set(1, 0);
-	program.getStartTimes().insert(101, new StartTime()).second->set(1, 1);
-	program.getStartTimes().insert(102, new StartTime()).second->set(1, 2);
+	program.getStartTimes().insert(100, unique_ptr<StartTime>(new StartTime(1, 0)));
+	program.getStartTimes().insert(101, unique_ptr<StartTime>(new StartTime(1, 1)));
+	program.getStartTimes().insert(102, unique_ptr<StartTime>(new StartTime(1, 2)));
 
 	program.updateFromDTO(ProgramDTO());
 	EXPECT_THAT(program.getStartTimes().size(), Eq(3));
@@ -248,7 +263,7 @@ TEST(Program, updateStartTimesFromProgramDTO) {
 	EXPECT_THAT(program.getStartTimes().at(102)->getStartTimeDTO(), Eq(StartTimeDTO(1, 2)));
 
 	program.updateFromDTO(ProgramDTO().setStartTimes(
-		new list<StartTimeDTO>({
+		list<StartTimeDTO>({
 			StartTimeDTO(2, 0).setId(200),
 			StartTimeDTO(2, 1).setId(201),
 			StartTimeDTO(2, 2).setId(202)
@@ -285,36 +300,22 @@ time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst
 	return mktime(&tm);
 }
 
-class MockScheduler : public SpecifiedScheduler {
-public:
-	MOCK_CONST_METHOD1(isDayScheduled, bool(const tm&));
-};
-
-class MockSchedulerFactory : public SchedulerFactory {
-public:
-	virtual SpecifiedScheduler* createSpecifiedScheduler() const override {
-		return new MockScheduler();
-	}
-};
-
 TEST(Program, isScheduled1) {
-	Program program(new MockSchedulerFactory());
-	time_t t;
+	NiceMock<MockProgram> program;
+	NiceMock<MockScheduler> scheduler;
 
-	program.getCurrentScheduler();
-	const MockScheduler& mockScheduler = dynamic_cast<const MockScheduler&>(program.getCurrentScheduler());
-	ON_CALL(mockScheduler, isDayScheduled(_)).WillByDefault(Return(false));
-	EXPECT_CALL(mockScheduler, isDayScheduled(_)).Times(AnyNumber());
+	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
+	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(false));
 
-	program.getStartTimes().insert(0, new StartTime(4, 0, 0));
-	program.getStartTimes().insert(1, new StartTime(6, 0, 0));
-	program.getStartTimes().insert(2, new StartTime(6, 30, 0));
-	program.getStartTimes().insert(3, new StartTime(20, 15, 0));
+	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0, 0)));
+	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0, 0)));
+	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30, 0)));
+	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15, 0)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				t = toTime(2018, 5, 27, hour, min, sec, true);
+				time_t t = toTime(2018, 5, 27, hour, min, sec, true);
 				EXPECT_FALSE(program.isScheduled(t));
 			}
 		}
@@ -322,22 +323,21 @@ TEST(Program, isScheduled1) {
 }
 
 TEST(Program, isScheduled2) {
-	Program program(new MockSchedulerFactory());
-	time_t t;
+	NiceMock<MockProgram> program;
+	NiceMock<MockScheduler> scheduler;
 
-	const MockScheduler& mockScheduler = dynamic_cast<const MockScheduler&>(program.getCurrentScheduler());
-	ON_CALL(mockScheduler, isDayScheduled(_)).WillByDefault(Return(true));
-	EXPECT_CALL(mockScheduler, isDayScheduled(_)).Times(AnyNumber());
+	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
+	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(true));
 
-	program.getStartTimes().insert(0, new StartTime(4, 0, 0));
-	program.getStartTimes().insert(1, new StartTime(6, 0, 0));
-	program.getStartTimes().insert(2, new StartTime(6, 30, 0));
-	program.getStartTimes().insert(3, new StartTime(20, 15, 0));
+	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0, 0)));
+	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0, 0)));
+	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30, 0)));
+	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15, 0)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				t = toTime(2018, 5, 27, hour, min, sec, true);
+				time_t t = toTime(2018, 5, 27, hour, min, sec, true);
 
 				bool requestedResult = false;
 				requestedResult |= (hour == 4 && min == 0 && sec == 0);
@@ -350,4 +350,3 @@ TEST(Program, isScheduled2) {
 		}
 	}
 }
-

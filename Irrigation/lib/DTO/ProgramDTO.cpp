@@ -6,51 +6,42 @@
 using namespace std;
 
 
-ProgramDTO::ProgramDTO() {
-}
-
-ProgramDTO::ProgramDTO(const string& name, const string& schedulerType,
-		const SpecifiedSchedulerDTO& specifiedScheduler,
-		const list<RunTimeDTO>* runTimes,
-		const list<StartTimeDTO>* startTimes) {
-
-	setName(name.c_str());
-	setSchedulerType(schedulerType.c_str());
-	setSpecifiedScheduler(specifiedScheduler);
-
-	if (runTimes != nullptr) {
-		setRunTimes(runTimes);
-	}
-
-	if (startTimes != nullptr) {
-		setStartTimes(startTimes);
-	}
-}
-
 ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 	if (other.hasId()) {
 		setId(other.getId());
 	}
 
 	if (other.hasName()) {
-		setName(other.getName().c_str());
+		setName(other.getName());
 	}
 
 	if (other.hasSchedulerType()) {
-		setSchedulerType(other.getSchedulerType().c_str());
+		setSchedulerType(other.getSchedulerType());
 	}
 
 	if (other.hasSpecifiedScheduler()) {
-		setSpecifiedScheduler(other.getSpecifiedScheduler());
+		setSpecifiedScheduler(SpecifiedSchedulerDTO(other.getSpecifiedScheduler()));
 	}
 
 	if (other.hasRunTimes()) {
-		setRunTimes(new list<RunTimeDTO>(other.getRunTimes()));
+		setRunTimes(list<RunTimeDTO>(other.getRunTimes()));
 	}
 
 	if (other.hasStartTimes()) {
-		setStartTimes(new list<StartTimeDTO>(other.getStartTimes()));
+		setStartTimes(list<StartTimeDTO>(other.getStartTimes()));
 	}
+}
+
+ProgramDTO::ProgramDTO(const string& name, const string& schedulerType,
+		SpecifiedSchedulerDTO&& specifiedScheduler,
+		list<RunTimeDTO>&& runTimes,
+		list<StartTimeDTO>&& startTimes) {
+
+	setName(name);
+	setSchedulerType(schedulerType);
+	setSpecifiedScheduler(move(specifiedScheduler));
+	setRunTimes(move(runTimes));
+	setStartTimes(move(startTimes));
 }
 
 bool ProgramDTO::operator== (const ProgramDTO& other) const {
@@ -139,28 +130,28 @@ ProgramDTO& ProgramDTO::setId(unsigned id) {
 	return *this;
 }
 
-ProgramDTO& ProgramDTO::setName(const char* name) {
+ProgramDTO& ProgramDTO::setName(const string& name) {
 	this->name.reset(new string(name));
 	return *this;
 }
 
-ProgramDTO& ProgramDTO::setSchedulerType(const char* schedulerType) {
+ProgramDTO& ProgramDTO::setSchedulerType(const string& schedulerType) {
 	this->schedulerType.reset(new string(schedulerType));
 	return *this;
 }
 
-ProgramDTO& ProgramDTO::setSpecifiedScheduler(const SpecifiedSchedulerDTO& specifiedScheduler) {
-	this->specifiedScheduler.reset(new SpecifiedSchedulerDTO(specifiedScheduler));
+ProgramDTO& ProgramDTO::setSpecifiedScheduler(SpecifiedSchedulerDTO&& specifiedScheduler) {
+	this->specifiedScheduler.reset(new SpecifiedSchedulerDTO(move(specifiedScheduler)));
 	return *this;
 }
 
-ProgramDTO& ProgramDTO::setRunTimes(const list<RunTimeDTO>* runTimes) {
-	this->runTimes.reset(runTimes);
+ProgramDTO& ProgramDTO::setRunTimes(list<RunTimeDTO>&& runTimes) {
+	this->runTimes.reset(new list<RunTimeDTO>(move(runTimes)));
 	return *this;
 }
 
-ProgramDTO& ProgramDTO::setStartTimes(const list<StartTimeDTO>* startTimes) {
-	this->startTimes.reset(startTimes);
+ProgramDTO& ProgramDTO::setStartTimes(list<StartTimeDTO>&& startTimes) {
+	this->startTimes.reset(new list<StartTimeDTO>(move(startTimes)));
 	return *this;
 }
 

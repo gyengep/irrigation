@@ -15,7 +15,7 @@ TEST(RunTimeDTOTest, defaultConstructor) {
 	EXPECT_FALSE(runTimeDTO.hasSeconds());
 }
 
-TEST(RunTimeDTOTest, constructor) {
+TEST(RunTimeDTOTest, parametrizedConstructor) {
 	const unsigned expectedMinutes = 5;
 	const unsigned expectedSeconds = 30;
 	RunTimeDTO runTimeDTO(expectedMinutes, expectedSeconds);
@@ -31,9 +31,24 @@ TEST(RunTimeDTOTest, constructor) {
 TEST(RunTimeDTOTest, copyConstructor) {
 	const unsigned expectedMinutes = 5;
 	const unsigned expectedSeconds = 30;
-	const RunTimeDTO other(expectedMinutes, expectedSeconds);
+	const RunTimeDTO source(expectedMinutes, expectedSeconds);
 
-	RunTimeDTO runTimeDTO(other);
+	RunTimeDTO runTimeDTO(source);
+
+	EXPECT_FALSE(runTimeDTO.hasId());
+	EXPECT_TRUE(runTimeDTO.hasMinutes());
+	EXPECT_TRUE(runTimeDTO.hasSeconds());
+
+	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
+	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
+}
+
+TEST(RunTimeDTOTest, moveConstructor) {
+	const unsigned expectedMinutes = 5;
+	const unsigned expectedSeconds = 30;
+	RunTimeDTO source(expectedMinutes, expectedSeconds);
+
+	RunTimeDTO runTimeDTO(move(source));
 
 	EXPECT_FALSE(runTimeDTO.hasId());
 	EXPECT_TRUE(runTimeDTO.hasMinutes());

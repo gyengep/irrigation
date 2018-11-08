@@ -5,30 +5,31 @@
 using namespace std;
 using namespace testing;
 
+///////////////////////////////////////////////////////////////////////////////
 
-TEST(RunTimeTest, initDefault) {
+TEST(RunTimeTest, defaultConstructor) {
 	RunTime runTime;
 	EXPECT_EQ(0, runTime.getSeconds());
 }
 
-TEST(RunTimeTest, initConversion) {
+TEST(RunTimeTest, parametrizedConstructor) {
 	RunTime runTime(10);
 	EXPECT_EQ(10, runTime.getSeconds());
 }
 
-TEST(RunTimeTest, initCopy) {
+TEST(RunTimeTest, copyConstructor) {
 	RunTime runTime(RunTime(20));
 	EXPECT_EQ(20, runTime.getSeconds());
 }
 
-TEST(RunTimeTest, copy) {
+TEST(RunTimeTest, copyOperator) {
 	RunTime source(20);
 	RunTime target;
 	target = source;
-	EXPECT_EQ(20, source.getSeconds());
+	EXPECT_EQ(20, target.getSeconds());
 }
 
-TEST(RunTimeTest, equals) {
+TEST(RunTimeTest, equalsOperator) {
 	EXPECT_TRUE(RunTime(10) == RunTime(10));
 	EXPECT_FALSE(RunTime(10) == RunTime(11));
 	EXPECT_FALSE(RunTime(11) == RunTime(10));
@@ -42,8 +43,8 @@ TEST(RunTimeTest, setValue) {
 
 TEST(RunTimeTest, setValueMax) {
 	RunTime runTime;
-	EXPECT_NO_THROW(runTime.setSeconds(3600 * 24));
-	EXPECT_THROW(runTime.setSeconds(3600 * 24 + 1), ValueOutOfBoundsException);
+	EXPECT_NO_THROW(runTime.setSeconds(24 * 60 * 60));
+	EXPECT_THROW(runTime.setSeconds(24 * 60 * 60 + 1), ValueOutOfBoundsException);
 }
 
 TEST(RunTimeTest, convertRunTimeDTO) {

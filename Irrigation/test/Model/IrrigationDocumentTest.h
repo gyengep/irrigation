@@ -15,12 +15,12 @@ public:
 };
 
 class MockDtoReaderWriterFactory : public DtoReaderWriterFactory {
-	MockDtoReader* mockReader;
+	mutable std::unique_ptr<DtoReader> reader;
 
 public:
-	MockDtoReaderWriterFactory(MockDtoReader* mockReader) : mockReader(mockReader) {}
-	virtual DtoReader* createDtoReader() const override { return mockReader; }
-	virtual DtoWriter* createDtoWriter() const override { return NULL; }
+	MockDtoReaderWriterFactory(std::unique_ptr<DtoReader>&& reader) : reader(move(reader)) {}
+	virtual std::unique_ptr<DtoReader> createDtoReader() const override { return move(reader); }
+	virtual std::unique_ptr<DtoWriter> createDtoWriter() const override { return std::unique_ptr<DtoWriter>(); }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,12 +31,12 @@ public:
 };
 
 class MockFileReaderWriterFactory : public FileReaderWriterFactory {
-	MockFileReader* mockReader;
+	mutable std::unique_ptr<FileReader> reader;
 
 public:
-	MockFileReaderWriterFactory(MockFileReader* mockReader) : mockReader(mockReader) {}
-	virtual FileReader* createFileReader() const override { return mockReader; }
-	virtual FileWriter* createFileWriter() const override { return NULL; }
+	MockFileReaderWriterFactory(std::unique_ptr<FileReader>&& reader) : reader(move(reader)) {}
+	virtual std::unique_ptr<FileReader> createFileReader() const override { return move(reader); }
+	virtual std::unique_ptr<FileWriter> createFileWriter() const override { return std::unique_ptr<FileWriter>(); }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

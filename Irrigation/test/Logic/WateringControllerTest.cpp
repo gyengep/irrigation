@@ -3,6 +3,7 @@
 
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
 
 void WateringControllerTest::SetUp() {
 	shared_ptr<ZoneHandler> zoneHandler = ZoneHandler::Builder()
@@ -13,7 +14,6 @@ void WateringControllerTest::SetUp() {
 
 void WateringControllerTest::TearDown() {
 }
-
 
 void WateringControllerTest::checkActiveZones(time_t t, const vector<size_t>& requiredZones) {
 	for (size_t i = 0; i < requiredZones.size(); ++i) {
@@ -26,6 +26,8 @@ void WateringControllerTest::checkActiveZones(time_t t, const vector<size_t>& re
 	wateringController->on1SecTimer(t++);
 	EXPECT_FALSE(wateringController->isWateringActive());
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(WateringControllerTest, initWithNull) {
 	EXPECT_THROW(WateringController(shared_ptr<ZoneHandler>()), invalid_argument);

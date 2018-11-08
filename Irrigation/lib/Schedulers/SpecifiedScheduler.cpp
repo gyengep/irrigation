@@ -9,8 +9,8 @@ using namespace std;
 
 
 
-SpecifiedScheduler* SchedulerFactory::createSpecifiedScheduler() const {
-	return new SpecifiedScheduler();
+unique_ptr<SpecifiedScheduler> SchedulerFactory::createSpecifiedScheduler() const {
+	return unique_ptr<SpecifiedScheduler>(new SpecifiedScheduler());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ bool SpecifiedScheduler::isDayScheduled(const tm& timeinfo) const {
 }
 
 SpecifiedSchedulerDTO SpecifiedScheduler::getSpecifiedSchedulerDTO() const {
-	return SpecifiedSchedulerDTO(adjustment, new list<bool>(days.begin(), days.end()));
+	return SpecifiedSchedulerDTO(adjustment, list<bool>(days.begin(), days.end()));
 }
 
 void SpecifiedScheduler::updateFromDTO(const SpecifiedSchedulerDTO& schedulerDTO) {

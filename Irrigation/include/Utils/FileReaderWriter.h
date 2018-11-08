@@ -1,6 +1,6 @@
 #pragma once
+#include <memory>
 #include <string>
-
 
 
 class FileReader {
@@ -20,6 +20,6 @@ public:
 class FileReaderWriterFactory {
 public:
 	virtual ~FileReaderWriterFactory() = default;
-	virtual FileReader* createFileReader() const = 0;
-	virtual FileWriter* createFileWriter() const = 0;
+	virtual std::unique_ptr<FileReader> createFileReader() const = 0;
+	virtual std::unique_ptr<FileWriter> createFileWriter() const = 0;
 };

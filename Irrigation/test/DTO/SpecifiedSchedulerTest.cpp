@@ -14,10 +14,10 @@ TEST(SpecifiedSchedulerDTOTest, defaultConstructor) {
 	EXPECT_FALSE(schedulerDTO.hasValues());
 }
 
-TEST(SpecifiedSchedulerDTOTest, constructor) {
+TEST(SpecifiedSchedulerDTOTest, parametrizedConstructor) {
 	const unsigned expectedAdjustment = 50;
 	const list<bool> expectedValues({ false, true });
-	SpecifiedSchedulerDTO schedulerDTO(expectedAdjustment, new list<bool>(expectedValues));
+	SpecifiedSchedulerDTO schedulerDTO(expectedAdjustment, list<bool>(expectedValues));
 
 	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
@@ -28,9 +28,22 @@ TEST(SpecifiedSchedulerDTOTest, constructor) {
 TEST(SpecifiedSchedulerDTOTest, copyConstructor) {
 	const unsigned expectedAdjustment = 130;
 	const list<bool> expectedValues({ false, true, false, false });
-	const SpecifiedSchedulerDTO other(expectedAdjustment, new list<bool>(expectedValues));
+	const SpecifiedSchedulerDTO source(expectedAdjustment, list<bool>(expectedValues));
 
-	SpecifiedSchedulerDTO schedulerDTO(other);
+	SpecifiedSchedulerDTO schedulerDTO(source);
+
+	EXPECT_TRUE(schedulerDTO.hasAdjustment());
+	EXPECT_TRUE(schedulerDTO.hasValues());
+	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
+	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
+}
+
+TEST(SpecifiedSchedulerDTOTest, moveConstructor) {
+	const unsigned expectedAdjustment = 130;
+	const list<bool> expectedValues({ false, true, false, false });
+	SpecifiedSchedulerDTO source(expectedAdjustment, list<bool>(expectedValues));
+
+	SpecifiedSchedulerDTO schedulerDTO(move(source));
 
 	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
@@ -60,7 +73,7 @@ TEST(SpecifiedSchedulerDTOTest, hasValues) {
 	SpecifiedSchedulerDTO schedulerDTO;
 
 	EXPECT_FALSE(schedulerDTO.hasValues());
-	schedulerDTO.setValues(new list<bool>());
+	schedulerDTO.setValues(list<bool>());
 	EXPECT_TRUE(schedulerDTO.hasValues());
 }
 
@@ -69,7 +82,7 @@ TEST(SpecifiedSchedulerDTOTest, getValues) {
 	SpecifiedSchedulerDTO schedulerDTO;
 
 	EXPECT_THROW(schedulerDTO.getValues(), logic_error);
-	schedulerDTO.setValues(new list<bool>(expectedValues));
+	schedulerDTO.setValues(list<bool>(expectedValues));
 	ASSERT_NO_THROW(schedulerDTO.getValues());
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 }
@@ -84,15 +97,15 @@ TEST(SpecifiedSchedulerDTOTest, equal) {
 	const list<bool> expectedValues1({ false, true });
 	const list<bool> expectedValues2({ false, true, true });
 
-	schedulerDTO1.setValues(new list<bool>(expectedValues1));
+	schedulerDTO1.setValues(list<bool>(expectedValues1));
 	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
 	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setValues(new list<bool>(expectedValues2));
+	schedulerDTO2.setValues(list<bool>(expectedValues2));
 	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
 	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setValues(new list<bool>(expectedValues2));
+	schedulerDTO1.setValues(list<bool>(expectedValues2));
 	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
 	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
 

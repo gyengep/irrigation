@@ -53,13 +53,6 @@ void StartTime::set(unsigned hour, unsigned minute, unsigned second) {
 	this->second = second;
 }
 
-StartTime& StartTime::operator= (const StartTime& other) {
-	hour = other.hour;
-	minute = other.minute;
-	second = other.second;
-	return *this;
-}
-
 bool StartTime::operator< (const StartTime& other) const {
 	if (getHours() != other.getHours()) {
 		return (getHours() < other.getHours());

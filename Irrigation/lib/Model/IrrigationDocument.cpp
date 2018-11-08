@@ -39,12 +39,12 @@ void IrrigationDocument::unlock() const {
 DocumentDTO IrrigationDocument::getDocumentDTO() const {
 	lock_guard<mutex> lock(mtx);
 
-	unique_ptr<list<ProgramDTO>> programDTOs(new list<ProgramDTO>());
+	list<ProgramDTO> programDTOs;
 	for (auto it = programs->begin(); it != programs->end(); ++it) {
-		programDTOs->push_back(it->second->getProgramDTO().setId(it->first));
+		programDTOs.push_back(it->second->getProgramDTO().setId(it->first));
 	}
 
-	return DocumentDTO(programDTOs.release());
+	return DocumentDTO(move(programDTOs));
 }
 
 void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
@@ -62,7 +62,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 				id = IdType(programDTO.getId());
 			}
 
-			programs->insert(id, program.release());
+			programs->insert(id, move(program));
 		}
 	}
 }
@@ -72,10 +72,10 @@ void IrrigationDocument::load(const string& fileName) {
 
 	programs.reset(new ProgramContainer());
 
-	unique_ptr<FileReader> fileReader(fileReaderWriterFactory->createFileReader());
+	unique_ptr<FileReader> fileReader = fileReaderWriterFactory->createFileReader();
 	const string text = fileReader->read(fileName);
 
-	unique_ptr<DtoReader> dtoReader(dtoReaderWriterFactory->createDtoReader());
+	unique_ptr<DtoReader> dtoReader = dtoReaderWriterFactory->createDtoReader();
 	const DocumentDTO documentDTO = dtoReader->loadDocument(text);
 
 	updateFromDTO(documentDTO);

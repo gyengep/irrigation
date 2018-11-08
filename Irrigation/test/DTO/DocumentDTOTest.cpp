@@ -13,13 +13,13 @@ TEST(DocumentDTOTest, defaultConstructor) {
 	EXPECT_FALSE(documentDTO.hasPrograms());
 }
 
-TEST(DocumentDTOTest, constructor) {
+TEST(DocumentDTOTest, parametrizedConstructor) {
 	const list<ProgramDTO> expectedPrograms({
-		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), new list<RunTimeDTO>({ RunTimeDTO() }), new list<StartTimeDTO>()),
-		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), new list<RunTimeDTO>(), new list<StartTimeDTO>({ StartTimeDTO()}))
+		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), list<RunTimeDTO>({ RunTimeDTO() }), list<StartTimeDTO>()),
+		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), list<RunTimeDTO>(), list<StartTimeDTO>({ StartTimeDTO()}))
 	});
 
-	DocumentDTO documentDTO(new list<ProgramDTO>(expectedPrograms));
+	DocumentDTO documentDTO(move(list<ProgramDTO>(expectedPrograms)));
 
 	EXPECT_TRUE(documentDTO.hasPrograms());
 	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
@@ -27,13 +27,25 @@ TEST(DocumentDTOTest, constructor) {
 
 TEST(DocumentDTOTest, copyConstructor) {
 	const list<ProgramDTO> expectedPrograms({
-		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), new list<RunTimeDTO>({ RunTimeDTO() }), new list<StartTimeDTO>()),
-		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), new list<RunTimeDTO>(), new list<StartTimeDTO>({ StartTimeDTO()}))
+		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), list<RunTimeDTO>({ RunTimeDTO() }), list<StartTimeDTO>()),
+		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), list<RunTimeDTO>(), list<StartTimeDTO>({ StartTimeDTO()}))
 	});
 
-	const DocumentDTO other(new list<ProgramDTO>(expectedPrograms));
+	const DocumentDTO source(move(list<ProgramDTO>(expectedPrograms)));
+	DocumentDTO documentDTO(source);
 
-	DocumentDTO documentDTO(other);
+	EXPECT_TRUE(documentDTO.hasPrograms());
+	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
+}
+
+TEST(DocumentDTOTest, moveConstructor) {
+	const list<ProgramDTO> expectedPrograms({
+		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), list<RunTimeDTO>({ RunTimeDTO() }), list<StartTimeDTO>()),
+		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), list<RunTimeDTO>(), list<StartTimeDTO>({ StartTimeDTO()}))
+	});
+
+	DocumentDTO source(move(list<ProgramDTO>(expectedPrograms)));
+	DocumentDTO documentDTO(move(source));
 
 	EXPECT_TRUE(documentDTO.hasPrograms());
 	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
@@ -43,31 +55,31 @@ TEST(DocumentDTOTest, hasPrograms) {
 	DocumentDTO documentDTO;
 
 	EXPECT_FALSE(documentDTO.hasPrograms());
-	documentDTO.setPrograms(new list<ProgramDTO>());
+	documentDTO.setPrograms(list<ProgramDTO>());
 	EXPECT_TRUE(documentDTO.hasPrograms());
 }
 
 TEST(DocumentDTOTest, getPrograms) {
 	const list<ProgramDTO> expectedPrograms({
-		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), new list<RunTimeDTO>({ RunTimeDTO() }), new list<StartTimeDTO>()),
-		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), new list<RunTimeDTO>(), new list<StartTimeDTO>({ StartTimeDTO()}))
+		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), list<RunTimeDTO>({ RunTimeDTO() }), list<StartTimeDTO>()),
+		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), list<RunTimeDTO>(), list<StartTimeDTO>({ StartTimeDTO()}))
 	});
 
 	DocumentDTO documentDTO;
 
 	EXPECT_THROW(documentDTO.getPrograms(), logic_error);
-	documentDTO.setPrograms(new list<ProgramDTO>(expectedPrograms));
+	documentDTO.setPrograms(list<ProgramDTO>(expectedPrograms));
 	ASSERT_NO_THROW(documentDTO.getPrograms());
 	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
 }
 
 TEST(DocumentDTOTest, equal) {
 	const list<ProgramDTO> expectedPrograms1({
-		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), new list<RunTimeDTO>({ RunTimeDTO() }), new list<StartTimeDTO>())
+		ProgramDTO("abc", "sch1", SpecifiedSchedulerDTO(), list<RunTimeDTO>({ RunTimeDTO() }), list<StartTimeDTO>())
 	});
 
 	const list<ProgramDTO> expectedPrograms2({
-		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), new list<RunTimeDTO>(), new list<StartTimeDTO>({ StartTimeDTO()}))
+		ProgramDTO("123", "sch2", SpecifiedSchedulerDTO(), list<RunTimeDTO>(), list<StartTimeDTO>({ StartTimeDTO()}))
 	});
 
 	DocumentDTO documentDTO1;
@@ -76,15 +88,15 @@ TEST(DocumentDTOTest, equal) {
 	EXPECT_TRUE(documentDTO1 == documentDTO2);
 	EXPECT_TRUE(documentDTO2 == documentDTO1);
 
-	documentDTO1.setPrograms(new list<ProgramDTO>(expectedPrograms1));
+	documentDTO1.setPrograms(list<ProgramDTO>(expectedPrograms1));
 	EXPECT_FALSE(documentDTO1 == documentDTO2);
 	EXPECT_FALSE(documentDTO2 == documentDTO1);
 
-	documentDTO2.setPrograms(new list<ProgramDTO>(expectedPrograms2));
+	documentDTO2.setPrograms(list<ProgramDTO>(expectedPrograms2));
 	EXPECT_FALSE(documentDTO1 == documentDTO2);
 	EXPECT_FALSE(documentDTO2 == documentDTO1);
 
-	documentDTO1.setPrograms(new list<ProgramDTO>(expectedPrograms2));
+	documentDTO1.setPrograms(list<ProgramDTO>(expectedPrograms2));
 	EXPECT_TRUE(documentDTO1 == documentDTO2);
 	EXPECT_TRUE(documentDTO2 == documentDTO1);
 }

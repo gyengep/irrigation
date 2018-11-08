@@ -17,10 +17,6 @@ RunTime::RunTime(unsigned seconds) :
 {
 }
 
-RunTime::RunTime(const RunTime& other) {
-	this->operator =(other);
-}
-
 RunTime::~RunTime() {
 }
 
@@ -36,14 +32,6 @@ void RunTime::setSeconds(unsigned seconds) {
 	}
 
 	this->seconds = seconds;
-}
-
-RunTime& RunTime::operator= (const RunTime& other) {
-	if (this != &other) {
-		seconds = other.seconds;
-	}
-
-	return *this;
 }
 
 bool RunTime::operator== (const RunTime& other) const {
