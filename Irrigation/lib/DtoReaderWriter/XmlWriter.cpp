@@ -15,9 +15,6 @@ using namespace pugi;
 XmlWriter::XmlWriter(bool humanReadable) : humanReadable(humanReadable) {
 }
 
-XmlWriter::~XmlWriter() {
-}
-
 string XmlWriter::toString(const xml_document* doc, bool humanReadable) {
 	ostringstream o;
 	if (humanReadable) {

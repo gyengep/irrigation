@@ -15,9 +15,8 @@ public:
 	StartTimeDTO(const StartTimeDTO& other);
 	StartTimeDTO(unsigned hour, unsigned minute);
 
-	StartTimeDTO& operator= (StartTimeDTO&& other) = delete;
-	StartTimeDTO& operator= (const StartTimeDTO& other) = delete;
-
+	StartTimeDTO& operator= (StartTimeDTO&&) = delete;
+	StartTimeDTO& operator= (const StartTimeDTO&) = delete;
 	bool operator== (const StartTimeDTO& other) const;
 
 	bool hasId() const;

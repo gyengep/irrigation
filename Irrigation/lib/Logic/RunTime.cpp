@@ -17,9 +17,6 @@ RunTime::RunTime(unsigned seconds) :
 {
 }
 
-RunTime::~RunTime() {
-}
-
 unsigned RunTime::getSeconds() const {
 	return seconds;
 }

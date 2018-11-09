@@ -15,9 +15,8 @@ public:
 	SpecifiedSchedulerDTO(const SpecifiedSchedulerDTO& other);
 	SpecifiedSchedulerDTO(unsigned adjustment, std::list<bool>&& values);
 
-	SpecifiedSchedulerDTO& operator= (SpecifiedSchedulerDTO&& other) = delete;
-	SpecifiedSchedulerDTO& operator= (const SpecifiedSchedulerDTO& other) = delete;
-
+	SpecifiedSchedulerDTO& operator= (SpecifiedSchedulerDTO&&) = delete;
+	SpecifiedSchedulerDTO& operator= (const SpecifiedSchedulerDTO&) = delete;
 	bool operator== (const SpecifiedSchedulerDTO& other) const;
 
 	bool hasAdjustment() const;

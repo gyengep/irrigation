@@ -126,12 +126,11 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 			unique_ptr<StartTime> startTime(new StartTime());
 			startTime->updateFromDTO(startTimeDTO);
 
-			IdType id;
 			if (startTimeDTO.hasId()) {
-				id = IdType(startTimeDTO.getId());
+				startTimes->insert(IdType(startTimeDTO.getId()), move(startTime));
+			} else {
+				startTimes->insert(IdType(), move(startTime));
 			}
-			startTimes->insert(id, move(startTime));
-
 		}
 	}
 }

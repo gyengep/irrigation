@@ -21,9 +21,12 @@ class Program {
 
 public:
 	Program();
-	Program(Program&&) = delete;
+	Program(Program&&) = default;
 	Program(const Program&) = delete;
 	virtual ~Program();
+
+	Program& operator= (Program&&) = default;
+	Program& operator= (const Program&) = delete;
 
 	virtual bool isScheduled(const std::time_t& rawTime) const;
 	virtual const Scheduler& getCurrentScheduler() const;
@@ -45,9 +48,6 @@ public:
 
 	ProgramDTO getProgramDTO() const;
 	void updateFromDTO(const ProgramDTO& programDTO);
-
-	void operator= (Program&&) = delete;
-	void operator= (const Program&) = delete;
 
 	friend std::string to_string(const Program& program);
 };

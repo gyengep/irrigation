@@ -3,6 +3,8 @@
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
+#include "Logic/RunTimeContainer.h"
+#include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
 

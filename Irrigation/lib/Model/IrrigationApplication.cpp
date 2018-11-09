@@ -13,6 +13,13 @@
 using namespace std;
 
 
+
+IrrigationApplication::IrrigationApplication() {
+}
+
+IrrigationApplication::~IrrigationApplication() {
+}
+
 IrrigationApplication& IrrigationApplication::getInstance() {
 	static IrrigationApplication instance;
 	return instance;

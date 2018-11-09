@@ -8,15 +8,15 @@
 using namespace std;
 
 
-GpioHandler& GpioHandler::getInstance() {
-	static GpioHandler instance;
-	return instance;
-}
-
 GpioHandler::GpioHandler() {
 }
 
 GpioHandler::~GpioHandler() {
+}
+
+GpioHandler& GpioHandler::getInstance() {
+	static GpioHandler instance;
+	return instance;
 }
 
 #ifdef __arm__

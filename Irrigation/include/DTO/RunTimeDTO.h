@@ -15,9 +15,8 @@ public:
 	RunTimeDTO(const RunTimeDTO& other);
 	RunTimeDTO(unsigned minutes, unsigned seconds);
 
-	RunTimeDTO& operator= (RunTimeDTO&& other) = delete;
-	RunTimeDTO& operator= (const RunTimeDTO& other) = delete;
-
+	RunTimeDTO& operator= (RunTimeDTO&&) = delete;
+	RunTimeDTO& operator= (const RunTimeDTO&) = delete;
 	bool operator== (const RunTimeDTO& other) const;
 
 	bool hasId() const;

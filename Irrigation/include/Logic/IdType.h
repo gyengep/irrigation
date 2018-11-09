@@ -8,9 +8,12 @@ class IdType {
 
 public:
 	IdType();
+	IdType(IdType&&) = default;
+	IdType(const IdType&) = default;
 	IdType(unsigned id);
 
-	IdType& operator= (const IdType& other);
+	IdType& operator= (IdType&&) = default;
+	IdType& operator= (const IdType&) = default;
 	operator unsigned() const { return id; }
 
 	friend std::string to_string(const IdType& idType);

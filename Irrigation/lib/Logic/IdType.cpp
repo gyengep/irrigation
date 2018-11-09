@@ -20,11 +20,6 @@ IdType::IdType(unsigned id) :
 	lastUsedId = max(id, lastUsedId);
 }
 
-IdType& IdType::operator= (const IdType& other) {
-	this->id = other.id;
-	return *this;
-}
-
 string to_string(const IdType& idType) {
 	ostringstream o;
 	o << (unsigned)idType;
