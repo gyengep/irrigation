@@ -14,9 +14,8 @@ public:
 	DocumentDTO(const DocumentDTO& other);
 	DocumentDTO(std::list<ProgramDTO>&& programs);
 
-	DocumentDTO& operator= (DocumentDTO&& other) = delete;
-	DocumentDTO& operator= (const DocumentDTO& other) = delete;
-
+	DocumentDTO& operator= (DocumentDTO&&) = delete;
+	DocumentDTO& operator= (const DocumentDTO&) = delete;
 	bool operator== (const DocumentDTO& other) const;
 
 	bool hasPrograms() const;

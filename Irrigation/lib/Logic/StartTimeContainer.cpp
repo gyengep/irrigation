@@ -22,8 +22,8 @@ const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& ke
 }
 
 StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, mapped_type&& value) {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		if (it->first == key) {
+	for (auto& startTimeAndIdPair : container) {
+		if (startTimeAndIdPair.first == key) {
 			throw AlreadyExistException("StartTime[" + to_string(key) + "] is already exist");
 		}
 	}

@@ -36,15 +36,15 @@ public:
 	// for testing
 	RunTimeContainer(RunTimeFactory* runTimeFactory);
 
+	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
+	RunTimeContainer& operator= (const RunTimeContainer& other);
+	bool operator== (const RunTimeContainer& other) const;
+
 	const_iterator begin() const 		{ return container.begin(); }
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
 
 	const mapped_type& at(const key_type& key) const;
-
-	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
-	RunTimeContainer& operator= (const RunTimeContainer& other);
-	bool operator== (const RunTimeContainer& other) const;
 
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
 };

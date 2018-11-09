@@ -25,9 +25,8 @@ public:
 			std::list<RunTimeDTO>&& runTimes,
 			std::list<StartTimeDTO>&& startTimes);
 
-	ProgramDTO& operator= (ProgramDTO&& other) = delete;
-	ProgramDTO& operator= (const ProgramDTO& other) = delete;
-
+	ProgramDTO& operator= (ProgramDTO&&) = delete;
+	ProgramDTO& operator= (const ProgramDTO&) = delete;
 	bool operator== (const ProgramDTO& other) const;
 
 	bool hasId() const;

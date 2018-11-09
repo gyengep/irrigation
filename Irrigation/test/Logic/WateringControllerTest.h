@@ -6,15 +6,15 @@
 
 class FakeValve: public Valve {
 public:
-	void activate() {}
-	void deactivate() {}
+	virtual void activate() override {}
+	virtual void deactivate() override {}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class FakeValveFactory : public ValveFactory {
 public:
-	virtual std::unique_ptr<Valve> createValve(size_t) {
+	virtual std::unique_ptr<Valve> createValve(size_t) override {
 		return std::unique_ptr<Valve>(new FakeValve());
 	}
 };

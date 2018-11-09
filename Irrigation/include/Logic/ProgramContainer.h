@@ -27,15 +27,15 @@ public:
 	ProgramContainer(const ProgramContainer&) = delete;
 	virtual ~ProgramContainer() = default;
 
+	ProgramContainer& operator= (ProgramContainer&&) = delete;
+	ProgramContainer& operator= (const ProgramContainer&) = delete;
+
 	virtual value_type& insert(const key_type& key, mapped_type&& value);
 	virtual void erase(const key_type& key);
 
 	const_iterator begin() const 		{ return container.begin(); }
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
-
-	ProgramContainer& operator= (ProgramContainer&&) = delete;
-	ProgramContainer& operator= (const ProgramContainer&) = delete;
 
 	const mapped_type& at(const key_type& key) const;
 };

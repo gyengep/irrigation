@@ -13,12 +13,6 @@ using namespace pugi;
 
 
 
-XmlReader::XmlReader() {
-}
-
-XmlReader::~XmlReader() {
-}
-
 void XmlReader::loadFromString(xml_document* doc, const string& text) {
 	xml_parse_result result = doc->load_string(text.c_str());
 

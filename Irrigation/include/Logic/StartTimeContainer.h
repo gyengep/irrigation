@@ -28,6 +28,9 @@ public:
 	StartTimeContainer(const StartTimeContainer&) = delete;
 	virtual ~StartTimeContainer() = default;
 
+	StartTimeContainer& operator= (StartTimeContainer&&) = delete;
+	StartTimeContainer& operator= (const StartTimeContainer&) = delete;
+
 	virtual value_type& insert(const key_type& key, mapped_type&& value);
 	virtual void erase(const key_type& key);
 	virtual void sort();
@@ -37,9 +40,6 @@ public:
 	size_t size() const 				{ return container.size(); }
 
 	const mapped_type& at(const key_type& key) const;
-
-	StartTimeContainer& operator= (StartTimeContainer&&) = delete;
-	StartTimeContainer& operator= (const StartTimeContainer&) = delete;
 
 	friend std::string to_string(const StartTimeContainer& startTimeContainer);
 };

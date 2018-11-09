@@ -3,6 +3,8 @@
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
+#include "Logic/RunTimeContainer.h"
+#include "Schedulers/SpecifiedScheduler.h"
 
 using namespace std;
 
@@ -22,8 +24,8 @@ const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) c
 }
 
 ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, mapped_type&& value) {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		if (it->first == key) {
+	for (auto& programAndIdPair : container) {
+		if (programAndIdPair.first == key) {
 			throw AlreadyExistException("Program[" + to_string(key) + "] is already exist");
 		}
 	}

@@ -23,7 +23,7 @@ class XmlWriter : public DtoWriter {
 
 public:
 	XmlWriter(bool humanReadable = true);
-	virtual ~XmlWriter();
+	virtual ~XmlWriter() = default;
 
 	virtual std::string save(const DocumentDTO& document) override;
 	virtual std::string save(const ProgramDTO& program) override;

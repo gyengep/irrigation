@@ -21,9 +21,6 @@ class XmlReader : public DtoReader {
 	SpecifiedSchedulerDTO loadScheduler(const pugi::xml_node& node) const;
 
 public:
-	XmlReader();
-	virtual ~XmlReader();
-
 	virtual DocumentDTO loadDocument(const std::string& text) const override;
 	virtual ProgramDTO loadProgram(const std::string& text) const override;
 	virtual RunTimeDTO loadRunTime(const std::string& text) const override;

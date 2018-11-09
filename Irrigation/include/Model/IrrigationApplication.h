@@ -18,10 +18,10 @@ class IrrigationApplication : public Application {
 	virtual void onTerminate() override;
 
 protected:
-	IrrigationApplication() = default;
+	IrrigationApplication();
 
 public:
-	virtual ~IrrigationApplication() = default;
+	virtual ~IrrigationApplication();
 	
 	static IrrigationApplication& getInstance();
 	static std::string getVersion();
