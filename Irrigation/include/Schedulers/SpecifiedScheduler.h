@@ -35,8 +35,8 @@ public:
 	void enableDay(size_t day, bool enable);
 	bool isDayEnabled(size_t day) const;
 
-	virtual bool isDayScheduled(const std::tm& timeinfo) const;
-	virtual unsigned getAdjustment() const;
+	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
+	virtual unsigned getAdjustment() const override;
 
 
 	SpecifiedSchedulerDTO getSpecifiedSchedulerDTO() const;

@@ -21,7 +21,7 @@ public:
 
 	MockValveFactory();
 
-	virtual std::unique_ptr<Valve> createValve(size_t id);
+	virtual std::unique_ptr<Valve> createValve(size_t id) override;
 };
 
 template<class VALVE>

@@ -9,13 +9,13 @@ public:
 	GpioValve(int pin);
 	virtual ~GpioValve();
 
-	virtual void activate();
-	virtual void deactivate();
+	virtual void activate() override;
+	virtual void deactivate() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class GpioValveFactory : public ValveFactory {
 public:
-	virtual std::unique_ptr<Valve> createValve(size_t id);
+	virtual std::unique_ptr<Valve> createValve(size_t id) override;
 };
