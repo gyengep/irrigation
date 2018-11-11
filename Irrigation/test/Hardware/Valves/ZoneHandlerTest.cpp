@@ -1,12 +1,13 @@
-#include "ZoneHandlerTest.h"
 #include <stdexcept>
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ValveConfig.h"
+#include "MockValve.h"
 
 using namespace std;
 using ::testing::Sequence;
 using ::testing::NiceMock;
 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ZoneHandlerTest, getZoneCount) {
 	EXPECT_EQ(6, ZoneHandler::getZoneCount());

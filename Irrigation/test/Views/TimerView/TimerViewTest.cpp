@@ -4,6 +4,7 @@
 using namespace std;
 using namespace testing;
 
+///////////////////////////////////////////////////////////////////////////////
 
 const time_t TimerViewTest::rawTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
 const RunTimeContainer TimerViewTest::runTimes1 { 110, 120, 130, 140, 150, 160 };

@@ -7,6 +7,7 @@ TARGET_NAME     = $(shell basename $(CURDIR))
 PROJECT_ROOT    = ../..
 SRC_EXT         = cpp
 SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+COMMON_DIR      = $(PROJECT_ROOT)/test/Common
 OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
 TARGET_DIR      = $(PROJECT_ROOT)/build
@@ -21,7 +22,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 
 LOCAL_LIBS      = -l$(TARGET_NAME)
-INCLUDE_PATH    = -I$(INCLUDE_DIR)
+INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(COMMON_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
 LIBS            = $(LOCAL_LIBS) -pthread -lgmock
 

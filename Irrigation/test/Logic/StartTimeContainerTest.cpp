@@ -1,23 +1,12 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
-#include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
+#include "MockStartTime.h"
+
 
 using namespace std;
 
 typedef vector<pair<const IdType, StartTime*>> IdTypeStartTimeVector;
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockStartTime : public StartTime {
-public:
-	MockStartTime() {
-		EXPECT_CALL(*this, destructed()).Times(1);
-	}
-
-	MOCK_METHOD0(destructed, void());
-	virtual ~MockStartTime() { destructed(); }
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -156,7 +145,7 @@ TEST(StartTimeContainerTest, atInvalid) {
 	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
 }
 
-TEST(StartTimeContainerTest, destructed) {
+TEST(StartTimeContainerTest, destroyed) {
 	StartTimeContainer startTimes;
 	startTimes.insert(0, unique_ptr<StartTime>(new MockStartTime()));
 }

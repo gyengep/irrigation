@@ -1,23 +1,11 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
-#include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
+#include "MockProgram.h"
 
 using namespace std;
 
 typedef vector<pair<const IdType, Program*>> IdTypeProgramPtrVector;
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockProgram : public Program {
-public:
-	MockProgram() {
-		EXPECT_CALL(*this, destructed()).Times(1);
-	}
-
-	MOCK_METHOD0(destructed, void());
-	virtual ~MockProgram() { destructed(); }
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -118,7 +106,7 @@ TEST(ProgramContainerTest, eraseInvalid) {
 	EXPECT_EQ(required.size(), programs.size());
 }
 
-TEST(ProgramContainerTest, eraseDestructed) {
+TEST(ProgramContainerTest, eraseDestroy) {
 	ProgramContainer programs;
 	programs.insert(0, unique_ptr<Program>(new MockProgram()));
 	programs.erase(0);
@@ -170,7 +158,7 @@ TEST(ProgramContainerTest, atConstInvalid) {
 	EXPECT_THROW(constPrograms.at(6), NoSuchElementException);
 }
 
-TEST(ProgramContainerTest, destructed) {
+TEST(ProgramContainerTest, destroyed) {
 	ProgramContainer programs;
 	programs.insert(0, unique_ptr<Program>(new MockProgram()));
 }

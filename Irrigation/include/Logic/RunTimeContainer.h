@@ -5,13 +5,7 @@
 #include "IdType.h"
 
 class RunTime;
-
-
-class RunTimeFactory {
-public:
-	virtual ~RunTimeFactory() = default;
-	virtual std::unique_ptr<RunTime> createRunTime() const;
-};
+class RunTimeFactory;
 
 
 class RunTimeContainer {

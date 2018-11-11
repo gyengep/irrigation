@@ -4,27 +4,15 @@
 #include "Logic/StartTime.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
-#include "Schedulers/Scheduler.h"
 #include "Schedulers/SpecifiedScheduler.h"
+#include "MockProgram.h"
+#include "MockScheduler.h"
 
 using namespace std;
 using namespace testing;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockProgram : public Program {
-public:
-	MOCK_CONST_METHOD0(getCurrentScheduler, const Scheduler&());
-};
-
-class MockScheduler : public Scheduler {
-public:
-	MOCK_CONST_METHOD1(isDayScheduled, bool(const tm&));
-	MOCK_CONST_METHOD0(getAdjustment, unsigned());
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -301,7 +289,7 @@ time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst
 }
 
 TEST(Program, isScheduled1) {
-	NiceMock<MockProgram> program;
+	NiceMock<MockProgram_Scheduler> program;
 	NiceMock<MockScheduler> scheduler;
 
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
@@ -323,7 +311,7 @@ TEST(Program, isScheduled1) {
 }
 
 TEST(Program, isScheduled2) {
-	NiceMock<MockProgram> program;
+	NiceMock<MockProgram_Scheduler> program;
 	NiceMock<MockScheduler> scheduler;
 
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));

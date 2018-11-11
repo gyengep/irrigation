@@ -1,7 +1,7 @@
+#include "IrrigationDocumentTest.h"
 #include <gmock/gmock.h>
 #include <cstdio>
 #include <thread>
-#include "IrrigationDocumentTest.h"
 #include "DTO/DocumentDTO.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioHandler.h"
@@ -13,7 +13,11 @@
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
 #include "Logic/WateringController.h"
+#include "Model/IrrigationDocument.h"
 #include "Schedulers/SpecifiedScheduler.h"
+#include "MockDtoReader.h"
+#include "MockFileReader.h"
+#include "MockProgram.h"
 
 using namespace std;
 using namespace testing;

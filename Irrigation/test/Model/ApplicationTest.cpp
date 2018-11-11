@@ -1,6 +1,7 @@
 #include "ApplicationTest.h"
 #include <chrono>
 #include <thread>
+#include "MockApplication.h"
 
 using namespace std;
 using namespace testing;

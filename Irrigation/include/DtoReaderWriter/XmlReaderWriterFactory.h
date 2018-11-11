@@ -1,5 +1,5 @@
 #pragma once
-#include "DtoReaderWriterFactory.h"
+#include "DtoReaderWriter.h"
 #include "XmlReader.h"
 #include "XmlWriter.h"
 

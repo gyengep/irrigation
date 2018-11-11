@@ -2,30 +2,11 @@
 #include <memory>
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
-#include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
+#include "MockRunTime.h"
 
 using namespace std;
 using namespace testing;
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockRunTime : public RunTime {
-public:
-	MockRunTime() {
-		EXPECT_CALL(*this, destructed()).Times(1);
-	}
-
-	MOCK_METHOD0(destructed, void());
-	virtual ~MockRunTime() { destructed(); }
-};
-
-class MockRunTimeFactory : public RunTimeFactory {
-public:
-	virtual unique_ptr<RunTime> createRunTime() const {
-		return unique_ptr<RunTime>(new MockRunTime());
-	}
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -118,6 +99,6 @@ TEST(RunTimeContainerTest, atInvalid) {
 	RunTimeContainer runTimes;
 	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
-TEST(RunTimeContainerTest, destructed) {
+TEST(RunTimeContainerTest, destroyed) {
 	RunTimeContainer runTimes(new MockRunTimeFactory());
 }

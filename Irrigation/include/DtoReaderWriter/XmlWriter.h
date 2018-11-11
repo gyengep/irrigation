@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
-#include "DtoReaderWriterFactory.h"
+#include "DtoReaderWriter.h"
 
 
 namespace pugi {
