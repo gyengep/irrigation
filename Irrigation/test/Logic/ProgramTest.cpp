@@ -4,7 +4,7 @@
 #include "Logic/StartTime.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
-#include "Schedulers/SpecifiedScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 #include "MockProgram.h"
 #include "MockScheduler.h"
 
@@ -28,17 +28,17 @@ TEST(Program, name) {
 
 TEST(Program, getSchedulerType) {
 	Program program;
-	EXPECT_EQ(SchedulerType::SPECIFIED_DAYS, program.getSchedulerType());
+	EXPECT_EQ(SchedulerType::WEEKLY, program.getSchedulerType());
 }
 
-TEST(Program, getSpecifiedScheduler) {
+TEST(Program, getWeeklyScheduler) {
 	Program program;
-	EXPECT_NO_THROW(program.getSpecifiedScheduler());
+	EXPECT_NO_THROW(program.getWeeklyScheduler());
 }
 
 TEST(Program, convertProgramDTO) {
-	const ProgramDTO expectedProgramDTO("Abcdefg", "specified",
-			SpecifiedSchedulerDTO(95, list<bool>({ false, true, false, false, false, true, false})),
+	const ProgramDTO expectedProgramDTO("Abcdefg", "weekly",
+			WeeklySchedulerDTO(95, list<bool>({ false, true, false, false, false, true, false})),
 			list<RunTimeDTO>({
 				RunTimeDTO(20, 30).setId(0),
 				RunTimeDTO(21, 31).setId(1),
@@ -58,9 +58,9 @@ TEST(Program, convertProgramDTO) {
 	program.updateFromDTO(expectedProgramDTO);
 
 	EXPECT_THAT(program.getName(), Eq(string("Abcdefg")));
-	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::SPECIFIED_DAYS));
-	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-			Eq(expectedProgramDTO.getSpecifiedScheduler()));
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
+	EXPECT_THAT(program.getWeeklyScheduler().getWeeklySchedulerDTO(),
+			Eq(expectedProgramDTO.getWeeklyScheduler()));
 
 	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
 	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO().setId(0),
@@ -101,46 +101,46 @@ TEST(DISABLED_Program, updateSchedulerTypeFromProgramDTO) {
 	FAIL();
 }
 
-TEST(Program, updateSpecifiedSchedulerFromProgramDTO) {
+TEST(Program, updateWeeklySchedulerFromProgramDTO) {
 	Program program;
-	program.getSpecifiedScheduler().setAdjustment(73);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::MONDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::TUESDAY, true);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::WEDNESDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::THURSDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::FRIDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SATURDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SUNDAY, true);
+	program.getWeeklyScheduler().setAdjustment(73);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::MONDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::TUESDAY, true);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::WEDNESDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::THURSDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::FRIDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::SATURDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::SUNDAY, true);
 
 	program.updateFromDTO(ProgramDTO());
-	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(73, list<bool>({ false, true, false, false, false, false, true }))));
+	EXPECT_THAT(program.getWeeklyScheduler().getWeeklySchedulerDTO(),
+		Eq(WeeklySchedulerDTO(73, list<bool>({ false, true, false, false, false, false, true }))));
 
-	program.updateFromDTO(ProgramDTO().setSpecifiedScheduler(
-		SpecifiedSchedulerDTO(84, list<bool>({ true, false, false, false, true, false, false}))
+	program.updateFromDTO(ProgramDTO().setWeeklyScheduler(
+		WeeklySchedulerDTO(84, list<bool>({ true, false, false, false, true, false, false}))
 	));
 
-	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(84, list<bool>({ true, false, false, false, true, false, false}))));
+	EXPECT_THAT(program.getWeeklyScheduler().getWeeklySchedulerDTO(),
+		Eq(WeeklySchedulerDTO(84, list<bool>({ true, false, false, false, true, false, false}))));
 }
 
-TEST(Program, updateLessSpecifiedSchedulerFromProgramDTO) {
+TEST(Program, updateLessWeeklySchedulerFromProgramDTO) {
 	Program program;
-	program.getSpecifiedScheduler().setAdjustment(34);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SUNDAY, true);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::MONDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::TUESDAY, true);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::WEDNESDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::THURSDAY, true);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::FRIDAY, false);
-	program.getSpecifiedScheduler().enableDay(SpecifiedScheduler::SATURDAY, true);
+	program.getWeeklyScheduler().setAdjustment(34);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::SUNDAY, true);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::MONDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::TUESDAY, true);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::WEDNESDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::THURSDAY, true);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::FRIDAY, false);
+	program.getWeeklyScheduler().enableDay(WeeklyScheduler::SATURDAY, true);
 
-	program.updateFromDTO(ProgramDTO().setSpecifiedScheduler(
-		SpecifiedSchedulerDTO(34, list<bool>({ false, true, false, true }))
+	program.updateFromDTO(ProgramDTO().setWeeklyScheduler(
+		WeeklySchedulerDTO(34, list<bool>({ false, true, false, true }))
 	));
 
-	EXPECT_THAT(program.getSpecifiedScheduler().getSpecifiedSchedulerDTO(),
-		Eq(SpecifiedSchedulerDTO(34, list<bool>({ false, true, false, true, false, false, false}))));
+	EXPECT_THAT(program.getWeeklyScheduler().getWeeklySchedulerDTO(),
+		Eq(WeeklySchedulerDTO(34, list<bool>({ false, true, false, true, false, false, false}))));
 }
 
 

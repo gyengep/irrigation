@@ -14,7 +14,7 @@
 #include "Logic/StartTimeContainer.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
-#include "Schedulers/SpecifiedScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 #include "MockDtoReader.h"
 #include "MockFileReader.h"
 #include "MockProgram.h"
@@ -25,8 +25,8 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
-	ProgramDTO("Abcdefg", "specified",
-		SpecifiedSchedulerDTO(39, list<bool>({ false, true, false, false, false, true, false})),
+	ProgramDTO("Abcdefg", "weekly",
+		WeeklySchedulerDTO(39, list<bool>({ false, true, false, false, false, true, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(2, 0).setId(0),
 			RunTimeDTO(2, 1).setId(1),
@@ -41,8 +41,8 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 			StartTimeDTO(5, 22).setId(102)
 		})
 	).setId(15),
-	ProgramDTO("Program2", "specified",
-		SpecifiedSchedulerDTO(40, list<bool>({ true, false, false, false, false, false, false})),
+	ProgramDTO("Program2", "weekly",
+		WeeklySchedulerDTO(40, list<bool>({ true, false, false, false, false, false, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(1, 20).setId(0),
 			RunTimeDTO(1, 21).setId(1),

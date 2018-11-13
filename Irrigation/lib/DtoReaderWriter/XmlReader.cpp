@@ -61,8 +61,8 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	if ((tmpNode = node.child("schedulers")) != nullptr) {
 		xml_node schedulerNode;
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "specified")) != nullptr) {
-			program.setSpecifiedScheduler(loadScheduler(schedulerNode));
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
+			program.setWeeklyScheduler(loadScheduler(schedulerNode));
 		}
 	}
 
@@ -93,11 +93,11 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	return program;
 }
 
-SpecifiedSchedulerDTO XmlReader::loadScheduler(const xml_node& node) const {
-	SpecifiedSchedulerDTO scheduler;
+WeeklySchedulerDTO XmlReader::loadScheduler(const xml_node& node) const {
+	WeeklySchedulerDTO scheduler;
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		if (strcmp(typeAttribute.as_string(), "specified") != 0) {
+		if (strcmp(typeAttribute.as_string(), "weekly") != 0) {
 			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
 		}
 	}
@@ -223,7 +223,7 @@ StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 	return loadStartTime(node);
 }
 
-SpecifiedSchedulerDTO XmlReader::loadSpecifiedScheduler(const string& text) const {
+WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const string& text) const {
 	const char* tagName = "scheduler";
 
 	unique_ptr<xml_document> doc(new xml_document());

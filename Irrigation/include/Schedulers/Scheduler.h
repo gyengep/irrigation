@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-class SpecifiedScheduler;
+class WeeklyScheduler;
 
 
 enum class SchedulerType {
-	SPECIFIED_DAYS,
+	WEEKLY,
 };
 
 std::string to_string(SchedulerType schedulerType);
@@ -23,5 +23,5 @@ public:
 class SchedulerFactory {
 public:
 	virtual ~SchedulerFactory() = default;
-	virtual std::unique_ptr<SpecifiedScheduler> createSpecifiedScheduler() const;
+	virtual std::unique_ptr<WeeklyScheduler> createWeeklyScheduler() const;
 };

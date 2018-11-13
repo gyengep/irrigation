@@ -4,7 +4,7 @@
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Logic/RunTimeContainer.h"
-#include "Schedulers/SpecifiedScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 
 using namespace std;
 

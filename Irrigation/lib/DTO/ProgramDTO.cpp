@@ -19,8 +19,8 @@ ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 		setSchedulerType(other.getSchedulerType());
 	}
 
-	if (other.hasSpecifiedScheduler()) {
-		setSpecifiedScheduler(SpecifiedSchedulerDTO(other.getSpecifiedScheduler()));
+	if (other.hasWeeklyScheduler()) {
+		setWeeklyScheduler(WeeklySchedulerDTO(other.getWeeklyScheduler()));
 	}
 
 	if (other.hasRunTimes()) {
@@ -33,13 +33,13 @@ ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 }
 
 ProgramDTO::ProgramDTO(const string& name, const string& schedulerType,
-		SpecifiedSchedulerDTO&& specifiedScheduler,
+		WeeklySchedulerDTO&& weeklyScheduler,
 		list<RunTimeDTO>&& runTimes,
 		list<StartTimeDTO>&& startTimes) {
 
 	setName(name);
 	setSchedulerType(schedulerType);
-	setSpecifiedScheduler(move(specifiedScheduler));
+	setWeeklyScheduler(move(weeklyScheduler));
 	setRunTimes(move(runTimes));
 	setStartTimes(move(startTimes));
 }
@@ -48,7 +48,7 @@ bool ProgramDTO::operator== (const ProgramDTO& other) const {
 	return (equalsPtr(id.get(), other.id.get()) &&
 			equalsPtr(name.get(), other.name.get()) &&
 			equalsPtr(schedulerType.get(), other.schedulerType.get()) &&
-			equalsPtr(specifiedScheduler.get(), other.specifiedScheduler.get()) &&
+			equalsPtr(weeklyScheduler.get(), other.weeklyScheduler.get()) &&
 			equalsPtr(runTimes.get(), other.runTimes.get()) &&
 			equalsPtr(startTimes.get(), other.startTimes.get()));
 }
@@ -65,8 +65,8 @@ bool ProgramDTO::hasSchedulerType() const {
 	return (schedulerType.get() != nullptr);
 }
 
-bool ProgramDTO::hasSpecifiedScheduler() const {
-	return (specifiedScheduler.get() != nullptr);
+bool ProgramDTO::hasWeeklyScheduler() const {
+	return (weeklyScheduler.get() != nullptr);
 }
 
 bool ProgramDTO::hasRunTimes() const {
@@ -101,12 +101,12 @@ const string& ProgramDTO::getSchedulerType() const {
 	return *schedulerType.get();
 }
 
-const SpecifiedSchedulerDTO& ProgramDTO::getSpecifiedScheduler() const {
-	if (!hasSpecifiedScheduler()) {
-		throw logic_error("ProgramDTO::getSpecifiedScheduler(): !hasSpecifiedScheduler()");
+const WeeklySchedulerDTO& ProgramDTO::getWeeklyScheduler() const {
+	if (!hasWeeklyScheduler()) {
+		throw logic_error("ProgramDTO::getWeeklyScheduler(): !hasWeeklyScheduler()");
 	}
 
-	return *specifiedScheduler.get();
+	return *weeklyScheduler.get();
 }
 
 const list<RunTimeDTO>& ProgramDTO::getRunTimes() const {
@@ -140,8 +140,8 @@ ProgramDTO& ProgramDTO::setSchedulerType(const string& schedulerType) {
 	return *this;
 }
 
-ProgramDTO& ProgramDTO::setSpecifiedScheduler(SpecifiedSchedulerDTO&& specifiedScheduler) {
-	this->specifiedScheduler.reset(new SpecifiedSchedulerDTO(move(specifiedScheduler)));
+ProgramDTO& ProgramDTO::setWeeklyScheduler(WeeklySchedulerDTO&& weeklyScheduler) {
+	this->weeklyScheduler.reset(new WeeklySchedulerDTO(move(weeklyScheduler)));
 	return *this;
 }
 
@@ -163,7 +163,7 @@ ostream& operator<<(ostream& os, const ProgramDTO& program) {
 	os << ", ";
 	PRINT_STR(os, "schedulerType", program.schedulerType.get());
 	os << ", ";
-	PRINT_PTR(os, "specifiedScheduler", program.specifiedScheduler.get());
+	PRINT_PTR(os, "weeklyScheduler", program.weeklyScheduler.get());
 	os << ", ";
 	PRINT_PTR(os, "runTimes", program.runTimes.get());
 	os << ", ";

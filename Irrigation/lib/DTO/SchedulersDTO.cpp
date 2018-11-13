@@ -6,7 +6,7 @@
 using namespace std;
 
 
-SpecifiedSchedulerDTO::SpecifiedSchedulerDTO(const SpecifiedSchedulerDTO& other) {
+WeeklySchedulerDTO::WeeklySchedulerDTO(const WeeklySchedulerDTO& other) {
 	if (other.hasAdjustment()) {
 		setAdjustment(other.getAdjustment());
 	}
@@ -16,52 +16,52 @@ SpecifiedSchedulerDTO::SpecifiedSchedulerDTO(const SpecifiedSchedulerDTO& other)
 	}
 }
 
-SpecifiedSchedulerDTO::SpecifiedSchedulerDTO(unsigned adjustment, list<bool>&& values) {
+WeeklySchedulerDTO::WeeklySchedulerDTO(unsigned adjustment, list<bool>&& values) {
 	setAdjustment(adjustment);
 	setValues(move(values));
 }
 
-bool SpecifiedSchedulerDTO::operator== (const SpecifiedSchedulerDTO& other) const {
+bool WeeklySchedulerDTO::operator== (const WeeklySchedulerDTO& other) const {
 	return (equalsPtr(adjustment.get(), other.adjustment.get()) &&
 			equalsPtr(values.get(), other.values.get()));
 }
 
-bool SpecifiedSchedulerDTO::hasAdjustment() const {
+bool WeeklySchedulerDTO::hasAdjustment() const {
 	return (adjustment.get() != nullptr);
 }
 
-bool SpecifiedSchedulerDTO::hasValues() const {
+bool WeeklySchedulerDTO::hasValues() const {
 	return (values.get() != nullptr);
 }
 
-unsigned SpecifiedSchedulerDTO::getAdjustment() const {
+unsigned WeeklySchedulerDTO::getAdjustment() const {
 	if (!hasAdjustment()) {
-		throw logic_error("SpecifiedSchedulerDTO::getAdjustment(): !hasAdjustment()");
+		throw logic_error("WeeklySchedulerDTO::getAdjustment(): !hasAdjustment()");
 	}
 
 	return *adjustment.get();
 }
 
-const list<bool>& SpecifiedSchedulerDTO::getValues() const {
+const list<bool>& WeeklySchedulerDTO::getValues() const {
 	if (!hasValues()) {
-		throw logic_error("SpecifiedSchedulerDTO::getValues(): !hasValues()");
+		throw logic_error("WeeklySchedulerDTO::getValues(): !hasValues()");
 	}
 
 	return *values.get();
 }
 
-SpecifiedSchedulerDTO& SpecifiedSchedulerDTO::setAdjustment(unsigned adjustment) {
+WeeklySchedulerDTO& WeeklySchedulerDTO::setAdjustment(unsigned adjustment) {
 	this->adjustment.reset(new unsigned(adjustment));
 	return *this;
 }
 
-SpecifiedSchedulerDTO& SpecifiedSchedulerDTO::setValues(list<bool>&& values) {
+WeeklySchedulerDTO& WeeklySchedulerDTO::setValues(list<bool>&& values) {
 	this->values.reset(new list<bool>(move(values)));
 	return *this;
 }
 
-ostream& operator<<(ostream& os, const SpecifiedSchedulerDTO& scheduler) {
-	os << "SpecifiedSchedulerDTO{";
+ostream& operator<<(ostream& os, const WeeklySchedulerDTO& scheduler) {
+	os << "WeeklySchedulerDTO{";
 	PRINT_PTR(os, "adjustment", scheduler.adjustment.get());
 	os << ", ";
 	PRINT_PTR(os, "values", scheduler.values.get());

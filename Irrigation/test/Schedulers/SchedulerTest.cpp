@@ -78,5 +78,5 @@ TEST(Scheduler, Time) {
 }
 
 TEST(schedulerType, to_string) {
-	EXPECT_EQ("specified", to_string(SchedulerType::SPECIFIED_DAYS));
+	EXPECT_EQ("weekly", to_string(SchedulerType::WEEKLY));
 }

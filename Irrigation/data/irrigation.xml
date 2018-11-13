@@ -3,9 +3,9 @@
 	<programs>
 		<program>
 			<name>fulocsolas</name>
-			<schedulertype>specified</schedulertype>
+			<schedulertype>weekly</schedulertype>
 			<schedulers>
-				<scheduler type="specified">
+				<scheduler type="weekly">
 					<adjustment>30</adjustment>
 					<days>
 						<day>true</day>
@@ -29,9 +29,9 @@
 		</program>
 		<program>
 			<name>buxus</name>
-			<schedulertype>specified</schedulertype>
+			<schedulertype>weekly</schedulertype>
 			<schedulers>
-				<scheduler type="specified">
+				<scheduler type="weekly">
 					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>
@@ -53,9 +53,9 @@
 		</program>
 		<program>
 			<name>paradicsom</name>
-			<schedulertype>specified</schedulertype>
+			<schedulertype>weekly</schedulertype>
 			<schedulers>
-				<scheduler type="specified">
+				<scheduler type="weekly">
 					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>
@@ -78,9 +78,9 @@
 		</program>
 		<program>
 			<name>kanikula</name>
-			<schedulertype>specified</schedulertype>
+			<schedulertype>weekly</schedulertype>
 			<schedulers>
-				<scheduler type="specified">
+				<scheduler type="weekly">
 					<adjustment>10</adjustment>
 					<days>
 						<day>true</day>
@@ -103,9 +103,9 @@
 		</program>
 		<program>
 			<name>test</name>
-			<schedulertype>specified</schedulertype>
+			<schedulertype>weekly</schedulertype>
 			<schedulers>
-				<scheduler type="specified">
+				<scheduler type="weekly">
 					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>

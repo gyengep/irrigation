@@ -20,9 +20,9 @@ const TestDataType testData_programs(
 			"<programs>"
 				"<program id=\"5\">"
 					"<name>abcdefg</name>"
-					"<schedulertype>specified</schedulertype>"
+					"<schedulertype>weekly</schedulertype>"
 					"<schedulers>"
-						"<scheduler type=\"specified\">"
+						"<scheduler type=\"weekly\">"
 							"<adjustment>130</adjustment>"
 							"<days>"
 								"<day>true</day>"
@@ -42,9 +42,9 @@ const TestDataType testData_programs(
 				"</program>"
 				"<program id=\"6\">"
 					"<name>123456</name>"
-					"<schedulertype>specified</schedulertype>"
+					"<schedulertype>weekly</schedulertype>"
 					"<schedulers>"
-						"<scheduler type=\"specified\">"
+						"<scheduler type=\"weekly\">"
 							"<adjustment>140</adjustment>"
 							"<days>"
 								"<day>true</day>"
@@ -70,8 +70,8 @@ const TestDataType testData_programs(
 			ProgramDTO()
 				.setId(5)
 				.setName("abcdefg")
-				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, list<bool>({ true, false })))
+				.setSchedulerType("weekly")
+				.setWeeklyScheduler(WeeklySchedulerDTO(130, list<bool>({ true, false })))
 				.setRunTimes(list<RunTimeDTO>({
 					RunTimeDTO(25, 54).setId(15),
 					RunTimeDTO(35, 44).setId(25)}))
@@ -82,8 +82,8 @@ const TestDataType testData_programs(
 			ProgramDTO()
 				.setId(6)
 				.setName("123456")
-				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(140, list<bool>({ true, true, false, false })))
+				.setSchedulerType("weekly")
+				.setWeeklyScheduler(WeeklySchedulerDTO(140, list<bool>({ true, true, false, false })))
 				.setRunTimes(list<RunTimeDTO>({
 					RunTimeDTO(30, 15).setId(115),
 					RunTimeDTO(40, 25).setId(125),
@@ -99,9 +99,9 @@ const TestDataType testData_programsWithoutId(
 			"<programs>"
 				"<program>"
 					"<name>abcdefg</name>"
-					"<schedulertype>specified</schedulertype>"
+					"<schedulertype>weekly</schedulertype>"
 					"<schedulers>"
-						"<scheduler type=\"specified\">"
+						"<scheduler type=\"weekly\">"
 							"<adjustment>130</adjustment>"
 							"<days>"
 								"<day>true</day>"
@@ -124,8 +124,8 @@ const TestDataType testData_programsWithoutId(
 		DocumentDTO(list<ProgramDTO>({
 			ProgramDTO()
 				.setName("abcdefg")
-				.setSchedulerType("specified")
-				.setSpecifiedScheduler(SpecifiedSchedulerDTO(130, list<bool>({ true, false })))
+				.setSchedulerType("weekly")
+				.setWeeklyScheduler(WeeklySchedulerDTO(130, list<bool>({ true, false })))
 				.setRunTimes(list<RunTimeDTO>({
 					RunTimeDTO(25, 54),
 					RunTimeDTO(52, 45)}))

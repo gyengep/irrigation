@@ -13,9 +13,9 @@ typedef pair<string, ProgramDTO> TestDataType;
 const TestDataType testData_all(
 		"<program>"
 			"<name>abcdefg</name>"
-			"<schedulertype>specified</schedulertype>"
+			"<schedulertype>weekly</schedulertype>"
 			"<schedulers>"
-				"<scheduler type=\"specified\">"
+				"<scheduler type=\"weekly\">"
 					"<adjustment>110</adjustment>"
 					"<days>"
 						"<day>true</day>"
@@ -35,8 +35,8 @@ const TestDataType testData_all(
 		"</program>",
 		ProgramDTO()
 		.setName("abcdefg")
-		.setSchedulerType("specified")
-		.setSpecifiedScheduler(SpecifiedSchedulerDTO(110, list<bool>({ true, false})))
+		.setSchedulerType("weekly")
+		.setWeeklyScheduler(WeeklySchedulerDTO(110, list<bool>({ true, false})))
 		.setRunTimes(list<RunTimeDTO>({
 			RunTimeDTO(19, 23).setId(15),
 			RunTimeDTO(31, 46).setId(25)}))
@@ -55,15 +55,15 @@ const TestDataType testData_name(
 
 const TestDataType testData_schedulerType(
 		"<program>"
-			"<schedulertype>specified</schedulertype>"
+			"<schedulertype>weekly</schedulertype>"
 		"</program>",
-		ProgramDTO().setSchedulerType("specified")
+		ProgramDTO().setSchedulerType("weekly")
 		);
 
 const TestDataType testData_schedulers(
 		"<program>"
 			"<schedulers>"
-				"<scheduler type=\"specified\">"
+				"<scheduler type=\"weekly\">"
 					"<adjustment>120</adjustment>"
 					"<days>"
 						"<day>true</day>"
@@ -73,7 +73,7 @@ const TestDataType testData_schedulers(
 			"</schedulers>"
 		"</program>",
 		ProgramDTO()
-		.setSpecifiedScheduler(SpecifiedSchedulerDTO(120, list<bool>({ true, false})))
+		.setWeeklyScheduler(WeeklySchedulerDTO(120, list<bool>({ true, false})))
 		);
 
 const TestDataType testData_runTimes(

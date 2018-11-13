@@ -58,7 +58,7 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SpecifiedSchedulerReaderTest : public ::testing::Test {
+class WeeklySchedulerReaderTest : public ::testing::Test {
 protected:
 
 	XmlReader reader;
@@ -67,12 +67,12 @@ protected:
     virtual void TearDown() {}
 };
 
-class SpecifiedSchedulerWriterTest : public ::testing::Test {
+class WeeklySchedulerWriterTest : public ::testing::Test {
 protected:
 
 	XmlWriter writer;
 
-	SpecifiedSchedulerWriterTest() : writer(false) {}
+	WeeklySchedulerWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}

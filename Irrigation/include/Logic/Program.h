@@ -15,7 +15,7 @@ class Program {
 
 	std::string name;
 	SchedulerType schedulerType;
-	std::unique_ptr<SpecifiedScheduler> specifiedScheduler;
+	std::unique_ptr<WeeklyScheduler> weeklyScheduler;
 	std::unique_ptr<RunTimeContainer> runTimes;
 	std::unique_ptr<StartTimeContainer> startTimes;
 
@@ -37,8 +37,8 @@ public:
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
 
-	const SpecifiedScheduler& getSpecifiedScheduler() const;
-	SpecifiedScheduler& getSpecifiedScheduler();
+	const WeeklyScheduler& getWeeklyScheduler() const;
+	WeeklyScheduler& getWeeklyScheduler();
 
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
 	RunTimeContainer& getRunTimes() { return *runTimes; }

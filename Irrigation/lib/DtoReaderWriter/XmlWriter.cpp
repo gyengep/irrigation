@@ -54,8 +54,8 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 		node.append_child("schedulertype").text().set(program.getSchedulerType().c_str());
 	}
 
-	if (program.hasSpecifiedScheduler()) {
-		const SpecifiedSchedulerDTO& scheduler = program.getSpecifiedScheduler();
+	if (program.hasWeeklyScheduler()) {
+		const WeeklySchedulerDTO& scheduler = program.getWeeklyScheduler();
 		xml_node schedulersListNode = node.append_child("schedulers");
 		saveScheduler(&schedulersListNode, scheduler);
 	}
@@ -109,9 +109,9 @@ void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDTO& startTime) {
 	}
 }
 
-void XmlWriter::saveScheduler(xml_node* parent, const SpecifiedSchedulerDTO& scheduler) {
+void XmlWriter::saveScheduler(xml_node* parent, const WeeklySchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
-	node.append_attribute("type").set_value("specified");
+	node.append_attribute("type").set_value("weekly");
 
 	if (scheduler.hasAdjustment()) {
 		node.append_child("adjustment").text().set(scheduler.getAdjustment());
@@ -152,7 +152,7 @@ string XmlWriter::save(const StartTimeDTO& startTime) {
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const SpecifiedSchedulerDTO& scheduler) {
+string XmlWriter::save(const WeeklySchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);

@@ -12,7 +12,7 @@ class ProgramDTO {
 	std::unique_ptr<const unsigned> id;
 	std::unique_ptr<const std::string> name;
 	std::unique_ptr<const std::string> schedulerType;
-	std::unique_ptr<const SpecifiedSchedulerDTO> specifiedScheduler;
+	std::unique_ptr<const WeeklySchedulerDTO> weeklyScheduler;
 	std::unique_ptr<const std::list<RunTimeDTO>> runTimes;
 	std::unique_ptr<const std::list<StartTimeDTO>> startTimes;
 
@@ -21,7 +21,7 @@ public:
 	ProgramDTO(ProgramDTO&& other) = default;
 	ProgramDTO(const ProgramDTO& other);
 	ProgramDTO(const std::string& name, const std::string& schedulerType,
-			SpecifiedSchedulerDTO&& specifiedScheduler,
+			WeeklySchedulerDTO&& weeklyScheduler,
 			std::list<RunTimeDTO>&& runTimes,
 			std::list<StartTimeDTO>&& startTimes);
 
@@ -32,21 +32,21 @@ public:
 	bool hasId() const;
 	bool hasName() const;
 	bool hasSchedulerType() const;
-	bool hasSpecifiedScheduler() const;
+	bool hasWeeklyScheduler() const;
 	bool hasRunTimes() const;
 	bool hasStartTimes() const;
 
 	unsigned getId() const;
 	const std::string& getName() const;
 	const std::string& getSchedulerType() const;
-	const SpecifiedSchedulerDTO& getSpecifiedScheduler() const;
+	const WeeklySchedulerDTO& getWeeklyScheduler() const;
 	const std::list<RunTimeDTO>& getRunTimes() const;
 	const std::list<StartTimeDTO>& getStartTimes() const;
 
 	ProgramDTO& setId(unsigned id);
 	ProgramDTO& setName(const std::string& name);
 	ProgramDTO& setSchedulerType(const std::string& schedulerType);
-	ProgramDTO& setSpecifiedScheduler(SpecifiedSchedulerDTO&& specifiedScheduler);
+	ProgramDTO& setWeeklyScheduler(WeeklySchedulerDTO&& weeklyScheduler);
 	ProgramDTO& setRunTimes(std::list<RunTimeDTO>&& runTimes);
 	ProgramDTO& setStartTimes(std::list<StartTimeDTO>&& startTimes);
 
