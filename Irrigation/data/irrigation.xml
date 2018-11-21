@@ -17,6 +17,12 @@
 						<day>true</day>
 					</days>
 				</scheduler>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>false</day>
+					</days>
+				</scheduler>
 			</schedulers>
 			<runtimes>
 				<runtime id="0"><minute>26</minute></runtime>
@@ -43,6 +49,13 @@
 						<day>false</day>
 					</days>
 				</scheduler>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
+						<day>false</day>
+					</days>
+				</scheduler>
 			</schedulers>
 			<runtimes>
 				<runtime id="3"><minute>15</minute></runtime>
@@ -64,6 +77,13 @@
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
+						<day>false</day>
+					</days>
+				</scheduler>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
 						<day>false</day>
 					</days>
 				</scheduler>
@@ -92,6 +112,12 @@
 						<day>true</day>
 					</days>
 				</scheduler>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>false</day>
+					</days>
+				</scheduler>
 			</schedulers>
 			<runtimes>
 				<runtime id="0"><minute>26</minute></runtime>
@@ -115,6 +141,12 @@
 						<day>true</day>
 						<day>true</day>
 						<day>true</day>
+					</days>
+				</scheduler>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>

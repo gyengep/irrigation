@@ -6,7 +6,7 @@
 #include "DTO/ProgramDTO.h"
 #include "DTO/RunTimeDTO.h"
 #include "DTO/StartTimeDTO.h"
-#include "DTO/SchedulersDTO.h"
+#include "DTO/WeeklySchedulerDTO.h"
 
 using namespace std;
 using namespace pugi;
@@ -62,7 +62,7 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 		xml_node schedulerNode;
 
 		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
-			program.setWeeklyScheduler(loadScheduler(schedulerNode));
+			program.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
 		}
 	}
 
@@ -93,7 +93,54 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	return program;
 }
 
-WeeklySchedulerDTO XmlReader::loadScheduler(const xml_node& node) const {
+PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const xml_node& node) const {
+	PeriodicSchedulerDTO scheduler;
+
+	xml_attribute typeAttribute;
+	if ((typeAttribute = node.attribute("type")) != nullptr) {
+		if (strcmp(typeAttribute.as_string(), "periodic") != 0) {
+			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
+		}
+	}
+
+	xml_node tmpNode;
+
+	if ((tmpNode = node.child("adjustment")) != nullptr) {
+		scheduler.setAdjustment(tmpNode.text().as_uint());
+	}
+
+	if ((tmpNode = node.child("days")) != nullptr) {
+		list<bool> values;
+
+		xml_node dayNode = tmpNode.child("day");
+		while (dayNode) {
+			values.push_back(dayNode.text().as_bool());
+			dayNode = dayNode.next_sibling("day");
+		}
+
+		scheduler.setValues(move(values));
+	}
+
+	if ((tmpNode = node.child("periodStartDate")) != nullptr) {
+		xml_node dateNode;
+
+		if ((dateNode = tmpNode.child("year")) != nullptr) {
+			scheduler.setPeriodStartYear(dateNode.text().as_uint());
+		}
+
+		if ((dateNode = tmpNode.child("month")) != nullptr) {
+			scheduler.setPeriodStartMonth(dateNode.text().as_uint());
+		}
+
+		if ((dateNode = tmpNode.child("day")) != nullptr) {
+			scheduler.setPeriodStartDay(dateNode.text().as_uint());
+		}
+	}
+
+	return scheduler;
+}
+
+WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const xml_node& node) const {
 	WeeklySchedulerDTO scheduler;
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
@@ -223,6 +270,21 @@ StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 	return loadStartTime(node);
 }
 
+PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const string& text) const {
+	const char* tagName = "scheduler";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'scheduler' element tag not found");
+	}
+
+	return loadPeriodicScheduler(node);
+}
+
 WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const string& text) const {
 	const char* tagName = "scheduler";
 
@@ -235,5 +297,5 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const string& text) const {
 		throw RequiredTagMissing("The 'scheduler' element tag not found");
 	}
 
-	return loadScheduler(node);
+	return loadWeeklyScheduler(node);
 }

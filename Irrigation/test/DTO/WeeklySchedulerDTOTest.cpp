@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/WeeklySchedulerDTO.h"
 
 using namespace std;
 using namespace testing;

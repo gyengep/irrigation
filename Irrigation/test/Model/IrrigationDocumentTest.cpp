@@ -26,6 +26,7 @@ using namespace testing;
 
 const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	ProgramDTO("Abcdefg", "weekly",
+		PeriodicSchedulerDTO(56, list<bool>({ false, true, false}), 2016, 1, 2),
 		WeeklySchedulerDTO(39, list<bool>({ false, true, false, false, false, true, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(2, 0).setId(0),
@@ -42,6 +43,7 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 		})
 	).setId(15),
 	ProgramDTO("Program2", "weekly",
+		PeriodicSchedulerDTO(106, list<bool>({ true, false}), 2018, 10, 20),
 		WeeklySchedulerDTO(40, list<bool>({ true, false, false, false, false, false, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(1, 20).setId(0),

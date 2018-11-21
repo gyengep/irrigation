@@ -4,8 +4,9 @@
 #include "StartTime.h"
 #include "StartTimeContainer.h"
 #include <sstream>
-#include "Schedulers/WeeklyScheduler.h"
 #include "Logger/Logger.h"
+#include "Schedulers/PeriodicScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ using namespace std;
 Program::Program() :
 	name(),
 	schedulerType(SchedulerType::WEEKLY),
+	periodicScheduler(schedulerFactory.createPeriodicScheduler()),
 	weeklyScheduler(schedulerFactory.createWeeklyScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
@@ -42,6 +44,8 @@ const Scheduler& Program::getCurrentScheduler() const {
 	switch (schedulerType) {
 	case SchedulerType::WEEKLY:
 		return getWeeklyScheduler();
+	case SchedulerType::PERIODIC:
+		return getPeriodicScheduler();
 	default:
 		throw invalid_argument("Program::getCurrentScheduler(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
 	}
@@ -59,6 +63,14 @@ bool Program::isScheduled(const time_t& rawTime) const {
 	}
 
 	return false;
+}
+
+const PeriodicScheduler& Program::getPeriodicScheduler() const {
+	return *periodicScheduler.get();
+}
+
+PeriodicScheduler& Program::getPeriodicScheduler() {
+	return *periodicScheduler.get();
 }
 
 const WeeklyScheduler& Program::getWeeklyScheduler() const {
@@ -81,7 +93,8 @@ ProgramDTO Program::getProgramDTO() const {
 		startTimeDTOs.push_back(startTimeAndIdPair.second->getStartTimeDTO().setId(startTimeAndIdPair.first));
 	}
 
-	return ProgramDTO(name.c_str(), "weekly",
+	return ProgramDTO(name, to_string(getSchedulerType()),
+			move(getPeriodicScheduler().getPeriodicSchedulerDTO()),
 			move(getWeeklyScheduler().getWeeklySchedulerDTO()),
 			move(runTimeDTOs),
 			move(startTimeDTOs));
@@ -93,11 +106,21 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasSchedulerType()) {
-		if (programDTO.getSchedulerType() != "weekly") {
+		const static string periodicSchedulerText = to_string(SchedulerType::PERIODIC);
+		const static string weeklySchedulerText = to_string(SchedulerType::WEEKLY);
+
+		if (periodicSchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::PERIODIC);
+		} else if (weeklySchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::WEEKLY);
+		} else {
 			throw invalid_argument("Program::updateFromDTO(): invalid SchedulerType: " + programDTO.getSchedulerType());
 		}
+	}
 
-		setSchedulerType(SchedulerType::WEEKLY);
+	if (programDTO.hasPeriodicScheduler()) {
+		periodicScheduler = schedulerFactory.createPeriodicScheduler();
+		periodicScheduler->updateFromDTO(programDTO.getPeriodicScheduler());
 	}
 
 	if (programDTO.hasWeeklyScheduler()) {
@@ -140,7 +163,9 @@ string to_string(const Program& program) {
 	o << "Program{";
 	o << "name=\"" << program.getName() << "\", ";
 	o << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
-	o << "weeklyScheduler=" << to_string(program.getWeeklyScheduler()) << ", ";
+	o << "schedulers=[" <<
+			to_string(program.getPeriodicScheduler()) << ", " <<
+			to_string(program.getWeeklyScheduler()) << "], ";
 	o << "runTimes=" << to_string(program.getRunTimes()) << ", ";
 	o << "startTimes=" << to_string(program.getStartTimes());
 	o << "}";

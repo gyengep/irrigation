@@ -10,6 +10,8 @@ string to_string(SchedulerType schedulerType) {
 	switch (schedulerType) {
 	case SchedulerType::WEEKLY:
 		return "weekly";
+	case SchedulerType::PERIODIC:
+		return "periodic";
 	default:
 		throw invalid_argument("Unknown value of enum SchedulerType: " + to_string(static_cast<unsigned>(schedulerType)));
 	}

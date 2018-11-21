@@ -1,4 +1,4 @@
-#include "SchedulersDTO.h"
+#include "WeeklySchedulerDTO.h"
 #include "EqualsPtr.h"
 #include "PrintToStream.h"
 #include <stdexcept>

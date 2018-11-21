@@ -6,6 +6,7 @@ class DocumentDTO;
 class ProgramDTO;
 class RunTimeDTO;
 class StartTimeDTO;
+class PeriodicSchedulerDTO;
 class WeeklySchedulerDTO;
 
 
@@ -16,6 +17,7 @@ public:
 	virtual ProgramDTO loadProgram(const std::string& text) const = 0;
 	virtual RunTimeDTO loadRunTime(const std::string& text) const = 0;
 	virtual StartTimeDTO loadStartTime(const std::string& text) const = 0;
+	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const = 0;
 	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const = 0;
 };
 
@@ -27,6 +29,7 @@ public:
 	virtual std::string save(const ProgramDTO& program) = 0;
 	virtual std::string save(const RunTimeDTO& runTime) = 0;
 	virtual std::string save(const StartTimeDTO& startTime) = 0;
+	virtual std::string save(const PeriodicSchedulerDTO& scheduler) = 0;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) = 0;
 };
 
