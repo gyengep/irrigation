@@ -1,0 +1,17 @@
+#!/bin/bash
+
+IS_ENGINEERING_RELEASE=TRUE
+
+PROGRAM_MAJOR=0
+PROGRAM_MINOR=2
+
+GIT_DATE=$(git log -1 --pretty=format:'%ai' | cut -c3-4,6-7,9-10)
+GIT_REVISION=$(git rev-parse --short=8 HEAD || echo unknown)
+
+if [ "$IS_ENGINEERING_RELEASE" = "TRUE" ]; then
+	VERSION="$PROGRAM_MAJOR.$PROGRAM_MINOR-$GIT_DATE-$GIT_REVISION"
+else
+	VERSION="$PROGRAM_MAJOR.$PROGRAM_MINOR"
+fi
+
+echo "v$VERSION"

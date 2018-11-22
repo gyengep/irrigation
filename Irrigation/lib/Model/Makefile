@@ -25,6 +25,8 @@ CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP
 CPPFLAGS        = $(INCLUDE_PATH) 
 ARFLAGS         = r 
 
+VERSION         = $(shell $(PROJECT_ROOT)/scripts/build/get_version.sh)
+
 # DEBUG flags
 #CXXFLAGS        += -O0 -g3
 
@@ -47,6 +49,7 @@ print:
 	@echo SOURCE_DIR: $(SOURCE_DIR)
 	@echo OBJECT_DIR: $(OBJECT_DIR)
 	@echo TARGET_DIR: $(TARGET_DIR)
+	@echo VERSION: $(VERSION)
 	@echo SOURCES: $(SOURCES)
 	@echo OBJECTS: $(OBJECTS)
 	@echo DEPENDS: $(DEPENDS)
@@ -56,7 +59,7 @@ print:
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<  -Dversion_string=\"$(VERSION)\"
 	
 $(TARGET):	$(OBJECTS)
 	@mkdir -p $(TARGET_DIR)
