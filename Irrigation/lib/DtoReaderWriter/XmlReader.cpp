@@ -61,6 +61,10 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	if ((tmpNode = node.child("schedulers")) != nullptr) {
 		xml_node schedulerNode;
 
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "periodic")) != nullptr) {
+			program.setPeriodicScheduler(loadPeriodicScheduler(schedulerNode));
+		}
+
 		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
 			program.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
 		}

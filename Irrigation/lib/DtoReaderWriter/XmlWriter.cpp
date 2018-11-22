@@ -54,10 +54,18 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 		node.append_child("schedulertype").text().set(program.getSchedulerType().c_str());
 	}
 
-	if (program.hasWeeklyScheduler()) {
-		const WeeklySchedulerDTO& scheduler = program.getWeeklyScheduler();
+	if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler()) {
 		xml_node schedulersListNode = node.append_child("schedulers");
-		saveWeeklyScheduler(&schedulersListNode, scheduler);
+
+		if (program.hasPeriodicScheduler()) {
+			const PeriodicSchedulerDTO& periodicScheduler = program.getPeriodicScheduler();
+			savePeriodicScheduler(&schedulersListNode, periodicScheduler);
+		}
+
+		if (program.hasWeeklyScheduler()) {
+			const WeeklySchedulerDTO& weeklyScheduler = program.getWeeklyScheduler();
+			saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
+		}
 	}
 
 	if (program.hasRunTimes()) {
