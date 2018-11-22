@@ -14,7 +14,15 @@ VERSION+="$PROGRAM_MAJOR.$PROGRAM_MINOR"
 
 if [ "$IS_ENGINEERING_RELEASE" = "TRUE" ]; then
 	VERSION+="-$GIT_DATE"
-	VERSION+="-$GIT_BRANCH"
+	
+	if [ -n "$GIT_BRANCH" ]; then
+		if [ "$GIT_BRANCH" != "master" ]; then
+			VERSION+="-$GIT_BRANCH"
+		fi
+	else
+		VERSION+="<detached>"
+	fi
+	
 	VERSION+="-$GIT_REVISION"
 fi
 
