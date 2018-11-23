@@ -5,13 +5,13 @@
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
 	tm timeinfo = toCalendarTime(year, month, day, hour, min, sec, dst);
 	return mktime(&timeinfo);
 }
-
-tm toCalendarTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
+*/
+tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 
 	if ((year < 1900) ||
 		(month < 1 || month > 12) ||
@@ -31,11 +31,10 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec, bool
 	timeinfo.tm_hour = hour;
 	timeinfo.tm_min = min;
 	timeinfo.tm_sec = sec;
-	timeinfo.tm_isdst = dst ? 1 : 0;
 
 	return timeinfo;
 }
 
 tm toCalendarTime(int year, int month, int day) {
-	return toCalendarTime(year, month, day, 0, 0, 0, false);
+	return toCalendarTime(year, month, day, 0, 0, 0);
 }

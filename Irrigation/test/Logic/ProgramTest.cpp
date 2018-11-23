@@ -296,7 +296,7 @@ TEST(Program, isScheduled1) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec, true);
+				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
 				time_t t = mktime(&timeinfo);
 				EXPECT_FALSE(program.isScheduled(t));
 			}
@@ -319,7 +319,7 @@ TEST(Program, isScheduled2) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec, true);
+				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
 				time_t rawtime = mktime(&timeinfo);
 
 				bool requestedResult = false;
