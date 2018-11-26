@@ -51,13 +51,11 @@ const Scheduler& Program::getCurrentScheduler() const {
 	}
 }
 
-bool Program::isScheduled(const time_t& rawTime) const {
-	tm timeinfo = *localtime(&rawTime);
-	StartTime currentTime(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+bool Program::isScheduled(const tm& timeinfo) const {
 
 	for (auto& startTimeAndIdPair : *startTimes) {
 		const StartTime& startTime = *startTimeAndIdPair.second;
-		if (startTime == currentTime) {
+		if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
 			return getCurrentScheduler().isDayScheduled(timeinfo);
 		}
 	}

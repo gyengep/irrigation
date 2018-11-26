@@ -13,7 +13,7 @@ class PeriodicScheduler: public Scheduler {
 	unsigned adjustment;
 	unsigned periodStartYear, periodStartMonth, periodStartDay;
 
-	unsigned elapsedDaysFromEpochToPeriodStart;
+	unsigned elapsedDaysSinceEpochToPeriodStart;
 
 	void checkIndex(size_t day) const;
 
@@ -40,7 +40,7 @@ public:
 	void setAdjustment(unsigned adjustment);
 	virtual unsigned getAdjustment() const override;
 
-	static unsigned getElapsedDaysAfterEpoch(const std::tm& startDay);
+	static unsigned getElapsedDaysSinceEpoch(const std::tm& timeinfo);
 
 	friend std::string to_string(const PeriodicScheduler& periodicScheduler);
 };

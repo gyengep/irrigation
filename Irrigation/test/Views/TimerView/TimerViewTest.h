@@ -15,7 +15,8 @@ class RunTimeContainer;
 class TimerViewTest : public ::testing::Test {
 protected:
 
-	static const time_t rawTime;
+	static const std::time_t rawtime;
+	static const std::tm timeinfo;
 	static const unsigned adjustment1 = 70;
 	static const unsigned adjustment2 = 80;
 	static const RunTimeContainer runTimes1;

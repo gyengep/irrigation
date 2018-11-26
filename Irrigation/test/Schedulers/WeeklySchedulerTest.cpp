@@ -9,13 +9,14 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void checkDay(const Scheduler& scheduler, bool requestedResult, int day) {
-	tm tm;
+void checkDay(tm& timeinfo, const Scheduler& scheduler, bool requestedResult) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				tm = toCalendarTime(2016, 9, day, hour, min, sec, true);
-				EXPECT_EQ(requestedResult, scheduler.isDayScheduled(tm));
+				timeinfo.tm_hour = hour;
+				timeinfo.tm_min = min;
+				timeinfo.tm_sec = sec;
+				ASSERT_EQ(requestedResult, scheduler.isDayScheduled(timeinfo));
 			}
 		}
 	}
@@ -87,21 +88,25 @@ TEST(WeeklySchedulerTest, isDayEnabledInvalid) {
 	EXPECT_THROW(scheduler.isDayEnabled(7), IndexOutOfBoundsException);
 }
 
-TEST(WeeklySchedulerTest, DISABLED_isDayScheduled) {
+TEST(WeeklySchedulerTest, isDayScheduled) {
 	WeeklyScheduler scheduler;
 
 	scheduler.enableDay(WeeklyScheduler::WEDNESDAY, true);
 
-	for (int day = 5; day < 12; day++) {
-		checkDay(scheduler, 7 == day, day);
+	for (int day = 19; day < 26; day++) {
+		tm timeinfo = toCalendarTime(2018, 11, day);
+		timeinfo.tm_wday = (day-18) % 7;
+		checkDay(timeinfo, scheduler, 21 == day);
 	}
 
 	scheduler.enableDay(WeeklyScheduler::WEDNESDAY, false);
 	scheduler.enableDay(WeeklyScheduler::THURSDAY, true);
 	scheduler.enableDay(WeeklyScheduler::SUNDAY, true);
 
-	for (int day = 5; day < 12; day++) {
-		checkDay(scheduler, 8 == day || 11 == day, day);
+	for (int day = 19; day < 26; day++) {
+		tm timeinfo = toCalendarTime(2018, 11, day);
+		timeinfo.tm_wday = (day-18) % 7;
+		checkDay(timeinfo, scheduler, 22 == day || 25 == day);
 	}
 }
 

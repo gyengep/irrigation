@@ -13,7 +13,7 @@ TEST(PeriodicSchedulerTest, constructor) {
 	EXPECT_THAT(scheduler.getAdjustment(), 100);
 	EXPECT_THAT(scheduler.getPeriod(), 1);
 	EXPECT_FALSE(scheduler.isDayEnabled(0));
-	EXPECT_THAT(scheduler.getPeriodStartYear(), 2000);
+	EXPECT_THAT(scheduler.getPeriodStartYear(), 1970);
 	EXPECT_THAT(scheduler.getPeriodStartMonth(), 1);
 	EXPECT_THAT(scheduler.getPeriodStartDay(), 1);
 }
@@ -215,24 +215,43 @@ TEST(PeriodicSchedulerTest, isDayScheduled) {
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 20)));
 }
 
-TEST(PeriodicSchedulerTest, getElapsedDaysAfterEpoch) {
-	const int days = PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 1, 1));
+TEST(PeriodicSchedulerTest, getElapsedDaysSinceEpoch) {
+	const int monthLengthsLeapYears[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+	const int monthLengthsNotLeapYears[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 12, 1)), days + 334);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 11, 1)), days + 304);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 10, 1)), days + 273);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 9, 1)), days + 243);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 8, 1)), days + 212);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 7, 1)), days + 181);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 6, 1)), days + 151);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 5, 1)), days + 120);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 4, 1)), days + 90);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 3, 1)), days + 59);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 2, 1)), days + 31);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2018, 1, 1)), days);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2017, 12, 1)), days - 31);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2017, 11, 1)), days - 61);
-	EXPECT_THAT(PeriodicScheduler::getElapsedDaysAfterEpoch(toCalendarTime(2017, 10, 1)), days - 92);
+	int elapsedDays = 0;
+
+	for (int year = 1970; year < 2100; year++) {
+		const int* monthLengths;
+
+		if (0 == (year % 4)) {
+			monthLengths = monthLengthsLeapYears;
+		} else {
+			monthLengths = monthLengthsNotLeapYears;
+		}
+
+		for (int month = 1; month <= 12; month++) {
+			for (int dayOfMonth = 1; dayOfMonth <= monthLengths[month - 1]; dayOfMonth++) {
+				const tm timeinfo = toCalendarTime(year, month, dayOfMonth);
+				ASSERT_THAT(PeriodicScheduler::getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
+				elapsedDays++;
+			}
+		}
+	}
+}
+
+TEST(PeriodicSchedulerTest, getElapsedDaysSinceEpoch2) {
+	const tm timeinfo = toCalendarTime(2018, 11, 24);
+	const int elapsedDays = PeriodicScheduler::getElapsedDaysSinceEpoch(timeinfo);
+
+	for (int hour = 0; hour < 24; hour++) {
+		for (int min = 0; min < 60; min++) {
+			for (int sec = 0; sec < 60; sec++) {
+				const tm timeinfo = toCalendarTime(2018, 11, 24, hour, min, sec);
+				ASSERT_THAT(PeriodicScheduler::getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
+			}
+		}
+	}
 }
 
 TEST(PeriodicSchedulerTest, getPeriodicSchedulerDTO) {

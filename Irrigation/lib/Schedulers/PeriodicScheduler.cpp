@@ -1,9 +1,13 @@
 #include "PeriodicScheduler.h"
 #include <ctime>
 #include <iomanip>
+#include <mutex>
 #include "Exceptions/Exceptions.h"
 #include "Utils/ToString.h"
 #include "Utils/ToTimeT.h"
+
+
+#include <iostream>
 
 using namespace std;
 
@@ -18,12 +22,13 @@ unique_ptr<PeriodicScheduler> SchedulerFactory::createPeriodicScheduler() const 
 PeriodicScheduler::PeriodicScheduler() :
 	days(minPeriod, false),
 	adjustment(100),
-	periodStartYear(2000),
+	periodStartYear(1970),
 	periodStartMonth(1),
-	periodStartDay(1)
+	periodStartDay(1),
+	elapsedDaysSinceEpochToPeriodStart(0)
 {
-	tm timeinfo = toCalendarTime(periodStartYear, periodStartMonth, periodStartDay);
-	elapsedDaysFromEpochToPeriodStart = getElapsedDaysAfterEpoch(timeinfo);
+	const tm timeinfo = toCalendarTime(periodStartYear, periodStartMonth, periodStartDay);
+	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
 }
 
 PeriodicScheduler::~PeriodicScheduler() {
@@ -70,18 +75,17 @@ unsigned PeriodicScheduler::getAdjustment() const {
 }
 
 void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsigned day) {
-	tm timeinfo = toCalendarTime(year, month, day);
+	const tm timeinfo = toCalendarTime(year, month, day);
+	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
 
 	periodStartYear = year;
 	periodStartMonth = month;
 	periodStartDay = day;
-
-	elapsedDaysFromEpochToPeriodStart = getElapsedDaysAfterEpoch(timeinfo);
 }
 
 bool PeriodicScheduler::isDayScheduled(const tm& timeinfo) const {
-	unsigned offset = elapsedDaysFromEpochToPeriodStart % getPeriod();
-	unsigned index = (getElapsedDaysAfterEpoch(timeinfo) + getPeriod() - offset) % getPeriod();
+	unsigned offset = elapsedDaysSinceEpochToPeriodStart % getPeriod();
+	unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + getPeriod() - offset) % getPeriod();
 	return isDayEnabled(index);
 }
 
@@ -120,8 +124,12 @@ void PeriodicScheduler::updateFromDTO(const PeriodicSchedulerDTO& schedulerDTO) 
 	}
 }
 
-unsigned PeriodicScheduler::getElapsedDaysAfterEpoch(const std::tm& timeinfo) {
+unsigned PeriodicScheduler::getElapsedDaysSinceEpoch(const tm& timeinfo) {
+	static once_flag flag;
+	call_once(flag, [](){ tzset(); }); // to initialize timezone variable
+
 	tm timeinfoCopy = timeinfo;
+	timeinfoCopy.tm_sec -= timezone;
 	time_t rawtime = mktime(&timeinfoCopy);
 
 	if (rawtime < 0) {
@@ -130,8 +138,8 @@ unsigned PeriodicScheduler::getElapsedDaysAfterEpoch(const std::tm& timeinfo) {
 				" month: " + to_string(timeinfo.tm_mon) +
 				" day: " + to_string(timeinfo.tm_mday) +
 				" hour: " + to_string(timeinfo.tm_hour) +
-				" minute: " + to_string(timeinfo.tm_min) +
-				" second: " + to_string(timeinfo.tm_sec));
+				" min: " + to_string(timeinfo.tm_min) +
+				" sec: " + to_string(timeinfo.tm_sec));
 	}
 
 	return rawtime / (60 * 60 * 24);
@@ -143,7 +151,7 @@ string to_string(const PeriodicScheduler& periodicScheduler) {
 	o << "adjustment=" << periodicScheduler.getAdjustment() << "%, ";
 	o << "values=" << to_string(periodicScheduler.days.begin(), periodicScheduler.days.end()) << ", ";
 	o << "periodStartDate=" <<
-			to_string(periodicScheduler.periodStartYear) << "-" <<
+			setw(4) << setfill('0') << to_string(periodicScheduler.periodStartYear) << "-" <<
 			setw(2) << setfill('0') << to_string(periodicScheduler.periodStartMonth) << "-" <<
 			setw(2) << setfill('0') << to_string(periodicScheduler.periodStartDay);
 	o << "}";

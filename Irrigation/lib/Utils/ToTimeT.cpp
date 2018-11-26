@@ -5,12 +5,7 @@
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
-/*
-time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
-	tm timeinfo = toCalendarTime(year, month, day, hour, min, sec, dst);
-	return mktime(&timeinfo);
-}
-*/
+
 tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 
 	if ((year < 1900) ||
@@ -20,10 +15,17 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 		(min < 0 || min >= 60) ||
 		(sec < 0 || sec >= 60))
 	{
-		throw runtime_error("Invalid date");
+		throw runtime_error(string("Invalid date:") +
+				" year: " + to_string(year) +
+				" month: " + to_string(month) +
+				" day: " + to_string(day) +
+				" hour: " + to_string(hour) +
+				" min: " + to_string(min) +
+				" sec: " + to_string(sec));
 	}
 
-	tm timeinfo{};
+	tm timeinfo;
+	memset(&timeinfo, 0, sizeof(timeinfo));
 
 	timeinfo.tm_year = year - 1900;
 	timeinfo.tm_mon = month - 1;

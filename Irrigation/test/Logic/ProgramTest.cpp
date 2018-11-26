@@ -288,17 +288,16 @@ TEST(Program, isScheduled1) {
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
 	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(false));
 
-	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0, 0)));
-	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0, 0)));
-	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30, 0)));
-	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15, 0)));
+	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				time_t t = mktime(&timeinfo);
-				EXPECT_FALSE(program.isScheduled(t));
+				EXPECT_FALSE(program.isScheduled(timeinfo));
 			}
 		}
 	}
@@ -311,16 +310,15 @@ TEST(Program, isScheduled2) {
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
 	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(true));
 
-	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0, 0)));
-	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0, 0)));
-	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30, 0)));
-	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15, 0)));
+	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				time_t rawtime = mktime(&timeinfo);
 
 				bool requestedResult = false;
 				requestedResult |= (hour == 4 && min == 0 && sec == 0);
@@ -328,7 +326,7 @@ TEST(Program, isScheduled2) {
 				requestedResult |= (hour == 6 && min == 30 && sec == 0);
 				requestedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				EXPECT_EQ(requestedResult, program.isScheduled(rawtime));
+				EXPECT_EQ(requestedResult, program.isScheduled(timeinfo));
 			}
 		}
 	}

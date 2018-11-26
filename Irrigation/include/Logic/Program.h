@@ -29,7 +29,7 @@ public:
 	Program& operator= (Program&&) = default;
 	Program& operator= (const Program&) = delete;
 
-	virtual bool isScheduled(const std::time_t& rawTime) const;
+	virtual bool isScheduled(const std::tm& timeinfo) const;
 	virtual const Scheduler& getCurrentScheduler() const;
 
 	void setName(const std::string& name);
