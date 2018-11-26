@@ -5,6 +5,14 @@
 			<name>fulocsolas</name>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+					</days>
+				</scheduler>
 				<scheduler type="weekly">
 					<adjustment>30</adjustment>
 					<days>
@@ -15,12 +23,6 @@
 						<day>true</day>
 						<day>true</day>
 						<day>true</day>
-					</days>
-				</scheduler>
-				<scheduler type="periodic">
-					<adjustment>100</adjustment>
-					<days>
-						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
@@ -35,8 +37,16 @@
 		</program>
 		<program>
 			<name>buxus</name>
-			<schedulertype>weekly</schedulertype>
+			<schedulertype>periodic</schedulertype>
 			<schedulers>
+				<scheduler type="periodic">
+					<adjustment>30</adjustment>
+					<days>
+						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+					</days>
+				</scheduler>
 				<scheduler type="weekly">
 					<adjustment>100</adjustment>
 					<days>
@@ -46,13 +56,6 @@
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
-						<day>false</day>
-					</days>
-				</scheduler>
-				<scheduler type="periodic">
-					<adjustment>100</adjustment>
-					<days>
-						<day>true</day>
 						<day>false</day>
 					</days>
 				</scheduler>
@@ -66,8 +69,16 @@
 		</program>
 		<program>
 			<name>paradicsom</name>
-			<schedulertype>weekly</schedulertype>
+			<schedulertype>periodic</schedulertype>
 			<schedulers>
+				<scheduler type="periodic">
+					<adjustment>30</adjustment>
+					<days>
+						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+					</days>
+				</scheduler>
 				<scheduler type="weekly">
 					<adjustment>100</adjustment>
 					<days>
@@ -77,13 +88,6 @@
 						<day>false</day>
 						<day>true</day>
 						<day>false</day>
-						<day>false</day>
-					</days>
-				</scheduler>
-				<scheduler type="periodic">
-					<adjustment>100</adjustment>
-					<days>
-						<day>true</day>
 						<day>false</day>
 					</days>
 				</scheduler>
@@ -100,6 +104,12 @@
 			<name>kanikula</name>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>false</day>
+					</days>
+				</scheduler>
 				<scheduler type="weekly">
 					<adjustment>10</adjustment>
 					<days>
@@ -110,12 +120,6 @@
 						<day>true</day>
 						<day>true</day>
 						<day>true</day>
-					</days>
-				</scheduler>
-				<scheduler type="periodic">
-					<adjustment>100</adjustment>
-					<days>
-						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
@@ -131,6 +135,12 @@
 			<name>test</name>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
+				<scheduler type="periodic">
+					<adjustment>100</adjustment>
+					<days>
+						<day>false</day>
+					</days>
+				</scheduler>
 				<scheduler type="weekly">
 					<adjustment>100</adjustment>
 					<days>
@@ -141,12 +151,6 @@
 						<day>true</day>
 						<day>true</day>
 						<day>true</day>
-					</days>
-				</scheduler>
-				<scheduler type="periodic">
-					<adjustment>100</adjustment>
-					<days>
-						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
