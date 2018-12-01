@@ -221,7 +221,7 @@ TEST(PeriodicSchedulerTest, getElapsedDaysSinceEpoch) {
 
 	int elapsedDays = 0;
 
-	for (int year = 1970; year < 2100; year++) {
+	for (int year = 1970; year < 2038; year++) {
 		const int* monthLengths;
 
 		if (0 == (year % 4)) {
