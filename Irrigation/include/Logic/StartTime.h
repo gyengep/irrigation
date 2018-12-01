@@ -6,7 +6,7 @@
 class StartTime {
 
 	unsigned hour, minute;
-	const unsigned second;
+	static const unsigned second = 0;
 
 public:
 	StartTime();
@@ -25,7 +25,6 @@ public:
 
 	unsigned getHours() const;
 	unsigned getMinutes() const;
-	unsigned getSeconds() const;
 
 	StartTimeDTO getStartTimeDTO() const;
 	void updateFromDTO(const StartTimeDTO& startTimeDTO);

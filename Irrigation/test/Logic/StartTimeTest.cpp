@@ -11,14 +11,12 @@ TEST(StartTimeTest, defaultConstructor) {
 	StartTime startTime;
 	EXPECT_EQ(0, startTime.getHours());
 	EXPECT_EQ(0, startTime.getMinutes());
-	EXPECT_EQ(0, startTime.getSeconds());
 }
 
 TEST(StartTimeTest, parametrizedConstructor) {
 	StartTime startTime(1, 30);
 	EXPECT_EQ(1, startTime.getHours());
 	EXPECT_EQ(30, startTime.getMinutes());
-	EXPECT_EQ(0, startTime.getSeconds());
 }
 
 TEST(StartTimeTest, equalOperator) {
@@ -36,6 +34,22 @@ TEST(StartTimeTest, equalOperator) {
 	EXPECT_FALSE(StartTime(hour, minute - 1) == startTime);
 	EXPECT_FALSE(StartTime(hour + 1, minute) == startTime);
 	EXPECT_FALSE(StartTime(hour - 1, minute) == startTime);
+}
+
+TEST(StartTimeTest, equals) {
+	const unsigned hour = 15;
+	const unsigned minute = 25;
+
+	StartTime startTime(hour, minute);
+
+	EXPECT_TRUE(startTime.equals(hour, minute, 0));
+
+	EXPECT_FALSE(startTime.equals(hour, minute, 59));
+	EXPECT_FALSE(startTime.equals(hour, minute, 1));
+	EXPECT_FALSE(startTime.equals(hour, minute - 1, 0));
+	EXPECT_FALSE(startTime.equals(hour, minute + 1, 0));
+	EXPECT_FALSE(startTime.equals(hour - 1, minute, 0));
+	EXPECT_FALSE(startTime.equals(hour + 1, minute, 0));
 }
 
 TEST(StartTimeTest, lessOperator) {

@@ -7,7 +7,7 @@
 using namespace std;
 
 
-StartTime::StartTime(unsigned hour, unsigned minute) : second(0) {
+StartTime::StartTime(unsigned hour, unsigned minute) {
 	set(hour, minute);
 }
 
@@ -23,10 +23,6 @@ unsigned StartTime::getHours() const {
 
 unsigned StartTime::getMinutes() const {
 	return minute;
-}
-
-unsigned StartTime::getSeconds() const {
-	return second;
 }
 
 void StartTime::set(unsigned hour, unsigned minute) {
@@ -51,28 +47,20 @@ bool StartTime::operator< (const StartTime& other) const {
 		return (getHours() < other.getHours());
 	}
 
-	if (getMinutes() != other.getMinutes()) {
-		return (getMinutes() < other.getMinutes());
-	}
-
-	return (getSeconds() < other.getSeconds());
+	return (getMinutes() < other.getMinutes());
 }
 
 bool StartTime::operator== (const StartTime& other) const {
-	return equals(other.getHours(), other.getMinutes(), other.getSeconds());
+	return equals(other.getHours(), other.getMinutes(), second);
 }
 
 bool StartTime::equals(unsigned hour, unsigned minute, unsigned second) const {
 	return (getHours() == hour &&
 			getMinutes() == minute &&
-			getSeconds() == second);
+			StartTime::second == second);
 }
 
 StartTimeDTO StartTime::getStartTimeDTO() const {
-	if (getSeconds() != 0) {
-		throw logic_error("StartTime::getStartTimeDTO(): getSeconds() != 0");
-	}
-
 	return StartTimeDTO(getHours(), getMinutes());
 }
 
@@ -96,7 +84,6 @@ void StartTime::updateFromDTO(const StartTimeDTO& startTimeDTO) {
 string to_string(const StartTime& startTime) {
 	ostringstream o;
 	o << setfill('0') << setw(2) << startTime.getHours() << ":";
-	o << setfill('0') << setw(2) << startTime.getMinutes() << ":";
-	o << setfill('0') << setw(2) << startTime.getSeconds();
+	o << setfill('0') << setw(2) << startTime.getMinutes();
 	return o.str();
 }
