@@ -49,9 +49,10 @@ void TimerView::onTimer(const time_t rawTime) {
 			const IdType& idType = programAndIdPair.first;
 			const Program& program = *programAndIdPair.second.get();
 			if (program.isScheduled(timeinfo)) {
-				LOGGER.debug("Program[%s] (%s) is scheduled",
+				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
 						to_string(idType).c_str(),
-						program.getName().c_str());
+						program.getName().c_str(),
+						to_string(program.getSchedulerType()).c_str());
 				wateringController.start(rawTime, program.getRunTimes(), program.getCurrentScheduler().getAdjustment());
 				break;
 			}
