@@ -1,4 +1,4 @@
-#include "ToTimeT.h"
+#include "TimeConversion.h"
 #include <cstring>
 #include <stdexcept>
 
@@ -39,4 +39,20 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 
 tm toCalendarTime(int year, int month, int day) {
 	return toCalendarTime(year, month, day, 0, 0, 0);
+}
+
+unsigned getElapsedDaysSinceEpoch(const tm& timeinfo) {
+	tm timeinfoCopy = timeinfo;
+	time_t rawtime = timegm(&timeinfoCopy);
+	if (rawtime == (time_t)-1) {
+		throw runtime_error(string("Invalid timeinfo:") +
+				" year: " + to_string(timeinfo.tm_year) +
+				" month: " + to_string(timeinfo.tm_mon) +
+				" day: " + to_string(timeinfo.tm_mday) +
+				" hour: " + to_string(timeinfo.tm_hour) +
+				" min: " + to_string(timeinfo.tm_min) +
+				" sec: " + to_string(timeinfo.tm_sec));
+	}
+
+	return rawtime / (60 * 60 * 24);
 }

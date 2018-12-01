@@ -40,7 +40,5 @@ public:
 	void setAdjustment(unsigned adjustment);
 	virtual unsigned getAdjustment() const override;
 
-	static unsigned getElapsedDaysSinceEpoch(const std::tm& timeinfo);
-
 	friend std::string to_string(const PeriodicScheduler& periodicScheduler);
 };

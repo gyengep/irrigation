@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
 #include "Schedulers/PeriodicScheduler.h"
-#include "Utils/ToTimeT.h"
+#include "Utils/TimeConversion.h"
 
 using namespace std;
 using namespace testing;
@@ -213,45 +213,6 @@ TEST(PeriodicSchedulerTest, isDayScheduled) {
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 18)));
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 19)));
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 20)));
-}
-
-TEST(PeriodicSchedulerTest, getElapsedDaysSinceEpoch) {
-	const int monthLengthsLeapYears[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-	const int monthLengthsNotLeapYears[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-	int elapsedDays = 0;
-
-	for (int year = 1970; year < 2038; year++) {
-		const int* monthLengths;
-
-		if (0 == (year % 4)) {
-			monthLengths = monthLengthsLeapYears;
-		} else {
-			monthLengths = monthLengthsNotLeapYears;
-		}
-
-		for (int month = 1; month <= 12; month++) {
-			for (int dayOfMonth = 1; dayOfMonth <= monthLengths[month - 1]; dayOfMonth++) {
-				const tm timeinfo = toCalendarTime(year, month, dayOfMonth);
-				ASSERT_THAT(PeriodicScheduler::getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
-				elapsedDays++;
-			}
-		}
-	}
-}
-
-TEST(PeriodicSchedulerTest, getElapsedDaysSinceEpoch2) {
-	const tm timeinfo = toCalendarTime(2018, 11, 24);
-	const int elapsedDays = PeriodicScheduler::getElapsedDaysSinceEpoch(timeinfo);
-
-	for (int hour = 0; hour < 24; hour++) {
-		for (int min = 0; min < 60; min++) {
-			for (int sec = 0; sec < 60; sec++) {
-				const tm timeinfo = toCalendarTime(2018, 11, 24, hour, min, sec);
-				ASSERT_THAT(PeriodicScheduler::getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
-			}
-		}
-	}
 }
 
 TEST(PeriodicSchedulerTest, getPeriodicSchedulerDTO) {

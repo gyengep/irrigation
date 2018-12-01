@@ -6,7 +6,7 @@
 #include "Logic/StartTimeContainer.h"
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
-#include "Utils/ToTimeT.h"
+#include "Utils/TimeConversion.h"
 #include "MockProgram.h"
 #include "MockScheduler.h"
 

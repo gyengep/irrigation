@@ -2,7 +2,7 @@
 #include <list>
 #include "Exceptions/Exceptions.h"
 #include "Schedulers/WeeklyScheduler.h"
-#include "Utils/ToTimeT.h"
+#include "Utils/TimeConversion.h"
 
 using namespace std;
 using namespace testing;

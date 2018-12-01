@@ -5,10 +5,8 @@
 #include <time.h>
 #include "Exceptions/Exceptions.h"
 #include "Utils/ToString.h"
-#include "Utils/ToTimeT.h"
+#include "Utils/TimeConversion.h"
 
-
-#include <iostream>
 
 using namespace std;
 
@@ -123,31 +121,6 @@ void PeriodicScheduler::updateFromDTO(const PeriodicSchedulerDTO& schedulerDTO) 
 				schedulerDTO.getPeriodStartMonth(),
 				schedulerDTO.getPeriodStartDay());
 	}
-}
-
-unsigned PeriodicScheduler::getElapsedDaysSinceEpoch(const tm& timeinfo) {
-	/*
-	static once_flag flag;
-	call_once(flag, [](){ tzset(); }); // to initialize timezone variable
-
-	tm timeinfoCopy = timeinfo;
-	timeinfoCopy.tm_sec -= timezone;
-	time_t rawtime = mktime(&timeinfoCopy);
-*/
-
-	tm timeinfoCopy = timeinfo;
-	time_t rawtime = timegm(&timeinfoCopy);
-	if (rawtime == (time_t)-1) {
-		throw runtime_error(string("Invalid timeinfo:") +
-				" year: " + to_string(timeinfo.tm_year) +
-				" month: " + to_string(timeinfo.tm_mon) +
-				" day: " + to_string(timeinfo.tm_mday) +
-				" hour: " + to_string(timeinfo.tm_hour) +
-				" min: " + to_string(timeinfo.tm_min) +
-				" sec: " + to_string(timeinfo.tm_sec));
-	}
-
-	return rawtime / (60 * 60 * 24);
 }
 
 string to_string(const PeriodicScheduler& periodicScheduler) {
