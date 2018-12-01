@@ -48,6 +48,15 @@ void TimerViewTest::executeTest() {
 	view->onTimer(rawtime);
 }
 
+bool operator== (const tm& t1, const tm& t2) {
+	return (t1.tm_year == t2.tm_year &&
+			t1.tm_mon == t2.tm_mon &&
+			t1.tm_mday == t2.tm_mday &&
+			t1.tm_hour == t2.tm_hour &&
+			t1.tm_min == t2.tm_min &&
+			t1.tm_sec == t2.tm_sec);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(TimerViewTest, notActiveNotScheduled) {

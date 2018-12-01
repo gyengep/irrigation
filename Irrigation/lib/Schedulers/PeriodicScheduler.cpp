@@ -2,6 +2,7 @@
 #include <ctime>
 #include <iomanip>
 #include <mutex>
+#include <time.h>
 #include "Exceptions/Exceptions.h"
 #include "Utils/ToString.h"
 #include "Utils/ToTimeT.h"
@@ -125,14 +126,18 @@ void PeriodicScheduler::updateFromDTO(const PeriodicSchedulerDTO& schedulerDTO) 
 }
 
 unsigned PeriodicScheduler::getElapsedDaysSinceEpoch(const tm& timeinfo) {
+	/*
 	static once_flag flag;
 	call_once(flag, [](){ tzset(); }); // to initialize timezone variable
 
 	tm timeinfoCopy = timeinfo;
 	timeinfoCopy.tm_sec -= timezone;
 	time_t rawtime = mktime(&timeinfoCopy);
+*/
 
-	if (rawtime < 0) {
+	tm timeinfoCopy = timeinfo;
+	time_t rawtime = timegm(&timeinfoCopy);
+	if (rawtime == (time_t)-1) {
 		throw runtime_error(string("Invalid timeinfo:") +
 				" year: " + to_string(timeinfo.tm_year) +
 				" month: " + to_string(timeinfo.tm_mon) +
