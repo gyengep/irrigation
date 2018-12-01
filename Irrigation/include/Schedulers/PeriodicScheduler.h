@@ -6,7 +6,6 @@
 
 
 class PeriodicScheduler: public Scheduler {
-	const static size_t minPeriod = 1;
 	const static size_t maxPeriod = 7;
 
 	std::vector<bool> days;

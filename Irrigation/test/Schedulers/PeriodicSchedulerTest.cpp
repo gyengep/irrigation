@@ -11,8 +11,7 @@ TEST(PeriodicSchedulerTest, constructor) {
 	PeriodicScheduler scheduler;
 
 	EXPECT_THAT(scheduler.getAdjustment(), 100);
-	EXPECT_THAT(scheduler.getPeriod(), 1);
-	EXPECT_FALSE(scheduler.isDayEnabled(0));
+	EXPECT_THAT(scheduler.getPeriod(), 0);
 	EXPECT_THAT(scheduler.getPeriodStartYear(), 1970);
 	EXPECT_THAT(scheduler.getPeriodStartMonth(), 1);
 	EXPECT_THAT(scheduler.getPeriodStartDay(), 1);
@@ -23,12 +22,16 @@ TEST(PeriodicSchedulerTest, setPeriod) {
 
 	scheduler.setPeriod(3);
 	EXPECT_THAT(scheduler.getPeriod(), 3);
+
+	EXPECT_FALSE(scheduler.isDayEnabled(0));
+	EXPECT_FALSE(scheduler.isDayEnabled(1));
+	EXPECT_FALSE(scheduler.isDayEnabled(2));
 }
 
 TEST(PeriodicSchedulerTest, setPeriodInvalid) {
 	PeriodicScheduler scheduler;
 
-	EXPECT_THROW(scheduler.setPeriod(0), ValueOutOfBoundsException);
+	EXPECT_NO_THROW(scheduler.setPeriod(0));
 	EXPECT_NO_THROW(scheduler.setPeriod(1));
 	EXPECT_NO_THROW(scheduler.setPeriod(2));
 	EXPECT_NO_THROW(scheduler.setPeriod(3));
@@ -116,6 +119,8 @@ TEST(PeriodicSchedulerTest, enableDayInvalid) {
 
 TEST(PeriodicSchedulerTest, isDayEnabledInvalid) {
 	PeriodicScheduler scheduler;
+
+	EXPECT_THROW(scheduler.isDayEnabled(0), IndexOutOfBoundsException);
 
 	scheduler.setPeriod(3);
 
@@ -213,6 +218,13 @@ TEST(PeriodicSchedulerTest, isDayScheduled) {
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 18)));
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 19)));
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 20)));
+}
+
+TEST(PeriodicSchedulerTest, isDayScheduledInvalid) {
+	PeriodicScheduler scheduler;
+
+	scheduler.setPeriod(0);
+	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 5)));
 }
 
 TEST(PeriodicSchedulerTest, getPeriodicSchedulerDTO) {

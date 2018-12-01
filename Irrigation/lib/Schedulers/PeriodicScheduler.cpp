@@ -19,12 +19,10 @@ unique_ptr<PeriodicScheduler> SchedulerFactory::createPeriodicScheduler() const 
 ///////////////////////////////////////////////////////////////////////////////
 
 PeriodicScheduler::PeriodicScheduler() :
-	days(minPeriod, false),
 	adjustment(100),
 	periodStartYear(1970),
 	periodStartMonth(1),
-	periodStartDay(1),
-	elapsedDaysSinceEpochToPeriodStart(0)
+	periodStartDay(1)
 {
 	const tm timeinfo = toCalendarTime(periodStartYear, periodStartMonth, periodStartDay);
 	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
@@ -34,9 +32,9 @@ PeriodicScheduler::~PeriodicScheduler() {
 }
 
 void PeriodicScheduler::setPeriod(unsigned days) {
-	if (days < minPeriod || days > maxPeriod) {
+	if (days > maxPeriod) {
 		throw ValueOutOfBoundsException(
-				"Period value shall be between " + to_string(minPeriod) + " and " + to_string(maxPeriod) +
+				"Period value shall be less than " + to_string(maxPeriod) +
 				", while actual value is " + to_string(days));
 	}
 
@@ -83,8 +81,14 @@ void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsign
 }
 
 bool PeriodicScheduler::isDayScheduled(const tm& timeinfo) const {
-	unsigned offset = elapsedDaysSinceEpochToPeriodStart % getPeriod();
-	unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + getPeriod() - offset) % getPeriod();
+	unsigned const period = getPeriod();
+
+	if (0 == period) {
+		return false;
+	}
+
+	unsigned offset = elapsedDaysSinceEpochToPeriodStart % period;
+	unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + period - offset) % period;
 	return isDayEnabled(index);
 }
 
