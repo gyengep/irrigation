@@ -29,10 +29,10 @@ StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, 
 	}
 
 	container.push_back(make_pair(key, move(value)));
-	LOGGER.debug("StartTime[%s] added: %s",
-		to_string(key).c_str(),
-		to_string(*container.back().second.get()).c_str()
-		);
+//	LOGGER.debug("StartTime[%s] added: %s",
+//		to_string(key).c_str(),
+//		to_string(*container.back().second.get()).c_str()
+//		);
 	return container.back();
 }
 

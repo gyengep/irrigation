@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/WeeklySchedulerDTO.h"
 #include "Schedulers/Scheduler.h"
 
 

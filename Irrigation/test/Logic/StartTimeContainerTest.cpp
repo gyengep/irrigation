@@ -153,10 +153,10 @@ TEST(StartTimeContainerTest, destroyed) {
 TEST(StartTimeContainerTest, sort) {
 
 	const IdTypeStartTimeVector startTimesToAdd {
-		{0, new StartTime(0, 0, 15)},
-		{1, new StartTime(0, 0, 25)},
-		{2, new StartTime(0, 0, 10)},
-		{3, new StartTime(0, 0, 20)},
+		{0, new StartTime(0, 15)},
+		{1, new StartTime(0, 25)},
+		{2, new StartTime(0, 10)},
+		{3, new StartTime(0, 20)},
 	};
 
 	StartTimeContainer startTimes;

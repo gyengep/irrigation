@@ -15,6 +15,19 @@ const TestDataType testData_all(
 			"<name>abcdefg</name>"
 			"<schedulertype>weekly</schedulertype>"
 			"<schedulers>"
+				"<scheduler type=\"periodic\">"
+					"<adjustment>95</adjustment>"
+					"<days>"
+						"<day>true</day>"
+						"<day>true</day>"
+						"<day>false</day>"
+					"</days>"
+					"<periodStartDate>"
+						"<year>2018</year>"
+						"<month>11</month>"
+						"<day>22</day>"
+					"</periodStartDate>"
+				"</scheduler>"
 				"<scheduler type=\"weekly\">"
 					"<adjustment>110</adjustment>"
 					"<days>"
@@ -36,6 +49,7 @@ const TestDataType testData_all(
 		ProgramDTO()
 		.setName("abcdefg")
 		.setSchedulerType("weekly")
+		.setPeriodicScheduler(PeriodicSchedulerDTO(95, list<bool>({ true, true, false}), 2018, 11, 22))
 		.setWeeklyScheduler(WeeklySchedulerDTO(110, list<bool>({ true, false})))
 		.setRunTimes(list<RunTimeDTO>({
 			RunTimeDTO(19, 23).setId(15),
@@ -60,7 +74,29 @@ const TestDataType testData_schedulerType(
 		ProgramDTO().setSchedulerType("weekly")
 		);
 
-const TestDataType testData_schedulers(
+const TestDataType testData_periodicSchedulers(
+		"<program>"
+			"<schedulers>"
+				"<scheduler type=\"periodic\">"
+					"<adjustment>94</adjustment>"
+					"<days>"
+						"<day>true</day>"
+						"<day>false</day>"
+						"<day>false</day>"
+					"</days>"
+					"<periodStartDate>"
+						"<year>2015</year>"
+						"<month>2</month>"
+						"<day>5</day>"
+					"</periodStartDate>"
+				"</scheduler>"
+			"</schedulers>"
+		"</program>",
+		ProgramDTO()
+		.setPeriodicScheduler(PeriodicSchedulerDTO(94, list<bool>({ true, false, false}), 2015, 2, 5))
+		);
+
+const TestDataType testData_weeklySchedulers(
 		"<program>"
 			"<schedulers>"
 				"<scheduler type=\"weekly\">"
@@ -183,8 +219,12 @@ TEST_F(ProgramReaderTest, programSchedulerType) {
 	testProgramRead(testData_schedulerType, reader);
 }
 
-TEST_F(ProgramReaderTest, programSchedulers) {
-	testProgramRead(testData_schedulers, reader);
+TEST_F(ProgramReaderTest, programPeriodicSchedulers) {
+	testProgramRead(testData_periodicSchedulers, reader);
+}
+
+TEST_F(ProgramReaderTest, programWeeklySchedulers) {
+	testProgramRead(testData_weeklySchedulers, reader);
 }
 
 TEST_F(ProgramReaderTest, programRunTimes) {
@@ -214,7 +254,7 @@ TEST_F(ProgramWriterTest, programSchedulerType) {
 }
 
 TEST_F(ProgramWriterTest, programSchedulers) {
-	testProgramWrite(testData_schedulers, writer);
+	testProgramWrite(testData_weeklySchedulers, writer);
 }
 
 TEST_F(ProgramWriterTest, programRunTimes) {

@@ -44,13 +44,15 @@ void TimerView::onTimer(const time_t rawTime) {
 	const ProgramContainer& programs = irrigationDocument.getPrograms();
 
 	if (!wateringController.isWateringActive()) {
+		const tm timeinfo = *localtime(&rawTime);
 		for (auto& programAndIdPair : programs) {
 			const IdType& idType = programAndIdPair.first;
 			const Program& program = *programAndIdPair.second.get();
-			if (program.isScheduled(rawTime)) {
-				LOGGER.debug("Program[%s] (%s) is scheduled",
+			if (program.isScheduled(timeinfo)) {
+				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
 						to_string(idType).c_str(),
-						program.getName().c_str());
+						program.getName().c_str(),
+						to_string(program.getSchedulerType()).c_str());
 				wateringController.start(rawTime, program.getRunTimes(), program.getCurrentScheduler().getAdjustment());
 				break;
 			}

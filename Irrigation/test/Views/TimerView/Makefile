@@ -21,7 +21,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -l$(TARGET_NAME) -lLogger -lModel -lDtoReaderWriter -lDocumentView -lLogic -lDTO -lUtils -lSchedulers -lValves
+LOCAL_LIBS      = -l$(TARGET_NAME) -lLogger -lModel -lDtoReaderWriter -lDocumentView -lLogic -lDTO -lSchedulers -lValves -lUtils
 INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(COMMON_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR)
 LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml

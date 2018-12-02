@@ -5,7 +5,7 @@
 #include "DTO/ProgramDTO.h"
 #include "DTO/RunTimeDTO.h"
 #include "DTO/StartTimeDTO.h"
-#include "DTO/SchedulersDTO.h"
+#include "DTO/WeeklySchedulerDTO.h"
 
 using namespace std;
 using namespace pugi;
@@ -54,10 +54,18 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 		node.append_child("schedulertype").text().set(program.getSchedulerType().c_str());
 	}
 
-	if (program.hasWeeklyScheduler()) {
-		const WeeklySchedulerDTO& scheduler = program.getWeeklyScheduler();
+	if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler()) {
 		xml_node schedulersListNode = node.append_child("schedulers");
-		saveScheduler(&schedulersListNode, scheduler);
+
+		if (program.hasPeriodicScheduler()) {
+			const PeriodicSchedulerDTO& periodicScheduler = program.getPeriodicScheduler();
+			savePeriodicScheduler(&schedulersListNode, periodicScheduler);
+		}
+
+		if (program.hasWeeklyScheduler()) {
+			const WeeklySchedulerDTO& weeklyScheduler = program.getWeeklyScheduler();
+			saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
+		}
 	}
 
 	if (program.hasRunTimes()) {
@@ -109,7 +117,42 @@ void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDTO& startTime) {
 	}
 }
 
-void XmlWriter::saveScheduler(xml_node* parent, const WeeklySchedulerDTO& scheduler) {
+void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerDTO& scheduler) {
+	xml_node node = parent->append_child("scheduler");
+	node.append_attribute("type").set_value("periodic");
+
+	if (scheduler.hasAdjustment()) {
+		node.append_child("adjustment").text().set(scheduler.getAdjustment());
+	}
+
+	if (scheduler.hasValues()) {
+		xml_node daysNode = node.append_child("days");
+		const list<bool>& values = scheduler.getValues();
+		for (auto value : values) {
+			daysNode.append_child("day").text().set(value);
+		}
+	}
+
+	if (scheduler.hasPeriodStartYear() ||
+		scheduler.hasPeriodStartMonth() ||
+		scheduler.hasPeriodStartDay()) {
+
+		xml_node startDateNode = node.append_child("periodStartDate");
+		if (scheduler.hasPeriodStartYear()) {
+			startDateNode.append_child("year").text().set(scheduler.getPeriodStartYear());
+		}
+
+		if (scheduler.hasPeriodStartMonth()) {
+			startDateNode.append_child("month").text().set(scheduler.getPeriodStartMonth());
+		}
+
+		if (scheduler.hasPeriodStartDay()) {
+			startDateNode.append_child("day").text().set(scheduler.getPeriodStartDay());
+		}
+	}
+}
+
+void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("weekly");
 
@@ -152,8 +195,14 @@ string XmlWriter::save(const StartTimeDTO& startTime) {
 	return toString(doc.get(), humanReadable);
 }
 
+string XmlWriter::save(const PeriodicSchedulerDTO& scheduler) {
+	unique_ptr<xml_document> doc(new xml_document());
+	savePeriodicScheduler(doc.get(), scheduler);
+	return toString(doc.get(), humanReadable);
+}
+
 string XmlWriter::save(const WeeklySchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveScheduler(doc.get(), scheduler);
+	saveWeeklyScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);
 }

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-
+///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<WeeklyScheduler> SchedulerFactory::createWeeklyScheduler() const {
 	return unique_ptr<WeeklyScheduler>(new WeeklyScheduler());
@@ -77,7 +77,7 @@ void WeeklyScheduler::updateFromDTO(const WeeklySchedulerDTO& schedulerDTO) {
 string to_string(const WeeklyScheduler& weeklyScheduler) {
 	ostringstream o;
 	o << "WeeklyScheduler{";
-	o << "adjustment=" << weeklyScheduler.getAdjustment() << "% ";
+	o << "adjustment=" << weeklyScheduler.getAdjustment() << "%, ";
 	o << "values=" << to_string(weeklyScheduler.days.begin(), weeklyScheduler.days.end());
 	o << "}";
 	return o.str();

@@ -4,7 +4,9 @@
 #include "Logic/StartTime.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
+#include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
+#include "Utils/TimeConversion.h"
 #include "MockProgram.h"
 #include "MockScheduler.h"
 
@@ -38,6 +40,7 @@ TEST(Program, getWeeklyScheduler) {
 
 TEST(Program, convertProgramDTO) {
 	const ProgramDTO expectedProgramDTO("Abcdefg", "weekly",
+			PeriodicSchedulerDTO(55, list<bool>({ false, true, false}), 1978, 9, 29),
 			WeeklySchedulerDTO(95, list<bool>({ false, true, false, false, false, true, false})),
 			list<RunTimeDTO>({
 				RunTimeDTO(20, 30).setId(0),
@@ -59,6 +62,8 @@ TEST(Program, convertProgramDTO) {
 
 	EXPECT_THAT(program.getName(), Eq(string("Abcdefg")));
 	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
+	EXPECT_THAT(program.getPeriodicScheduler().getPeriodicSchedulerDTO(),
+			Eq(expectedProgramDTO.getPeriodicScheduler()));
 	EXPECT_THAT(program.getWeeklyScheduler().getWeeklySchedulerDTO(),
 			Eq(expectedProgramDTO.getWeeklyScheduler()));
 
@@ -97,8 +102,20 @@ TEST(Program, updateNameFromProgramDTO) {
 	EXPECT_THAT(program.getName(), Eq(string("12345")));
 }
 
-TEST(DISABLED_Program, updateSchedulerTypeFromProgramDTO) {
-	FAIL();
+TEST(Program, updateSchedulerTypeFromProgramDTO) {
+	Program program;
+	program.setSchedulerType(SchedulerType::WEEKLY);
+
+	program.updateFromDTO(ProgramDTO());
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
+
+	program.updateFromDTO(ProgramDTO().setSchedulerType("periodic"));
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::PERIODIC));
+
+	program.updateFromDTO(ProgramDTO().setSchedulerType("weekly"));
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
+
+	EXPECT_THROW(program.updateFromDTO(ProgramDTO().setSchedulerType("invalid")), invalid_argument);
 }
 
 TEST(Program, updateWeeklySchedulerFromProgramDTO) {
@@ -264,30 +281,6 @@ TEST(Program, updateStartTimesFromProgramDTO) {
 	EXPECT_THAT(program.getStartTimes().at(202)->getStartTimeDTO(), Eq(StartTimeDTO(2, 2)));
 }
 
-
-time_t toTime(int year, int month, int day, int hour, int min, int sec, bool dst) {
-
-	EXPECT_TRUE(0 <= month && month < 12);
-	EXPECT_TRUE(1 <= day && day < 32);
-	EXPECT_TRUE(0 <= hour && hour < 24);
-	EXPECT_TRUE(0 <= min && min < 60);
-	EXPECT_TRUE(0 <= sec && sec < 60);
-
-	tm tm;
-
-	memset(&tm, 0, sizeof(tm));
-
-	tm.tm_year = year - 1900;
-	tm.tm_mon = month - 1;
-	tm.tm_mday = day;
-	tm.tm_hour = hour;
-	tm.tm_min = min;
-	tm.tm_sec = sec;
-	tm.tm_isdst = dst ? 1 : 0;
-
-	return mktime(&tm);
-}
-
 TEST(Program, isScheduled1) {
 	NiceMock<MockProgram_Scheduler> program;
 	NiceMock<MockScheduler> scheduler;
@@ -295,16 +288,16 @@ TEST(Program, isScheduled1) {
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
 	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(false));
 
-	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0, 0)));
-	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0, 0)));
-	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30, 0)));
-	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15, 0)));
+	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				time_t t = toTime(2018, 5, 27, hour, min, sec, true);
-				EXPECT_FALSE(program.isScheduled(t));
+				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
+				EXPECT_FALSE(program.isScheduled(timeinfo));
 			}
 		}
 	}
@@ -317,15 +310,15 @@ TEST(Program, isScheduled2) {
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
 	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(true));
 
-	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0, 0)));
-	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0, 0)));
-	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30, 0)));
-	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15, 0)));
+	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				time_t t = toTime(2018, 5, 27, hour, min, sec, true);
+				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
 
 				bool requestedResult = false;
 				requestedResult |= (hour == 4 && min == 0 && sec == 0);
@@ -333,7 +326,7 @@ TEST(Program, isScheduled2) {
 				requestedResult |= (hour == 6 && min == 30 && sec == 0);
 				requestedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				EXPECT_EQ(requestedResult, program.isScheduled(t));
+				EXPECT_EQ(requestedResult, program.isScheduled(timeinfo));
 			}
 		}
 	}

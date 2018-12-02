@@ -5,25 +5,26 @@
 
 class StartTime {
 
-	unsigned hour, minute, second;
+	unsigned hour, minute;
+	static const unsigned second = 0;
 
 public:
 	StartTime();
 	StartTime(StartTime&&) = default;
 	StartTime(const StartTime&) = default;
-	StartTime(unsigned hour, unsigned minute, unsigned second = 0);
+	StartTime(unsigned hour, unsigned minute);
 	virtual ~StartTime();
 
+	bool equals(unsigned hour, unsigned minute, unsigned second) const;
 	bool operator< (const StartTime& other) const;
 	bool operator== (const StartTime& other) const;
 	StartTime& operator= (StartTime&&) = default;
 	StartTime& operator= (const StartTime&) = default;
 
-	void set(unsigned hour, unsigned minute, unsigned second = 0);
+	void set(unsigned hour, unsigned minute);
 
 	unsigned getHours() const;
 	unsigned getMinutes() const;
-	unsigned getSeconds() const;
 
 	StartTimeDTO getStartTimeDTO() const;
 	void updateFromDTO(const StartTimeDTO& startTimeDTO);

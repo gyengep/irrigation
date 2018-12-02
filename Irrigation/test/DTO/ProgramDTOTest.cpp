@@ -14,6 +14,7 @@ TEST(ProgramDTOTest, defaultConstructor) {
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_FALSE(programDTO.hasName());
 	EXPECT_FALSE(programDTO.hasSchedulerType());
+	EXPECT_FALSE(programDTO.hasPeriodicScheduler());
 	EXPECT_FALSE(programDTO.hasWeeklyScheduler());
 	EXPECT_FALSE(programDTO.hasRunTimes());
 	EXPECT_FALSE(programDTO.hasStartTimes());
@@ -22,6 +23,7 @@ TEST(ProgramDTOTest, defaultConstructor) {
 TEST(ProgramDTOTest, parametrizedConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
+	const PeriodicSchedulerDTO expectedPeriodicScheduler(100, list<bool>({ true, false, true }), 2018, 11, 15);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(100, list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10, 0), RunTimeDTO(15, 0), RunTimeDTO(20, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(5, 0), StartTimeDTO(6, 0) });
@@ -29,6 +31,7 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	ProgramDTO programDTO(
 			expectedName,
 			expectedSchedulerType,
+			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
 			list<StartTimeDTO>(expectedStartTimes));
@@ -36,12 +39,14 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
 	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
@@ -50,6 +55,7 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 TEST(ProgramDTOTest, copyConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
+	const PeriodicSchedulerDTO expectedPeriodicScheduler(100, list<bool>({ true, false, true }), 2018, 11, 15);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(110, list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
@@ -57,6 +63,7 @@ TEST(ProgramDTOTest, copyConstructor) {
 	const ProgramDTO source(
 			expectedName,
 			expectedSchedulerType,
+			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
 			list<StartTimeDTO>(expectedStartTimes));
@@ -66,12 +73,14 @@ TEST(ProgramDTOTest, copyConstructor) {
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
 	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
@@ -80,6 +89,7 @@ TEST(ProgramDTOTest, copyConstructor) {
 TEST(ProgramDTOTest, moveConstructor) {
 	const string expectedName("name");
 	const string expectedSchedulerType("scheduler");
+	const PeriodicSchedulerDTO expectedPeriodicScheduler(120, list<bool>({ false, true }), 2018, 11, 10);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(110, list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
@@ -87,6 +97,7 @@ TEST(ProgramDTOTest, moveConstructor) {
 	ProgramDTO source(
 			expectedName,
 			expectedSchedulerType,
+			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
 			list<StartTimeDTO>(expectedStartTimes));
@@ -96,12 +107,14 @@ TEST(ProgramDTOTest, moveConstructor) {
 	EXPECT_FALSE(programDTO.hasId());
 	EXPECT_TRUE(programDTO.hasName());
 	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
@@ -162,6 +175,25 @@ TEST(ProgramDTOTest, getSchedulerType) {
 	programDTO.setSchedulerType(expectedSchedulerType);
 	ASSERT_NO_THROW(programDTO.getSchedulerType());
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+}
+
+TEST(ProgramDTOTest, hasPeriodicScheduler) {
+	const PeriodicSchedulerDTO expectedScheduler(100, list<bool>({ true, false, true }), 2018, 11, 15);
+	ProgramDTO programDTO;
+
+	EXPECT_FALSE(programDTO.hasPeriodicScheduler());
+	programDTO.setPeriodicScheduler(PeriodicSchedulerDTO(expectedScheduler));
+	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
+}
+
+TEST(ProgramDTOTest, getPeriodicScheduler) {
+	const PeriodicSchedulerDTO expectedScheduler(100, list<bool>({ true, false, true }), 2018, 11, 15);
+	ProgramDTO programDTO;
+
+	EXPECT_THROW(programDTO.getPeriodicScheduler(), logic_error);
+	programDTO.setPeriodicScheduler(PeriodicSchedulerDTO(expectedScheduler));
+	ASSERT_NO_THROW(programDTO.getPeriodicScheduler());
+	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedScheduler));
 }
 
 TEST(ProgramDTOTest, hasWeeklyScheduler) {
@@ -271,18 +303,33 @@ TEST(ProgramDTOTest, equal) {
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 
-	const WeeklySchedulerDTO expectedScheduler1(20, list<bool>({ true, true, false }));
-	const WeeklySchedulerDTO expectedScheduler2(25, list<bool>({ true, false, false }));
+	const PeriodicSchedulerDTO expectedPeriodicScheduler1(120, list<bool>({ true, false, true }), 2018, 11, 15);
+	const PeriodicSchedulerDTO expectedPeriodicScheduler2(80, list<bool>({ true, false, false }), 2015, 10, 15);
 
-	programDTO1.setWeeklyScheduler(WeeklySchedulerDTO(expectedScheduler1));
+	programDTO1.setPeriodicScheduler(PeriodicSchedulerDTO(expectedPeriodicScheduler1));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO2.setWeeklyScheduler(WeeklySchedulerDTO(expectedScheduler2));
+	programDTO2.setPeriodicScheduler(PeriodicSchedulerDTO(expectedPeriodicScheduler2));
 	EXPECT_FALSE(programDTO1 == programDTO2);
 	EXPECT_FALSE(programDTO2 == programDTO1);
 
-	programDTO1.setWeeklyScheduler(WeeklySchedulerDTO(expectedScheduler2));
+	programDTO1.setPeriodicScheduler(PeriodicSchedulerDTO(expectedPeriodicScheduler2));
+	EXPECT_TRUE(programDTO1 == programDTO2);
+	EXPECT_TRUE(programDTO2 == programDTO1);
+
+	const WeeklySchedulerDTO expectedWeeklyScheduler1(20, list<bool>({ true, true, false }));
+	const WeeklySchedulerDTO expectedWeeklyScheduler2(25, list<bool>({ true, false, false }));
+
+	programDTO1.setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklyScheduler1));
+	EXPECT_FALSE(programDTO1 == programDTO2);
+	EXPECT_FALSE(programDTO2 == programDTO1);
+
+	programDTO2.setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklyScheduler2));
+	EXPECT_FALSE(programDTO1 == programDTO2);
+	EXPECT_FALSE(programDTO2 == programDTO1);
+
+	programDTO1.setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklyScheduler2));
 	EXPECT_TRUE(programDTO1 == programDTO2);
 	EXPECT_TRUE(programDTO2 == programDTO1);
 

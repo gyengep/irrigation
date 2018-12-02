@@ -4,7 +4,7 @@
 #include "DTO/ProgramDTO.h"
 #include "DTO/RunTimeDTO.h"
 #include "DTO/StartTimeDTO.h"
-#include "DTO/SchedulersDTO.h"
+#include "DTO/WeeklySchedulerDTO.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
 
@@ -51,6 +51,28 @@ protected:
 	XmlWriter writer;
 
 	StartTimeWriterTest() : writer(false) {}
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class PeriodicSchedulerReaderTest : public ::testing::Test {
+protected:
+
+	XmlReader reader;
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+class PeriodicSchedulerWriterTest : public ::testing::Test {
+protected:
+
+	XmlWriter writer;
+
+	PeriodicSchedulerWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}

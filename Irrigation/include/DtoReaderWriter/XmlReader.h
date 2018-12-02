@@ -18,12 +18,14 @@ class XmlReader : public DtoReader {
 	ProgramDTO loadProgram(const pugi::xml_node& node) const;
 	RunTimeDTO loadRunTime(const pugi::xml_node& node) const;
 	StartTimeDTO loadStartTime(const pugi::xml_node& node) const;
-	WeeklySchedulerDTO loadScheduler(const pugi::xml_node& node) const;
+	PeriodicSchedulerDTO loadPeriodicScheduler(const pugi::xml_node& node) const;
+	WeeklySchedulerDTO loadWeeklyScheduler(const pugi::xml_node& node) const;
 
 public:
 	virtual DocumentDTO loadDocument(const std::string& text) const override;
 	virtual ProgramDTO loadProgram(const std::string& text) const override;
 	virtual RunTimeDTO loadRunTime(const std::string& text) const override;
 	virtual StartTimeDTO loadStartTime(const std::string& text) const override;
+	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const override;
 	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const override;
 };

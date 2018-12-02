@@ -19,7 +19,8 @@ class XmlWriter : public DtoWriter {
 	void saveProgram(pugi::xml_node* parent, const ProgramDTO& program);
 	void saveRunTime(pugi::xml_node* parent, const RunTimeDTO& runTime);
 	void saveStartTime(pugi::xml_node* parent, const StartTimeDTO& startTime);
-	void saveScheduler(pugi::xml_node* parent, const WeeklySchedulerDTO& scheduler);
+	void savePeriodicScheduler(pugi::xml_node* parent, const PeriodicSchedulerDTO& scheduler);
+	void saveWeeklyScheduler(pugi::xml_node* parent, const WeeklySchedulerDTO& scheduler);
 
 public:
 	XmlWriter(bool humanReadable = true);
@@ -29,5 +30,6 @@ public:
 	virtual std::string save(const ProgramDTO& program) override;
 	virtual std::string save(const RunTimeDTO& runTime) override;
 	virtual std::string save(const StartTimeDTO& startTime) override;
+	virtual std::string save(const PeriodicSchedulerDTO& scheduler) override;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) override;
 };
