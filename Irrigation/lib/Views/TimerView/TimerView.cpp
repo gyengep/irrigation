@@ -44,7 +44,7 @@ void TimerView::onTimer(const time_t rawTime) {
 	const ProgramContainer& programs = irrigationDocument.getPrograms();
 
 	if (!wateringController.isWateringActive()) {
-		tm timeinfo = *localtime(&rawTime);
+		const tm timeinfo = *localtime(&rawTime);
 		for (auto& programAndIdPair : programs) {
 			const IdType& idType = programAndIdPair.first;
 			const Program& program = *programAndIdPair.second.get();
