@@ -24,9 +24,11 @@ const WeeklySchedulerSample weeklySchedulerSample_all(
 				"<day>false</day>"
 				"<day>true</day>"
 				"<day>true</day>"
+				"<day>false</day>"
+				"<day>true</day>"
 			"</days>"
 		"</scheduler>",
-		WeeklySchedulerDTO(2390, std::list<bool>({ true, false, false, true, true }))
+		WeeklySchedulerDTO(2390, std::list<bool>({ true, false, false, true, true, false, true }))
 		);
 
 const WeeklySchedulerSample weeklySchedulerSample_adjustment(
@@ -43,9 +45,12 @@ const WeeklySchedulerSample weeklySchedulerSample_values(
 				"<day>true</day>"
 				"<day>true</day>"
 				"<day>false</day>"
+				"<day>true</day>"
+				"<day>false</day>"
+				"<day>false</day>"
 			"</days>"
 		"</scheduler>",
-		WeeklySchedulerDTO().setValues(std::list<bool>({ true, true, true, false }))
+		WeeklySchedulerDTO().setValues(std::list<bool>({ true, true, true, false, true, false, false }))
 		);
 
 const WeeklySchedulerSample weeklySchedulerSample_empty(

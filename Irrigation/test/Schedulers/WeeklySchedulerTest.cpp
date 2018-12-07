@@ -146,43 +146,18 @@ TEST(WeeklySchedulerTest, convertWeeklySchedulerDTO) {
 	EXPECT_THAT(scheduler.getWeeklySchedulerDTO(), Eq(expectedSchedulerDTO));
 }
 
-TEST(WeeklySchedulerTest, updateLessValueFromDTO) {
-	WeeklyScheduler scheduler;
-	scheduler.enableDay(WeeklyScheduler::MONDAY, true);
-	scheduler.enableDay(WeeklyScheduler::TUESDAY, true);
-	scheduler.enableDay(WeeklyScheduler::WEDNESDAY, true);
-	scheduler.enableDay(WeeklyScheduler::THURSDAY, true);
-	scheduler.enableDay(WeeklyScheduler::FRIDAY, true);
-	scheduler.enableDay(WeeklyScheduler::SATURDAY, true);
-	scheduler.enableDay(WeeklyScheduler::SUNDAY, true);
-
-	scheduler.updateFromDTO(WeeklySchedulerDTO(
-			100,
-			list<bool>({false, false, false})
-			));
-
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::MONDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::TUESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::WEDNESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::THURSDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::FRIDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::SATURDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::SUNDAY));
-}
-
-TEST(WeeklySchedulerTest, updateMoreValueFromDTO) {
+TEST(WeeklySchedulerTest, updateLessOrMoreValueFromDTO) {
 	WeeklyScheduler scheduler;
 
-	scheduler.updateFromDTO(WeeklySchedulerDTO(
-		100,
-		list<bool>({true, true, true, true, true, true, true, true, true, true})
-		));
+	EXPECT_THROW(scheduler.updateFromDTO(WeeklySchedulerDTO(100, list<bool>({
+		false, false, false, false, false, false
+	}))), runtime_error);
 
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::MONDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::TUESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::WEDNESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::THURSDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::FRIDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::SATURDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklyScheduler::SUNDAY));
+	EXPECT_NO_THROW(scheduler.updateFromDTO(WeeklySchedulerDTO(100, list<bool>({
+		false, false, false, false, false, false, false
+	}))));
+
+	EXPECT_THROW(scheduler.updateFromDTO(WeeklySchedulerDTO(100, list<bool>({
+		false, false, false, false, false, false, false, false
+	}))), runtime_error);
 }

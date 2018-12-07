@@ -66,8 +66,12 @@ void WeeklyScheduler::updateFromDTO(const WeeklySchedulerDTO& schedulerDTO) {
 	}
 
 	if (schedulerDTO.hasValues()) {
-		const size_t maxIndex = min(days.size(), schedulerDTO.getValues().size());
-		for (size_t i = 0; i < maxIndex; ++i) {
+		if (schedulerDTO.getValues().size() != days.size()) {
+			throw runtime_error("WeeklyScheduler::updateFromDTO(): " + to_string(days.size()) +
+					"\"days\" have to be exist");
+		}
+
+		for (size_t i = 0; i < schedulerDTO.getValues().size(); ++i) {
 			auto it = next(schedulerDTO.getValues().begin(), i);
 			days[i] = *it;
 		}

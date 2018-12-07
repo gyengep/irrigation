@@ -141,26 +141,6 @@ TEST(Program, updateWeeklySchedulerFromProgramDTO) {
 		Eq(WeeklySchedulerDTO(84, list<bool>({ true, false, false, false, true, false, false}))));
 }
 
-TEST(Program, updateLessWeeklySchedulerFromProgramDTO) {
-	Program program;
-	program.getWeeklyScheduler().setAdjustment(34);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::SUNDAY, true);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::MONDAY, false);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::TUESDAY, true);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::WEDNESDAY, false);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::THURSDAY, true);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::FRIDAY, false);
-	program.getWeeklyScheduler().enableDay(WeeklyScheduler::SATURDAY, true);
-
-	program.updateFromDTO(ProgramDTO().setWeeklyScheduler(
-		WeeklySchedulerDTO(34, list<bool>({ false, true, false, true }))
-	));
-
-	EXPECT_THAT(program.getWeeklyScheduler().getWeeklySchedulerDTO(),
-		Eq(WeeklySchedulerDTO(34, list<bool>({ false, true, false, true, false, false, false}))));
-}
-
-
 TEST(Program, updateRunTimesFromProgramDTO) {
 	Program program;
 	program.getRunTimes().at(0)->setSeconds(60);

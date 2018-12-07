@@ -118,7 +118,7 @@ void PeriodicScheduler::updateFromDTO(const PeriodicSchedulerDTO& schedulerDTO) 
 			!schedulerDTO.hasPeriodStartMonth() ||
 			!schedulerDTO.hasPeriodStartDay()) {
 			throw runtime_error("PeriodicScheduler::updateFromDTO(): both of the "
-					"startYear, startMonth and startDay have to exist");
+					"startYear, startMonth and startDay have to be exist");
 		}
 
 		setPeriodStartDate(schedulerDTO.getPeriodStartYear(),
