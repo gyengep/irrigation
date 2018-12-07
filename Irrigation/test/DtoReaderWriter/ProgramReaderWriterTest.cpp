@@ -1,160 +1,21 @@
 #include <list>
 #include <string>
 #include "XmlReaderWriterTest.h"
+#include "ProgramSamples.h"
 
 using namespace std;
 using namespace testing;
 
-
-typedef pair<string, ProgramDTO> TestDataType;
-
 ///////////////////////////////////////////////////////////////////////////////
 
-const TestDataType testData_all(
-		"<program>"
-			"<name>abcdefg</name>"
-			"<schedulertype>weekly</schedulertype>"
-			"<schedulers>"
-				"<scheduler type=\"periodic\">"
-					"<adjustment>95</adjustment>"
-					"<days>"
-						"<day>true</day>"
-						"<day>true</day>"
-						"<day>false</day>"
-					"</days>"
-					"<periodStartDate>"
-						"<year>2018</year>"
-						"<month>11</month>"
-						"<day>22</day>"
-					"</periodStartDate>"
-				"</scheduler>"
-				"<scheduler type=\"weekly\">"
-					"<adjustment>110</adjustment>"
-					"<days>"
-						"<day>true</day>"
-						"<day>false</day>"
-					"</days>"
-				"</scheduler>"
-			"</schedulers>"
-			"<runtimes>"
-				"<runtime id=\"15\"><minute>19</minute><second>23</second></runtime>"
-				"<runtime id=\"25\"><minute>31</minute><second>46</second></runtime>"
-			"</runtimes>"
-			"<starttimes>"
-				"<starttime id=\"35\"><hour>19</hour><minute>26</minute></starttime>"
-				"<starttime id=\"45\"><hour>18</hour><minute>25</minute></starttime>"
-				"<starttime id=\"55\"><hour>17</hour><minute>24</minute></starttime>"
-			"</starttimes>"
-		"</program>",
-		ProgramDTO()
-		.setName("abcdefg")
-		.setSchedulerType("weekly")
-		.setPeriodicScheduler(PeriodicSchedulerDTO(95, list<bool>({ true, true, false}), 2018, 11, 22))
-		.setWeeklyScheduler(WeeklySchedulerDTO(110, list<bool>({ true, false})))
-		.setRunTimes(list<RunTimeDTO>({
-			RunTimeDTO(19, 23).setId(15),
-			RunTimeDTO(31, 46).setId(25)}))
-		.setStartTimes(list<StartTimeDTO>({
-			StartTimeDTO(19, 26).setId(35),
-			StartTimeDTO(18, 25).setId(45),
-			StartTimeDTO(17, 24).setId(55)}))
-		);
-
-const TestDataType testData_name(
-		"<program>"
-			"<name>abcdefg</name>"
-		"</program>",
-		ProgramDTO().setName("abcdefg")
-		);
-
-const TestDataType testData_schedulerType(
-		"<program>"
-			"<schedulertype>weekly</schedulertype>"
-		"</program>",
-		ProgramDTO().setSchedulerType("weekly")
-		);
-
-const TestDataType testData_periodicSchedulers(
-		"<program>"
-			"<schedulers>"
-				"<scheduler type=\"periodic\">"
-					"<adjustment>94</adjustment>"
-					"<days>"
-						"<day>true</day>"
-						"<day>false</day>"
-						"<day>false</day>"
-					"</days>"
-					"<periodStartDate>"
-						"<year>2015</year>"
-						"<month>2</month>"
-						"<day>5</day>"
-					"</periodStartDate>"
-				"</scheduler>"
-			"</schedulers>"
-		"</program>",
-		ProgramDTO()
-		.setPeriodicScheduler(PeriodicSchedulerDTO(94, list<bool>({ true, false, false}), 2015, 2, 5))
-		);
-
-const TestDataType testData_weeklySchedulers(
-		"<program>"
-			"<schedulers>"
-				"<scheduler type=\"weekly\">"
-					"<adjustment>120</adjustment>"
-					"<days>"
-						"<day>true</day>"
-						"<day>false</day>"
-					"</days>"
-				"</scheduler>"
-			"</schedulers>"
-		"</program>",
-		ProgramDTO()
-		.setWeeklyScheduler(WeeklySchedulerDTO(120, list<bool>({ true, false})))
-		);
-
-const TestDataType testData_runTimes(
-		"<program>"
-			"<runtimes>"
-				"<runtime id=\"15\"><minute>3</minute><second>15</second></runtime>"
-				"<runtime id=\"25\"><minute>7</minute><second>35</second></runtime>"
-			"</runtimes>"
-		"</program>",
-		ProgramDTO()
-		.setRunTimes(list<RunTimeDTO>({
-			RunTimeDTO(3, 15).setId(15),
-			RunTimeDTO(7, 35).setId(25)}))
-		);
-
-const TestDataType testData_startTimes(
-		"<program>"
-			"<starttimes>"
-				"<starttime id=\"35\"><hour>9</hour><minute>6</minute></starttime>"
-				"<starttime id=\"45\"><hour>8</hour><minute>5</minute></starttime>"
-				"<starttime id=\"55\"><hour>7</hour><minute>4</minute></starttime>"
-			"</starttimes>"
-		"</program>",
-		ProgramDTO()
-		.setStartTimes(list<StartTimeDTO>({
-			StartTimeDTO(9, 6).setId(35),
-			StartTimeDTO(8, 5).setId(45),
-			StartTimeDTO(7, 4).setId(55)}))
-		);
-
-const TestDataType testData_empty(
-		"<program/>",
-		ProgramDTO()
-		);
-
-///////////////////////////////////////////////////////////////////////////////
-
-void testProgramRead(const TestDataType& testData, XmlReader& reader) {
-	const ProgramDTO actualDto = reader.loadProgram(testData.first);
-	EXPECT_EQ(testData.second, actualDto);
+void testProgramRead(const ProgramSample& programSample, XmlReader& reader) {
+	const ProgramDTO actualDto = reader.loadProgram(programSample.first);
+	EXPECT_EQ(programSample.second, actualDto);
 }
 
-void testProgramWrite(const TestDataType& testData, XmlWriter& writer) {
-	const string actualXml = writer.save(testData.second);
-	EXPECT_EQ(testData.first, remove_xml_tag(actualXml));
+void testProgramWrite(const ProgramSample& programSample, XmlWriter& writer) {
+	const string actualXml = writer.save(programSample.second);
+	EXPECT_EQ(programSample.first, remove_xml_tag(actualXml));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -171,100 +32,78 @@ TEST_F(ProgramReaderTest, programInvalidXml) {
 	EXPECT_THROW(reader.loadProgram("<abc/><123/>"), XMLParseException);
 }
 
-TEST_F(ProgramReaderTest, programRunTimeWithoutId) {
-	const TestDataType testData_runTimesWithoutId(
-			"<program>"
-				"<runtimes>"
-					"<runtime><minute>3</minute><second>15</second></runtime>"
-					"<runtime><minute>7</minute><second>35</second></runtime>"
-				"</runtimes>"
-			"</program>",
-			ProgramDTO()
-			.setRunTimes(list<RunTimeDTO>({
-				RunTimeDTO(3, 15),
-				RunTimeDTO(7, 35)}))
-			);
-
-	testProgramRead(testData_runTimesWithoutId, reader);
-}
-
-TEST_F(ProgramReaderTest, programStartTimeWithoutId) {
-	const TestDataType testData_startTimesWithoutId(
-			"<program>"
-				"<starttimes>"
-					"<starttime><hour>9</hour><minute>6</minute></starttime>"
-					"<starttime><hour>8</hour><minute>5</minute></starttime>"
-					"<starttime><hour>7</hour><minute>4</minute></starttime>"
-				"</starttimes>"
-			"</program>",
-			ProgramDTO()
-			.setStartTimes(list<StartTimeDTO>({
-				StartTimeDTO(9, 6),
-				StartTimeDTO(8, 5),
-				StartTimeDTO(7, 4)}))
-			);
-
-	testProgramRead(testData_startTimesWithoutId, reader);
-}
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(ProgramReaderTest, programAll) {
-	testProgramRead(testData_all, reader);
+	testProgramRead(programSample_all, reader);
 }
 
 TEST_F(ProgramReaderTest, programName) {
-	testProgramRead(testData_name, reader);
+	testProgramRead(programSample_name, reader);
 }
 
 TEST_F(ProgramReaderTest, programSchedulerType) {
-	testProgramRead(testData_schedulerType, reader);
+	testProgramRead(programSample_schedulerType, reader);
 }
 
-TEST_F(ProgramReaderTest, programPeriodicSchedulers) {
-	testProgramRead(testData_periodicSchedulers, reader);
+TEST_F(ProgramReaderTest, programPeriodicScheduler) {
+	testProgramRead(programSample_periodicScheduler, reader);
 }
 
-TEST_F(ProgramReaderTest, programWeeklySchedulers) {
-	testProgramRead(testData_weeklySchedulers, reader);
+TEST_F(ProgramReaderTest, programWeeklyScheduler) {
+	testProgramRead(programSample_weeklyScheduler, reader);
 }
 
 TEST_F(ProgramReaderTest, programRunTimes) {
-	testProgramRead(testData_runTimes, reader);
+	testProgramRead(programSample_runTimes, reader);
 }
 
 TEST_F(ProgramReaderTest, programStartTimes) {
-	testProgramRead(testData_startTimes, reader);
+	testProgramRead(programSample_startTimes, reader);
+}
+
+TEST_F(ProgramReaderTest, programId) {
+	testProgramRead(programSample_id, reader);
 }
 
 TEST_F(ProgramReaderTest, programEmpty) {
-	testProgramRead(testData_empty, reader);
+	testProgramRead(programSample_empty, reader);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(ProgramWriterTest, programAll) {
-	testProgramWrite(testData_all, writer);
+	testProgramWrite(programSample_all, writer);
 }
 
 TEST_F(ProgramWriterTest, programName) {
-	testProgramWrite(testData_name, writer);
+	testProgramWrite(programSample_name, writer);
 }
 
 TEST_F(ProgramWriterTest, programSchedulerType) {
-	testProgramWrite(testData_schedulerType, writer);
+	testProgramWrite(programSample_schedulerType, writer);
 }
 
-TEST_F(ProgramWriterTest, programSchedulers) {
-	testProgramWrite(testData_weeklySchedulers, writer);
+TEST_F(ProgramWriterTest, programPeriodicScheduler) {
+	testProgramWrite(programSample_periodicScheduler, writer);
+}
+
+TEST_F(ProgramWriterTest, programWeeklyScheduler) {
+	testProgramWrite(programSample_weeklyScheduler, writer);
 }
 
 TEST_F(ProgramWriterTest, programRunTimes) {
-	testProgramWrite(testData_runTimes, writer);
+	testProgramWrite(programSample_runTimes, writer);
 }
 
 TEST_F(ProgramWriterTest, programStartTimes) {
-	testProgramWrite(testData_startTimes, writer);
+	testProgramWrite(programSample_startTimes, writer);
+}
+
+TEST_F(ProgramWriterTest, programId) {
+	testProgramWrite(programSample_id, writer);
 }
 
 TEST_F(ProgramWriterTest, programEmpty) {
-	testProgramWrite(testData_empty, writer);
+	testProgramWrite(programSample_empty, writer);
 }
