@@ -2,9 +2,6 @@
 .PHONY: all
 all: library-all test-all src-all
 
-.PHONY: all-without-test
-all-without-test: library-all src-all
-
 .PHONY: clean
 clean: library-clean test-clean src-clean
 
