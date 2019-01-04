@@ -23,7 +23,7 @@ TEST(ToCalendarTimeTest, YearMonthDayHourMinSec) {
 }
 
 
-TEST(GetElapsedDaysSinceEpoch, getDays) {
+TEST(GetElapsedDaysSinceEpochTest, getDays) {
 	const int monthLengthsLeapYears[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	const int monthLengthsNotLeapYears[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -48,7 +48,7 @@ TEST(GetElapsedDaysSinceEpoch, getDays) {
 	}
 }
 
-TEST(GetElapsedDaysSinceEpoch, getHours) {
+TEST(GetElapsedDaysSinceEpochTest, getHours) {
 	const tm timeinfo = toCalendarTime(2018, 11, 24);
 	const int elapsedDays = getElapsedDaysSinceEpoch(timeinfo);
 

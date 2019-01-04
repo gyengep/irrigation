@@ -18,7 +18,7 @@ using ::testing::Return;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(Program, name) {
+TEST(ProgramTest, name) {
 	Program program;
 
 	EXPECT_TRUE(program.getName().empty());
@@ -28,17 +28,17 @@ TEST(Program, name) {
 	EXPECT_EQ(name, program.getName());
 }
 
-TEST(Program, getSchedulerType) {
+TEST(ProgramTest, getSchedulerType) {
 	Program program;
 	EXPECT_EQ(SchedulerType::WEEKLY, program.getSchedulerType());
 }
 
-TEST(Program, getWeeklyScheduler) {
+TEST(ProgramTest, getWeeklyScheduler) {
 	Program program;
 	EXPECT_NO_THROW(program.getWeeklyScheduler());
 }
 
-TEST(Program, convertProgramDTO) {
+TEST(ProgramTest, convertProgramDTO) {
 	const ProgramDTO expectedProgramDTO("Abcdefg", "weekly",
 			PeriodicSchedulerDTO(55, list<bool>({ false, true, false}), 1978, 9, 29),
 			WeeklySchedulerDTO(95, list<bool>({ false, true, false, false, false, true, false})),
@@ -91,7 +91,7 @@ TEST(Program, convertProgramDTO) {
 	EXPECT_THAT(program.getProgramDTO(), Eq(expectedProgramDTO));
 }
 
-TEST(Program, updateNameFromProgramDTO) {
+TEST(ProgramTest, updateNameFromProgramDTO) {
 	Program program;
 	program.setName("abcd");
 
@@ -102,7 +102,7 @@ TEST(Program, updateNameFromProgramDTO) {
 	EXPECT_THAT(program.getName(), Eq(string("12345")));
 }
 
-TEST(Program, updateSchedulerTypeFromProgramDTO) {
+TEST(ProgramTest, updateSchedulerTypeFromProgramDTO) {
 	Program program;
 	program.setSchedulerType(SchedulerType::WEEKLY);
 
@@ -118,7 +118,7 @@ TEST(Program, updateSchedulerTypeFromProgramDTO) {
 	EXPECT_THROW(program.updateFromDTO(ProgramDTO().setSchedulerType("invalid")), invalid_argument);
 }
 
-TEST(Program, updateWeeklySchedulerFromProgramDTO) {
+TEST(ProgramTest, updateWeeklySchedulerFromProgramDTO) {
 	Program program;
 	program.getWeeklyScheduler().setAdjustment(73);
 	program.getWeeklyScheduler().enableDay(WeeklyScheduler::MONDAY, false);
@@ -141,7 +141,7 @@ TEST(Program, updateWeeklySchedulerFromProgramDTO) {
 		Eq(WeeklySchedulerDTO(84, list<bool>({ true, false, false, false, true, false, false}))));
 }
 
-TEST(Program, updateRunTimesFromProgramDTO) {
+TEST(ProgramTest, updateRunTimesFromProgramDTO) {
 	Program program;
 	program.getRunTimes().at(0)->setSeconds(60);
 	program.getRunTimes().at(1)->setSeconds(61);
@@ -172,7 +172,7 @@ TEST(Program, updateRunTimesFromProgramDTO) {
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
 }
 
-TEST(Program, updateRunTimesFromProgramDTOWithoutId) {
+TEST(ProgramTest, updateRunTimesFromProgramDTOWithoutId) {
 	Program program;
 	program.updateFromDTO(ProgramDTO().setRunTimes(
 		list<RunTimeDTO>({
@@ -194,7 +194,7 @@ TEST(Program, updateRunTimesFromProgramDTOWithoutId) {
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(2, 5)));
 }
 
-TEST(Program, updateRunTimesFromProgramDTOWithId) {
+TEST(ProgramTest, updateRunTimesFromProgramDTOWithId) {
 	Program program;
 	program.updateFromDTO(ProgramDTO().setRunTimes(
 		list<RunTimeDTO>({
@@ -216,7 +216,7 @@ TEST(Program, updateRunTimesFromProgramDTOWithId) {
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(2, 5)));
 }
 
-TEST(Program, updateRunTimesFromDTOWithAndWithoutId) {
+TEST(ProgramTest, updateRunTimesFromDTOWithAndWithoutId) {
 	Program program;
 	program.updateFromDTO(ProgramDTO().setRunTimes(
 		list<RunTimeDTO>({
@@ -235,7 +235,7 @@ TEST(Program, updateRunTimesFromDTOWithAndWithoutId) {
 	EXPECT_THAT(program.getRunTimes().at(5)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
 }
 
-TEST(Program, updateStartTimesFromProgramDTO) {
+TEST(ProgramTest, updateStartTimesFromProgramDTO) {
 	Program program;
 	program.getStartTimes().insert(100, unique_ptr<StartTime>(new StartTime(1, 0)));
 	program.getStartTimes().insert(101, unique_ptr<StartTime>(new StartTime(1, 1)));
@@ -261,7 +261,7 @@ TEST(Program, updateStartTimesFromProgramDTO) {
 	EXPECT_THAT(program.getStartTimes().at(202)->getStartTimeDTO(), Eq(StartTimeDTO(2, 2)));
 }
 
-TEST(Program, isScheduled1) {
+TEST(ProgramTest, isScheduled1) {
 	NiceMock<MockProgram_Scheduler> program;
 	NiceMock<MockScheduler> scheduler;
 
@@ -283,7 +283,7 @@ TEST(Program, isScheduled1) {
 	}
 }
 
-TEST(Program, isScheduled2) {
+TEST(ProgramTest, isScheduled2) {
 	NiceMock<MockProgram_Scheduler> program;
 	NiceMock<MockScheduler> scheduler;
 
