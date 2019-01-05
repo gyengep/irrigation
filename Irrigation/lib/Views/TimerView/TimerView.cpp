@@ -40,6 +40,8 @@ void TimerView::terminate() {
 }
 
 void TimerView::onTimer(const time_t rawTime) {
+	lock_guard<IrrigationDocument> lock(irrigationDocument);
+
 	WateringController& wateringController = irrigationDocument.getWateringController();
 	const ProgramContainer& programs = irrigationDocument.getPrograms();
 
@@ -47,13 +49,13 @@ void TimerView::onTimer(const time_t rawTime) {
 		const tm timeinfo = *localtime(&rawTime);
 		for (auto& programAndIdPair : programs) {
 			const IdType& idType = programAndIdPair.first;
-			const Program& program = *programAndIdPair.second.get();
-			if (program.isScheduled(timeinfo)) {
+			const shared_ptr<Program> program = programAndIdPair.second;
+			if (program->isScheduled(timeinfo)) {
 				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
 						to_string(idType).c_str(),
-						program.getName().c_str(),
-						to_string(program.getSchedulerType()).c_str());
-				wateringController.start(rawTime, program.getRunTimes(), program.getCurrentScheduler().getAdjustment());
+						program->getName().c_str(),
+						to_string(program->getSchedulerType()).c_str());
+				wateringController.start(rawTime, program->getRunTimes(), program->getCurrentScheduler().getAdjustment());
 				break;
 			}
 		}
@@ -63,8 +65,6 @@ void TimerView::onTimer(const time_t rawTime) {
 }
 
 void TimerView::onTimer() {
-	lock_guard<IrrigationDocument> lock(irrigationDocument);
-
 	if (!checkSystemTime(expectedSystemTime)) {
 		expectedSystemTime = system_clock::now();
 	}

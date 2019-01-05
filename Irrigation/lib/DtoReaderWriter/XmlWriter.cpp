@@ -33,7 +33,7 @@ void XmlWriter::saveDocument(xml_node* parent, const DocumentDTO& document) {
 	if (document.hasPrograms()) {
 		xml_node programListNode = node.append_child("programs");
 		const list<ProgramDTO>& programs = document.getPrograms();
-		for (auto& program : programs) {
+		for (const auto& program : programs) {
 			saveProgram(&programListNode, program);
 		}
 	}
@@ -71,7 +71,7 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 	if (program.hasRunTimes()) {
 		const list<RunTimeDTO>& runTimes = program.getRunTimes();
 		xml_node runTimeListNode = node.append_child("runtimes");
-		for (auto& runTime : runTimes) {
+		for (const auto& runTime : runTimes) {
 			saveRunTime(&runTimeListNode, runTime);
 		}
 	}
@@ -79,7 +79,7 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 	if (program.hasStartTimes()) {
 		const list<StartTimeDTO>& startTimes = program.getStartTimes();
 		xml_node startTimeListNode = node.append_child("starttimes");
-		for (auto& startTime : startTimes) {
+		for (const auto& startTime : startTimes) {
 			saveStartTime(&startTimeListNode, startTime);
 		}
 	}

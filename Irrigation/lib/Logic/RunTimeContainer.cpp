@@ -9,14 +9,14 @@
 using namespace std;
 
 
-unique_ptr<RunTime> RunTimeFactory::createRunTime() const {
-	return unique_ptr<RunTime>(new RunTime());
+shared_ptr<RunTime> RunTimeFactory::createRunTime() const {
+	return shared_ptr<RunTime>(new RunTime());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 RunTimeContainer::RunTimeContainer() :
-	RunTimeContainer(new RunTimeFactory())
+	RunTimeContainer(unique_ptr<RunTimeFactory>(new RunTimeFactory()))
 {
 }
 
@@ -40,12 +40,10 @@ RunTimeContainer::RunTimeContainer(initializer_list<RunTime> initializer) :
 	}
 }
 
-RunTimeContainer::RunTimeContainer(RunTimeFactory* runTimeFactory) {
-	unique_ptr<RunTimeFactory> runTimeFactoryPtr(runTimeFactory);
-
+RunTimeContainer::RunTimeContainer(unique_ptr<RunTimeFactory> runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		container.push_back(make_pair(i, runTimeFactoryPtr->createRunTime()));
+		container.push_back(make_pair(i, runTimeFactory->createRunTime()));
 	}
 }
 

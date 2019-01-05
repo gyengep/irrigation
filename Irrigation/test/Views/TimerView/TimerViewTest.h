@@ -24,7 +24,7 @@ protected:
 
 	std::unique_ptr<IrrigationDocument> document;
 	std::unique_ptr<TimerView> view;
-	std::unique_ptr<MockProgram> program1, program2;
+	std::shared_ptr<MockProgram> program1, program2;
 	std::unique_ptr<MockScheduler> scheduler1, scheduler2;
 	std::unique_ptr<MockWateringController> wateringController;
 

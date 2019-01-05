@@ -9,6 +9,14 @@
 using namespace std;
 
 
+ProgramContainer::ProgramContainer(std::initializer_list<ProgramContainer::value_type> initializer) :
+	ProgramContainer()
+{
+	for (const auto& value : initializer) {
+		insert(value.first, value.second);
+	}
+}
+
 ProgramContainer::container_type::const_iterator ProgramContainer::find(const key_type& key) const {
 	for (auto it = container.begin(); container.end() != it; ++it) {
 		if (it->first == key) {
@@ -23,14 +31,14 @@ const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) c
 	return find(key)->second;
 }
 
-ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, mapped_type&& value) {
+ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
 	for (auto& programAndIdPair : container) {
 		if (programAndIdPair.first == key) {
 			throw AlreadyExistException("Program[" + to_string(key) + "] is already exist");
 		}
 	}
 
-	container.push_back(make_pair(key, move(value)));
+	container.push_back(make_pair(key, value));
 	LOGGER.debug("Program[%s] added: %s",
 		to_string(key).c_str(),
 		to_string(*container.back().second.get()).c_str()

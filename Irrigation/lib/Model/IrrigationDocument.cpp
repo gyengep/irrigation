@@ -54,7 +54,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 		programs.reset(new ProgramContainer());
 
 		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
-			unique_ptr<Program> program(new Program());
+			shared_ptr<Program> program(new Program());
 			program->updateFromDTO(programDTO);
 
 			IdType id;
@@ -62,7 +62,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 				id = IdType(programDTO.getId());
 			}
 
-			programs->insert(id, move(program));
+			programs->insert(id, program);
 		}
 	}
 }

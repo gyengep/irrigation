@@ -144,13 +144,13 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 		startTimes.reset(new StartTimeContainer());
 
 		for (const StartTimeDTO& startTimeDTO : programDTO.getStartTimes()) {
-			unique_ptr<StartTime> startTime(new StartTime());
+			shared_ptr<StartTime> startTime(new StartTime());
 			startTime->updateFromDTO(startTimeDTO);
 
 			if (startTimeDTO.hasId()) {
-				startTimes->insert(IdType(startTimeDTO.getId()), move(startTime));
+				startTimes->insert(IdType(startTimeDTO.getId()), startTime);
 			} else {
-				startTimes->insert(IdType(), move(startTime));
+				startTimes->insert(IdType(), startTime);
 			}
 		}
 	}

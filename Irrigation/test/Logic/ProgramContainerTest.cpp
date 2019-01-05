@@ -4,161 +4,134 @@
 #include "MockProgram.h"
 
 using namespace std;
-
-typedef vector<pair<const IdType, Program*>> IdTypeProgramPtrVector;
-
-///////////////////////////////////////////////////////////////////////////////
-
-static void insertToPrograms(ProgramContainer& programs, const IdTypeProgramPtrVector& values) {
-	for (unsigned i = 0; i < values.size(); ++i) {
-		programs.insert(values[i].first, unique_ptr<Program>(values[i].second));
-	}
-}
-
-static void expectPrograms(const ProgramContainer& programs, const IdTypeProgramPtrVector& required) {
-	ASSERT_EQ(required.size(), programs.size());
-
-	unsigned i = 0;
-	for (auto it = programs.begin(); it != programs.end(); ++it, ++i) {
-		EXPECT_EQ(required[i].first, it->first);
-		EXPECT_EQ(required[i].second, it->second.get());
-	}
-}
+using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
+
+TEST(ProgramContainerTest, defaultConstructor) {
+	ProgramContainer programs;
+	EXPECT_THAT(programs.begin(), programs.end());
+}
+
+TEST(ProgramContainerTest, initializerConstructor) {
+	const initializer_list<ProgramContainer::value_type> initializer {
+		{10, shared_ptr<Program>(new Program())},
+		{20, shared_ptr<Program>(new Program())},
+		{15, shared_ptr<Program>(new Program())},
+	};
+
+	ProgramContainer programs(initializer);
+	for (size_t i = 0; i < initializer.size(); ++i) {
+		EXPECT_THAT(*next(programs.begin(), i), Eq(*next(initializer.begin(), i)));
+	}
+}
 
 TEST(ProgramContainerTest, size) {
 	ProgramContainer programs;
-	EXPECT_EQ(0, programs.size());
+	EXPECT_THAT(programs, SizeIs(0));
 
-	programs.insert(0, unique_ptr<Program>(new Program()));
-	EXPECT_EQ(1, programs.size());
+	programs.insert(0, shared_ptr<Program>(new Program()));
+	EXPECT_THAT(programs, SizeIs(1));
 }
 
 TEST(ProgramContainerTest, insert) {
-	const IdTypeProgramPtrVector required {
-		{10, new Program()},
-		{20, new Program()},
-		{15, new Program()},
+	const initializer_list<ProgramContainer::value_type> initializer {
+		{10, shared_ptr<Program>(new Program())},
+		{20, shared_ptr<Program>(new Program())},
+		{15, shared_ptr<Program>(new Program())},
 	};
 
 	ProgramContainer programs;
 
-	for (auto& requiredPair : required) {
-		const ProgramContainer::value_type& insertedPair =
-				programs.insert(requiredPair.first, unique_ptr<Program>(requiredPair.second));
-
-		EXPECT_EQ(requiredPair.first, insertedPair.first);
-		EXPECT_EQ(requiredPair.second, insertedPair.second.get());
+	for (const auto& value : initializer) {
+		programs.insert(value.first, value.second);
 	}
 
-	expectPrograms(programs, required);
+	EXPECT_THAT(programs, ElementsAreArray(initializer));
 }
 
 TEST(ProgramContainerTest, insertExisting) {
-	const IdTypeProgramPtrVector required {
-		{100, new Program()},
-		{101, new Program()},
-		{102, new Program()},
-	};
+	ProgramContainer programs({
+		{100, shared_ptr<Program>(new Program())},
+		{101, shared_ptr<Program>(new Program())},
+		{102, shared_ptr<Program>(new Program())},
+	});
 
-	ProgramContainer programs;
-	insertToPrograms(programs, required);
-
-	EXPECT_THROW(programs.insert(101, unique_ptr<Program>(new MockProgram())), AlreadyExistException);
+	EXPECT_THROW(programs.insert(101, shared_ptr<Program>(new MockProgram())), AlreadyExistException);
 }
 
 TEST(ProgramContainerTest, erase) {
-	const IdTypeProgramPtrVector programsToAdd {
-		{50, new Program()},
-		{40, new Program()},
-		{70, new Program()},
-		{60, new Program()}
+	const initializer_list<ProgramContainer::value_type> initializer {
+		{50, shared_ptr<Program>(new Program())},
+		{40, shared_ptr<Program>(new Program())},
+		{70, shared_ptr<Program>(new Program())},
+		{60, shared_ptr<Program>(new Program())}
 	};
 
-	ProgramContainer programs;
-	insertToPrograms(programs, programsToAdd);
-	ASSERT_EQ(programsToAdd.size(), programs.size());
+	ProgramContainer programs(initializer);
 
-	programs.erase(40);
+	EXPECT_THAT(programs, SizeIs(initializer.size()));
+	EXPECT_NO_THROW(programs.erase(40));
+	EXPECT_THAT(programs, SizeIs(initializer.size() - 1));
 
-	const IdTypeProgramPtrVector required {
-		{50, programsToAdd[0].second},
-		{70, programsToAdd[2].second},
-		{60, programsToAdd[3].second},
-	};
-
-	expectPrograms(programs, required);
+	EXPECT_THAT(programs,
+			ElementsAre(
+				*next(initializer.begin(), 0),
+				*next(initializer.begin(), 2),
+				*next(initializer.begin(), 3)
+			));
 }
 
 TEST(ProgramContainerTest, eraseInvalid) {
-	const IdTypeProgramPtrVector required {
-		{10, new Program()},
-		{20, new Program()},
-		{15, new Program()},
+	const initializer_list<ProgramContainer::value_type> initializer {
+		{10, shared_ptr<Program>(new Program())},
+		{20, shared_ptr<Program>(new Program())},
+		{15, shared_ptr<Program>(new Program())},
 	};
 
-	ProgramContainer programs;
-	insertToPrograms(programs, required);
+	ProgramContainer programs(initializer);
 
-	EXPECT_EQ(required.size(), programs.size());
+	EXPECT_THAT(programs, SizeIs(initializer.size()));
 	EXPECT_THROW(programs.erase(30), NoSuchElementException);
-	EXPECT_EQ(required.size(), programs.size());
+	EXPECT_THAT(programs, SizeIs(initializer.size()));
 }
 
 TEST(ProgramContainerTest, eraseDestroy) {
 	ProgramContainer programs;
-	programs.insert(0, unique_ptr<Program>(new MockProgram()));
+	programs.insert(0, shared_ptr<Program>(new MockProgram()));
 	programs.erase(0);
 }
 
 TEST(ProgramContainerTest, at) {
-	const IdTypeProgramPtrVector required {
-		{10, new Program()},
-		{15, new Program()},
-		{20, new Program()},
+	const initializer_list<ProgramContainer::value_type> initializer {
+		{10, shared_ptr<Program>(new Program())},
+		{15, shared_ptr<Program>(new Program())},
+		{20, shared_ptr<Program>(new Program())},
 	};
 
-	ProgramContainer programs;
-	insertToPrograms(programs, required);
+	ProgramContainer programs(initializer);
 
-	ASSERT_EQ(required.size(), programs.size());
-	for (unsigned i = 0; i < required.size(); ++i) {
-		const IdType& requiredId = required[i].first;
-		const Program* requiredPtr = required[i].second;
+	ASSERT_THAT(programs, SizeIs(initializer.size()));
+	for (unsigned i = 0; i < initializer.size(); ++i) {
+		const ProgramContainer::value_type& value = *next(initializer.begin(), i);
+		const ProgramContainer::key_type& requiredKey = value.first;
+		const ProgramContainer::mapped_type& requiredValue = value.second;
 
-		EXPECT_EQ(requiredPtr, programs.at(requiredId).get());
+		EXPECT_THAT(programs.at(requiredKey), Eq(requiredValue));
 	}
 }
 
 TEST(ProgramContainerTest, atInvalid) {
-	const IdTypeProgramPtrVector required {
-		{10, new Program()},
-		{15, new Program()},
-		{20, new Program()},
-	};
-
-	ProgramContainer programs;
-	insertToPrograms(programs, required);
+	ProgramContainer programs({
+		{10, shared_ptr<Program>(new Program())},
+		{15, shared_ptr<Program>(new Program())},
+		{20, shared_ptr<Program>(new Program())},
+	});
 
 	EXPECT_THROW(programs.at(6), NoSuchElementException);
 }
 
-TEST(ProgramContainerTest, atConstInvalid) {
-	const IdTypeProgramPtrVector required {
-		{10, new Program()},
-		{15, new Program()},
-		{20, new Program()},
-	};
-
-	ProgramContainer programs;
-	insertToPrograms(programs, required);
-
-	const ProgramContainer& constPrograms = programs;
-	EXPECT_THROW(constPrograms.at(6), NoSuchElementException);
-}
-
 TEST(ProgramContainerTest, destroyed) {
 	ProgramContainer programs;
-	programs.insert(0, unique_ptr<Program>(new MockProgram()));
+	programs.insert(0, shared_ptr<Program>(new MockProgram()));
 }

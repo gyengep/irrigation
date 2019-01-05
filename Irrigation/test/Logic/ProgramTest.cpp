@@ -25,12 +25,12 @@ TEST(ProgramTest, name) {
 
 	const string name("AbcXyz");
 	program.setName(name);
-	EXPECT_EQ(name, program.getName());
+	EXPECT_THAT(program.getName(), Eq(name));
 }
 
 TEST(ProgramTest, getSchedulerType) {
 	Program program;
-	EXPECT_EQ(SchedulerType::WEEKLY, program.getSchedulerType());
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
 }
 
 TEST(ProgramTest, getWeeklyScheduler) {
@@ -151,7 +151,7 @@ TEST(ProgramTest, updateRunTimesFromProgramDTO) {
 	program.getRunTimes().at(5)->setSeconds(65);
 
 	program.updateFromDTO(ProgramDTO());
-	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes(), SizeIs(6));
 	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(1, 0)));
 	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(1, 1)));
 	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(1, 2)));
@@ -163,7 +163,7 @@ TEST(ProgramTest, updateRunTimesFromProgramDTO) {
 		list<RunTimeDTO>()
 	));
 
-	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes(), SizeIs(6));
 	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
 	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
 	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
@@ -185,7 +185,7 @@ TEST(ProgramTest, updateRunTimesFromProgramDTOWithoutId) {
 		})
 	));
 
-	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes(), SizeIs(6));
 	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(2, 0)));
 	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(2, 1)));
 	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(2, 2)));
@@ -207,7 +207,7 @@ TEST(ProgramTest, updateRunTimesFromProgramDTOWithId) {
 		})
 	));
 
-	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes(), SizeIs(6));
 	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(2, 0)));
 	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(2, 1)));
 	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(2, 2)));
@@ -226,7 +226,7 @@ TEST(ProgramTest, updateRunTimesFromDTOWithAndWithoutId) {
 		})
 	));
 
-	EXPECT_THAT(program.getRunTimes().size(), Eq(6));
+	EXPECT_THAT(program.getRunTimes(), SizeIs(6));
 	EXPECT_THAT(program.getRunTimes().at(0)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
 	EXPECT_THAT(program.getRunTimes().at(1)->getRunTimeDTO(), Eq(RunTimeDTO(3, 51)));
 	EXPECT_THAT(program.getRunTimes().at(2)->getRunTimeDTO(), Eq(RunTimeDTO(0, 0)));
@@ -237,12 +237,12 @@ TEST(ProgramTest, updateRunTimesFromDTOWithAndWithoutId) {
 
 TEST(ProgramTest, updateStartTimesFromProgramDTO) {
 	Program program;
-	program.getStartTimes().insert(100, unique_ptr<StartTime>(new StartTime(1, 0)));
-	program.getStartTimes().insert(101, unique_ptr<StartTime>(new StartTime(1, 1)));
-	program.getStartTimes().insert(102, unique_ptr<StartTime>(new StartTime(1, 2)));
+	program.getStartTimes().insert(100, shared_ptr<StartTime>(new StartTime(1, 0)));
+	program.getStartTimes().insert(101, shared_ptr<StartTime>(new StartTime(1, 1)));
+	program.getStartTimes().insert(102, shared_ptr<StartTime>(new StartTime(1, 2)));
 
 	program.updateFromDTO(ProgramDTO());
-	EXPECT_THAT(program.getStartTimes().size(), Eq(3));
+	EXPECT_THAT(program.getStartTimes(), SizeIs(3));
 	EXPECT_THAT(program.getStartTimes().at(100)->getStartTimeDTO(), Eq(StartTimeDTO(1, 0)));
 	EXPECT_THAT(program.getStartTimes().at(101)->getStartTimeDTO(), Eq(StartTimeDTO(1, 1)));
 	EXPECT_THAT(program.getStartTimes().at(102)->getStartTimeDTO(), Eq(StartTimeDTO(1, 2)));
@@ -255,7 +255,7 @@ TEST(ProgramTest, updateStartTimesFromProgramDTO) {
 		})
 	));
 
-	EXPECT_THAT(program.getStartTimes().size(), Eq(3));
+	EXPECT_THAT(program.getStartTimes(), SizeIs(3));
 	EXPECT_THAT(program.getStartTimes().at(200)->getStartTimeDTO(), Eq(StartTimeDTO(2, 0)));
 	EXPECT_THAT(program.getStartTimes().at(201)->getStartTimeDTO(), Eq(StartTimeDTO(2, 1)));
 	EXPECT_THAT(program.getStartTimes().at(202)->getStartTimeDTO(), Eq(StartTimeDTO(2, 2)));
@@ -268,10 +268,10 @@ TEST(ProgramTest, isScheduled1) {
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
 	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(false));
 
-	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15)));
+	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -290,23 +290,23 @@ TEST(ProgramTest, isScheduled2) {
 	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
 	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(true));
 
-	program.getStartTimes().insert(0, unique_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, unique_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, unique_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, unique_ptr<StartTime>(new StartTime(20, 15)));
+	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
 
-				bool requestedResult = false;
-				requestedResult |= (hour == 4 && min == 0 && sec == 0);
-				requestedResult |= (hour == 6 && min == 0 && sec == 0);
-				requestedResult |= (hour == 6 && min == 30 && sec == 0);
-				requestedResult |= (hour == 20 && min == 15 && sec == 0);
+				bool expectedResult = false;
+				expectedResult |= (hour == 4 && min == 0 && sec == 0);
+				expectedResult |= (hour == 6 && min == 0 && sec == 0);
+				expectedResult |= (hour == 6 && min == 30 && sec == 0);
+				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				EXPECT_EQ(requestedResult, program.isScheduled(timeinfo));
+				EXPECT_THAT(program.isScheduled(timeinfo), Eq(expectedResult));
 			}
 		}
 	}

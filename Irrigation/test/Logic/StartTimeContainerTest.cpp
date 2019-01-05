@@ -3,173 +3,156 @@
 #include "Logic/StartTimeContainer.h"
 #include "MockStartTime.h"
 
-
 using namespace std;
-
-typedef vector<pair<const IdType, StartTime*>> IdTypeStartTimeVector;
-
-///////////////////////////////////////////////////////////////////////////////
-
-static void insertToStartTimes(StartTimeContainer& startTimes, const IdTypeStartTimeVector& values) {
-	for (unsigned i = 0; i < values.size(); ++i) {
-		startTimes.insert(values[i].first, unique_ptr<StartTime>(values[i].second));
-	}
-}
-
-static void expectStartTimes(const StartTimeContainer& startTimes, const IdTypeStartTimeVector& required) {
-	ASSERT_EQ(required.size(), startTimes.size());
-
-	unsigned i = 0;
-	for (auto it = startTimes.begin(); it != startTimes.end(); ++it, ++i) {
-		EXPECT_EQ(required[i].first, it->first);
-		EXPECT_EQ(required[i].second, it->second.get());
-	}
-}
+using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
+
+TEST(StartTimeContainerTest, defaultConstructor) {
+	StartTimeContainer startTimes;
+	EXPECT_THAT(startTimes.begin(), startTimes.end());
+}
+
+TEST(StartTimeContainerTest, initializerConstructor) {
+	const initializer_list<StartTimeContainer::value_type> initializer {
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
+	};
+
+	StartTimeContainer startTimes(initializer);
+	for (size_t i = 0; i < initializer.size(); ++i) {
+		EXPECT_THAT(*next(startTimes.begin(), i), Eq(*next(initializer.begin(), i)));
+	}
+}
 
 TEST(StartTimeContainerTest, size) {
 	StartTimeContainer startTimes;
-	EXPECT_EQ(0, startTimes.size());
+	EXPECT_THAT(startTimes, SizeIs(0));
 
-	startTimes.insert(0, unique_ptr<StartTime>(new StartTime()));
-	EXPECT_EQ(1, startTimes.size());
+	startTimes.insert(0, shared_ptr<StartTime>(new StartTime()));
+	EXPECT_THAT(startTimes, SizeIs(1));
 }
 
 TEST(StartTimeContainerTest, insert) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{20, new StartTime()},
-		{15, new StartTime()},
+	const initializer_list<StartTimeContainer::value_type> initializer {
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
 	};
 
 	StartTimeContainer startTimes;
 
-	for (auto& requiredPair : required) {
-		StartTimeContainer::value_type& insertedPair =
-				startTimes.insert(requiredPair.first, unique_ptr<StartTime>(requiredPair.second));
-
-		EXPECT_EQ(requiredPair.first, insertedPair.first);
-		EXPECT_EQ(requiredPair.second, insertedPair.second.get());
+	for (const auto& value : initializer) {
+		startTimes.insert(value.first, value.second);
 	}
 
-	expectStartTimes(startTimes, required);
+	EXPECT_THAT(startTimes, ElementsAreArray(initializer));
 }
 
 TEST(StartTimeContainerTest, insertExisted) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{20, new StartTime()},
-		{15, new StartTime()},
-	};
+	StartTimeContainer startTimes({
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
+	});
 
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
-
-	EXPECT_THROW(startTimes.insert(20, unique_ptr<StartTime>(new MockStartTime())), AlreadyExistException);
+	EXPECT_THROW(startTimes.insert(20, shared_ptr<StartTime>(new MockStartTime())), AlreadyExistException);
 }
 
 TEST(StartTimeContainerTest, erase) {
-	const IdTypeStartTimeVector startTimesToAdd {
-		{10, new StartTime()},
-		{20, new StartTime()},
-		{30, new StartTime()},
-		{15, new StartTime()},
+	const initializer_list<StartTimeContainer::value_type> initializer {
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
+		{30, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
 	};
 
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, startTimesToAdd);
-	ASSERT_EQ(startTimesToAdd.size(), startTimes.size());
+	StartTimeContainer startTimes(initializer);
 
-	startTimes.erase(30);
+	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
+	EXPECT_NO_THROW(startTimes.erase(30));
+	EXPECT_THAT(startTimes, SizeIs(initializer.size() - 1));
 
-	const IdTypeStartTimeVector required {
-		{10, startTimesToAdd[0].second},
-		{20, startTimesToAdd[1].second},
-		{15, startTimesToAdd[3].second},
-	};
-
-	expectStartTimes(startTimes, required);
+	EXPECT_THAT(startTimes,
+			ElementsAre(
+				*next(initializer.begin(), 0),
+				*next(initializer.begin(), 1),
+				*next(initializer.begin(), 3)
+			));
 }
 
 TEST(StartTimeContainerTest, eraseInvalid) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{20, new StartTime()},
-		{15, new StartTime()},
+	const initializer_list<StartTimeContainer::value_type> initializer {
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
 	};
 
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
+	StartTimeContainer startTimes(initializer);
 
-	EXPECT_EQ(required.size(), startTimes.size());
+	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
 	EXPECT_THROW(startTimes.erase(30), NoSuchElementException);
-	EXPECT_EQ(required.size(), startTimes.size());
+	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
 }
 
-TEST(StartTimeContainerTest, eraseDestructed) {
+TEST(StartTimeContainerTest, eraseDestroy) {
 	StartTimeContainer startTimes;
-	startTimes.insert(0, unique_ptr<StartTime>(new MockStartTime()));
+	startTimes.insert(0, shared_ptr<StartTime>(new MockStartTime()));
 	startTimes.erase(0);
 }
 
 TEST(StartTimeContainerTest, at) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{15, new StartTime()},
-		{20, new StartTime()},
+	const initializer_list<StartTimeContainer::value_type> initializer {
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
 	};
 
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
+	StartTimeContainer startTimes(initializer);
 
-	ASSERT_EQ(required.size(), startTimes.size());
-	for (unsigned i = 0; i < required.size(); ++i) {
-		const IdType& requiredId = required[i].first;
-		const StartTime* requiredPtr = required[i].second;
+	ASSERT_THAT(startTimes, SizeIs(initializer.size()));
+	for (unsigned i = 0; i < initializer.size(); ++i) {
+		const StartTimeContainer::value_type& value = *next(initializer.begin(), i);
+		const StartTimeContainer::key_type& requiredKey = value.first;
+		const StartTimeContainer::mapped_type& requiredValue = value.second;
 
-		EXPECT_EQ(requiredPtr, startTimes.at(requiredId).get());
+		EXPECT_THAT(startTimes.at(requiredKey), Eq(requiredValue));
 	}
 }
 
 TEST(StartTimeContainerTest, atInvalid) {
-	const IdTypeStartTimeVector required {
-		{10, new StartTime()},
-		{15, new StartTime()},
-		{20, new StartTime()},
-	};
-
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, required);
+	StartTimeContainer startTimes({
+		{10, shared_ptr<StartTime>(new StartTime())},
+		{15, shared_ptr<StartTime>(new StartTime())},
+		{20, shared_ptr<StartTime>(new StartTime())},
+	});
 
 	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
 }
 
 TEST(StartTimeContainerTest, destroyed) {
 	StartTimeContainer startTimes;
-	startTimes.insert(0, unique_ptr<StartTime>(new MockStartTime()));
+	startTimes.insert(0, shared_ptr<StartTime>(new MockStartTime()));
 }
 
 TEST(StartTimeContainerTest, sort) {
-
-	const IdTypeStartTimeVector startTimesToAdd {
-		{0, new StartTime(0, 15)},
-		{1, new StartTime(0, 25)},
-		{2, new StartTime(0, 10)},
-		{3, new StartTime(0, 20)},
+	const initializer_list<StartTimeContainer::value_type> initializer {
+		{0, shared_ptr<StartTime>(new StartTime(0, 15))},
+		{1, shared_ptr<StartTime>(new StartTime(0, 25))},
+		{2, shared_ptr<StartTime>(new StartTime(0, 10))},
+		{3, shared_ptr<StartTime>(new StartTime(0, 20))},
 	};
 
-	StartTimeContainer startTimes;
-	insertToStartTimes(startTimes, startTimesToAdd);
+	StartTimeContainer startTimes(initializer);
 
 	startTimes.sort();
 
-	const IdTypeStartTimeVector required {
-		{2, startTimesToAdd[2].second},
-		{0, startTimesToAdd[0].second},
-		{3, startTimesToAdd[3].second},
-		{1, startTimesToAdd[1].second},
-	};
-
-	expectStartTimes(startTimes, required);
+	EXPECT_THAT(startTimes,
+			ElementsAre(
+				*next(initializer.begin(), 2),
+				*next(initializer.begin(), 0),
+				*next(initializer.begin(), 3),
+				*next(initializer.begin(), 1)
+			));
 }

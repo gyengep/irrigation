@@ -11,10 +11,11 @@ class RunTimeFactory;
 class RunTimeContainer {
 public:
 	typedef IdType									key_type;
-	typedef std::unique_ptr<RunTime>				mapped_type;
+	typedef std::shared_ptr<RunTime>				mapped_type;
 	typedef std::pair<const key_type, mapped_type>	value_type;
 	typedef std::vector<value_type>					container_type;
 	typedef typename container_type::const_iterator const_iterator;
+	typedef container_type::size_type				size_type;
 
 private:
 
@@ -28,7 +29,7 @@ public:
 	virtual ~RunTimeContainer() = default;
 
 	// for testing
-	RunTimeContainer(RunTimeFactory* runTimeFactory);
+	RunTimeContainer(std::unique_ptr<RunTimeFactory> runTimeFactory);
 
 	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
 	RunTimeContainer& operator= (const RunTimeContainer& other);

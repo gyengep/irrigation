@@ -13,23 +13,23 @@ using namespace testing;
 TEST(RunTimeContainerTest, initDefault) {
 	const RunTimeContainer runTimes;
 
-	EXPECT_THAT(*runTimes.at(0), Eq(RunTime()));
-	EXPECT_THAT(*runTimes.at(1), Eq(RunTime()));
-	EXPECT_THAT(*runTimes.at(2), Eq(RunTime()));
-	EXPECT_THAT(*runTimes.at(3), Eq(RunTime()));
-	EXPECT_THAT(*runTimes.at(4), Eq(RunTime()));
-	EXPECT_THAT(*runTimes.at(5), Eq(RunTime()));
+	EXPECT_THAT(runTimes.at(0), Pointee(RunTime()));
+	EXPECT_THAT(runTimes.at(1), Pointee(RunTime()));
+	EXPECT_THAT(runTimes.at(2), Pointee(RunTime()));
+	EXPECT_THAT(runTimes.at(3), Pointee(RunTime()));
+	EXPECT_THAT(runTimes.at(4), Pointee(RunTime()));
+	EXPECT_THAT(runTimes.at(5), Pointee(RunTime()));
 }
 
 TEST(RunTimeContainerTest, initWithInitializer) {
 	const RunTimeContainer runTimes{ 10, 11, 12, 13, 14, 15 };
 
-	EXPECT_THAT(*runTimes.at(0), Eq(RunTime(10)));
-	EXPECT_THAT(*runTimes.at(1), Eq(RunTime(11)));
-	EXPECT_THAT(*runTimes.at(2), Eq(RunTime(12)));
-	EXPECT_THAT(*runTimes.at(3), Eq(RunTime(13)));
-	EXPECT_THAT(*runTimes.at(4), Eq(RunTime(14)));
-	EXPECT_THAT(*runTimes.at(5), Eq(RunTime(15)));
+	EXPECT_THAT(runTimes.at(0), Pointee(RunTime(10)));
+	EXPECT_THAT(runTimes.at(1), Pointee(RunTime(11)));
+	EXPECT_THAT(runTimes.at(2), Pointee(RunTime(12)));
+	EXPECT_THAT(runTimes.at(3), Pointee(RunTime(13)));
+	EXPECT_THAT(runTimes.at(4), Pointee(RunTime(14)));
+	EXPECT_THAT(runTimes.at(5), Pointee(RunTime(15)));
 }
 
 TEST(RunTimeContainerTest, initWithNotCorrectInitializer) {
@@ -41,12 +41,12 @@ TEST(RunTimeContainerTest, initCopy) {
 	const RunTimeContainer source{ 10, 11, 12, 13, 14, 15 };
 	const RunTimeContainer runTimes(source);
 
-	EXPECT_THAT(*runTimes.at(0), Eq(RunTime(10)));
-	EXPECT_THAT(*runTimes.at(1), Eq(RunTime(11)));
-	EXPECT_THAT(*runTimes.at(2), Eq(RunTime(12)));
-	EXPECT_THAT(*runTimes.at(3), Eq(RunTime(13)));
-	EXPECT_THAT(*runTimes.at(4), Eq(RunTime(14)));
-	EXPECT_THAT(*runTimes.at(5), Eq(RunTime(15)));
+	EXPECT_THAT(runTimes.at(0), Pointee(RunTime(10)));
+	EXPECT_THAT(runTimes.at(1), Pointee(RunTime(11)));
+	EXPECT_THAT(runTimes.at(2), Pointee(RunTime(12)));
+	EXPECT_THAT(runTimes.at(3), Pointee(RunTime(13)));
+	EXPECT_THAT(runTimes.at(4), Pointee(RunTime(14)));
+	EXPECT_THAT(runTimes.at(5), Pointee(RunTime(15)));
 }
 
 TEST(RunTimeContainerTest, copy) {
@@ -54,12 +54,12 @@ TEST(RunTimeContainerTest, copy) {
 	RunTimeContainer runTimes;
 	runTimes = source;
 
-	EXPECT_THAT(*runTimes.at(0), Eq(RunTime(10)));
-	EXPECT_THAT(*runTimes.at(1), Eq(RunTime(11)));
-	EXPECT_THAT(*runTimes.at(2), Eq(RunTime(12)));
-	EXPECT_THAT(*runTimes.at(3), Eq(RunTime(13)));
-	EXPECT_THAT(*runTimes.at(4), Eq(RunTime(14)));
-	EXPECT_THAT(*runTimes.at(5), Eq(RunTime(15)));
+	EXPECT_THAT(runTimes.at(0), Pointee(RunTime(10)));
+	EXPECT_THAT(runTimes.at(1), Pointee(RunTime(11)));
+	EXPECT_THAT(runTimes.at(2), Pointee(RunTime(12)));
+	EXPECT_THAT(runTimes.at(3), Pointee(RunTime(13)));
+	EXPECT_THAT(runTimes.at(4), Pointee(RunTime(14)));
+	EXPECT_THAT(runTimes.at(5), Pointee(RunTime(15)));
 }
 
 TEST(RunTimeContainerTest, equals) {
@@ -76,14 +76,14 @@ TEST(RunTimeContainerTest, equals) {
 
 TEST(RunTimeContainerTest, size) {
 	RunTimeContainer runTimes;
-	EXPECT_EQ(ZoneHandler::getZoneCount(), runTimes.size());
+	EXPECT_THAT(runTimes, SizeIs(ZoneHandler::getZoneCount()));
 }
 
 TEST(RunTimeContainerTest, id) {
 	RunTimeContainer runTimes;
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
-		EXPECT_EQ(i, next(runTimes.begin(), i)->first);
+		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(i));
 	}
 }
 
@@ -91,7 +91,7 @@ TEST(RunTimeContainerTest, at) {
 	RunTimeContainer runTimes;
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
-		EXPECT_EQ(*next(runTimes.begin(), i)->second, *runTimes.at(i));
+		EXPECT_THAT(runTimes.at(i), Eq(next(runTimes.begin(), i)->second));
 	}
 }
 
@@ -99,6 +99,7 @@ TEST(RunTimeContainerTest, atInvalid) {
 	RunTimeContainer runTimes;
 	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
+
 TEST(RunTimeContainerTest, destroyed) {
-	RunTimeContainer runTimes(new MockRunTimeFactory());
+	RunTimeContainer runTimes(unique_ptr<RunTimeFactory>(new MockRunTimeFactory()));
 }

@@ -9,24 +9,24 @@ using namespace testing;
 
 TEST(RunTimeTest, defaultConstructor) {
 	RunTime runTime;
-	EXPECT_EQ(0, runTime.getSeconds());
+	EXPECT_THAT(runTime.getSeconds(), Eq(0));
 }
 
 TEST(RunTimeTest, parametrizedConstructor) {
 	RunTime runTime(10);
-	EXPECT_EQ(10, runTime.getSeconds());
+	EXPECT_THAT(runTime.getSeconds(), Eq(10));
 }
 
 TEST(RunTimeTest, copyConstructor) {
 	RunTime runTime(RunTime(20));
-	EXPECT_EQ(20, runTime.getSeconds());
+	EXPECT_THAT(runTime.getSeconds(), Eq(20));
 }
 
 TEST(RunTimeTest, copyOperator) {
 	RunTime source(20);
 	RunTime target;
 	target = source;
-	EXPECT_EQ(20, target.getSeconds());
+	EXPECT_THAT(target.getSeconds(), Eq(20));
 }
 
 TEST(RunTimeTest, equalsOperator) {
@@ -38,7 +38,7 @@ TEST(RunTimeTest, equalsOperator) {
 TEST(RunTimeTest, setValue) {
 	RunTime runTime;
 	runTime.setSeconds(25);
-	EXPECT_EQ(25, runTime.getSeconds());
+	EXPECT_THAT(runTime.getSeconds(), Eq(25));
 }
 
 TEST(RunTimeTest, setValueMax) {

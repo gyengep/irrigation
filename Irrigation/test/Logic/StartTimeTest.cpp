@@ -9,14 +9,14 @@ using namespace testing;
 
 TEST(StartTimeTest, defaultConstructor) {
 	StartTime startTime;
-	EXPECT_EQ(0, startTime.getHours());
-	EXPECT_EQ(0, startTime.getMinutes());
+	EXPECT_THAT(startTime.getHours(), Eq(0));
+	EXPECT_THAT(startTime.getMinutes(), Eq(0));
 }
 
 TEST(StartTimeTest, parametrizedConstructor) {
 	StartTime startTime(1, 30);
-	EXPECT_EQ(1, startTime.getHours());
-	EXPECT_EQ(30, startTime.getMinutes());
+	EXPECT_THAT(startTime.getHours(), Eq(1));
+	EXPECT_THAT(startTime.getMinutes(), Eq(30));
 }
 
 TEST(StartTimeTest, equalOperator) {
@@ -76,8 +76,8 @@ TEST(StartTimeTest, set) {
 	StartTime startTime;
 
 	startTime.set(21, 36);
-	EXPECT_EQ(21, startTime.getHours());
-	EXPECT_EQ(36, startTime.getMinutes());
+	EXPECT_THAT(startTime.getHours(), Eq(21));
+	EXPECT_THAT(startTime.getMinutes(), Eq(36));
 }
 
 TEST(StartTimeTest, setValueMax) {

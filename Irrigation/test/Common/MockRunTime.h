@@ -18,8 +18,8 @@ public:
 
 class MockRunTimeFactory : public RunTimeFactory {
 public:
-	virtual std::unique_ptr<RunTime> createRunTime() const {
-		return std::unique_ptr<RunTime>(new MockRunTime());
+	virtual std::shared_ptr<RunTime> createRunTime() const {
+		return std::shared_ptr<RunTime>(new MockRunTime());
 	}
 };
 

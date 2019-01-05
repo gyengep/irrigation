@@ -7,6 +7,14 @@
 using namespace std;
 
 
+StartTimeContainer::StartTimeContainer(std::initializer_list<StartTimeContainer::value_type> initializer) :
+	StartTimeContainer()
+{
+	for (const auto& value : initializer) {
+		insert(value.first, value.second);
+	}
+}
+
 StartTimeContainer::container_type::const_iterator StartTimeContainer::find(const key_type& key) const {
 	for (auto it = container.begin(); it != container.end(); ++it) {
 		if (it->first == key) {
@@ -21,14 +29,14 @@ const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& ke
 	return find(key)->second;
 }
 
-StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, mapped_type&& value) {
+StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
 	for (auto& startTimeAndIdPair : container) {
 		if (startTimeAndIdPair.first == key) {
 			throw AlreadyExistException("StartTime[" + to_string(key) + "] is already exist");
 		}
 	}
 
-	container.push_back(make_pair(key, move(value)));
+	container.push_back(make_pair(key, value));
 //	LOGGER.debug("StartTime[%s] added: %s",
 //		to_string(key).c_str(),
 //		to_string(*container.back().second.get()).c_str()

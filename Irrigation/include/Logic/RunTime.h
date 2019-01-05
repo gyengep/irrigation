@@ -33,7 +33,7 @@ public:
 class RunTimeFactory {
 public:
 	virtual ~RunTimeFactory() = default;
-	virtual std::unique_ptr<RunTime> createRunTime() const;
+	virtual std::shared_ptr<RunTime> createRunTime() const;
 };
 
 

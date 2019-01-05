@@ -41,8 +41,8 @@ void TimerViewTest::executeTest() {
 		.setWateringController(move(wateringController))
 		.build();
 
-	document->getPrograms().insert(IdType(), move(program1));
-	document->getPrograms().insert(IdType(), move(program2));
+	document->getPrograms().insert(IdType(), program1);
+	document->getPrograms().insert(IdType(), program2);
 
 	view.reset(new TimerView(*document));
 	view->onTimer(rawtime);
