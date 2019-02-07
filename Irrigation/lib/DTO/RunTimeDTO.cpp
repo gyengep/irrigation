@@ -31,6 +31,28 @@ bool RunTimeDTO::operator== (const RunTimeDTO& other) const {
 			equalsPtr(seconds.get(), other.seconds.get()));
 }
 
+RunTimeDTO& RunTimeDTO::operator= (const RunTimeDTO& other) {
+	if (this != &other) {
+		id.reset();
+		minutes.reset();
+		seconds.reset();
+
+		if (other.hasId()) {
+			setId(other.getId());
+		}
+
+		if (other.hasMinutes()) {
+			setMinutes(other.getMinutes());
+		}
+
+		if (other.hasSeconds()) {
+			setSeconds(other.getSeconds());
+		}
+	}
+
+	return *this;
+}
+
 bool RunTimeDTO::hasId() const {
 	return (id.get() != nullptr);
 }

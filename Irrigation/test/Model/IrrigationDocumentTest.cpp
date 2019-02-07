@@ -96,8 +96,8 @@ TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
 	document->updateFromDTO(expectedDocumentDTO);
 
 	EXPECT_THAT(document->getPrograms().size(), Eq(2));
-	EXPECT_THAT(document->getPrograms().at(15)->getProgramDTO().setId(15), *next(expectedDocumentDTO.getPrograms().begin(), 0));
-	EXPECT_THAT(document->getPrograms().at(25)->getProgramDTO().setId(25), *next(expectedDocumentDTO.getPrograms().begin(), 1));
+	EXPECT_THAT(document->getPrograms().at(15)->toProgramDto().setId(15), *next(expectedDocumentDTO.getPrograms().begin(), 0));
+	EXPECT_THAT(document->getPrograms().at(25)->toProgramDto().setId(25), *next(expectedDocumentDTO.getPrograms().begin(), 1));
 	EXPECT_THAT(document->getDocumentDTO(), Eq(expectedDocumentDTO));
 }
 

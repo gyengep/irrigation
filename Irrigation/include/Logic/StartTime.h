@@ -15,19 +15,20 @@ public:
 	StartTime(unsigned hour, unsigned minute);
 	virtual ~StartTime();
 
+	StartTime& operator= (StartTime&&) = delete;
+	StartTime& operator= (const StartTime&) = delete;
 	bool equals(unsigned hour, unsigned minute, unsigned second) const;
 	bool operator< (const StartTime& other) const;
 	bool operator== (const StartTime& other) const;
-	StartTime& operator= (StartTime&&) = default;
-	StartTime& operator= (const StartTime&) = default;
 
 	void set(unsigned hour, unsigned minute);
 
 	unsigned getHours() const;
 	unsigned getMinutes() const;
 
-	StartTimeDTO getStartTimeDTO() const;
-	void updateFromDTO(const StartTimeDTO& startTimeDTO);
+	StartTimeDTO toStartTimeDto() const;
+	void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO);
 
 	friend std::string to_string(const StartTime& startTime);
+	friend std::ostream& operator<<(std::ostream& os, const StartTime& startTime);
 };

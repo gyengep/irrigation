@@ -25,20 +25,25 @@ void XmlReader::loadFromString(xml_document* doc, const string& text) {
 
 DocumentDTO XmlReader::loadDocument(const xml_node& node) const {
 	DocumentDTO document;
+
 	xml_node programListNode;
 	if ((programListNode = node.child("programs")) != nullptr) {
-		list<ProgramDTO> programs;
-
-		xml_node programNode = programListNode.child("program");
-		while (programNode) {
-			programs.push_back(loadProgram(programNode));
-			programNode = programNode.next_sibling("program");
-		}
-
-		document.setPrograms(move(programs));
+		document.setPrograms(loadProgramList(programListNode));
 	}
 
 	return document;
+}
+
+list<ProgramDTO> XmlReader::loadProgramList(const xml_node& node) const {
+	list<ProgramDTO> programList;
+
+	xml_node programNode = node.child("program");
+	while (programNode) {
+		programList.push_back(loadProgram(programNode));
+		programNode = programNode.next_sibling("program");
+	}
+
+	return programList;
 }
 
 ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
@@ -71,27 +76,11 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	}
 
 	if ((tmpNode = node.child("runtimes")) != nullptr) {
-		list<RunTimeDTO> runTimes;
-
-		xml_node runTimeNode = tmpNode.child("runtime");
-		while (runTimeNode) {
-			runTimes.push_back(loadRunTime(runTimeNode));
-			runTimeNode = runTimeNode.next_sibling("runtime");
-		}
-
-		program.setRunTimes(move(runTimes));
+		program.setRunTimes(loadRunTimeList(tmpNode));
 	}
 
 	if ((tmpNode = node.child("starttimes")) != nullptr) {
-		list<StartTimeDTO> startTimes;
-
-		xml_node startTimeNode = tmpNode.child("starttime");
-		while (startTimeNode) {
-			startTimes.push_back(loadStartTime(startTimeNode));
-			startTimeNode = startTimeNode.next_sibling("starttime");
-		}
-
-		program.setStartTimes(move(startTimes));
+		program.setStartTimes(loadStartTimeList(tmpNode));
 	}
 
 	return program;
@@ -174,6 +163,18 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const xml_node& node) const {
 	return scheduler;
 }
 
+list<RunTimeDTO> XmlReader::loadRunTimeList(const xml_node& node) const {
+	list<RunTimeDTO> runTimesList;
+
+	xml_node runTimeNode = node.child("runtime");
+	while (runTimeNode) {
+		runTimesList.push_back(loadRunTime(runTimeNode));
+		runTimeNode = runTimeNode.next_sibling("runtime");
+	}
+
+	return runTimesList;
+}
+
 RunTimeDTO XmlReader::loadRunTime(const xml_node& node) const {
 	RunTimeDTO runTime;
 	xml_attribute idAttribute;
@@ -193,6 +194,18 @@ RunTimeDTO XmlReader::loadRunTime(const xml_node& node) const {
 	return runTime;
 }
 
+list<StartTimeDTO> XmlReader::loadStartTimeList(const xml_node& node) const {
+	list<StartTimeDTO> startTimeList;
+
+	xml_node startTimeNode = node.child("starttime");
+	while (startTimeNode) {
+		startTimeList.push_back(loadStartTime(startTimeNode));
+		startTimeNode = startTimeNode.next_sibling("starttime");
+	}
+
+	return startTimeList;
+}
+
 StartTimeDTO XmlReader::loadStartTime(const xml_node& node) const {
 	StartTimeDTO startTime;
 	xml_attribute idAttribute;
@@ -202,11 +215,11 @@ StartTimeDTO XmlReader::loadStartTime(const xml_node& node) const {
 
 	xml_node tmpNode;
 	if ((tmpNode = node.child("hour")) != nullptr) {
-		startTime.setHour(tmpNode.text().as_uint());
+		startTime.setHours(tmpNode.text().as_uint());
 	}
 
 	if ((tmpNode = node.child("minute")) != nullptr) {
-		startTime.setMinute(tmpNode.text().as_uint());
+		startTime.setMinutes(tmpNode.text().as_uint());
 	}
 
 	return startTime;
@@ -229,6 +242,21 @@ DocumentDTO XmlReader::loadDocument(const string& text) const {
 	return loadDocument(node);
 }
 
+std::list<ProgramDTO> XmlReader::loadProgramList(const string& text) const {
+	const char* tagName = "programs";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'programs' element tag not found");
+	}
+
+	return loadProgramList(node);
+}
+
 ProgramDTO XmlReader::loadProgram(const string& text) const {
 	const char* tagName = "program";
 
@@ -244,6 +272,21 @@ ProgramDTO XmlReader::loadProgram(const string& text) const {
 	return loadProgram(node);
 }
 
+std::list<RunTimeDTO> XmlReader::loadRunTimeList(const string& text) const {
+	const char* tagName = "runtimes";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'runtimes' element tag not found");
+	}
+
+	return loadRunTimeList(node);
+}
+
 RunTimeDTO XmlReader::loadRunTime(const string& text) const {
 	const char* tagName = "runtime";
 
@@ -257,6 +300,21 @@ RunTimeDTO XmlReader::loadRunTime(const string& text) const {
 	}
 
 	return loadRunTime(node);
+}
+
+std::list<StartTimeDTO> XmlReader::loadStartTimeList(const string& text) const {
+	const char* tagName = "starttimes";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'starttimes' element tag not found");
+	}
+
+	return loadStartTimeList(node);
 }
 
 StartTimeDTO XmlReader::loadStartTime(const string& text) const {

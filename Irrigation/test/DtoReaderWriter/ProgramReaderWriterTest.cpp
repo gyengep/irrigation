@@ -10,12 +10,12 @@ using namespace testing;
 
 void testProgramRead(const ProgramSample& programSample, XmlReader& reader) {
 	const ProgramDTO actualDto = reader.loadProgram(programSample.first);
-	EXPECT_EQ(programSample.second, actualDto);
+	EXPECT_THAT(actualDto, Eq(programSample.second));
 }
 
 void testProgramWrite(const ProgramSample& programSample, XmlWriter& writer) {
 	const string actualXml = writer.save(programSample.second);
-	EXPECT_EQ(programSample.first, remove_xml_tag(actualXml));
+	EXPECT_THAT(remove_xml_tag(actualXml), Eq(programSample.first));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

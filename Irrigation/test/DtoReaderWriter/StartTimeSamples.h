@@ -1,7 +1,5 @@
 #pragma once
-#include <list>
 #include <string>
-#include <utility>
 #include "DTO/StartTimeDTO.h"
 
 #define STARTTIME_SAMPLE_1 startTimeSample_all
@@ -23,12 +21,12 @@ const StartTimeSample startTimeSample_all(
 
 const StartTimeSample startTimeSample_hour(
 		"<starttime><hour>11</hour></starttime>",
-		StartTimeDTO().setHour(11)
+		StartTimeDTO().setHours(11)
 		);
 
 const StartTimeSample startTimeSample_minute(
 		"<starttime><minute>12</minute></starttime>",
-		StartTimeDTO().setMinute(12)
+		StartTimeDTO().setMinutes(12)
 		);
 
 const StartTimeSample startTimeSample_id(

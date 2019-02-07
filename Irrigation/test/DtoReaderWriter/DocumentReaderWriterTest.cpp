@@ -10,12 +10,12 @@ using namespace testing;
 
 void testDocumentRead(const DocumentSample& documentSample, XmlReader& reader) {
 	const DocumentDTO actualDto = reader.loadDocument(documentSample.first);
-	EXPECT_EQ(documentSample.second, actualDto);
+	EXPECT_THAT(actualDto, Eq(documentSample.second));
 }
 
 void testDocumentWrite(const DocumentSample& documentSample, XmlWriter& writer) {
 	const string actualXml = writer.save(documentSample.second);
-	EXPECT_EQ(documentSample.first, remove_xml_tag(actualXml));
+	EXPECT_THAT(remove_xml_tag(actualXml), Eq(documentSample.first));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,8 +34,12 @@ TEST_F(DocumentReaderTest, documentInvalidXml) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(DocumentReaderTest, documentAll) {
-	testDocumentRead(documentSample_all, reader);
+TEST_F(DocumentReaderTest, document1) {
+	testDocumentRead(documentSample_1, reader);
+}
+
+TEST_F(DocumentReaderTest, document2) {
+	testDocumentRead(documentSample_2, reader);
 }
 
 TEST_F(DocumentReaderTest, documentEmpty) {
@@ -44,8 +48,12 @@ TEST_F(DocumentReaderTest, documentEmpty) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(DocumentWriterTest, documentAll) {
-	testDocumentWrite(documentSample_all, writer);
+TEST_F(DocumentWriterTest, document1) {
+	testDocumentWrite(documentSample_1, writer);
+}
+
+TEST_F(DocumentWriterTest, document2) {
+	testDocumentWrite(documentSample_2, writer);
 }
 
 TEST_F(DocumentWriterTest, documentEmpty) {

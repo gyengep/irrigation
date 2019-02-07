@@ -23,11 +23,12 @@ class Program {
 public:
 	Program();
 	Program(Program&&) = default;
-	Program(const Program&) = delete;
+	Program(const Program&);
 	virtual ~Program();
 
-	Program& operator= (Program&&) = default;
+	Program& operator= (Program&&) = delete;
 	Program& operator= (const Program&) = delete;
+	bool operator== (const Program&);
 
 	virtual bool isScheduled(const std::tm& timeinfo) const;
 	virtual const Scheduler& getCurrentScheduler() const;
@@ -50,8 +51,9 @@ public:
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
-	ProgramDTO getProgramDTO() const;
-	void updateFromDTO(const ProgramDTO& programDTO);
+	ProgramDTO toProgramDto() const;
+	void updateFromProgramDto(const ProgramDTO& programDTO);
 
 	friend std::string to_string(const Program& program);
+	friend std::ostream& operator<<(std::ostream& os, const Program& program);
 };

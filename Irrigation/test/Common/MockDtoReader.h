@@ -13,6 +13,9 @@ public:
 	MOCK_CONST_METHOD1(loadStartTime, StartTimeDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadPeriodicScheduler, PeriodicSchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadWeeklyScheduler, WeeklySchedulerDTO(const std::string&));
+	MOCK_CONST_METHOD1(loadProgramList, std::list<ProgramDTO>(const std::string& text));
+	MOCK_CONST_METHOD1(loadRunTimeList, std::list<RunTimeDTO>(const std::string& text));
+	MOCK_CONST_METHOD1(loadStartTimeList, std::list<StartTimeDTO>(const std::string& text));
 };
 
 ///////////////////////////////////////////////////////////////////////////////

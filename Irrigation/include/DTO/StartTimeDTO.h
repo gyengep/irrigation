@@ -6,8 +6,8 @@
 
 class StartTimeDTO {
 	std::unique_ptr<const unsigned> id;
-	std::unique_ptr<const unsigned> hour;
-	std::unique_ptr<const unsigned> minute;
+	std::unique_ptr<const unsigned> hours;
+	std::unique_ptr<const unsigned> minutes;
 
 public:
 	StartTimeDTO() = default;
@@ -20,16 +20,16 @@ public:
 	bool operator== (const StartTimeDTO& other) const;
 
 	bool hasId() const;
-	bool hasHour() const;
-	bool hasMinute() const;
+	bool hasHours() const;
+	bool hasMinutes() const;
 
 	unsigned getId() const;
-	unsigned getHour() const;
-	unsigned getMinute() const;
+	unsigned getHours() const;
+	unsigned getMinutes() const;
 
 	StartTimeDTO& setId(unsigned id);
-	StartTimeDTO& setHour(unsigned hour);
-	StartTimeDTO& setMinute(unsigned minute);
+	StartTimeDTO& setHours(unsigned hour);
+	StartTimeDTO& setMinutes(unsigned minute);
 
 	friend std::ostream& operator<<(std::ostream& os, const StartTimeDTO& startTime);
 };

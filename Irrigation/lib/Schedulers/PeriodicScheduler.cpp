@@ -28,7 +28,25 @@ PeriodicScheduler::PeriodicScheduler() :
 	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
 }
 
+PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
+	days(other.days),
+	adjustment(other.adjustment),
+	periodStartYear(other.periodStartYear),
+	periodStartMonth(other.periodStartMonth),
+	periodStartDay(other.periodStartDay),
+	elapsedDaysSinceEpochToPeriodStart(other.elapsedDaysSinceEpochToPeriodStart)
+{
+}
+
 PeriodicScheduler::~PeriodicScheduler() {
+}
+
+bool PeriodicScheduler::operator== (const PeriodicScheduler& other) const {
+	return (adjustment == other.adjustment &&
+			days == other.days &&
+			periodStartYear == other.periodStartYear &&
+			periodStartMonth == other.periodStartMonth &&
+			periodStartDay == other.periodStartDay);
 }
 
 void PeriodicScheduler::setPeriod(unsigned days) {
@@ -92,22 +110,19 @@ bool PeriodicScheduler::isDayScheduled(const tm& timeinfo) const {
 	return isDayEnabled(index);
 }
 
-PeriodicSchedulerDTO PeriodicScheduler::getPeriodicSchedulerDTO() const {
+PeriodicSchedulerDTO PeriodicScheduler::toPeriodicSchedulerDto() const {
 	return PeriodicSchedulerDTO(adjustment, list<bool>(days.begin(), days.end()),
 			periodStartYear, periodStartMonth, periodStartDay);
 }
 
-void PeriodicScheduler::updateFromDTO(const PeriodicSchedulerDTO& schedulerDTO) {
+void PeriodicScheduler::updateFromPeriodicSchedulerDto(const PeriodicSchedulerDTO& schedulerDTO) {
 	if (schedulerDTO.hasAdjustment()) {
 		setAdjustment(schedulerDTO.getAdjustment());
 	}
 
 	if (schedulerDTO.hasValues()) {
 		setPeriod(schedulerDTO.getValues().size());
-		for (size_t i = 0; i < schedulerDTO.getValues().size(); ++i) {
-			auto it = next(schedulerDTO.getValues().begin(), i);
-			days[i] = *it;
-		}
+		copy(schedulerDTO.getValues().begin(), schedulerDTO.getValues().end(), days.begin());
 	}
 
 	if (schedulerDTO.hasPeriodStartYear() ||
@@ -121,21 +136,28 @@ void PeriodicScheduler::updateFromDTO(const PeriodicSchedulerDTO& schedulerDTO) 
 					"startYear, startMonth and startDay have to be exist");
 		}
 
-		setPeriodStartDate(schedulerDTO.getPeriodStartYear(),
-				schedulerDTO.getPeriodStartMonth(),
-				schedulerDTO.getPeriodStartDay());
+		setPeriodStartDate(
+			schedulerDTO.getPeriodStartYear(),
+			schedulerDTO.getPeriodStartMonth(),
+			schedulerDTO.getPeriodStartDay());
 	}
 }
 
+
 string to_string(const PeriodicScheduler& periodicScheduler) {
-	ostringstream o;
-	o << "PeriodicScheduler{";
-	o << "adjustment=" << periodicScheduler.getAdjustment() << "%, ";
-	o << "values=" << to_string(periodicScheduler.days.begin(), periodicScheduler.days.end()) << ", ";
-	o << "periodStartDate=" <<
+	ostringstream oss;
+	oss << periodicScheduler;
+	return oss.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const PeriodicScheduler& periodicScheduler) {
+	os << "PeriodicScheduler{";
+	os << "adjustment=" << periodicScheduler.getAdjustment() << "%, ";
+	os << "values=" << to_string(periodicScheduler.days.begin(), periodicScheduler.days.end()) << ", ";
+	os << "periodStartDate=" <<
 			setw(4) << setfill('0') << to_string(periodicScheduler.periodStartYear) << "-" <<
 			setw(2) << setfill('0') << to_string(periodicScheduler.periodStartMonth) << "-" <<
 			setw(2) << setfill('0') << to_string(periodicScheduler.periodStartDay);
-	o << "}";
-	return o.str();
+	os << "}";
+	return os;
 }

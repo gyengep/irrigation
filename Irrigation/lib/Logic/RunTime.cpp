@@ -17,6 +17,10 @@ RunTime::RunTime(unsigned seconds) :
 {
 }
 
+bool RunTime::operator== (const RunTime& other) const {
+	return (seconds == other.seconds);
+}
+
 unsigned RunTime::getSeconds() const {
 	return seconds;
 }
@@ -31,15 +35,11 @@ void RunTime::setSeconds(unsigned seconds) {
 	this->seconds = seconds;
 }
 
-bool RunTime::operator== (const RunTime& other) const {
-	return (seconds == other.seconds);
-}
-
-RunTimeDTO RunTime::getRunTimeDTO() const {
+RunTimeDTO RunTime::toRunTimeDto() const {
 	return RunTimeDTO(seconds / 60, seconds % 60);
 }
 
-void RunTime::updateFromDTO(const RunTimeDTO& runTimeDTO) {
+void RunTime::updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) {
 	if (runTimeDTO.hasMinutes() || runTimeDTO.hasSeconds()) {
 		unsigned minutes = 0;
 		unsigned seconds = 0;
@@ -57,8 +57,13 @@ void RunTime::updateFromDTO(const RunTimeDTO& runTimeDTO) {
 }
 
 string to_string(const RunTime& runTime) {
-	ostringstream o;
-	o << setfill('0') << setw(2) << (runTime.getSeconds() / 60) << ":";
-	o << setfill('0') << setw(2) << (runTime.getSeconds() % 60);
-	return o.str();
+	ostringstream oss;
+	oss << runTime;
+	return oss.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const RunTime& runTime) {
+	os << setfill('0') << setw(2) << (runTime.getSeconds() / 60) << ":";
+	os << setfill('0') << setw(2) << (runTime.getSeconds() % 60);
+	return os;
 }

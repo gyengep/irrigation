@@ -21,15 +21,34 @@ Program::Program() :
 {
 }
 
+Program::Program(const Program& other) :
+	name(other.getName()),
+	schedulerType(other.getSchedulerType()),
+	periodicScheduler(new PeriodicScheduler(other.getPeriodicScheduler())),
+	weeklyScheduler(new WeeklyScheduler(other.getWeeklyScheduler())),
+	runTimes(new RunTimeContainer(other.getRunTimes())),
+	startTimes(new StartTimeContainer(other.getStartTimes()))
+{
+}
+
 Program::~Program() {
+}
+
+bool Program::operator== (const Program& other) {
+	return (getName() == other.getName() &&
+			getSchedulerType() == other.getSchedulerType() &&
+			getPeriodicScheduler() == other.getPeriodicScheduler() &&
+			getWeeklyScheduler() == other.getWeeklyScheduler() &&
+			getRunTimes() == other.getRunTimes() &&
+			getStartTimes() == other.getStartTimes());
 }
 
 const string& Program::getName() const {
 	return name;
 }
 
-void Program::setName(const string& newName) {
-	name = newName;
+void Program::setName(const string& name) {
+	this->name = name;
 }
 
 void Program::setSchedulerType(SchedulerType schedulerType) {
@@ -79,26 +98,15 @@ WeeklyScheduler& Program::getWeeklyScheduler() {
 	return *weeklyScheduler.get();
 }
 
-ProgramDTO Program::getProgramDTO() const {
-	list<RunTimeDTO> runTimeDTOs;
-	list<StartTimeDTO> startTimeDTOs;
-
-	for (auto& runTimeAndIdPair : *runTimes) {
-		runTimeDTOs.push_back(runTimeAndIdPair.second->getRunTimeDTO().setId(runTimeAndIdPair.first));
-	}
-
-	for (auto& startTimeAndIdPair : *startTimes) {
-		startTimeDTOs.push_back(startTimeAndIdPair.second->getStartTimeDTO().setId(startTimeAndIdPair.first));
-	}
-
+ProgramDTO Program::toProgramDto() const {
 	return ProgramDTO(name, to_string(getSchedulerType()),
-			move(getPeriodicScheduler().getPeriodicSchedulerDTO()),
-			move(getWeeklyScheduler().getWeeklySchedulerDTO()),
-			move(runTimeDTOs),
-			move(startTimeDTOs));
+			getPeriodicScheduler().toPeriodicSchedulerDto(),
+			getWeeklyScheduler().toWeeklySchedulerDto(),
+			getRunTimes().toRunTimeDtoList(),
+			getStartTimes().toStartTimeDtoList());
 }
 
-void Program::updateFromDTO(const ProgramDTO& programDTO) {
+void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 	if (programDTO.hasName()) {
 		setName(programDTO.getName());
 	}
@@ -117,56 +125,37 @@ void Program::updateFromDTO(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasPeriodicScheduler()) {
-		periodicScheduler = schedulerFactory.createPeriodicScheduler();
-		periodicScheduler->updateFromDTO(programDTO.getPeriodicScheduler());
+		periodicScheduler->updateFromPeriodicSchedulerDto(programDTO.getPeriodicScheduler());
 	}
 
 	if (programDTO.hasWeeklyScheduler()) {
-		weeklyScheduler = schedulerFactory.createWeeklyScheduler();
-		weeklyScheduler->updateFromDTO(programDTO.getWeeklyScheduler());
+		weeklyScheduler->updateFromWeeklySchedulerDto(programDTO.getWeeklyScheduler());
 	}
 
 	if (programDTO.hasRunTimes()) {
-		runTimes.reset(new RunTimeContainer());
-
-		unsigned id = 0;
-		for (const RunTimeDTO& runTimeDTO : programDTO.getRunTimes()) {
-			if (runTimeDTO.hasId()) {
-				id = runTimeDTO.getId();
-			}
-
-			runTimes->at(IdType(id))->updateFromDTO(runTimeDTO);
-			id++;
-		}
+		runTimes->updateFromRunTimeDtoList(programDTO.getRunTimes());
 	}
 
 	if (programDTO.hasStartTimes()) {
-		startTimes.reset(new StartTimeContainer());
-
-		for (const StartTimeDTO& startTimeDTO : programDTO.getStartTimes()) {
-			shared_ptr<StartTime> startTime(new StartTime());
-			startTime->updateFromDTO(startTimeDTO);
-
-			if (startTimeDTO.hasId()) {
-				startTimes->insert(IdType(startTimeDTO.getId()), startTime);
-			} else {
-				startTimes->insert(IdType(), startTime);
-			}
-		}
+		startTimes->updateFromStartTimeDtoList(programDTO.getStartTimes());
 	}
 }
 
 string to_string(const Program& program) {
-	ostringstream o;
-	o << "Program{";
-	o << "name=\"" << program.getName() << "\", ";
-	o << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
-	o << "schedulers=[" <<
+	ostringstream oss;
+	oss << program;
+	return oss.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const Program& program) {
+	os << "Program{";
+	os << "name=\"" << program.getName() << "\", ";
+	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
+	os << "schedulers=[" <<
 			to_string(program.getPeriodicScheduler()) << ", " <<
 			to_string(program.getWeeklyScheduler()) << "], ";
-	o << "runTimes=" << to_string(program.getRunTimes()) << ", ";
-	o << "startTimes=" << to_string(program.getStartTimes());
-	o << "}";
-
-	return o.str();
+	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
+	os << "startTimes=" << to_string(program.getStartTimes());
+	os << "}";
+	return os;
 }

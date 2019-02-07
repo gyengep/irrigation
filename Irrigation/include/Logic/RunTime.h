@@ -15,17 +15,18 @@ public:
 	RunTime(unsigned seconds);
 	virtual ~RunTime() = default;
 
-	RunTime& operator= (RunTime&&) = default;
-	RunTime& operator= (const RunTime&) = default;
+	RunTime& operator= (RunTime&&) = delete;
+	RunTime& operator= (const RunTime&) = delete;
 	bool operator== (const RunTime& other) const;
 
 	unsigned getSeconds() const;
 	void setSeconds(unsigned seconds);
 
-	RunTimeDTO getRunTimeDTO() const;
-	void updateFromDTO(const RunTimeDTO& runTimeDTO);
+	RunTimeDTO toRunTimeDto() const;
+	void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO);
 
 	friend std::string to_string(const RunTime& runTime);
+	friend std::ostream& operator<<(std::ostream& os, const RunTime& runTime);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

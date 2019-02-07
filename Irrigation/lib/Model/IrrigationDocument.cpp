@@ -41,7 +41,7 @@ DocumentDTO IrrigationDocument::getDocumentDTO() const {
 
 	list<ProgramDTO> programDTOs;
 	for (auto& program : *programs) {
-		programDTOs.push_back(program.second->getProgramDTO().setId(program.first));
+		programDTOs.push_back(program.second->toProgramDto().setId(program.first));
 	}
 
 	return DocumentDTO(move(programDTOs));
@@ -55,7 +55,7 @@ void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
 
 		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
 			shared_ptr<Program> program(new Program());
-			program->updateFromDTO(programDTO);
+			program->updateFromProgramDto(programDTO);
 
 			IdType id;
 			if (programDTO.hasId()) {

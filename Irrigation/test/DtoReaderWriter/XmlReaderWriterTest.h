@@ -36,6 +36,29 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+class RunTimeListReaderTest : public ::testing::Test {
+protected:
+
+	XmlReader reader;
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+
+class RunTimeListWriterTest : public ::testing::Test {
+protected:
+
+	XmlWriter writer;
+
+	RunTimeListWriterTest() : writer(false) {}
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 class StartTimeReaderTest : public ::testing::Test {
 protected:
 
@@ -51,6 +74,28 @@ protected:
 	XmlWriter writer;
 
 	StartTimeWriterTest() : writer(false) {}
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class StartTimeListReaderTest : public ::testing::Test {
+protected:
+
+	XmlReader reader;
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+class StartTimeListWriterTest : public ::testing::Test {
+protected:
+
+	XmlWriter writer;
+
+	StartTimeListWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}
@@ -117,6 +162,28 @@ protected:
 	XmlWriter writer;
 
 	ProgramWriterTest() : writer(false) {}
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class ProgramListReaderTest : public ::testing::Test {
+protected:
+
+	XmlReader reader;
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+class ProgramListWriterTest : public ::testing::Test {
+protected:
+
+	XmlWriter writer;
+
+	ProgramListWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}

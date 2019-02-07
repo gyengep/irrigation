@@ -3,8 +3,8 @@
 #include <string>
 #include <utility>
 #include "DTO/ProgramDTO.h"
-#include "RunTimeSamples.h"
-#include "StartTimeSamples.h"
+#include "RunTimeListSamples.h"
+#include "StartTimeListSamples.h"
 #include "PeriodicSchedulerSamples.h"
 #include "WeeklySchedulerSamples.h"
 
@@ -31,21 +31,9 @@ const ProgramSample programSample_all(
 			"<schedulers>" +
 				PERIODIC_SCHEDULER_SAMPLE_1.first +
 				WEEKLY_SCHEDULER_SAMPLE_1.first +
-			"</schedulers>"
-			"<runtimes>" +
-				RUNTIME_SAMPLE_1.first +
-				RUNTIME_SAMPLE_2.first +
-				RUNTIME_SAMPLE_3.first +
-				RUNTIME_SAMPLE_4.first +
-				RUNTIME_SAMPLE_5.first +
-			"</runtimes>"
-			"<starttimes>" +
-				STARTTIME_SAMPLE_1.first +
-				STARTTIME_SAMPLE_2.first +
-				STARTTIME_SAMPLE_3.first +
-				STARTTIME_SAMPLE_4.first +
-				STARTTIME_SAMPLE_5.first +
-			"</starttimes>"
+			"</schedulers>" +
+			RUNTIME_LIST_SAMPLE_1.first +
+			STARTTIME_LIST_SAMPLE_1.first +
 		"</program>",
 		ProgramDTO()
 		.setId(123)
@@ -53,20 +41,8 @@ const ProgramSample programSample_all(
 		.setSchedulerType("weekly")
 		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_1.second))
 		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_1.second))
-		.setRunTimes(std::list<RunTimeDTO>({
-				RUNTIME_SAMPLE_1.second,
-				RUNTIME_SAMPLE_2.second,
-				RUNTIME_SAMPLE_3.second,
-				RUNTIME_SAMPLE_4.second,
-				RUNTIME_SAMPLE_5.second
-			}))
-		.setStartTimes(std::list<StartTimeDTO>({
-				STARTTIME_SAMPLE_1.second,
-				STARTTIME_SAMPLE_2.second,
-				STARTTIME_SAMPLE_3.second,
-				STARTTIME_SAMPLE_4.second,
-				STARTTIME_SAMPLE_5.second,
-			}))
+		.setRunTimes(std::list<RunTimeDTO>(RUNTIME_LIST_SAMPLE_1.second))
+		.setStartTimes(std::list<StartTimeDTO>(STARTTIME_LIST_SAMPLE_1.second))
 		);
 
 
@@ -90,8 +66,7 @@ const ProgramSample programSample_periodicScheduler(
 				PERIODIC_SCHEDULER_SAMPLE_2.first +
 			"</schedulers>"
 		"</program>",
-		ProgramDTO()
-		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_2.second))
+		ProgramDTO().setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_2.second))
 		);
 
 const ProgramSample programSample_weeklyScheduler(
@@ -100,40 +75,17 @@ const ProgramSample programSample_weeklyScheduler(
 				WEEKLY_SCHEDULER_SAMPLE_2.first +
 			"</schedulers>"
 		"</program>",
-		ProgramDTO()
-		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_2.second))
+		ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_2.second))
 		);
 
 const ProgramSample programSample_runTimes(
-		"<program>"
-			"<runtimes>" +
-				RUNTIME_SAMPLE_3.first +
-				RUNTIME_SAMPLE_4.first +
-				RUNTIME_SAMPLE_5.first +
-			"</runtimes>"
-		"</program>",
-		ProgramDTO()
-		.setRunTimes(std::list<RunTimeDTO>({
-				RUNTIME_SAMPLE_3.second,
-				RUNTIME_SAMPLE_4.second,
-				RUNTIME_SAMPLE_5.second,
-			}))
+		"<program>" + RUNTIME_LIST_SAMPLE_2.first + "</program>",
+		ProgramDTO().setRunTimes(std::list<RunTimeDTO>(RUNTIME_LIST_SAMPLE_2.second))
 		);
 
 const ProgramSample programSample_startTimes(
-		"<program>"
-			"<starttimes>" +
-				STARTTIME_SAMPLE_3.first +
-				STARTTIME_SAMPLE_4.first +
-				STARTTIME_SAMPLE_5.first +
-			"</starttimes>"
-		"</program>",
-		ProgramDTO()
-		.setStartTimes(std::list<StartTimeDTO>({
-				STARTTIME_SAMPLE_3.second,
-				STARTTIME_SAMPLE_4.second,
-				STARTTIME_SAMPLE_5.second
-			}))
+		"<program>" + STARTTIME_LIST_SAMPLE_3.first + "</program>",
+		ProgramDTO().setStartTimes(std::list<StartTimeDTO>(STARTTIME_LIST_SAMPLE_3.second))
 		);
 
 const ProgramSample programSample_id(

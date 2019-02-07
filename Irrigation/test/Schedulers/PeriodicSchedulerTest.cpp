@@ -2,9 +2,11 @@
 #include "Exceptions/Exceptions.h"
 #include "Schedulers/PeriodicScheduler.h"
 #include "Utils/TimeConversion.h"
+#include "PeriodicSchedulerSamples.h"
 
 using namespace std;
 using namespace testing;
+using namespace LogicTest;
 
 
 TEST(PeriodicSchedulerTest, constructor) {
@@ -227,40 +229,113 @@ TEST(PeriodicSchedulerTest, isDayScheduledInvalid) {
 	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 5)));
 }
 
-TEST(PeriodicSchedulerTest, getPeriodicSchedulerDTO) {
-	PeriodicScheduler scheduler;
+///////////////////////////////////////////////////////////////////////////////
 
-	scheduler.setAdjustment(123);
-	scheduler.setPeriod(2);
-	scheduler.enableDay(0, true);
-	scheduler.enableDay(1, false);
-	scheduler.setPeriodStartDate(2018, 11, 15);
-
-	const PeriodicSchedulerDTO expectedSchedulerDTO(
-			123,
-			list<bool>({true, false }),
-			2018, 11, 15
-			);
-
-	EXPECT_THAT(scheduler.getPeriodicSchedulerDTO(), Eq(expectedSchedulerDTO));
+void testToPeriodicSchedulerDto(const PeriodicSchedulerSample& periodicSchedulerSample) {
+	const shared_ptr<PeriodicScheduler> periodicScheduler = periodicSchedulerSample.getPeriodicScheduler();
+	const PeriodicSchedulerDTO& expectedPeriodicSchedulerDto = periodicSchedulerSample.getPeriodicSchedulerDto();
+	EXPECT_THAT(periodicScheduler->toPeriodicSchedulerDto(), Eq(expectedPeriodicSchedulerDto));
 }
 
-TEST(PeriodicSchedulerTest, updateFromDTO) {
-	const PeriodicSchedulerDTO expectedSchedulerDTO(
-		120,
-		list<bool>({true, false, true, true}),
-		2018, 12, 31
-		);
-
-	PeriodicScheduler scheduler;
-	scheduler.updateFromDTO(expectedSchedulerDTO);
-
-	EXPECT_THAT(scheduler.getAdjustment(), 120);
-	EXPECT_TRUE(scheduler.isDayEnabled(0));
-	EXPECT_FALSE(scheduler.isDayEnabled(1));
-	EXPECT_TRUE(scheduler.isDayEnabled(2));
-	EXPECT_TRUE(scheduler.isDayEnabled(3));
-	EXPECT_THAT(scheduler.getPeriod(), 4);
-
-	EXPECT_THAT(scheduler.getPeriodicSchedulerDTO(), Eq(expectedSchedulerDTO));
+TEST(PeriodicSchedulerTest, toPeriodicSchedulerDto1) {
+	testToPeriodicSchedulerDto(PeriodicSchedulerSample1());
 }
+
+TEST(PeriodicSchedulerTest, toPeriodicSchedulerDto2) {
+	testToPeriodicSchedulerDto(PeriodicSchedulerSample2());
+}
+
+TEST(PeriodicSchedulerTest, toPeriodicSchedulerDto3) {
+	testToPeriodicSchedulerDto(PeriodicSchedulerSample3());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void testUpdateFromPeriodicSchedulerDto(shared_ptr<PeriodicScheduler> periodicScheduler, const PeriodicSchedulerSample& periodicSchedulerSample) {
+	EXPECT_THAT(periodicScheduler, Not(Pointee(*periodicSchedulerSample.getPeriodicScheduler())));
+	periodicScheduler->updateFromPeriodicSchedulerDto(periodicSchedulerSample.getPeriodicSchedulerDto());
+	EXPECT_THAT(periodicScheduler, Pointee(*periodicSchedulerSample.getPeriodicScheduler()));
+}
+
+TEST(PeriodicSchedulerTest, updateFromPeriodicSchedulerDto1) {
+	shared_ptr<PeriodicScheduler> periodicScheduler = shared_ptr<PeriodicScheduler>(new PeriodicScheduler());
+	testUpdateFromPeriodicSchedulerDto(periodicScheduler, PeriodicSchedulerSample1());
+}
+
+TEST(PeriodicSchedulerTest, updateFromPeriodicSchedulerDto2) {
+	shared_ptr<PeriodicScheduler> periodicScheduler = PeriodicSchedulerSample1().getPeriodicScheduler();
+	testUpdateFromPeriodicSchedulerDto(periodicScheduler, PeriodicSchedulerSample2());
+}
+
+TEST(PeriodicSchedulerTest, updateFromPeriodicSchedulerDto3) {
+	shared_ptr<PeriodicScheduler> periodicScheduler = PeriodicSchedulerSample2().getPeriodicScheduler();
+	testUpdateFromPeriodicSchedulerDto(periodicScheduler, PeriodicSchedulerSample3());
+}
+
+TEST(PeriodicSchedulerTest, updateFromPeriodicSchedulerDto4) {
+	shared_ptr<PeriodicScheduler> periodicScheduler = PeriodicSchedulerSample3().getPeriodicScheduler();
+	testUpdateFromPeriodicSchedulerDto(periodicScheduler, PeriodicSchedulerSample4());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(PeriodicSchedulerTest, partialUpdateFromPeriodicSchedulerDto_empty) {
+	const PeriodicScheduler periodicScheduler(*PeriodicSchedulerSample1().getPeriodicScheduler());
+
+	PeriodicScheduler actualPeriodicScheduler(periodicScheduler);
+	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(PeriodicSchedulerDTO());
+
+	PeriodicScheduler expectedPeriodicScheduler(periodicScheduler);
+
+	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
+}
+
+TEST(PeriodicSchedulerTest, partialUpdateFromPeriodicSchedulerDto_adjustment) {
+	const PeriodicScheduler periodicScheduler(*PeriodicSchedulerSample2().getPeriodicScheduler());
+	const unsigned adjustment = 80;
+
+	PeriodicScheduler actualPeriodicScheduler(periodicScheduler);
+	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(PeriodicSchedulerDTO().setAdjustment(adjustment));
+
+	PeriodicScheduler expectedPeriodicScheduler(periodicScheduler);
+	expectedPeriodicScheduler.setAdjustment(adjustment);
+
+
+	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
+}
+
+TEST(PeriodicSchedulerTest, partialUpdateFromPeriodicSchedulerDto_days) {
+	const PeriodicScheduler periodicScheduler(*PeriodicSchedulerSample3().getPeriodicScheduler());
+	const list<bool> days({ true, false });
+
+	PeriodicScheduler actualPeriodicScheduler(periodicScheduler);
+	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(PeriodicSchedulerDTO().setValues(list<bool>(days)));
+
+	PeriodicScheduler expectedPeriodicScheduler(periodicScheduler);
+	expectedPeriodicScheduler.setPeriod(days.size());
+	for (size_t i = 0; i < days.size(); ++i) {
+		expectedPeriodicScheduler.enableDay(i, *next(days.begin(), i));
+	}
+
+	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
+}
+
+TEST(PeriodicSchedulerTest, partialUpdateFromPeriodicSchedulerDto_periodStart) {
+	const PeriodicScheduler periodicScheduler(*PeriodicSchedulerSample4().getPeriodicScheduler());
+	const unsigned year = 1999;
+	const unsigned month = 11;
+	const unsigned day = 25;
+
+	PeriodicScheduler actualPeriodicScheduler(periodicScheduler);
+	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(
+			PeriodicSchedulerDTO().
+			setPeriodStartYear(year).
+			setPeriodStartMonth(month).
+			setPeriodStartDay(day));
+
+	PeriodicScheduler expectedPeriodicScheduler(periodicScheduler);
+	expectedPeriodicScheduler.setPeriodStartDate(year, month, day);
+
+	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
+}
+
