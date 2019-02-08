@@ -242,7 +242,7 @@ DocumentDTO XmlReader::loadDocument(const string& text) const {
 	return loadDocument(node);
 }
 
-std::list<ProgramDTO> XmlReader::loadProgramList(const string& text) const {
+list<ProgramDTO> XmlReader::loadProgramList(const string& text) const {
 	const char* tagName = "programs";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -272,7 +272,7 @@ ProgramDTO XmlReader::loadProgram(const string& text) const {
 	return loadProgram(node);
 }
 
-std::list<RunTimeDTO> XmlReader::loadRunTimeList(const string& text) const {
+list<RunTimeDTO> XmlReader::loadRunTimeList(const string& text) const {
 	const char* tagName = "runtimes";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -302,7 +302,7 @@ RunTimeDTO XmlReader::loadRunTime(const string& text) const {
 	return loadRunTime(node);
 }
 
-std::list<StartTimeDTO> XmlReader::loadStartTimeList(const string& text) const {
+list<StartTimeDTO> XmlReader::loadStartTimeList(const string& text) const {
 	const char* tagName = "starttimes";
 
 	unique_ptr<xml_document> doc(new xml_document());

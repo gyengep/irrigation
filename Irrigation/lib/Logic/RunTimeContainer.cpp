@@ -14,23 +14,27 @@ shared_ptr<RunTime> RunTimeFactory::createRunTime() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeContainer::RunTimeContainer() :
-	RunTimeContainer(unique_ptr<RunTimeFactory>(new RunTimeFactory()))
-{
+RunTimeContainer::RunTimeContainer() {
+	container.reserve(ZoneHandler::getZoneCount());
+	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
+		shared_ptr<RunTime> runTime(new RunTime());
+		container.push_back(make_pair(i, runTime));
+	}
 }
 
 RunTimeContainer::RunTimeContainer(unique_ptr<RunTimeFactory> runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		container.push_back(make_pair(i, runTimeFactory->createRunTime()));
+		shared_ptr<RunTime> runTime = runTimeFactory->createRunTime();
+		container.push_back(make_pair(i, runTime));
 	}
 }
 
 RunTimeContainer::RunTimeContainer(const RunTimeContainer& other) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		const RunTime& otherRunTime = *other.container[i].second;
-		container.push_back(make_pair(i, shared_ptr<RunTime>(new RunTime(otherRunTime))));
+		shared_ptr<RunTime> runTime(new RunTime(*other.container[i].second));
+		container.push_back(make_pair(i, runTime));
 	}
 }
 
@@ -40,9 +44,9 @@ RunTimeContainer::RunTimeContainer(initializer_list<RunTime> initializer) {
 	}
 
 	container.reserve(ZoneHandler::getZoneCount());
-	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		const RunTime& otherRunTime = *next(initializer.begin(), i);
-		container.push_back(make_pair(i, shared_ptr<RunTime>(new RunTime(otherRunTime))));
+	for (size_t i = 0; i < ZoneHandler::getZoneCount(); ++i) {
+		shared_ptr<RunTime> runTime(new RunTime(*next(initializer.begin(), i)));
+		container.push_back(make_pair(i, runTime));
 	}
 }
 
@@ -74,7 +78,7 @@ list<RunTimeDTO> RunTimeContainer::toRunTimeDtoList() const {
 	return runTimeDtoList;
 }
 
-void RunTimeContainer::updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) {
+void RunTimeContainer::updateFromRunTimeDtoList(const list<RunTimeDTO>& runTimeDtoList) {
 	if (runTimeDtoList.size() != container.size()) {
 		throw IllegalArgumentException(
 				"RunTimeDTO list must contains " + to_string(size()) + " elements");
@@ -101,7 +105,7 @@ string to_string(const RunTimeContainer& runTimeContainer) {
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer) {
+ostream& operator<<(ostream& os, const RunTimeContainer& runTimeContainer) {
 	os << "[";
 	for (auto it = runTimeContainer.begin(); it != runTimeContainer.end(); ++it) {
 		if (it != runTimeContainer.begin()) {

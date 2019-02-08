@@ -9,7 +9,7 @@ using namespace std;
 
 ProgramContainer::ProgramContainer(const ProgramContainer& other) {
 	for (const auto& value : other.container) {
-		insert(value.first, shared_ptr<Program>(new Program(*value.second)));
+		container.push_back(make_pair(value.first, shared_ptr<Program>(new Program(*value.second))));
 	}
 }
 

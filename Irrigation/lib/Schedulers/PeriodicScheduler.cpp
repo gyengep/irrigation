@@ -11,7 +11,7 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(100, std::vector<bool>(), 1970, 1, 1) {
+PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(100, vector<bool>(), 1970, 1, 1) {
 }
 
 PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
@@ -24,7 +24,7 @@ PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
 {
 }
 
-PeriodicScheduler::PeriodicScheduler(unsigned adjustment, const std::vector<bool>& days, unsigned year, unsigned month, unsigned day) :
+PeriodicScheduler::PeriodicScheduler(unsigned adjustment, const vector<bool>& days, unsigned year, unsigned month, unsigned day) :
 	adjustment(adjustment)
 {
 	setPeriod(days.size());
@@ -145,7 +145,7 @@ string to_string(const PeriodicScheduler& periodicScheduler) {
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const PeriodicScheduler& periodicScheduler) {
+ostream& operator<<(ostream& os, const PeriodicScheduler& periodicScheduler) {
 	os << "PeriodicScheduler{";
 	os << "adjustment=" << periodicScheduler.getAdjustment() << "%, ";
 	os << "values=" << to_string(periodicScheduler.days.begin(), periodicScheduler.days.end()) << ", ";

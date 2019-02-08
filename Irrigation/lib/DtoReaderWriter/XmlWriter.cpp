@@ -195,7 +195,7 @@ string XmlWriter::save(const ProgramDTO& program) {
 	return toString(doc.get(), humanReadable);
 }
 
-std::string XmlWriter::save(const list<ProgramDTO>& programs) {
+string XmlWriter::save(const list<ProgramDTO>& programs) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveProgramList(doc.get(), programs);
 	return toString(doc.get(), humanReadable);
@@ -207,7 +207,7 @@ string XmlWriter::save(const RunTimeDTO& runTime) {
 	return toString(doc.get(), humanReadable);
 }
 
-std::string XmlWriter::save(const list<RunTimeDTO>& runTimes) {
+string XmlWriter::save(const list<RunTimeDTO>& runTimes) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveRunTimeList(doc.get(), runTimes);
 	return toString(doc.get(), humanReadable);
@@ -219,7 +219,7 @@ string XmlWriter::save(const StartTimeDTO& startTime) {
 	return toString(doc.get(), humanReadable);
 }
 
-std::string XmlWriter::save(const list<StartTimeDTO>& startTimes) {
+string XmlWriter::save(const list<StartTimeDTO>& startTimes) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveStartTimeList(doc.get(), startTimes);
 	return toString(doc.get(), humanReadable);

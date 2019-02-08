@@ -16,7 +16,7 @@ WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(100, array<bool, 7>({false,
 WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.adjustment, other.days) {
 }
 
-WeeklyScheduler::WeeklyScheduler(unsigned adjustment, const std::array<bool, 7>& days) :
+WeeklyScheduler::WeeklyScheduler(unsigned adjustment, const array<bool, 7>& days) :
 	adjustment(adjustment),
 	days(days)
 {
@@ -87,7 +87,7 @@ string to_string(const WeeklyScheduler& weeklyScheduler) {
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler) {
+ostream& operator<<(ostream& os, const WeeklyScheduler& weeklyScheduler) {
 	os << "WeeklyScheduler{";
 	os << "adjustment=" << weeklyScheduler.getAdjustment() << "%, ";
 	os << "values=" << to_string(weeklyScheduler.days.begin(), weeklyScheduler.days.end());

@@ -31,7 +31,7 @@ Program::Program(const Program& other) :
 {
 }
 
-Program::Program(const std::string& name, SchedulerType schedulerType,
+Program::Program(const string& name, SchedulerType schedulerType,
 	shared_ptr<PeriodicScheduler> periodicScheduler,
 	shared_ptr<WeeklyScheduler> weeklyScheduler,
 	shared_ptr<RunTimeContainer> runTimes,
@@ -168,7 +168,7 @@ Program::Builder::Builder() :
 Program::Builder::~Builder() {
 }
 
-Program::Builder& Program::Builder::setName(const std::string& name) {
+Program::Builder& Program::Builder::setName(const string& name) {
 	this->name = name;
 	return *this;
 }
@@ -178,22 +178,22 @@ Program::Builder& Program::Builder::setSchedulerType(SchedulerType schedulerType
 	return *this;
 }
 
-Program::Builder& Program::Builder::setPeriodicScheduler(std::shared_ptr<PeriodicScheduler> periodicScheduler) {
+Program::Builder& Program::Builder::setPeriodicScheduler(shared_ptr<PeriodicScheduler> periodicScheduler) {
 	this->periodicScheduler = periodicScheduler;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setWeeklyScheduler(std::shared_ptr<WeeklyScheduler> weeklyScheduler) {
+Program::Builder& Program::Builder::setWeeklyScheduler(shared_ptr<WeeklyScheduler> weeklyScheduler) {
 	this->weeklyScheduler = weeklyScheduler;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setRunTimeContainer(std::shared_ptr<RunTimeContainer> runTimes) {
+Program::Builder& Program::Builder::setRunTimeContainer(shared_ptr<RunTimeContainer> runTimes) {
 	this->runTimes = runTimes;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setStartTimeContainer(std::shared_ptr<StartTimeContainer> startTimes) {
+Program::Builder& Program::Builder::setStartTimeContainer(shared_ptr<StartTimeContainer> startTimes) {
 	this->startTimes = startTimes;
 	return *this;
 }

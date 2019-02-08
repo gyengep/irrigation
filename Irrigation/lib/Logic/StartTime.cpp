@@ -84,7 +84,7 @@ string to_string(const StartTime& startTime) {
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const StartTime& startTime) {
+ostream& operator<<(ostream& os, const StartTime& startTime) {
 	os << setfill('0') << setw(2) << startTime.getHours() << ":";
 	os << setfill('0') << setw(2) << startTime.getMinutes();
 	return os;

@@ -60,7 +60,7 @@ string to_string(const RunTime& runTime) {
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const RunTime& runTime) {
+ostream& operator<<(ostream& os, const RunTime& runTime) {
 	os << setfill('0') << setw(2) << (runTime.getSeconds() / 60) << ":";
 	os << setfill('0') << setw(2) << (runTime.getSeconds() % 60);
 	return os;

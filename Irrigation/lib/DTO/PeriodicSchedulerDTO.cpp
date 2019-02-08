@@ -28,7 +28,7 @@ PeriodicSchedulerDTO::PeriodicSchedulerDTO(const PeriodicSchedulerDTO& other) {
 	}
 }
 
-PeriodicSchedulerDTO::PeriodicSchedulerDTO(unsigned adjustment, std::list<bool>&& values,
+PeriodicSchedulerDTO::PeriodicSchedulerDTO(unsigned adjustment, list<bool>&& values,
 		unsigned periodStartYear, unsigned periodStartMonth, unsigned periodStartDay) {
 	setAdjustment(adjustment);
 	setValues(move(values));

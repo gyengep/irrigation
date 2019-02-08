@@ -9,7 +9,7 @@ using namespace std;
 
 StartTimeContainer::StartTimeContainer(const StartTimeContainer& other) {
 	for (const auto& value : other.container) {
-		insert(value.first, shared_ptr<StartTime>(new StartTime(*value.second)));
+		container.push_back(make_pair(value.first, shared_ptr<StartTime>(new StartTime(*value.second))));
 	}
 }
 
