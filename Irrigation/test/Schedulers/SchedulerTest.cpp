@@ -2,11 +2,12 @@
 #include "Schedulers/Scheduler.h"
 
 using namespace std;
+using namespace testing;
 
 
 TEST(SchedulerTypeTest, to_string) {
-	EXPECT_EQ("weekly", to_string(SchedulerType::WEEKLY));
-	EXPECT_EQ("periodic", to_string(SchedulerType::PERIODIC));
+	EXPECT_THAT(to_string(SchedulerType::WEEKLY), Eq("weekly"));
+	EXPECT_THAT(to_string(SchedulerType::PERIODIC), Eq("periodic"));
 }
 
 TEST(SchedulerTypeTest, to_string_Invalid) {

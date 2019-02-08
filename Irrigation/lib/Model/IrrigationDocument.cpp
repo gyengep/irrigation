@@ -14,14 +14,14 @@ using namespace std;
 
 
 IrrigationDocument::IrrigationDocument(
-		unique_ptr<ProgramContainer>&& programContainer,
-		unique_ptr<WateringController>&& wateringController,
-		unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory,
-		unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) :
-	programs(move(programContainer)),
-	wateringController(move(wateringController)),
-	dtoReaderWriterFactory(move(dtoReaderWriterFactory)),
-	fileReaderWriterFactory(move(fileReaderWriterFactory))
+		shared_ptr<ProgramContainer> programContainer,
+		shared_ptr<WateringController> wateringController,
+		shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory,
+		shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory) :
+	programs(programContainer),
+	wateringController(wateringController),
+	dtoReaderWriterFactory(dtoReaderWriterFactory),
+	fileReaderWriterFactory(fileReaderWriterFactory)
 {
 }
 
@@ -36,49 +36,30 @@ void IrrigationDocument::unlock() const {
 	mtx.unlock();
 }
 
-DocumentDTO IrrigationDocument::getDocumentDTO() const {
+DocumentDTO IrrigationDocument::toDocumentDto() const {
 	lock_guard<mutex> lock(mtx);
 
-	list<ProgramDTO> programDTOs;
-	for (auto& program : *programs) {
-		programDTOs.push_back(program.second->toProgramDto().setId(program.first));
-	}
-
-	return DocumentDTO(move(programDTOs));
+	return DocumentDTO(programs->toProgramDtoList());
 }
 
-void IrrigationDocument::updateFromDTO(const DocumentDTO& documentDTO) {
+void IrrigationDocument::updateFromDocumentDto(const DocumentDTO& documentDTO) {
 	lock_guard<mutex> lock(mtx);
 
 	if (documentDTO.hasPrograms()) {
-		programs.reset(new ProgramContainer());
-
-		for (const ProgramDTO& programDTO : documentDTO.getPrograms()) {
-			shared_ptr<Program> program(new Program());
-			program->updateFromProgramDto(programDTO);
-
-			IdType id;
-			if (programDTO.hasId()) {
-				id = IdType(programDTO.getId());
-			}
-
-			programs->insert(id, program);
-		}
+		programs->updateFromProgramDtoList(documentDTO.getPrograms());
 	}
 }
 
 void IrrigationDocument::load(const string& fileName) {
 	LOGGER.debug("Loading configuration...");
 
-	programs.reset(new ProgramContainer());
-
 	unique_ptr<FileReader> fileReader = fileReaderWriterFactory->createFileReader();
-	const string text = fileReader->read(fileName);
-
 	unique_ptr<DtoReader> dtoReader = dtoReaderWriterFactory->createDtoReader();
+
+	const string text = fileReader->read(fileName);
 	const DocumentDTO documentDTO = dtoReader->loadDocument(text);
 
-	updateFromDTO(documentDTO);
+	updateFromDocumentDto(documentDTO);
 
 	LOGGER.debug("Configuration is successfully loaded");
 }
@@ -105,27 +86,27 @@ IrrigationDocument::Builder::Builder() {
 IrrigationDocument::Builder::~Builder() {
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramContainer(unique_ptr<ProgramContainer>&& programContainer) {
-	this->programContainer = move(programContainer);
+IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramContainer(shared_ptr<ProgramContainer> programContainer) {
+	this->programContainer = programContainer;
 	return *this;
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(unique_ptr<WateringController>&& wateringController) {
-	this->wateringController = move(wateringController);
+IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(shared_ptr<WateringController> wateringController) {
+	this->wateringController = wateringController;
 	return *this;
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory) {
-	this->dtoReaderWriterFactory = move(dtoReaderWriterFactory);
+IrrigationDocument::Builder& IrrigationDocument::Builder::setDtoReaderWriterFactory(shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory) {
+	this->dtoReaderWriterFactory = dtoReaderWriterFactory;
 	return *this;
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory) {
-	this->fileReaderWriterFactory = move(fileReaderWriterFactory);
+IrrigationDocument::Builder& IrrigationDocument::Builder::setFileReaderWriterFactory(shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory) {
+	this->fileReaderWriterFactory = fileReaderWriterFactory;
 	return *this;
 }
 
-unique_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
+shared_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
 
 	if (nullptr == programContainer) {
 		programContainer.reset(new ProgramContainer());
@@ -143,9 +124,9 @@ unique_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
 		fileReaderWriterFactory.reset(new FileReaderWriterFactoryImpl());
 	}
 
-	return unique_ptr<IrrigationDocument>(new IrrigationDocument(
-			move(programContainer),
-			move(wateringController),
-			move(dtoReaderWriterFactory),
-			move(fileReaderWriterFactory)));
+	return shared_ptr<IrrigationDocument>(new IrrigationDocument(
+			programContainer,
+			wateringController,
+			dtoReaderWriterFactory,
+			fileReaderWriterFactory));
 }

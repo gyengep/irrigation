@@ -7,10 +7,28 @@
 using namespace std;
 
 
-ProgramContainer::ProgramContainer(std::initializer_list<ProgramContainer::value_type> initializer) {
+ProgramContainer::ProgramContainer(const ProgramContainer& other) {
+	for (const auto& value : other.container) {
+		insert(value.first, shared_ptr<Program>(new Program(*value.second)));
+	}
+}
+
+ProgramContainer::ProgramContainer(initializer_list<ProgramContainer::value_type> initializer) {
 	for (const auto& value : initializer) {
 		insert(value.first, value.second);
 	}
+}
+
+bool ProgramContainer::operator== (const ProgramContainer& other) const {
+	if (container.size() != other.container.size()) {
+		return false;
+	}
+
+	auto comp = [](const value_type& a, const value_type& b) {
+		return (a.first == b.first) && (a.second->operator ==(*b.second));
+	};
+
+	return equal(container.begin(), container.end(), other.container.begin(), comp);
 }
 
 const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) const {
@@ -50,13 +68,29 @@ list<ProgramDTO> ProgramContainer::toProgramDtoList() const {
 	return programDtos;
 }
 
+void ProgramContainer::updateFromProgramDtoList(const list<ProgramDTO>& dtoList) {
+	container.clear();
+	for (const ProgramDTO& dto : dtoList) {
+		unique_ptr<IdType> id;
+		if (dto.hasId()) {
+			id.reset(new IdType(dto.getId()));
+		} else {
+			id.reset(new IdType());
+		}
+
+		shared_ptr<Program> program = Program::Builder().build();
+		program->updateFromProgramDto(dto);
+		insert(IdType(*id), program);
+	}
+}
+
 string to_string(const ProgramContainer& programContainer) {
 	ostringstream oss;
 	oss << programContainer;
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const ProgramContainer& programContainer) {
+ostream& operator<<(ostream& os, const ProgramContainer& programContainer) {
 	os << "[";
 	for (auto it = programContainer.begin(); it != programContainer.end(); ++it) {
 		if (it != programContainer.begin()) {

@@ -2,6 +2,7 @@
 #include "Hardware/Valves/ZoneHandler.h"
 
 using namespace std;
+using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -15,12 +16,12 @@ void WateringControllerTest::SetUp() {
 void WateringControllerTest::TearDown() {
 }
 
-void WateringControllerTest::checkActiveZones(time_t t, const vector<size_t>& requiredZones) {
-	for (size_t i = 0; i < requiredZones.size(); ++i) {
+void WateringControllerTest::checkActiveZones(time_t t, const vector<size_t>& expectedZones) {
+	for (size_t i = 0; i < expectedZones.size(); ++i) {
 		wateringController->on1SecTimer(t++);
 
 		EXPECT_TRUE(wateringController->isWateringActive());
-		EXPECT_EQ(requiredZones[i], wateringController->getActiveZoneId());
+		EXPECT_THAT(wateringController->getActiveZoneId(), Eq(expectedZones[i]));
 	}
 
 	wateringController->on1SecTimer(t++);
@@ -66,8 +67,8 @@ TEST_F(WateringControllerTest, startWithEmpty) {
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
 
-	const vector<size_t> requiredZones { };
-	checkActiveZones(t, requiredZones);
+	const vector<size_t> expectedZones { };
+	checkActiveZones(t, expectedZones);
 }
 
 TEST_F(WateringControllerTest, simpleSimingCheck) {
@@ -78,8 +79,8 @@ TEST_F(WateringControllerTest, simpleSimingCheck) {
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
 
-	const vector<size_t> requiredZones { 0, 0 };
-	checkActiveZones(t, requiredZones);
+	const vector<size_t> expectedZones { 0, 0 };
+	checkActiveZones(t, expectedZones);
 }
 
 TEST_F(WateringControllerTest, timingCheckWith0start) {
@@ -92,8 +93,8 @@ TEST_F(WateringControllerTest, timingCheckWith0start) {
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
 
-	const vector<size_t> requiredZones { 3, 3, 4, 4, 4, 4, 4, 5, 5, 5 };
-	checkActiveZones(t, requiredZones);
+	const vector<size_t> expectedZones { 3, 3, 4, 4, 4, 4, 4, 5, 5, 5 };
+	checkActiveZones(t, expectedZones);
 }
 
 TEST_F(WateringControllerTest, timingCheckWith0end) {
@@ -106,8 +107,8 @@ TEST_F(WateringControllerTest, timingCheckWith0end) {
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer);
 
-	const vector<size_t> requiredZones { 0, 0, 0, 2, 2, 3 };
-	checkActiveZones(t, requiredZones);
+	const vector<size_t> expectedZones { 0, 0, 0, 2, 2, 3 };
+	checkActiveZones(t, expectedZones);
 }
 
 TEST_F(WateringControllerTest, timingAdjust) {
@@ -119,6 +120,6 @@ TEST_F(WateringControllerTest, timingAdjust) {
 	time_t t = time(nullptr);
 	wateringController->start(t, runTimeContainer, 30);
 
-	const vector<size_t> requiredZones { 0, 0, 0, 2, 2, 2, 2, 2, 2 };
-	checkActiveZones(t, requiredZones);
+	const vector<size_t> expectedZones { 0, 0, 0, 2, 2, 2, 2, 2, 2 };
+	checkActiveZones(t, expectedZones);
 }

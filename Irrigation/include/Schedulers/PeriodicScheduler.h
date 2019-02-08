@@ -8,8 +8,8 @@
 class PeriodicScheduler: public Scheduler {
 	const static size_t maxPeriod = 7;
 
-	std::vector<bool> days;
 	unsigned adjustment;
+	std::vector<bool> days;
 	unsigned periodStartYear, periodStartMonth, periodStartDay;
 
 	unsigned elapsedDaysSinceEpochToPeriodStart;
@@ -20,6 +20,7 @@ public:
 	PeriodicScheduler();
 	PeriodicScheduler(PeriodicScheduler&&) = default;
 	PeriodicScheduler(const PeriodicScheduler&);
+	PeriodicScheduler(unsigned adjustment, const std::vector<bool>& days, unsigned year, unsigned month, unsigned day);
 	virtual ~PeriodicScheduler();
 
 	PeriodicScheduler& operator= (PeriodicScheduler&&) = delete;

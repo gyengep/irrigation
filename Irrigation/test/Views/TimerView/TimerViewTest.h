@@ -4,9 +4,9 @@
 #include "Logic/RunTimeContainer.h"
 #include "Model/IrrigationDocument.h"
 #include "Views/TimerView/TimerView.h"
-#include "MockProgram.h"
-#include "MockScheduler.h"
-#include "MockWateringController.h"
+#include "Mocks/MockProgram.h"
+#include "Mocks/MockScheduler.h"
+#include "Mocks/MockWateringController.h"
 
 class RunTimeContainer;
 

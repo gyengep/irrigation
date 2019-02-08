@@ -93,19 +93,19 @@ void StartTimeContainer::updateFromStartTimeDtoList(const list<StartTimeDTO>& st
 }
 
 string to_string(const StartTimeContainer& startTimeContainer) {
-	ostringstream o;
-	o << "[";
-	for (auto it = startTimeContainer.begin(); it != startTimeContainer.end(); ++it) {
-		if (it != startTimeContainer.begin()) {
-			o << ", ";
-		}
-		o << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
-	}
-	o << "]";
-	return o.str();
+	ostringstream oss;
+	oss << startTimeContainer;
+	return oss.str();
 }
 
 ostream& operator<<(ostream& os, const StartTimeContainer& startTimeContainer) {
-	os << to_string(startTimeContainer);
+	os << "[";
+	for (auto it = startTimeContainer.begin(); it != startTimeContainer.end(); ++it) {
+		if (it != startTimeContainer.begin()) {
+			os << ", ";
+		}
+		os << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
+	}
+	os << "]";
 	return os;
 }

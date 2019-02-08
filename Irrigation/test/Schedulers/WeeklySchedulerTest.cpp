@@ -3,11 +3,11 @@
 #include "Exceptions/Exceptions.h"
 #include "Schedulers/WeeklyScheduler.h"
 #include "Utils/TimeConversion.h"
-#include "WeeklySchedulerSamples.h"
+#include "Dto2Object/WeeklySchedulerSamples.h"
 
 using namespace std;
 using namespace testing;
-using namespace LogicTest;
+using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +29,7 @@ void checkDay(tm& timeinfo, const Scheduler& scheduler, bool expectedResult) {
 TEST(WeeklySchedulerTest, defaultConstructor) {
 	WeeklyScheduler scheduler;
 
-	EXPECT_EQ(100, scheduler.getAdjustment());
+	EXPECT_THAT(scheduler.getAdjustment(), Eq(100));
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::MONDAY));
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::TUESDAY));
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::WEDNESDAY));
@@ -43,7 +43,7 @@ TEST(WeeklySchedulerTest, setAdjustment) {
 	WeeklyScheduler scheduler;
 
 	scheduler.setAdjustment(53);
-	EXPECT_EQ(53, scheduler.getAdjustment());
+	EXPECT_THAT(scheduler.getAdjustment(), Eq(53));
 }
 
 TEST(WeeklySchedulerTest, enableDay) {
@@ -115,9 +115,7 @@ TEST(WeeklySchedulerTest, isDayScheduled) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToWeeklySchedulerDto(const WeeklySchedulerSample& weeklySchedulerSample) {
-	const shared_ptr<WeeklyScheduler> weeklyScheduler = weeklySchedulerSample.getWeeklyScheduler();
-	const WeeklySchedulerDTO& expectedWeeklySchedulerDto = weeklySchedulerSample.getWeeklySchedulerDto();
-	EXPECT_THAT(weeklyScheduler->toWeeklySchedulerDto(), Eq(expectedWeeklySchedulerDto));
+	EXPECT_THAT(weeklySchedulerSample.getObject()->toWeeklySchedulerDto(), Eq(weeklySchedulerSample.getDto()));
 }
 
 TEST(WeeklySchedulerTest, toWeeklySchedulerDto1) {
@@ -135,9 +133,9 @@ TEST(WeeklySchedulerTest, toWeeklySchedulerDto3) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromWeeklySchedulerDto(shared_ptr<WeeklyScheduler> weeklyScheduler, const WeeklySchedulerSample& weeklySchedulerSample) {
-	EXPECT_THAT(weeklyScheduler, Not(Pointee(*weeklySchedulerSample.getWeeklyScheduler())));
-	weeklyScheduler->updateFromWeeklySchedulerDto(weeklySchedulerSample.getWeeklySchedulerDto());
-	EXPECT_THAT(weeklyScheduler, Pointee(*weeklySchedulerSample.getWeeklyScheduler()));
+	EXPECT_THAT(weeklyScheduler, Not(Pointee(*weeklySchedulerSample.getObject())));
+	weeklyScheduler->updateFromWeeklySchedulerDto(weeklySchedulerSample.getDto());
+	EXPECT_THAT(weeklyScheduler, Pointee(*weeklySchedulerSample.getObject()));
 }
 
 TEST(WeeklySchedulerTest, updateFromWeeklySchedulerDto1) {
@@ -146,59 +144,64 @@ TEST(WeeklySchedulerTest, updateFromWeeklySchedulerDto1) {
 }
 
 TEST(WeeklySchedulerTest, updateFromWeeklySchedulerDto2) {
-	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample1().getWeeklyScheduler();
+	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample1().getObject();
 	testUpdateFromWeeklySchedulerDto(weeklyScheduler, WeeklySchedulerSample2());
 }
 
 TEST(WeeklySchedulerTest, updateFromWeeklySchedulerDto3) {
-	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample2().getWeeklyScheduler();
+	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample2().getObject();
 	testUpdateFromWeeklySchedulerDto(weeklyScheduler, WeeklySchedulerSample3());
 }
 
 TEST(WeeklySchedulerTest, updateFromWeeklySchedulerDto4) {
-	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample3().getWeeklyScheduler();
+	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample3().getObject();
 	testUpdateFromWeeklySchedulerDto(weeklyScheduler, WeeklySchedulerSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeeklySchedulerTest, partialUpdateFromWeeklySchedulerDto_empty) {
-	const WeeklyScheduler weeklyScheduler(*WeeklySchedulerSample1().getWeeklyScheduler());
+	WeeklyScheduler actualWeeklyScheduler(*WeeklySchedulerSample1().getObject());
+	WeeklyScheduler expectedWeeklyScheduler(*WeeklySchedulerSample1().getObject());
 
-	WeeklyScheduler actualWeeklyScheduler(weeklyScheduler);
 	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO());
-
-	WeeklyScheduler expectedWeeklyScheduler(weeklyScheduler);
 
 	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
 }
 
 TEST(WeeklySchedulerTest, partialUpdateFromWeeklySchedulerDto_adjustment) {
-	const WeeklyScheduler weeklyScheduler(*WeeklySchedulerSample2().getWeeklyScheduler());
-	const unsigned adjustment = 80;
+	const unsigned adjustment1 = 37;
+	const unsigned adjustment2 = 92;
 
-	WeeklyScheduler actualWeeklyScheduler(weeklyScheduler);
-	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setAdjustment(adjustment));
+	WeeklyScheduler actualWeeklyScheduler(*WeeklySchedulerSample2().getObject());
+	WeeklyScheduler expectedWeeklyScheduler(*WeeklySchedulerSample2().getObject());
 
-	WeeklyScheduler expectedWeeklyScheduler(weeklyScheduler);
-	expectedWeeklyScheduler.setAdjustment(adjustment);
+	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setAdjustment(adjustment1));
+	expectedWeeklyScheduler.setAdjustment(adjustment1);
+	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
 
-
+	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setAdjustment(adjustment2));
+	expectedWeeklyScheduler.setAdjustment(adjustment2);
 	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
 }
 
 TEST(WeeklySchedulerTest, partialUpdateFromWeeklySchedulerDto_days) {
-	const WeeklyScheduler weeklyScheduler(*WeeklySchedulerSample3().getWeeklyScheduler());
-	const list<bool> days({ false, false, true, true, false, true, false});
+	const list<bool> days1({ false, false, true, true, false, true, false});
+	const list<bool> days2({ true, true, true, true, false, false, false});
 
-	WeeklyScheduler actualWeeklyScheduler(weeklyScheduler);
-	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setValues(list<bool>(days)));
+	WeeklyScheduler actualWeeklyScheduler(*WeeklySchedulerSample3().getObject());
+	WeeklyScheduler expectedWeeklyScheduler(*WeeklySchedulerSample3().getObject());
 
-	WeeklyScheduler expectedWeeklyScheduler(weeklyScheduler);
-	for (size_t i = 0; i < days.size(); ++i) {
-		expectedWeeklyScheduler.enableDay(i, *next(days.begin(), i));
+	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setValues(list<bool>(days1)));
+	for (size_t i = 0; i < days1.size(); ++i) {
+		expectedWeeklyScheduler.enableDay(i, *next(days1.begin(), i));
 	}
+	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
 
+	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setValues(list<bool>(days2)));
+	for (size_t i = 0; i < days2.size(); ++i) {
+		expectedWeeklyScheduler.enableDay(i, *next(days2.begin(), i));
+	}
 	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
 }
 

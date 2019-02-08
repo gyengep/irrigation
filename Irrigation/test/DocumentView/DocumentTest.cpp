@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
 #include "DocumentView/Document.h"
-#include "MockView.h"
+#include "Mocks/MockView.h"
 
 using namespace std;
 

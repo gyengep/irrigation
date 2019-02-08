@@ -8,13 +8,6 @@
 
 using namespace std;
 
-
-///////////////////////////////////////////////////////////////////////////////
-
-unique_ptr<WeeklyScheduler> SchedulerFactory::createWeeklyScheduler() const {
-	return unique_ptr<WeeklyScheduler>(new WeeklyScheduler());
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 WeeklyScheduler::WeeklyScheduler() :
@@ -24,8 +17,14 @@ WeeklyScheduler::WeeklyScheduler() :
 }
 
 WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) :
-	days(other.days),
-	adjustment(other.adjustment)
+	adjustment(other.adjustment),
+	days(other.days)
+{
+}
+
+WeeklyScheduler::WeeklyScheduler(unsigned adjustment, const std::array<bool, 7>& days) :
+	adjustment(adjustment),
+	days(days)
 {
 }
 

@@ -3,12 +3,12 @@
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
 #include "Logic/RunTimeContainer.h"
-#include "MockRunTime.h"
-#include "RunTimeListSamples.h"
+#include "Mocks/MockRunTime.h"
+#include "Dto2Object/RunTimeListSamples.h"
 
 using namespace std;
 using namespace testing;
-using namespace LogicTest;
+using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -167,29 +167,34 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_wrongId) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToRunTimeDtoList(const RunTimeListSample& runTimeListSample) {
-	const shared_ptr<RunTimeContainer> runTimeContainer = runTimeListSample.getRunTimeContainer();
-	const list<RunTimeDTO>& expectedRunTimeDtoList = runTimeListSample.getRunTimeDtoList();
-	EXPECT_THAT(runTimeContainer->toRunTimeDtoList(), Eq(expectedRunTimeDtoList));
+	EXPECT_THAT(
+		runTimeListSample.getContainer()->toRunTimeDtoList(),
+		Eq(runTimeListSample.getDtoList())
+	);
 }
 
 TEST(RunTimeContainerTest, toRunTimeDtoList1) {
-	const shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample1().getRunTimeContainer();
-	const list<RunTimeDTO> expectedRunTimeDtoList = RunTimeListSample1().getRunTimeDtoList();
-	EXPECT_THAT(runTimeContainer->toRunTimeDtoList(), Eq(expectedRunTimeDtoList));
+	testToRunTimeDtoList(RunTimeListSample1());
 }
 
 TEST(RunTimeContainerTest, toRunTimeDtoList2) {
-	const shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getRunTimeContainer();
-	const list<RunTimeDTO> expectedRunTimeDtoList = RunTimeListSample2().getRunTimeDtoList();
-	EXPECT_THAT(runTimeContainer->toRunTimeDtoList(), Eq(expectedRunTimeDtoList));
+	testToRunTimeDtoList(RunTimeListSample2());
+}
+
+TEST(RunTimeContainerTest, toRunTimeDtoList3) {
+	testToRunTimeDtoList(RunTimeListSample3());
+}
+
+TEST(RunTimeContainerTest, toRunTimeDtoList4) {
+	testToRunTimeDtoList(RunTimeListSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromRunTimeDtoList(shared_ptr<RunTimeContainer> runTimeContainer, const RunTimeListSample& runTimeListSample) {
-	EXPECT_THAT(runTimeContainer, Not(Pointee(*runTimeListSample.getRunTimeContainer())));
-	runTimeContainer->updateFromRunTimeDtoList(runTimeListSample.getRunTimeDtoList());
-	EXPECT_THAT(runTimeContainer, Pointee(*runTimeListSample.getRunTimeContainer()));
+	EXPECT_THAT(runTimeContainer, Not(Pointee(*runTimeListSample.getContainer())));
+	runTimeContainer->updateFromRunTimeDtoList(runTimeListSample.getDtoList());
+	EXPECT_THAT(runTimeContainer, Pointee(*runTimeListSample.getContainer()));
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList1) {
@@ -198,6 +203,16 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList1) {
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList2) {
-	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample1().getRunTimeContainer();
+	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample1().getContainer();
 	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample2());
+}
+
+TEST(RunTimeContainerTest, updateFromRunTimeDtoList3) {
+	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getContainer();
+	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample3());
+}
+
+TEST(RunTimeContainerTest, updateFromRunTimeDtoList4) {
+	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample3().getContainer();
+	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample4());
 }

@@ -1,11 +1,11 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
 #include "Logic/RunTime.h"
-#include "RunTimeSamples.h"
+#include "Dto2Object/RunTimeSamples.h"
 
 using namespace std;
 using namespace testing;
-using namespace LogicTest;
+using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -45,9 +45,7 @@ TEST(RunTimeTest, setValueMax) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToRunTimeDto(const RunTimeSample& runTimeSample) {
-	const shared_ptr<RunTime> runTime = runTimeSample.getRunTime();
-	const RunTimeDTO& expectedRunTimeDto = runTimeSample.getRunTimeDto();
-	EXPECT_THAT(runTime->toRunTimeDto(), Eq(expectedRunTimeDto));
+	EXPECT_THAT(runTimeSample.getObject()->toRunTimeDto(), Eq(runTimeSample.getDto()));
 }
 
 TEST(RunTimeTest, toRunTimeDto1) {
@@ -77,9 +75,9 @@ TEST(RunTimeTest, toRunTimeDto6) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromRunTimeDto(shared_ptr<RunTime> runTime, const RunTimeSample& runTimeSample) {
-	EXPECT_THAT(runTime, Not(Pointee(*runTimeSample.getRunTime())));
-	runTime->updateFromRunTimeDto(runTimeSample.getRunTimeDto());
-	EXPECT_THAT(runTime, Pointee(*runTimeSample.getRunTime()));
+	EXPECT_THAT(runTime, Not(Pointee(*runTimeSample.getObject())));
+	runTime->updateFromRunTimeDto(runTimeSample.getDto());
+	EXPECT_THAT(runTime, Pointee(*runTimeSample.getObject()));
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto1) {
@@ -88,46 +86,61 @@ TEST(RunTimeTest, updateFromRunTimeDto1) {
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto2) {
-	shared_ptr<RunTime> runTime = RunTimeSample1().getRunTime();
+	shared_ptr<RunTime> runTime = RunTimeSample1().getObject();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample2());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto3) {
-	shared_ptr<RunTime> runTime = RunTimeSample2().getRunTime();
+	shared_ptr<RunTime> runTime = RunTimeSample2().getObject();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample3());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto4) {
-	shared_ptr<RunTime> runTime = RunTimeSample3().getRunTime();
+	shared_ptr<RunTime> runTime = RunTimeSample3().getObject();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample4());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto5) {
-	shared_ptr<RunTime> runTime = RunTimeSample4().getRunTime();
+	shared_ptr<RunTime> runTime = RunTimeSample4().getObject();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample5());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto6) {
-	shared_ptr<RunTime> runTime = RunTimeSample5().getRunTime();
+	shared_ptr<RunTime> runTime = RunTimeSample5().getObject();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample6());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeTest, partialUpdateFromRunTimeDto_empty) {
-	RunTimeSample1 runTimeSample;
-	runTimeSample.getRunTime()->updateFromRunTimeDto(RunTimeDTO());
-	EXPECT_THAT(runTimeSample.getRunTime(), Pointee(*RunTimeSample1().getRunTime()));
+	RunTime actualRunTime(*RunTimeSample1().getObject());
+
+	actualRunTime.updateFromRunTimeDto(RunTimeDTO());
+	EXPECT_THAT(actualRunTime, RunTime(*RunTimeSample1().getObject()));
 }
 
 TEST(RunTimeTest, partialUpdateFromRunTimeDto_seconds) {
-	RunTimeSample2 runTimeSample;
-	runTimeSample.getRunTime()->updateFromRunTimeDto(RunTimeDTO().setSeconds(130));
-	EXPECT_THAT(runTimeSample.getRunTime(), Pointee(RunTime(130)));
+	const unsigned second1 = 20;
+	const unsigned second2 = 30;
+
+	RunTime actualRunTime(*RunTimeSample2().getObject());
+
+	actualRunTime.updateFromRunTimeDto(RunTimeDTO().setSeconds(second1));
+	EXPECT_THAT(actualRunTime, Eq(RunTime(second1)));
+
+	actualRunTime.updateFromRunTimeDto(RunTimeDTO().setSeconds(second2));
+	EXPECT_THAT(actualRunTime, Eq(RunTime(second2)));
 }
 
 TEST(RunTimeTest, partialUpdateFromRunTimeDto_minutes) {
-	RunTimeSample3 runTimeSample;
-	runTimeSample.getRunTime()->updateFromRunTimeDto(RunTimeDTO().setMinutes(3));
-	EXPECT_THAT(runTimeSample.getRunTime(), Pointee(RunTime(180)));
+	const unsigned minute1 = 55;
+	const unsigned minute2 = 40;
+
+	RunTime actualRunTime(*RunTimeSample3().getObject());
+
+	actualRunTime.updateFromRunTimeDto(RunTimeDTO().setMinutes(minute1));
+	EXPECT_THAT(actualRunTime, Eq(RunTime(minute1 * 60)));
+
+	actualRunTime.updateFromRunTimeDto(RunTimeDTO().setMinutes(minute2));
+	EXPECT_THAT(actualRunTime, Eq(RunTime(minute2 * 60)));
 }

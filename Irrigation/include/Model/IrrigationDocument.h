@@ -17,17 +17,20 @@ public:
 
 private:
 	mutable std::mutex mtx;
-	std::unique_ptr<ProgramContainer> programs;
-	std::unique_ptr<WateringController> wateringController;
-	std::unique_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
-	std::unique_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
+	std::shared_ptr<ProgramContainer> programs;
+	std::shared_ptr<WateringController> wateringController;
+	std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
+	std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
 
 public:
 	IrrigationDocument(
-			std::unique_ptr<ProgramContainer>&& programContainer,
-			std::unique_ptr<WateringController>&& wateringController,
-			std::unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory,
-			std::unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory);
+			std::shared_ptr<ProgramContainer> programContainer,
+			std::shared_ptr<WateringController> wateringController,
+			std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory,
+			std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory
+			);
+
+	IrrigationDocument(const IrrigationDocument&);
 
 	virtual ~IrrigationDocument();
 
@@ -40,27 +43,27 @@ public:
 	const WateringController& getWateringController() const { return *wateringController; }
 	WateringController& getWateringController() { return *wateringController; }
 
-	DocumentDTO getDocumentDTO() const;
-	void updateFromDTO(const DocumentDTO& documentDTO);
+	DocumentDTO toDocumentDto() const;
+	void updateFromDocumentDto(const DocumentDTO& documentDTO);
 
 	void load(const std::string& fileName);
 	void save(const std::string& fileName) const;
 };
 
 class IrrigationDocument::Builder {
-	std::unique_ptr<ProgramContainer> programContainer;
-	std::unique_ptr<WateringController> wateringController;
-	std::unique_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
-	std::unique_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
+	std::shared_ptr<ProgramContainer> programContainer;
+	std::shared_ptr<WateringController> wateringController;
+	std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
+	std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
 
 public:
 	Builder();
 	~Builder();
 
-	Builder& setProgramContainer(std::unique_ptr<ProgramContainer>&& programContainer);
-	Builder& setWateringController(std::unique_ptr<WateringController>&& wateringController);
-	Builder& setDtoReaderWriterFactory(std::unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory);
-	Builder& setFileReaderWriterFactory(std::unique_ptr<FileReaderWriterFactory>&& fileReaderWriterFactory);
+	Builder& setProgramContainer(std::shared_ptr<ProgramContainer> programContainer);
+	Builder& setWateringController(std::shared_ptr<WateringController> wateringController);
+	Builder& setDtoReaderWriterFactory(std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory);
+	Builder& setFileReaderWriterFactory(std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory);
 
-	std::unique_ptr<IrrigationDocument> build();
+	std::shared_ptr<IrrigationDocument> build();
 };

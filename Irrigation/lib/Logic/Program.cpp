@@ -14,8 +14,8 @@ using namespace std;
 Program::Program() :
 	name(),
 	schedulerType(SchedulerType::WEEKLY),
-	periodicScheduler(schedulerFactory.createPeriodicScheduler()),
-	weeklyScheduler(schedulerFactory.createWeeklyScheduler()),
+	periodicScheduler(new PeriodicScheduler()),
+	weeklyScheduler(new WeeklyScheduler()),
 	runTimes(new RunTimeContainer()),
 	startTimes(new StartTimeContainer())
 {
@@ -31,10 +31,24 @@ Program::Program(const Program& other) :
 {
 }
 
+Program::Program(const std::string& name, SchedulerType schedulerType,
+	shared_ptr<PeriodicScheduler> periodicScheduler,
+	shared_ptr<WeeklyScheduler> weeklyScheduler,
+	shared_ptr<RunTimeContainer> runTimes,
+	shared_ptr<StartTimeContainer> startTimes)
+{
+	this->name = name;
+	this->schedulerType = schedulerType;
+	this->periodicScheduler = periodicScheduler;
+	this->weeklyScheduler = weeklyScheduler;
+	this->runTimes = runTimes;
+	this->startTimes = startTimes;
+}
+
 Program::~Program() {
 }
 
-bool Program::operator== (const Program& other) {
+bool Program::operator== (const Program& other) const {
 	return (getName() == other.getName() &&
 			getSchedulerType() == other.getSchedulerType() &&
 			getPeriodicScheduler() == other.getPeriodicScheduler() &&
@@ -147,7 +161,7 @@ string to_string(const Program& program) {
 	return oss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const Program& program) {
+ostream& operator<<(ostream& os, const Program& program) {
 	os << "Program{";
 	os << "name=\"" << program.getName() << "\", ";
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
@@ -158,4 +172,69 @@ std::ostream& operator<<(std::ostream& os, const Program& program) {
 	os << "startTimes=" << to_string(program.getStartTimes());
 	os << "}";
 	return os;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+Program::Builder::Builder() :
+	schedulerType(SchedulerType::WEEKLY)
+{
+}
+
+Program::Builder::~Builder() {
+}
+
+Program::Builder& Program::Builder::setName(const std::string& name) {
+	this->name = name;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setSchedulerType(SchedulerType schedulerType) {
+	this->schedulerType = schedulerType;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setPeriodicScheduler(std::shared_ptr<PeriodicScheduler> periodicScheduler) {
+	this->periodicScheduler = periodicScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setWeeklyScheduler(std::shared_ptr<WeeklyScheduler> weeklyScheduler) {
+	this->weeklyScheduler = weeklyScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setRunTimeContainer(std::shared_ptr<RunTimeContainer> runTimes) {
+	this->runTimes = runTimes;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setStartTimeContainer(std::shared_ptr<StartTimeContainer> startTimes) {
+	this->startTimes = startTimes;
+	return *this;
+}
+
+shared_ptr<Program> Program::Builder::build() {
+
+	if (nullptr == periodicScheduler) {
+		periodicScheduler.reset(new PeriodicScheduler());
+	}
+
+	if (nullptr == weeklyScheduler) {
+		weeklyScheduler.reset(new WeeklyScheduler());
+	}
+
+	if (nullptr == runTimes) {
+		runTimes.reset(new RunTimeContainer());
+	}
+
+	if (nullptr == startTimes) {
+		startTimes.reset(new StartTimeContainer());
+	}
+
+	return shared_ptr<Program>(new Program(name, schedulerType,
+			periodicScheduler,
+			weeklyScheduler,
+			runTimes,
+			startTimes));
 }

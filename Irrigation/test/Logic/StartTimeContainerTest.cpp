@@ -1,12 +1,12 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
 #include "Logic/StartTimeContainer.h"
-#include "MockStartTime.h"
-#include "StartTimeListSamples.h"
+#include "Mocks/MockStartTime.h"
+#include "Dto2Object/StartTimeListSamples.h"
 
 using namespace std;
 using namespace testing;
-using namespace LogicTest;
+using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -162,42 +162,51 @@ TEST(StartTimeContainerTest, sort) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToStartTimeDtoList(const StartTimeListSample& startTimeListSample) {
-	const shared_ptr<StartTimeContainer> startTimeContainer = startTimeListSample.getStartTimeContainer();
-	const list<StartTimeDTO>& expectedStartTimeDtoList = startTimeListSample.getStartTimeDtoList();
+	const shared_ptr<StartTimeContainer> startTimeContainer = startTimeListSample.getContainer();
+	const list<StartTimeDTO>& expectedStartTimeDtoList = startTimeListSample.getDtoList();
 	EXPECT_THAT(startTimeContainer->toStartTimeDtoList(), Eq(expectedStartTimeDtoList));
 }
 
 TEST(StartTimeContainerTest, toStartTimeDtoList_empty) {
-	testToStartTimeDtoList(StartTimeListSampleEmpty());
+	testToStartTimeDtoList(StartTimeListSample1());
 }
 
 TEST(StartTimeContainerTest, toStartTimeDtoList_oneItem) {
-	testToStartTimeDtoList(StartTimeListSampleOneItem());
+	testToStartTimeDtoList(StartTimeListSample2());
 }
 
-TEST(StartTimeContainerTest, toStartTimeDtoList_moreItem) {
-	testToStartTimeDtoList(StartTimeListSampleMoreItem());
+TEST(StartTimeContainerTest, toStartTimeDtoList_moreItem1) {
+	testToStartTimeDtoList(StartTimeListSample3());
+}
+
+TEST(StartTimeContainerTest, toStartTimeDtoList_moreItem2) {
+	testToStartTimeDtoList(StartTimeListSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromStartTimeDtoList(shared_ptr<StartTimeContainer> startTimeContainer, const StartTimeListSample& startTimeListSample) {
-	EXPECT_THAT(startTimeContainer, Not(Pointee(*startTimeListSample.getStartTimeContainer())));
-	startTimeContainer->updateFromStartTimeDtoList(startTimeListSample.getStartTimeDtoList());
-	EXPECT_THAT(startTimeContainer, Pointee(*startTimeListSample.getStartTimeContainer()));
+	EXPECT_THAT(startTimeContainer, Not(Pointee(*startTimeListSample.getContainer())));
+	startTimeContainer->updateFromStartTimeDtoList(startTimeListSample.getDtoList());
+	EXPECT_THAT(startTimeContainer, Pointee(*startTimeListSample.getContainer()));
 }
 
 TEST(StartTimeContainerTest, updateFromStartTimeDtoList_empty) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSampleOneItem().getStartTimeContainer();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSampleEmpty());
+	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample2().getContainer();
+	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample1());
 }
 
 TEST(StartTimeContainerTest, updateFromStartTimeDtoList_oneItem) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSampleMoreItem().getStartTimeContainer();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSampleOneItem());
+	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample3().getContainer();
+	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample2());
 }
 
-TEST(StartTimeContainerTest, updateFromStartTimeDtoList_moreItem) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSampleEmpty().getStartTimeContainer();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSampleMoreItem());
+TEST(StartTimeContainerTest, updateFromStartTimeDtoList_moreItem1) {
+	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample1().getContainer();
+	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample3());
+}
+
+TEST(StartTimeContainerTest, updateFromStartTimeDtoList_moreItem2) {
+	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample2().getContainer();
+	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample4());
 }

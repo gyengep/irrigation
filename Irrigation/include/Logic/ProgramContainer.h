@@ -32,7 +32,7 @@ private:
 
 public:
 	ProgramContainer() = default;
-	ProgramContainer(ProgramContainer&&) = delete;
+	ProgramContainer(ProgramContainer&&) = default;
 	ProgramContainer(const ProgramContainer&);
 	ProgramContainer(std::initializer_list<value_type> initializer);
 	virtual ~ProgramContainer() = default;
@@ -51,6 +51,7 @@ public:
 	const mapped_type& at(const key_type& key) const;
 
 	std::list<ProgramDTO> toProgramDtoList() const;
+	void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList);
 
 	friend std::string to_string(const ProgramContainer& programContainer);
 	friend std::ostream& operator<<(std::ostream& os, const ProgramContainer& programContainer);

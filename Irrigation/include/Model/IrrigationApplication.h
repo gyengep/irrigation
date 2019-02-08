@@ -7,7 +7,7 @@ class IrrigationDocument;
 
 
 class IrrigationApplication : public Application {
-	std::unique_ptr<IrrigationDocument> document;
+	std::shared_ptr<IrrigationDocument> document;
 
 	//void saveDocument(const std::string& fileName) const;
 

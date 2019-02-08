@@ -7,35 +7,33 @@
 #include "Utils/ToString.h"
 #include "Utils/TimeConversion.h"
 
-
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<PeriodicScheduler> SchedulerFactory::createPeriodicScheduler() const {
-	return unique_ptr<PeriodicScheduler>(new PeriodicScheduler());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 PeriodicScheduler::PeriodicScheduler() :
-	adjustment(100),
-	periodStartYear(1970),
-	periodStartMonth(1),
-	periodStartDay(1)
+	adjustment(100)
 {
-	const tm timeinfo = toCalendarTime(periodStartYear, periodStartMonth, periodStartDay);
-	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
+	setPeriodStartDate(1970, 1, 1);
 }
 
 PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
-	days(other.days),
 	adjustment(other.adjustment),
+	days(other.days),
 	periodStartYear(other.periodStartYear),
 	periodStartMonth(other.periodStartMonth),
 	periodStartDay(other.periodStartDay),
 	elapsedDaysSinceEpochToPeriodStart(other.elapsedDaysSinceEpochToPeriodStart)
 {
+}
+
+PeriodicScheduler::PeriodicScheduler(unsigned adjustment, const std::vector<bool>& days, unsigned year, unsigned month, unsigned day) :
+	adjustment(adjustment)
+{
+	setPeriod(days.size());
+	copy(days.begin(), days.end(), this->days.begin());
+
+	setPeriodStartDate(year, month, day);
 }
 
 PeriodicScheduler::~PeriodicScheduler() {

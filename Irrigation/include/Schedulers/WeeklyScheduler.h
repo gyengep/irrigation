@@ -20,8 +20,8 @@ public:
 
 private:
 
-	std::array<bool, 7> days;
 	unsigned adjustment;
+	std::array<bool, 7> days;
 
 	void checkIndex(size_t day) const;
 
@@ -29,6 +29,7 @@ public:
 	WeeklyScheduler();
 	WeeklyScheduler(WeeklyScheduler&&) = default;
 	WeeklyScheduler(const WeeklyScheduler&);
+	WeeklyScheduler(unsigned adjustment, const std::array<bool, 7>& days);
 	virtual ~WeeklyScheduler();
 
 	WeeklyScheduler& operator= (WeeklyScheduler&&) = delete;

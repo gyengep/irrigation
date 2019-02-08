@@ -1,11 +1,11 @@
 #include <gmock/gmock.h>
 #include "Exceptions/Exceptions.h"
 #include "Logic/StartTime.h"
-#include "StartTimeSamples.h"
+#include "Dto2Object/StartTimeSamples.h"
 
 using namespace std;
 using namespace testing;
-using namespace LogicTest;
+using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -97,8 +97,8 @@ TEST(StartTimeTest, setValueMax) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToStartTimeDto(const StartTimeSample& startTimeSample) {
-	const shared_ptr<StartTime> startTime = startTimeSample.getStartTime();
-	const StartTimeDTO& expectedStartTimeDto = startTimeSample.getStartTimeDto();
+	const shared_ptr<StartTime> startTime = startTimeSample.getObject();
+	const StartTimeDTO& expectedStartTimeDto = startTimeSample.getDto();
 	EXPECT_THAT(startTime->toStartTimeDto(), Eq(expectedStartTimeDto));
 }
 
@@ -121,9 +121,9 @@ TEST(StartTimeTest, toStartTimeDto4) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromStartTimeDto(shared_ptr<StartTime> startTime, const StartTimeSample& startTimeSample) {
-	EXPECT_THAT(startTime, Not(Pointee(*startTimeSample.getStartTime())));
-	startTime->updateFromStartTimeDto(startTimeSample.getStartTimeDto());
-	EXPECT_THAT(startTime, Pointee(*startTimeSample.getStartTime()));
+	EXPECT_THAT(startTime, Not(Pointee(*startTimeSample.getObject())));
+	startTime->updateFromStartTimeDto(startTimeSample.getDto());
+	EXPECT_THAT(startTime, Pointee(*startTimeSample.getObject()));
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto1) {
@@ -132,36 +132,51 @@ TEST(StartTimeTest, updateFromStartTimeDto1) {
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto2) {
-	shared_ptr<StartTime> startTime = StartTimeSample1().getStartTime();
+	shared_ptr<StartTime> startTime = StartTimeSample1().getObject();
 	testUpdateFromStartTimeDto(startTime, StartTimeSample2());
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto3) {
-	shared_ptr<StartTime> startTime = StartTimeSample2().getStartTime();
+	shared_ptr<StartTime> startTime = StartTimeSample2().getObject();
 	testUpdateFromStartTimeDto(startTime, StartTimeSample3());
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto4) {
-	shared_ptr<StartTime> startTime = StartTimeSample3().getStartTime();
+	shared_ptr<StartTime> startTime = StartTimeSample3().getObject();
 	testUpdateFromStartTimeDto(startTime, StartTimeSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeTest, partialUpdateFromStartTimeDto_empty) {
-	StartTimeSample1 startTimeSample;
-	startTimeSample.getStartTime()->updateFromStartTimeDto(StartTimeDTO());
-	EXPECT_THAT(startTimeSample.getStartTime(), Pointee(*StartTimeSample1().getStartTime()));
+	StartTime actualStartTime(*StartTimeSample1().getObject());
+
+	actualStartTime.updateFromStartTimeDto(StartTimeDTO());
+	EXPECT_THAT(actualStartTime, Eq(StartTime(*StartTimeSample1().getObject())));
 }
 
 TEST(StartTimeTest, partialUpdateFromStartTimeDto_minutes) {
-	StartTimeSample2 startTimeSample;
-	startTimeSample.getStartTime()->updateFromStartTimeDto(StartTimeDTO().setMinutes(50));
-	EXPECT_THAT(startTimeSample.getStartTime(), Pointee(StartTime(0, 50)));
+	const unsigned minute1 = 20;
+	const unsigned minute2 = 30;
+
+	StartTime actualStartTime(*StartTimeSample2().getObject());
+
+	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setMinutes(minute1));
+	EXPECT_THAT(actualStartTime, Eq(StartTime(0, minute1)));
+
+	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setMinutes(minute2));
+	EXPECT_THAT(actualStartTime, Eq(StartTime(0, minute2)));
 }
 
 TEST(StartTimeTest, partialUpdateFromStartTimeDto_hours) {
-	StartTimeSample3 startTimeSample;
-	startTimeSample.getStartTime()->updateFromStartTimeDto(StartTimeDTO().setHours(20));
-	EXPECT_THAT(startTimeSample.getStartTime(), Pointee(StartTime(20, 0)));
+	const unsigned hour1 = 10;
+	const unsigned hour2 = 15;
+
+	StartTime actualStartTime(*StartTimeSample3().getObject());
+
+	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setHours(hour1));
+	EXPECT_THAT(actualStartTime, Eq(StartTime(hour1, 0)));
+
+	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setHours(hour2));
+	EXPECT_THAT(actualStartTime, Eq(StartTime(hour2, 0)));
 }
