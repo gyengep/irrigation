@@ -11,10 +11,7 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-PeriodicScheduler::PeriodicScheduler() :
-	adjustment(100)
-{
-	setPeriodStartDate(1970, 1, 1);
+PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(100, std::vector<bool>(), 1970, 1, 1) {
 }
 
 PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
@@ -31,7 +28,7 @@ PeriodicScheduler::PeriodicScheduler(unsigned adjustment, const std::vector<bool
 	adjustment(adjustment)
 {
 	setPeriod(days.size());
-	copy(days.begin(), days.end(), this->days.begin());
+	this->days = days;
 
 	setPeriodStartDate(year, month, day);
 }

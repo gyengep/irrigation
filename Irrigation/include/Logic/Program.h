@@ -16,7 +16,7 @@ class Program {
 public:
 	class Builder;
 
-private:
+protected:
 	std::string name;
 	SchedulerType schedulerType;
 	std::shared_ptr<PeriodicScheduler> periodicScheduler;
@@ -24,7 +24,6 @@ private:
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
 
-protected:
 	Program();
 	Program(const std::string& name, SchedulerType schedulerType,
 			std::shared_ptr<PeriodicScheduler> periodicScheduler,
@@ -43,25 +42,23 @@ public:
 	Program& operator= (const Program&) = delete;
 	bool operator== (const Program&) const;
 
-	virtual bool isScheduled(const std::tm& timeinfo) const;
-	virtual const Scheduler& getCurrentScheduler() const;
-
 	void setName(const std::string& name);
 	const std::string& getName() const;
 
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
 
-	const PeriodicScheduler& getPeriodicScheduler() const;
-	PeriodicScheduler& getPeriodicScheduler();
+	virtual bool isScheduled(const std::tm& timeinfo) const;
+	virtual const Scheduler& getCurrentScheduler() const;
 
-	const WeeklyScheduler& getWeeklyScheduler() const;
-	WeeklyScheduler& getWeeklyScheduler();
-
+	const PeriodicScheduler& getPeriodicScheduler() const { return *periodicScheduler; }
+	const WeeklyScheduler& getWeeklyScheduler() const { return *weeklyScheduler; }
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
-	RunTimeContainer& getRunTimes() { return *runTimes; }
-
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
+
+	PeriodicScheduler& getPeriodicScheduler() { return *periodicScheduler; }
+	WeeklyScheduler& getWeeklyScheduler() { return *weeklyScheduler; }
+	RunTimeContainer& getRunTimes() { return *runTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
 	ProgramDTO toProgramDto() const;

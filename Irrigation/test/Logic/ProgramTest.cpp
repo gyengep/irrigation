@@ -15,8 +15,8 @@ using namespace std;
 using namespace testing;
 using namespace Dto2ObjectTest;
 using ::testing::_;
-using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::AnyNumber;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -44,11 +44,18 @@ TEST(ProgramTest, setSchedulerType) {
 }
 
 TEST(ProgramTest, isScheduled1) {
-	NiceMock<MockProgram_Scheduler> program;
-	NiceMock<MockScheduler> scheduler;
+	MockProgram program;
+	MockScheduler scheduler;
 
-	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
-	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(false));
+	EXPECT_CALL(program, isScheduled(_)).
+			Times(AnyNumber()).
+			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
+	EXPECT_CALL(program, getCurrentScheduler()).
+			Times(4).
+			WillRepeatedly(ReturnRef(scheduler));
+	EXPECT_CALL(scheduler, isDayScheduled(_)).
+			Times(4).
+			WillRepeatedly(Return(false));
 
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
 	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
@@ -66,11 +73,18 @@ TEST(ProgramTest, isScheduled1) {
 }
 
 TEST(ProgramTest, isScheduled2) {
-	NiceMock<MockProgram_Scheduler> program;
-	NiceMock<MockScheduler> scheduler;
+	MockProgram program;
+	MockScheduler scheduler;
 
-	ON_CALL(program, getCurrentScheduler()).WillByDefault(ReturnRef(scheduler));
-	ON_CALL(scheduler, isDayScheduled(_)).WillByDefault(Return(true));
+	EXPECT_CALL(program, isScheduled(_)).
+			Times(AnyNumber()).
+			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
+	EXPECT_CALL(program, getCurrentScheduler()).
+			Times(4).
+			WillRepeatedly(ReturnRef(scheduler));
+	EXPECT_CALL(scheduler, isDayScheduled(_)).
+			Times(4).
+			WillRepeatedly(Return(true));
 
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
 	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));

@@ -3,12 +3,19 @@
 #include "Timer.h"
 #include "DocumentView/View.h"
 
+#ifndef FRIEND_TEST
+#define FRIEND_TEST(a, b)
+#endif
+
 class IrrigationDocument;
 class TimerViewTest;
 
 
 class TimerView : public View, public TimerCallback {
-	friend TimerViewTest;
+	FRIEND_TEST(TimerViewTest, notActiveNotScheduled);
+	FRIEND_TEST(TimerViewTest, notActiveScheduledFirst);
+	FRIEND_TEST(TimerViewTest, notActiveScheduledSecond);
+	FRIEND_TEST(TimerViewTest, active);
 
 	const std::chrono::seconds period;
 	const std::chrono::seconds maxTardiness;

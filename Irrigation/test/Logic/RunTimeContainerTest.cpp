@@ -38,20 +38,7 @@ TEST(RunTimeContainerTest, initializerConstructorWithWrongInitializer) {
 	EXPECT_THROW(RunTimeContainer({ 10, 11, 12, 13, 14 }), logic_error);
 	EXPECT_THROW(RunTimeContainer({ 10, 11, 12, 13, 14, 15, 16 }), logic_error);
 }
-/*
-TEST(RunTimeContainerTest, copyOperator) {
-	const RunTimeContainer source{ 10, 11, 12, 13, 14, 15 };
-	RunTimeContainer runTimes;
-	runTimes = source;
 
-	EXPECT_THAT(runTimes.at(0), Pointee(RunTime(10)));
-	EXPECT_THAT(runTimes.at(1), Pointee(RunTime(11)));
-	EXPECT_THAT(runTimes.at(2), Pointee(RunTime(12)));
-	EXPECT_THAT(runTimes.at(3), Pointee(RunTime(13)));
-	EXPECT_THAT(runTimes.at(4), Pointee(RunTime(14)));
-	EXPECT_THAT(runTimes.at(5), Pointee(RunTime(15)));
-}
-*/
 TEST(RunTimeContainerTest, equalsOperator) {
 	EXPECT_TRUE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 11, 12, 13, 14, 15 }));
 	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 20, 21, 22, 23, 24, 25 }));

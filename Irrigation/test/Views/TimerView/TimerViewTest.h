@@ -11,7 +11,6 @@
 class RunTimeContainer;
 
 
-
 class TimerViewTest : public ::testing::Test {
 protected:
 
@@ -22,14 +21,12 @@ protected:
 	static const RunTimeContainer runTimes1;
 	static const RunTimeContainer runTimes2;
 
-	std::unique_ptr<IrrigationDocument> document;
-	std::unique_ptr<TimerView> view;
+	std::shared_ptr<IrrigationDocument> document;
+	std::shared_ptr<TimerView> view;
 	std::shared_ptr<MockProgram> program1, program2;
-	std::unique_ptr<MockScheduler> scheduler1, scheduler2;
-	std::unique_ptr<MockWateringController> wateringController;
+	std::shared_ptr<MockScheduler> scheduler1, scheduler2;
+	std::shared_ptr<MockWateringController> wateringController;
 
 	virtual void SetUp();
     virtual void TearDown();
-
-    void executeTest();
 };

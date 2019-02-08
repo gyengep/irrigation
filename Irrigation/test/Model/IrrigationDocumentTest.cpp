@@ -175,9 +175,9 @@ TEST_F(IrrigationDocumentTest, updateFromDocumentDto4) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(IrrigationDocumentTest, partialUpdateFromDocumentDto_empty) {
-	const DocumentSample1 expected;
+	const DocumentSample3 expected;
 
-	DocumentSample1 actual;
+	DocumentSample3 actual;
 	actual.getObject()->updateFromDocumentDto(DocumentDTO());
 	EXPECT_THAT(actual.getObject()->getPrograms(), Eq(expected.getObject()->getPrograms()));
 }

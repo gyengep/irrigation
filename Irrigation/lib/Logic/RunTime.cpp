@@ -7,9 +7,7 @@
 using namespace std;
 
 
-RunTime::RunTime() :
-	RunTime(0)
-{
+RunTime::RunTime() : RunTime(0) {
 }
 
 RunTime::RunTime(unsigned seconds) :

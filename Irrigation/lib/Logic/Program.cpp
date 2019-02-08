@@ -96,22 +96,6 @@ bool Program::isScheduled(const tm& timeinfo) const {
 	return false;
 }
 
-const PeriodicScheduler& Program::getPeriodicScheduler() const {
-	return *periodicScheduler.get();
-}
-
-PeriodicScheduler& Program::getPeriodicScheduler() {
-	return *periodicScheduler.get();
-}
-
-const WeeklyScheduler& Program::getWeeklyScheduler() const {
-	return *weeklyScheduler.get();
-}
-
-WeeklyScheduler& Program::getWeeklyScheduler() {
-	return *weeklyScheduler.get();
-}
-
 ProgramDTO Program::toProgramDto() const {
 	return ProgramDTO(name, to_string(getSchedulerType()),
 			getPeriodicScheduler().toPeriodicSchedulerDto(),

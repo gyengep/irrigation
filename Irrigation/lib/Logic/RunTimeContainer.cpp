@@ -80,8 +80,10 @@ void RunTimeContainer::updateFromRunTimeDtoList(const std::list<RunTimeDTO>& run
 				"RunTimeDTO list must contains " + to_string(size()) + " elements");
 	}
 
-	for (size_t i = 0; i < container.size(); ++i) {
-		const RunTimeDTO& runTimeDto =*next(runTimeDtoList.begin(), i);
+	auto it = runTimeDtoList.begin();
+	for (size_t i = 0; i < container.size(); ++i, ++it) {
+		const RunTimeDTO& runTimeDto = *it;
+
 		if (runTimeDto.hasId()) {
 			if (runTimeDto.getId() != i) {
 				throw IllegalArgumentException(
@@ -89,7 +91,7 @@ void RunTimeContainer::updateFromRunTimeDtoList(const std::list<RunTimeDTO>& run
 			}
 		}
 
-		at(i)->updateFromRunTimeDto(runTimeDto);
+		container[i].second->updateFromRunTimeDto(runTimeDto);
 	}
 }
 

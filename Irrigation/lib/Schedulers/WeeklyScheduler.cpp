@@ -10,16 +10,10 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WeeklyScheduler::WeeklyScheduler() :
-	adjustment(100)
-{
-	days.fill(false);
+WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(100, array<bool, 7>({false, false, false, false, false, false, false})) {
 }
 
-WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) :
-	adjustment(other.adjustment),
-	days(other.days)
-{
+WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.adjustment, other.days) {
 }
 
 WeeklyScheduler::WeeklyScheduler(unsigned adjustment, const std::array<bool, 7>& days) :
