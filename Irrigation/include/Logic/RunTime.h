@@ -28,13 +28,3 @@ public:
 	friend std::string to_string(const RunTime& runTime);
 	friend std::ostream& operator<<(std::ostream& os, const RunTime& runTime);
 };
-
-///////////////////////////////////////////////////////////////////////////////
-
-class RunTimeFactory {
-public:
-	virtual ~RunTimeFactory() = default;
-	virtual std::shared_ptr<RunTime> createRunTime() const;
-};
-
-

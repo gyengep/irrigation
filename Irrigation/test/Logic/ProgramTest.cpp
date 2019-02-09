@@ -20,6 +20,17 @@ using ::testing::AnyNumber;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(ProgramTest, defaultConstructor) {
+	const Program program;
+
+	EXPECT_THAT(program.getName(), Eq(""));
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
+	EXPECT_THAT(program.getPeriodicScheduler(), Eq(PeriodicScheduler()));
+	EXPECT_THAT(program.getWeeklyScheduler(), Eq(WeeklyScheduler()));
+	EXPECT_THAT(program.getRunTimes(), Eq(RunTimeContainer()));
+	EXPECT_THAT(program.getStartTimes(), Eq(StartTimeContainer()));
+}
+
 TEST(ProgramTest, copyConstructor) {
 	const ProgramSample3 programSampe;
 
@@ -42,10 +53,10 @@ TEST(ProgramTest, copyConstructor) {
 TEST(ProgramTest, parametrizedConstructor) {
 	const string name("gcuuzg");
 	const SchedulerType schedulerType = SchedulerType::PERIODIC;
-	shared_ptr<PeriodicScheduler> periodicScheduler = PeriodicSchedulerSample4().getObject();
-	shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample3().getObject();
-	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getContainer();
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample1().getContainer();
+	const shared_ptr<PeriodicScheduler> periodicScheduler = PeriodicSchedulerSample4().getObject();
+	const shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample3().getObject();
+	const shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getContainer();
+	const shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample1().getContainer();
 
 	shared_ptr<Program> program = Program::Builder().
 			setName(name).
@@ -70,44 +81,44 @@ TEST(ProgramTest, parametrizedConstructor) {
 }
 
 TEST(ProgramTest, equalsOperator) {
-	auto program1 = Program::Builder().build();
-	auto program2 = Program::Builder().build();
+	Program program1;
+	Program program2;
 
-	EXPECT_TRUE(*program1 == *program2);
-	EXPECT_TRUE(*program2 == *program1);
+	EXPECT_TRUE(program1 == program2);
+	EXPECT_TRUE(program2 == program1);
 
 	{
 		const string name1("abcdefghijk");
 		const string name2("98765");
 
-		program1->setName(name1);
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
+		program1.setName(name1);
+		EXPECT_FALSE(program1 == program2);
+		EXPECT_FALSE(program2 == program1);
 
-		program2->setName(name2);
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
+		program2.setName(name2);
+		EXPECT_FALSE(program1 == program2);
+		EXPECT_FALSE(program2 == program1);
 
-		program1->setName(name2);
-		EXPECT_TRUE(*program1 == *program2);
-		EXPECT_TRUE(*program2 == *program1);
+		program1.setName(name2);
+		EXPECT_TRUE(program1 == program2);
+		EXPECT_TRUE(program2 == program1);
 	}
 
 	{
 		const SchedulerType schedulerType1 = SchedulerType::PERIODIC;
 		const SchedulerType schedulerType2 = SchedulerType::WEEKLY;
 
-		program1->setSchedulerType(schedulerType1);
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
+		program1.setSchedulerType(schedulerType1);
+		EXPECT_FALSE(program1 == program2);
+		EXPECT_FALSE(program2 == program1);
 
-		program2->setSchedulerType(schedulerType2);
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
+		program2.setSchedulerType(schedulerType2);
+		EXPECT_FALSE(program1 == program2);
+		EXPECT_FALSE(program2 == program1);
 
-		program1->setSchedulerType(schedulerType2);
-		EXPECT_TRUE(*program1 == *program2);
-		EXPECT_TRUE(*program2 == *program1);
+		program1.setSchedulerType(schedulerType2);
+		EXPECT_TRUE(program1 == program2);
+		EXPECT_TRUE(program2 == program1);
 	}
 
 	{
@@ -158,15 +169,15 @@ TEST(ProgramTest, equalsOperator) {
 TEST(ProgramTest, setName) {
 	const string name("AbcXyz");
 
-	auto program = Program::Builder().build();
-	program->setName(name);
-	EXPECT_THAT(program->getName(), Eq(name));
+	Program program;
+	program.setName(name);
+	EXPECT_THAT(program.getName(), Eq(name));
 }
 
 TEST(ProgramTest, setSchedulerType) {
-	auto program = Program::Builder().build();
-	program->setSchedulerType(SchedulerType::PERIODIC);
-	EXPECT_THAT(program->getSchedulerType(), Eq(SchedulerType::PERIODIC));
+	Program program;
+	program.setSchedulerType(SchedulerType::PERIODIC);
+	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::PERIODIC));
 }
 
 TEST(ProgramTest, isScheduled1) {

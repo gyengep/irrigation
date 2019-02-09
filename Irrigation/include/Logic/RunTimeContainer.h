@@ -49,3 +49,11 @@ public:
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
 	friend std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer);
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class RunTimeFactory {
+public:
+	virtual ~RunTimeFactory() = default;
+	virtual std::shared_ptr<RunTime> createRunTime() const;
+};

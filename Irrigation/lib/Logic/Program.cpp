@@ -12,37 +12,35 @@ using namespace std;
 
 
 Program::Program() :
-	name(),
-	schedulerType(SchedulerType::WEEKLY),
-	periodicScheduler(new PeriodicScheduler()),
-	weeklyScheduler(new WeeklyScheduler()),
-	runTimes(new RunTimeContainer()),
-	startTimes(new StartTimeContainer())
+	Program("", SchedulerType::WEEKLY,
+		shared_ptr<PeriodicScheduler>(new PeriodicScheduler()),
+		shared_ptr<WeeklyScheduler>(new WeeklyScheduler()),
+		shared_ptr<RunTimeContainer>(new RunTimeContainer()),
+		shared_ptr<StartTimeContainer>(new StartTimeContainer())
+	)
 {
 }
 
 Program::Program(const Program& other) :
-	name(other.getName()),
-	schedulerType(other.getSchedulerType()),
-	periodicScheduler(new PeriodicScheduler(other.getPeriodicScheduler())),
-	weeklyScheduler(new WeeklyScheduler(other.getWeeklyScheduler())),
-	runTimes(new RunTimeContainer(other.getRunTimes())),
-	startTimes(new StartTimeContainer(other.getStartTimes()))
+	Program(other.getName(), other.getSchedulerType(),
+		shared_ptr<PeriodicScheduler>(new PeriodicScheduler(other.getPeriodicScheduler())),
+		shared_ptr<WeeklyScheduler>(new WeeklyScheduler(other.getWeeklyScheduler())),
+		shared_ptr<RunTimeContainer>(new RunTimeContainer(other.getRunTimes())),
+		shared_ptr<StartTimeContainer>(new StartTimeContainer(other.getStartTimes()))
+	)
 {
 }
 
 Program::Program(const string& name, SchedulerType schedulerType,
-	shared_ptr<PeriodicScheduler> periodicScheduler,
-	shared_ptr<WeeklyScheduler> weeklyScheduler,
-	shared_ptr<RunTimeContainer> runTimes,
-	shared_ptr<StartTimeContainer> startTimes)
+	shared_ptr<PeriodicScheduler> periodicScheduler, shared_ptr<WeeklyScheduler> weeklyScheduler,
+	shared_ptr<RunTimeContainer> runTimes, shared_ptr<StartTimeContainer> startTimes) :
+	name(name),
+	schedulerType(schedulerType),
+	periodicScheduler(periodicScheduler),
+	weeklyScheduler(weeklyScheduler),
+	runTimes(runTimes),
+	startTimes(startTimes)
 {
-	this->name = name;
-	this->schedulerType = schedulerType;
-	this->periodicScheduler = periodicScheduler;
-	this->weeklyScheduler = weeklyScheduler;
-	this->runTimes = runTimes;
-	this->startTimes = startTimes;
 }
 
 Program::~Program() {

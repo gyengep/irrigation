@@ -24,17 +24,15 @@ protected:
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
 
-	Program();
-	Program(const std::string& name, SchedulerType schedulerType,
-			std::shared_ptr<PeriodicScheduler> periodicScheduler,
-			std::shared_ptr<WeeklyScheduler> weeklyScheduler,
-			std::shared_ptr<RunTimeContainer> runTimes,
-			std::shared_ptr<StartTimeContainer> startTimes
-			);
-
 public:
+	Program();
 	Program(Program&&) = default;
 	Program(const Program&);
+	Program(const std::string& name, SchedulerType schedulerType,
+		std::shared_ptr<PeriodicScheduler> periodicScheduler,
+		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
+		std::shared_ptr<RunTimeContainer> runTimes,
+		std::shared_ptr<StartTimeContainer> startTimes);
 
 	virtual ~Program();
 
