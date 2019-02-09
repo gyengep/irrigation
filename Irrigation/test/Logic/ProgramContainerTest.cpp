@@ -12,7 +12,7 @@ using namespace Dto2ObjectTest;
 
 TEST(ProgramContainerTest, defaultConstructor) {
 	ProgramContainer programs;
-	EXPECT_THAT(programs.begin(), programs.end());
+	EXPECT_THAT(programs.begin(), Eq(programs.end()));
 }
 
 TEST(ProgramContainerTest, initializerConstructor) {
@@ -21,10 +21,84 @@ TEST(ProgramContainerTest, initializerConstructor) {
 		{ 20, Program::Builder().build() },
 		{ 15, Program::Builder().build() },
 	};
-
 	ProgramContainer programs(initializer);
+
+	ASSERT_THAT(programs, SizeIs(initializer.size()));
+
 	for (size_t i = 0; i < initializer.size(); ++i) {
-		EXPECT_THAT(*next(programs.begin(), i), Eq(*next(initializer.begin(), i)));
+		EXPECT_THAT(next(programs.begin(), i)->first, Eq(next(initializer.begin(), i)->first));
+		EXPECT_THAT(next(programs.begin(), i)->second.get(), Eq(next(initializer.begin(), i)->second.get()));
+		EXPECT_THAT(next(programs.begin(), i)->second.get(), Pointee(*next(initializer.begin(), i)->second.get()));
+	}
+}
+
+TEST(ProgramContainerTest, copyConstructor) {
+	const ProgramContainer programs1({
+		{ 10, Program::Builder().build() },
+		{ 20, Program::Builder().build() },
+		{ 15, Program::Builder().build() },
+	});
+	const ProgramContainer programs2(programs1);
+
+	ASSERT_THAT(programs2, SizeIs(programs1.size()));
+
+	for (size_t i = 0; i < programs1.size(); ++i) {
+		EXPECT_THAT(next(programs2.begin(), i)->first, Eq(next(programs1.begin(), i)->first));
+		EXPECT_THAT(next(programs2.begin(), i)->second.get(), Ne(next(programs1.begin(), i)->second.get()));
+		EXPECT_THAT(next(programs2.begin(), i)->second.get(), Pointee(*next(programs1.begin(), i)->second.get()));
+	}
+}
+
+TEST(ProgramContainerTest, equalsOperator) {
+	const Program program1(*ProgramSample2().getObject());
+	const Program program2(*ProgramSample3().getObject());
+
+	{
+		ProgramContainer container1;
+		ProgramContainer container2;
+
+		EXPECT_TRUE(container1 == container2);
+		EXPECT_TRUE(container2 == container1);
+
+		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
+		EXPECT_FALSE(container1 == container2);
+		EXPECT_FALSE(container2 == container1);
+
+		container2.insert(1000, shared_ptr<Program>(new Program(program1)));
+		EXPECT_TRUE(container1 == container2);
+		EXPECT_TRUE(container2 == container1);
+	}
+
+	{
+		ProgramContainer container1;
+		ProgramContainer container2;
+
+		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
+		container2.insert(1001, shared_ptr<Program>(new Program(program1)));
+		EXPECT_FALSE(container1 == container2);
+		EXPECT_FALSE(container2 == container1);
+	}
+
+	{
+		ProgramContainer container1;
+		ProgramContainer container2;
+
+		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
+		container2.insert(1000, shared_ptr<Program>(new Program(program2)));
+		EXPECT_FALSE(container1 == container2);
+		EXPECT_FALSE(container2 == container1);
+	}
+
+	{
+		ProgramContainer container1;
+		ProgramContainer container2;
+
+		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
+		container1.insert(1001, shared_ptr<Program>(new Program(program2)));
+		container2.insert(1001, shared_ptr<Program>(new Program(program2)));
+		container2.insert(1000, shared_ptr<Program>(new Program(program1)));
+		EXPECT_FALSE(container1 == container2);
+		EXPECT_FALSE(container2 == container1);
 	}
 }
 

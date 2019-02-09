@@ -39,6 +39,75 @@ TEST(WeeklySchedulerTest, defaultConstructor) {
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::SUNDAY));
 }
 
+TEST(WeeklySchedulerTest, parametrizedConstructor) {
+	WeeklyScheduler scheduler(150, array<bool, 7>({true, false, true, true, false, false, false}));
+
+	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
+	EXPECT_TRUE(scheduler.isDayEnabled(0));
+	EXPECT_FALSE(scheduler.isDayEnabled(1));
+	EXPECT_TRUE(scheduler.isDayEnabled(2));
+	EXPECT_TRUE(scheduler.isDayEnabled(3));
+	EXPECT_FALSE(scheduler.isDayEnabled(4));
+	EXPECT_FALSE(scheduler.isDayEnabled(5));
+	EXPECT_FALSE(scheduler.isDayEnabled(6));
+}
+
+TEST(WeeklySchedulerTest, copyConstructor) {
+	WeeklyScheduler scheduler(WeeklyScheduler(150, array<bool, 7>({true, false, true, true, false, false, false})));
+
+	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
+	EXPECT_TRUE(scheduler.isDayEnabled(0));
+	EXPECT_FALSE(scheduler.isDayEnabled(1));
+	EXPECT_TRUE(scheduler.isDayEnabled(2));
+	EXPECT_TRUE(scheduler.isDayEnabled(3));
+	EXPECT_FALSE(scheduler.isDayEnabled(4));
+	EXPECT_FALSE(scheduler.isDayEnabled(5));
+	EXPECT_FALSE(scheduler.isDayEnabled(6));
+}
+
+TEST(WeeklySchedulerTest, equalsOperator) {
+	WeeklyScheduler scheduler1;
+	WeeklyScheduler scheduler2;
+
+	EXPECT_TRUE(scheduler1 == scheduler2);
+	EXPECT_TRUE(scheduler2 == scheduler1);
+
+	{
+		const unsigned adjustment1 = 80;
+		const unsigned adjustment2 = 110;
+
+		scheduler1.setAdjustment(adjustment1);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.setAdjustment(adjustment2);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.setAdjustment(adjustment2);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+
+	{
+		scheduler1.enableDay(1, true);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.enableDay(2, true);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.enableDay(1, false);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.enableDay(2, true);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+}
+
 TEST(WeeklySchedulerTest, setAdjustment) {
 	WeeklyScheduler scheduler;
 

@@ -177,85 +177,95 @@ TEST(PeriodicSchedulerDTOTest, getPeriodStartDay) {
 	EXPECT_THAT(schedulerDTO.getPeriodStartDay(), Eq(expectedPeriodStartDay));
 }
 
-TEST(PeriodicSchedulerDTOTest, equal) {
+TEST(PeriodicSchedulerDTOTest, equalsOperator) {
 	PeriodicSchedulerDTO schedulerDTO1;
 	PeriodicSchedulerDTO schedulerDTO2;
 
 	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
 	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
 
-	const list<bool> expectedValues1({ false, true });
-	const list<bool> expectedValues2({ false, true, true });
+	{
+		const list<bool> expectedValues1({ false, true });
+		const list<bool> expectedValues2({ false, true, true });
 
-	schedulerDTO1.setValues(list<bool>(expectedValues1));
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setValues(list<bool>(expectedValues1));
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setValues(list<bool>(expectedValues2));
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setValues(list<bool>(expectedValues2));
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setValues(list<bool>(expectedValues2));
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setValues(list<bool>(expectedValues2));
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 
-	const unsigned expectedAdjustment1 = 40;
-	const unsigned expectedAdjustment2 = 60;
+	{
+		const unsigned expectedAdjustment1 = 40;
+		const unsigned expectedAdjustment2 = 60;
 
-	schedulerDTO1.setAdjustment(expectedAdjustment1);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setAdjustment(expectedAdjustment1);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setAdjustment(expectedAdjustment2);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setAdjustment(expectedAdjustment2);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setAdjustment(expectedAdjustment2);
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setAdjustment(expectedAdjustment2);
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 
-	const unsigned expectedPeriodStartYear1 = 1900;
-	const unsigned expectedPeriodStartYear2 = 2000;
+	{
+		const unsigned expectedPeriodStartYear1 = 1900;
+		const unsigned expectedPeriodStartYear2 = 2000;
 
-	schedulerDTO1.setPeriodStartYear(expectedPeriodStartYear1);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setPeriodStartYear(expectedPeriodStartYear1);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setPeriodStartYear(expectedPeriodStartYear2);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setPeriodStartYear(expectedPeriodStartYear2);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setPeriodStartYear(expectedPeriodStartYear2);
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setPeriodStartYear(expectedPeriodStartYear2);
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 
-	const unsigned expectedPeriodStartMonth1 = 1900;
-	const unsigned expectedPeriodStartMonth2 = 2000;
+	{
+		const unsigned expectedPeriodStartMonth1 = 1900;
+		const unsigned expectedPeriodStartMonth2 = 2000;
 
-	schedulerDTO1.setPeriodStartMonth(expectedPeriodStartMonth1);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setPeriodStartMonth(expectedPeriodStartMonth1);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setPeriodStartMonth(expectedPeriodStartMonth2);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setPeriodStartMonth(expectedPeriodStartMonth2);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setPeriodStartMonth(expectedPeriodStartMonth2);
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setPeriodStartMonth(expectedPeriodStartMonth2);
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 
-	const unsigned expectedPeriodStartDay1 = 1900;
-	const unsigned expectedPeriodStartDay2 = 2000;
+	{
+		const unsigned expectedPeriodStartDay1 = 1900;
+		const unsigned expectedPeriodStartDay2 = 2000;
 
-	schedulerDTO1.setPeriodStartDay(expectedPeriodStartDay1);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setPeriodStartDay(expectedPeriodStartDay1);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setPeriodStartDay(expectedPeriodStartDay2);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setPeriodStartDay(expectedPeriodStartDay2);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setPeriodStartDay(expectedPeriodStartDay2);
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setPeriodStartDay(expectedPeriodStartDay2);
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 }

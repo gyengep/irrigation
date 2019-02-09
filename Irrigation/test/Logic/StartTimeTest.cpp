@@ -15,16 +15,16 @@ TEST(StartTimeTest, defaultConstructor) {
 	EXPECT_THAT(startTime.getMinutes(), Eq(0));
 }
 
-TEST(StartTimeTest, copyConstructor) {
-	StartTime startTime(StartTime(20, 10));
-	EXPECT_THAT(startTime.getHours(), Eq(20));
-	EXPECT_THAT(startTime.getMinutes(), Eq(10));
-}
-
 TEST(StartTimeTest, parametrizedConstructor) {
 	StartTime startTime(1, 30);
 	EXPECT_THAT(startTime.getHours(), Eq(1));
 	EXPECT_THAT(startTime.getMinutes(), Eq(30));
+}
+
+TEST(StartTimeTest, copyConstructor) {
+	StartTime startTime(StartTime(20, 10));
+	EXPECT_THAT(startTime.getHours(), Eq(20));
+	EXPECT_THAT(startTime.getMinutes(), Eq(10));
 }
 
 TEST(StartTimeTest, equalsOperator) {

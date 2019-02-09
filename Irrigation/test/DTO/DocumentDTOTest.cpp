@@ -73,7 +73,7 @@ TEST(DocumentDTOTest, getPrograms) {
 	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
 }
 
-TEST(DocumentDTOTest, equal) {
+TEST(DocumentDTOTest, equalsOperator) {
 	const list<ProgramDTO> expectedPrograms1({
 		ProgramDTO("abc", "sch1", PeriodicSchedulerDTO(), WeeklySchedulerDTO(), list<RunTimeDTO>({ RunTimeDTO() }), list<StartTimeDTO>())
 	});

@@ -14,14 +14,14 @@ TEST(RunTimeTest, defaultConstructor) {
 	EXPECT_THAT(runTime.getSeconds(), Eq(0));
 }
 
-TEST(RunTimeTest, copyConstructor) {
-	RunTime runTime(RunTime(20));
-	EXPECT_THAT(runTime.getSeconds(), Eq(20));
-}
-
 TEST(RunTimeTest, parametrizedConstructor) {
 	RunTime runTime(10);
 	EXPECT_THAT(runTime.getSeconds(), Eq(10));
+}
+
+TEST(RunTimeTest, copyConstructor) {
+	RunTime runTime(RunTime(20));
+	EXPECT_THAT(runTime.getSeconds(), Eq(20));
 }
 
 TEST(RunTimeTest, equalsOperator) {

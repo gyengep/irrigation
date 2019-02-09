@@ -9,7 +9,7 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-TEST(PeriodicSchedulerTest, constructor) {
+TEST(PeriodicSchedulerTest, defaultConstructor) {
 	PeriodicScheduler scheduler;
 
 	EXPECT_THAT(scheduler.getAdjustment(), 100);
@@ -17,6 +17,149 @@ TEST(PeriodicSchedulerTest, constructor) {
 	EXPECT_THAT(scheduler.getPeriodStartYear(), 1970);
 	EXPECT_THAT(scheduler.getPeriodStartMonth(), 1);
 	EXPECT_THAT(scheduler.getPeriodStartDay(), 1);
+}
+
+TEST(PeriodicSchedulerTest, parametrizedConstructor) {
+	PeriodicScheduler scheduler(150, vector<bool>({true, false, true}), 2011, 12, 13);
+
+	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
+	EXPECT_THAT(scheduler.getPeriod(), Eq(3));
+	EXPECT_TRUE(scheduler.isDayEnabled(0));
+	EXPECT_FALSE(scheduler.isDayEnabled(1));
+	EXPECT_TRUE(scheduler.isDayEnabled(2));
+	EXPECT_THAT(scheduler.getPeriodStartYear(), Eq(2011));
+	EXPECT_THAT(scheduler.getPeriodStartMonth(), Eq(12));
+	EXPECT_THAT(scheduler.getPeriodStartDay(), Eq(13));
+}
+
+TEST(PeriodicSchedulerTest, copyConstructor) {
+	PeriodicScheduler scheduler(PeriodicScheduler(150, vector<bool>({true, false, true}), 2011, 12, 13));
+
+	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
+	EXPECT_THAT(scheduler.getPeriod(), Eq(3));
+	EXPECT_TRUE(scheduler.isDayEnabled(0));
+	EXPECT_FALSE(scheduler.isDayEnabled(1));
+	EXPECT_TRUE(scheduler.isDayEnabled(2));
+	EXPECT_THAT(scheduler.getPeriodStartYear(), Eq(2011));
+	EXPECT_THAT(scheduler.getPeriodStartMonth(), Eq(12));
+	EXPECT_THAT(scheduler.getPeriodStartDay(), Eq(13));
+}
+
+TEST(PeriodicSchedulerTest, equalsOperator) {
+	PeriodicScheduler scheduler1;
+	PeriodicScheduler scheduler2;
+
+	EXPECT_TRUE(scheduler1 == scheduler2);
+	EXPECT_TRUE(scheduler2 == scheduler1);
+
+	{
+		const unsigned adjustment1 = 80;
+		const unsigned adjustment2 = 110;
+
+		scheduler1.setAdjustment(adjustment1);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.setAdjustment(adjustment2);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.setAdjustment(adjustment2);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+
+	{
+		const unsigned period1 = 2;
+		const unsigned period2 = 3;
+
+		scheduler1.setPeriod(period1);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.setPeriod(period2);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.setPeriod(period2);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+
+	{
+		scheduler1.enableDay(1, true);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.enableDay(2, true);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.enableDay(1, false);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.enableDay(2, true);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+
+	{
+		const unsigned year1 = 2010;
+		const unsigned year2 = 2020;
+		const unsigned month = 10;
+		const unsigned day = 20;
+
+		scheduler1.setPeriodStartDate(year1, month, day);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.setPeriodStartDate(year2, month, day);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.setPeriodStartDate(year2, month, day);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+
+	{
+		const unsigned year = 2010;
+		const unsigned month1 = 5;
+		const unsigned month2 = 6;
+		const unsigned day = 20;
+
+		scheduler1.setPeriodStartDate(year, month1, day);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.setPeriodStartDate(year, month2, day);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.setPeriodStartDate(year, month2, day);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
+
+	{
+		const unsigned year = 2010;
+		const unsigned month = 1;
+		const unsigned day1 = 16;
+		const unsigned day2 = 26;
+
+		scheduler1.setPeriodStartDate(year, month, day1);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler2.setPeriodStartDate(year, month, day2);
+		EXPECT_FALSE(scheduler1 == scheduler2);
+		EXPECT_FALSE(scheduler2 == scheduler1);
+
+		scheduler1.setPeriodStartDate(year, month, day2);
+		EXPECT_TRUE(scheduler1 == scheduler2);
+		EXPECT_TRUE(scheduler2 == scheduler1);
+	}
 }
 
 TEST(PeriodicSchedulerTest, setPeriod) {

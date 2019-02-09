@@ -24,14 +24,27 @@ TEST(RunTimeContainerTest, defaultConstructor) {
 }
 
 TEST(RunTimeContainerTest, initializerConstructor) {
-	const RunTimeContainer runTimes{ 10, 11, 12, 13, 14, 15 };
+	const initializer_list<RunTime> initializer { 10, 11, 12, 13, 14, 15 };
+	const RunTimeContainer runTimes(initializer);
 
-	EXPECT_THAT(runTimes.at(0), Pointee(RunTime(10)));
-	EXPECT_THAT(runTimes.at(1), Pointee(RunTime(11)));
-	EXPECT_THAT(runTimes.at(2), Pointee(RunTime(12)));
-	EXPECT_THAT(runTimes.at(3), Pointee(RunTime(13)));
-	EXPECT_THAT(runTimes.at(4), Pointee(RunTime(14)));
-	EXPECT_THAT(runTimes.at(5), Pointee(RunTime(15)));
+	ASSERT_THAT(runTimes, SizeIs(initializer.size()));
+
+	for (size_t i = 0; i < initializer.size(); ++i) {
+		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(i));
+		EXPECT_THAT(next(runTimes.begin(), i)->second.get(), Pointee(*next(initializer.begin(), i)));
+	}
+}
+
+TEST(RunTimeContainerTest, copyConstructor) {
+	const RunTimeContainer runTimes1({ 10, 11, 12, 13, 14, 15 });
+	const RunTimeContainer runTimes2(runTimes1);
+
+	ASSERT_THAT(runTimes2, SizeIs(runTimes1.size()));
+
+	for (size_t i = 0; i < runTimes1.size(); ++i) {
+		EXPECT_THAT(next(runTimes2.begin(), i)->first, Eq(i));
+		EXPECT_THAT(next(runTimes2.begin(), i)->second.get(), Pointee(*next(runTimes1.begin(), i)->second.get()));
+	}
 }
 
 TEST(RunTimeContainerTest, initializerConstructorWithWrongInitializer) {
