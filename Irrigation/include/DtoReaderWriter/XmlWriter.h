@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include <string>
 #include <memory>
 #include "DtoReaderWriter.h"
@@ -21,6 +22,9 @@ class XmlWriter : public DtoWriter {
 	void saveStartTime(pugi::xml_node* parent, const StartTimeDTO& startTime);
 	void savePeriodicScheduler(pugi::xml_node* parent, const PeriodicSchedulerDTO& scheduler);
 	void saveWeeklyScheduler(pugi::xml_node* parent, const WeeklySchedulerDTO& scheduler);
+	void saveProgramList(pugi::xml_node* parent, const std::list<ProgramDTO>& programs);
+	void saveRunTimeList(pugi::xml_node* parent, const std::list<RunTimeDTO>& runTimes);
+	void saveStartTimeList(pugi::xml_node* parent, const std::list<StartTimeDTO>& startTimes);
 
 public:
 	XmlWriter(bool humanReadable = true);
@@ -32,4 +36,7 @@ public:
 	virtual std::string save(const StartTimeDTO& startTime) override;
 	virtual std::string save(const PeriodicSchedulerDTO& scheduler) override;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) override;
+	virtual std::string save(const std::list<ProgramDTO>& programs) override;
+	virtual std::string save(const std::list<RunTimeDTO>& runTimes) override;
+	virtual std::string save(const std::list<StartTimeDTO>& startTimes) override;
 };

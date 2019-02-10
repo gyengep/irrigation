@@ -10,12 +10,12 @@ using namespace testing;
 
 void testRunTimeRead(const RunTimeSample& runTimeSample, XmlReader& reader) {
 	const RunTimeDTO actualDto = reader.loadRunTime(runTimeSample.first);
-	EXPECT_EQ(runTimeSample.second, actualDto);
+	EXPECT_THAT(actualDto, Eq(runTimeSample.second));
 }
 
 void testRunTimeWrite(const RunTimeSample& runTimeSample, XmlWriter& writer) {
 	const string actualXml = writer.save(runTimeSample.second);
-	EXPECT_EQ(runTimeSample.first, remove_xml_tag(actualXml));
+	EXPECT_THAT(remove_xml_tag(actualXml), Eq(runTimeSample.first));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

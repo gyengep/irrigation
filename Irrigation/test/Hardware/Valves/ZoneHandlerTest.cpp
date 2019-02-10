@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ValveConfig.h"
-#include "MockValve.h"
+#include "Mocks/MockValve.h"
 
 using namespace std;
 using ::testing::Sequence;

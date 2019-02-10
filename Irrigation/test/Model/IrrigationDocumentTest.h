@@ -8,7 +8,7 @@ class IrrigationDocument;
 class IrrigationDocumentTest : public ::testing::Test {
 protected:
 
-	std::unique_ptr<IrrigationDocument> document;
+	std::shared_ptr<IrrigationDocument> document;
 
     virtual void SetUp();
     virtual void TearDown();

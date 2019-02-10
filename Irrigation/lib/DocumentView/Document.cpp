@@ -19,7 +19,7 @@ Document::~Document() {
 	views.clear();
 }
 
-void Document::addView(std::unique_ptr<View>&& view) {
+void Document::addView(unique_ptr<View>&& view) {
 	lock_guard<mutex> lockView(mtx);
 
 	if (&view->getDocument() != this) {

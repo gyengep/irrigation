@@ -1,74 +1,111 @@
 #include "StartTimeContainer.h"
 #include "StartTime.h"
+#include <algorithm>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
-#include "Logger/Logger.h"
 
 using namespace std;
 
 
-StartTimeContainer::StartTimeContainer(std::initializer_list<StartTimeContainer::value_type> initializer) :
-	StartTimeContainer()
-{
+StartTimeContainer::StartTimeContainer(const StartTimeContainer& other) {
+	for (const auto& value : other.container) {
+		container.push_back(make_pair(value.first, shared_ptr<StartTime>(new StartTime(*value.second))));
+	}
+}
+
+StartTimeContainer::StartTimeContainer(initializer_list<StartTimeContainer::value_type> initializer) {
 	for (const auto& value : initializer) {
 		insert(value.first, value.second);
 	}
 }
 
-StartTimeContainer::container_type::const_iterator StartTimeContainer::find(const key_type& key) const {
-	for (auto it = container.begin(); it != container.end(); ++it) {
-		if (it->first == key) {
-			return it;
-		}
+bool StartTimeContainer::operator== (const StartTimeContainer& other) const {
+	if (container.size() != other.container.size()) {
+		return false;
 	}
 
-	throw NoSuchElementException("StartTime[" + to_string(key) + "] not found");
+	auto comp = [](const value_type& a, const value_type& b) {
+		return (a.first == b.first) && (a.second->operator ==(*b.second));
+	};
+
+	return equal(container.begin(), container.end(), other.container.begin(), comp);
 }
 
 const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) const {
-	return find(key)->second;
-}
+	auto it = find_if(container.begin(), container.end(), findKey(key));
 
-StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
-	for (auto& startTimeAndIdPair : container) {
-		if (startTimeAndIdPair.first == key) {
-			throw AlreadyExistException("StartTime[" + to_string(key) + "] is already exist");
-		}
+	if (container.end() == it) {
+		throw NoSuchElementException("StartTime[" + to_string(key) + "] not found");
 	}
 
-	container.push_back(make_pair(key, value));
-//	LOGGER.debug("StartTime[%s] added: %s",
-//		to_string(key).c_str(),
-//		to_string(*container.back().second.get()).c_str()
-//		);
-	return container.back();
+	return it->second;
 }
 
 void StartTimeContainer::erase(const key_type& key) {
-	container.erase(find(key));
-	LOGGER.debug("StartTime[%s] deleted", to_string(key).c_str());
+	auto it = find_if(container.begin(), container.end(), findKey(key));
+
+	if (container.end() == it) {
+		throw NoSuchElementException("StartTime[" + to_string(key) + "] not found");
+	}
+
+	container.erase(it);
+}
+
+StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
+	if (container.end() != find_if(container.begin(), container.end(), findKey(key))) {
+		throw AlreadyExistException("StartTime[" + to_string(key) + "] is already exist");
+	}
+
+	container.push_back(make_pair(key, value));
+	return container.back();
 }
 
 void StartTimeContainer::sort() {
-	container.sort(compareStartTime);
+	auto comp = [](const value_type& a, const value_type& b) {
+		return a.second->operator <(*b.second);
+	};
+
+	container.sort(comp);
 }
 
-bool StartTimeContainer::compareStartTime(const value_type& first, const value_type& second) {
-	StartTime& firstStartTime = *first.second;
-	StartTime& secondStartTime = *second.second;
+list<StartTimeDTO> StartTimeContainer::toStartTimeDtoList() const {
+	list<StartTimeDTO> startTimeDtoList;
+	for (const value_type& value : container) {
+		startTimeDtoList.push_back(value.second->toStartTimeDto().setId(value.first));
+	}
+	return startTimeDtoList;
+}
 
-	return (firstStartTime < secondStartTime);
+void StartTimeContainer::updateFromStartTimeDtoList(const list<StartTimeDTO>& startTimeDtoList) {
+	container.clear();
+	for (const StartTimeDTO& startTimeDTO : startTimeDtoList) {
+		unique_ptr<IdType> id;
+		if (startTimeDTO.hasId()) {
+			id.reset(new IdType(startTimeDTO.getId()));
+		} else {
+			id.reset(new IdType());
+		}
+
+		shared_ptr<StartTime> startTime(new StartTime());
+		startTime->updateFromStartTimeDto(startTimeDTO);
+		insert(IdType(*id), startTime);
+	}
 }
 
 string to_string(const StartTimeContainer& startTimeContainer) {
-	ostringstream o;
-	o << "[";
+	ostringstream oss;
+	oss << startTimeContainer;
+	return oss.str();
+}
+
+ostream& operator<<(ostream& os, const StartTimeContainer& startTimeContainer) {
+	os << "[";
 	for (auto it = startTimeContainer.begin(); it != startTimeContainer.end(); ++it) {
 		if (it != startTimeContainer.begin()) {
-			o << ", ";
+			os << ", ";
 		}
-		o << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
+		os << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
 	}
-	o << "]";
-	return o.str();
+	os << "]";
+	return os;
 }

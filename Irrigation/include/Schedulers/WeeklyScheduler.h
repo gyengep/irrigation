@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <array>
 #include "DTO/WeeklySchedulerDTO.h"
 #include "Schedulers/Scheduler.h"
 
@@ -19,17 +19,22 @@ public:
 	};
 
 private:
-	static const unsigned DAY_COUNT = 7;
-	typedef std::vector<bool> DayArray;
 
-	DayArray days;
 	unsigned adjustment;
+	std::array<bool, 7> days;
 
 	void checkIndex(size_t day) const;
 
 public:
 	WeeklyScheduler();
+	WeeklyScheduler(WeeklyScheduler&&) = default;
+	WeeklyScheduler(const WeeklyScheduler&);
+	WeeklyScheduler(unsigned adjustment, const std::array<bool, 7>& days);
 	virtual ~WeeklyScheduler();
+
+	WeeklyScheduler& operator= (WeeklyScheduler&&) = delete;
+	WeeklyScheduler& operator= (const WeeklyScheduler&) = delete;
+	bool operator== (const WeeklyScheduler& other) const;
 
 	void setAdjustment(unsigned adjustment);
 	void enableDay(size_t day, bool enable);
@@ -38,8 +43,9 @@ public:
 	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
 	virtual unsigned getAdjustment() const override;
 
-	WeeklySchedulerDTO getWeeklySchedulerDTO() const;
-	void updateFromDTO(const WeeklySchedulerDTO& schedulerDTO);
+	WeeklySchedulerDTO toWeeklySchedulerDto() const;
+	void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO);
 
 	friend std::string to_string(const WeeklyScheduler& weeklyScheduler);
+	friend std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler);
 };

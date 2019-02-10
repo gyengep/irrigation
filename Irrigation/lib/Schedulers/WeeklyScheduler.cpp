@@ -1,4 +1,5 @@
 #include "WeeklyScheduler.h"
+#include <algorithm>
 #include <ctime>
 #include <list>
 #include <sstream>
@@ -9,19 +10,24 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<WeeklyScheduler> SchedulerFactory::createWeeklyScheduler() const {
-	return unique_ptr<WeeklyScheduler>(new WeeklyScheduler());
+WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(100, array<bool, 7>({false, false, false, false, false, false, false})) {
 }
 
-///////////////////////////////////////////////////////////////////////////////
+WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.adjustment, other.days) {
+}
 
-WeeklyScheduler::WeeklyScheduler() :
-	days(DAY_COUNT, false),
-	adjustment(100)
+WeeklyScheduler::WeeklyScheduler(unsigned adjustment, const array<bool, 7>& days) :
+	adjustment(adjustment),
+	days(days)
 {
 }
 
 WeeklyScheduler::~WeeklyScheduler() {
+}
+
+bool WeeklyScheduler::operator== (const WeeklyScheduler& other) const {
+	return (adjustment == other.adjustment &&
+			days == other.days);
 }
 
 void WeeklyScheduler::checkIndex(size_t day) const {
@@ -56,11 +62,11 @@ bool WeeklyScheduler::isDayScheduled(const tm& timeinfo) const {
 	return days[(weekDay + 6) % 7];
 }
 
-WeeklySchedulerDTO WeeklyScheduler::getWeeklySchedulerDTO() const {
+WeeklySchedulerDTO WeeklyScheduler::toWeeklySchedulerDto() const {
 	return WeeklySchedulerDTO(adjustment, list<bool>(days.begin(), days.end()));
 }
 
-void WeeklyScheduler::updateFromDTO(const WeeklySchedulerDTO& schedulerDTO) {
+void WeeklyScheduler::updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) {
 	if (schedulerDTO.hasAdjustment()) {
 		setAdjustment(schedulerDTO.getAdjustment());
 	}
@@ -71,18 +77,20 @@ void WeeklyScheduler::updateFromDTO(const WeeklySchedulerDTO& schedulerDTO) {
 					"\"days\" have to be exist");
 		}
 
-		for (size_t i = 0; i < schedulerDTO.getValues().size(); ++i) {
-			auto it = next(schedulerDTO.getValues().begin(), i);
-			days[i] = *it;
-		}
+		copy(schedulerDTO.getValues().begin(), schedulerDTO.getValues().end(), days.begin());
 	}
 }
 
 string to_string(const WeeklyScheduler& weeklyScheduler) {
-	ostringstream o;
-	o << "WeeklyScheduler{";
-	o << "adjustment=" << weeklyScheduler.getAdjustment() << "%, ";
-	o << "values=" << to_string(weeklyScheduler.days.begin(), weeklyScheduler.days.end());
-	o << "}";
-	return o.str();
+	ostringstream oss;
+	oss << weeklyScheduler;
+	return oss.str();
+}
+
+ostream& operator<<(ostream& os, const WeeklyScheduler& weeklyScheduler) {
+	os << "WeeklyScheduler{";
+	os << "adjustment=" << weeklyScheduler.getAdjustment() << "%, ";
+	os << "values=" << to_string(weeklyScheduler.days.begin(), weeklyScheduler.days.end());
+	os << "}";
+	return os;
 }

@@ -113,55 +113,61 @@ TEST(RunTimeDTOTest, getSeconds) {
 	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
 }
 
-TEST(RunTimeDTOTest, equal) {
+TEST(RunTimeDTOTest, equalsOperator) {
 	RunTimeDTO runTimeDTO1;
 	RunTimeDTO runTimeDTO2;
 
 	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
 	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
 
-	const unsigned expectedId1 = 100;
-	const unsigned expectedId2 = 200;
+	{
+		const unsigned expectedId1 = 100;
+		const unsigned expectedId2 = 200;
 
-	runTimeDTO1.setId(expectedId1);
-	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO1.setId(expectedId1);
+		EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO2.setId(expectedId2);
-	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO2.setId(expectedId2);
+		EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setId(expectedId2);
-	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO1.setId(expectedId2);
+		EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+	}
 
-	const unsigned expectedMinutes1= 5;
-	const unsigned expectedMinutes2= 4;
+	{
+		const unsigned expectedMinutes1= 5;
+		const unsigned expectedMinutes2= 4;
 
-	runTimeDTO1.setMinutes(expectedMinutes1);
-	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO1.setMinutes(expectedMinutes1);
+		EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO2.setMinutes(expectedMinutes2);
-	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO2.setMinutes(expectedMinutes2);
+		EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setMinutes(expectedMinutes2);
-	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO1.setMinutes(expectedMinutes2);
+		EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+	}
 
-	const unsigned expectedSeconds1= 30;
-	const unsigned expectedSeconds2= 25;
+	{
+		const unsigned expectedSeconds1= 30;
+		const unsigned expectedSeconds2= 25;
 
-	runTimeDTO1.setSeconds(expectedSeconds1);
-	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO1.setSeconds(expectedSeconds1);
+		EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO2.setSeconds(expectedSeconds2);
-	EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO2.setSeconds(expectedSeconds2);
+		EXPECT_FALSE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_FALSE(runTimeDTO2 == runTimeDTO1);
 
-	runTimeDTO1.setSeconds(expectedSeconds2);
-	EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
-	EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+		runTimeDTO1.setSeconds(expectedSeconds2);
+		EXPECT_TRUE(runTimeDTO1 == runTimeDTO2);
+		EXPECT_TRUE(runTimeDTO2 == runTimeDTO1);
+	}
 }

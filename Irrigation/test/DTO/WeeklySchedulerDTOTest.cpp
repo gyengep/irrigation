@@ -87,40 +87,44 @@ TEST(WeeklySchedulerDTOTest, getValues) {
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 }
 
-TEST(WeeklySchedulerDTOTest, equal) {
+TEST(WeeklySchedulerDTOTest, equalsOperator) {
 	WeeklySchedulerDTO schedulerDTO1;
 	WeeklySchedulerDTO schedulerDTO2;
 
 	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
 	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
 
-	const list<bool> expectedValues1({ false, true });
-	const list<bool> expectedValues2({ false, true, true });
+	{
+		const list<bool> expectedValues1({ false, true });
+		const list<bool> expectedValues2({ false, true, true });
 
-	schedulerDTO1.setValues(list<bool>(expectedValues1));
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setValues(list<bool>(expectedValues1));
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setValues(list<bool>(expectedValues2));
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setValues(list<bool>(expectedValues2));
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setValues(list<bool>(expectedValues2));
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setValues(list<bool>(expectedValues2));
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 
-	const unsigned expectedAdjustment1 = 40;
-	const unsigned expectedAdjustment2 = 60;
+	{
+		const unsigned expectedAdjustment1 = 40;
+		const unsigned expectedAdjustment2 = 60;
 
-	schedulerDTO1.setAdjustment(expectedAdjustment1);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setAdjustment(expectedAdjustment1);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO2.setAdjustment(expectedAdjustment2);
-	EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO2.setAdjustment(expectedAdjustment2);
+		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
-	schedulerDTO1.setAdjustment(expectedAdjustment2);
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+		schedulerDTO1.setAdjustment(expectedAdjustment2);
+		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
+		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	}
 }

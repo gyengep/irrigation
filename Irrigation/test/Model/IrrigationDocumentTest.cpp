@@ -15,12 +15,14 @@
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include "Schedulers/WeeklyScheduler.h"
-#include "MockDtoReader.h"
-#include "MockFileReader.h"
-#include "MockProgram.h"
+#include "Mocks/MockDtoReader.h"
+#include "Mocks/MockFileReader.h"
+#include "Mocks/MockProgram.h"
+#include "Dto2Object/DocumentSamples.h"
 
 using namespace std;
 using namespace testing;
+using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -92,15 +94,6 @@ TEST_F(IrrigationDocumentTest, lockUnlock) {
 	lockAndUnlockThread.join();
 }
 
-TEST_F(IrrigationDocumentTest, convertDocumentDTO) {
-	document->updateFromDTO(expectedDocumentDTO);
-
-	EXPECT_THAT(document->getPrograms().size(), Eq(2));
-	EXPECT_THAT(document->getPrograms().at(15)->getProgramDTO().setId(15), *next(expectedDocumentDTO.getPrograms().begin(), 0));
-	EXPECT_THAT(document->getPrograms().at(25)->getProgramDTO().setId(25), *next(expectedDocumentDTO.getPrograms().begin(), 1));
-	EXPECT_THAT(document->getDocumentDTO(), Eq(expectedDocumentDTO));
-}
-
 TEST_F(IrrigationDocumentTest, loadInvalidFile) {
 	EXPECT_THROW(document->load(tmpnam(nullptr)), FileNotFoundException);
 }
@@ -126,5 +119,65 @@ TEST_F(IrrigationDocumentTest, load) {
 			.build();
 
 	EXPECT_NO_THROW(document->load(fileName));
-	EXPECT_THAT(document->getDocumentDTO(), Eq(expectedDocumentDTO));
+	EXPECT_THAT(document->toDocumentDto(), Eq(expectedDocumentDTO));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void testToDocumentDto(const DocumentSample& documentSample) {
+	EXPECT_THAT(documentSample.getObject()->toDocumentDto(), Eq(documentSample.getDto()));
+}
+
+TEST_F(IrrigationDocumentTest, toDocumentDto1) {
+	testToDocumentDto(DocumentSample1());
+}
+
+TEST_F(IrrigationDocumentTest, toDocumentDto2) {
+	testToDocumentDto(DocumentSample2());
+}
+
+TEST_F(IrrigationDocumentTest, toDocumentDto3) {
+	testToDocumentDto(DocumentSample3());
+}
+
+TEST_F(IrrigationDocumentTest, toDocumentDto4) {
+	testToDocumentDto(DocumentSample4());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void testUpdateFromDocumentDto(shared_ptr<IrrigationDocument> document, const DocumentSample& documentSample) {
+	EXPECT_THAT(document->getPrograms(), Not(documentSample.getObject()->getPrograms()));
+	document->updateFromDocumentDto(documentSample.getDto());
+	EXPECT_THAT(document->getPrograms(), documentSample.getObject()->getPrograms());
+}
+
+TEST_F(IrrigationDocumentTest, updateFromDocumentDto1) {
+	shared_ptr<IrrigationDocument> document = DocumentSample4().getObject();
+	testUpdateFromDocumentDto(document, DocumentSample1());
+}
+
+TEST_F(IrrigationDocumentTest, updateFromDocumentDto2) {
+	shared_ptr<IrrigationDocument> document = DocumentSample1().getObject();
+	testUpdateFromDocumentDto(document, DocumentSample2());
+}
+
+TEST_F(IrrigationDocumentTest, updateFromDocumentDto3) {
+	shared_ptr<IrrigationDocument> document = DocumentSample2().getObject();
+	testUpdateFromDocumentDto(document, DocumentSample3());
+}
+
+TEST_F(IrrigationDocumentTest, updateFromDocumentDto4) {
+	shared_ptr<IrrigationDocument> document = IrrigationDocument::Builder().build();
+	testUpdateFromDocumentDto(document, DocumentSample4());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(IrrigationDocumentTest, partialUpdateFromDocumentDto_empty) {
+	const DocumentSample3 expected;
+
+	DocumentSample3 actual;
+	actual.getObject()->updateFromDocumentDto(DocumentDTO());
+	EXPECT_THAT(actual.getObject()->getPrograms(), Eq(expected.getObject()->getPrograms()));
 }

@@ -1,8 +1,10 @@
 #pragma once
 #include <cstddef>
+#include <list>
 #include <memory>
 #include <vector>
 #include "IdType.h"
+#include "DTO/RunTimeDTO.h"
 
 class RunTime;
 class RunTimeFactory;
@@ -23,7 +25,7 @@ private:
 
 public:
 	RunTimeContainer();
-	RunTimeContainer(RunTimeContainer&&) = delete;
+	RunTimeContainer(RunTimeContainer&&) = default;
 	RunTimeContainer(const RunTimeContainer& other);
 	RunTimeContainer(std::initializer_list<RunTime> initializer);
 	virtual ~RunTimeContainer() = default;
@@ -32,7 +34,7 @@ public:
 	RunTimeContainer(std::unique_ptr<RunTimeFactory> runTimeFactory);
 
 	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
-	RunTimeContainer& operator= (const RunTimeContainer& other);
+	RunTimeContainer& operator= (const RunTimeContainer& other) = delete;
 	bool operator== (const RunTimeContainer& other) const;
 
 	const_iterator begin() const 		{ return container.begin(); }
@@ -41,5 +43,17 @@ public:
 
 	const mapped_type& at(const key_type& key) const;
 
+	std::list<RunTimeDTO> toRunTimeDtoList() const;
+	void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
+
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
+	friend std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class RunTimeFactory {
+public:
+	virtual ~RunTimeFactory() = default;
+	virtual std::shared_ptr<RunTime> createRunTime() const;
 };

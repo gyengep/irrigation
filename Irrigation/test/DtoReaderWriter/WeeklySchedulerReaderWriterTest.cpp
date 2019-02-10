@@ -10,12 +10,12 @@ using namespace testing;
 
 void testWeeklySchedulerRead(const WeeklySchedulerSample& weeklySchedulerSample, XmlReader& reader) {
 	const WeeklySchedulerDTO actualDto = reader.loadWeeklyScheduler(weeklySchedulerSample.first);
-	EXPECT_EQ(weeklySchedulerSample.second, actualDto);
+	EXPECT_THAT(actualDto, Eq(weeklySchedulerSample.second));
 }
 
 void testWeeklySchedulerWrite(const WeeklySchedulerSample& weeklySchedulerSample, XmlWriter& writer) {
 	const string actualXml = writer.save(weeklySchedulerSample.second);
-	EXPECT_EQ(weeklySchedulerSample.first, remove_xml_tag(actualXml));
+	EXPECT_THAT(remove_xml_tag(actualXml), Eq(weeklySchedulerSample.first));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

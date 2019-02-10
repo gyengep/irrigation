@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include <memory>
 #include <string>
 
@@ -19,6 +20,9 @@ public:
 	virtual StartTimeDTO loadStartTime(const std::string& text) const = 0;
 	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const = 0;
 	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const = 0;
+	virtual std::list<ProgramDTO> loadProgramList(const std::string& text) const = 0;
+	virtual std::list<RunTimeDTO> loadRunTimeList(const std::string& text) const = 0;
+	virtual std::list<StartTimeDTO> loadStartTimeList(const std::string& text) const = 0;
 };
 
 
@@ -31,6 +35,9 @@ public:
 	virtual std::string save(const StartTimeDTO& startTime) = 0;
 	virtual std::string save(const PeriodicSchedulerDTO& scheduler) = 0;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) = 0;
+	virtual std::string save(const std::list<ProgramDTO>& programs) = 0;
+	virtual std::string save(const std::list<RunTimeDTO>& runTimes) = 0;
+	virtual std::string save(const std::list<StartTimeDTO>& startTimes) = 0;
 };
 
 

@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include "IdType.h"
+#include "DTO/StartTimeDTO.h"
 
 class StartTime;
 
@@ -18,20 +19,28 @@ public:
 
 private:
 
-	container_type container;
+	struct findKey {
+		const key_type& key;
 
-	container_type::const_iterator find(const key_type& key) const;
-	static bool compareStartTime(const value_type& first, const value_type& second);
+		findKey(const key_type& key) : key(key) {}
+
+		bool operator() (const value_type& a) {
+			return (a.first == key);
+		}
+	};
+
+	container_type container;
 
 public:
 	StartTimeContainer() = default;
-	StartTimeContainer(StartTimeContainer&&) = delete;
-	StartTimeContainer(const StartTimeContainer&) = delete;
+	StartTimeContainer(StartTimeContainer&&) = default;
+	StartTimeContainer(const StartTimeContainer& other);
 	StartTimeContainer(std::initializer_list<value_type> initializer);
 	virtual ~StartTimeContainer() = default;
 
 	StartTimeContainer& operator= (StartTimeContainer&&) = delete;
 	StartTimeContainer& operator= (const StartTimeContainer&) = delete;
+	bool operator== (const StartTimeContainer& other) const;
 
 	virtual value_type& insert(const key_type& key, const mapped_type& value);
 	virtual void erase(const key_type& key);
@@ -43,5 +52,9 @@ public:
 
 	const mapped_type& at(const key_type& key) const;
 
+	std::list<StartTimeDTO> toStartTimeDtoList() const;
+	void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList);
+
 	friend std::string to_string(const StartTimeContainer& startTimeContainer);
+	friend std::ostream& operator<<(std::ostream& os, const StartTimeContainer& startTimeContainer);
 };
