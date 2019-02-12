@@ -70,20 +70,20 @@ Logger::Logger() :
 Logger::~Logger() {
 }
 
-void Logger::setOutput(ostream* o) {
+void Logger::setOutputStream(shared_ptr<ostream> o) {
 	lock_guard<mutex> lock(mtx);
-	output.reset(o);
+	output = o;
 }
 
 void Logger::setFileName(string fileName) {
-	unique_ptr<ofstream> ofs(new ofstream());
+	shared_ptr<ofstream> ofs(new ofstream());
 	ofs->open(fileName, ofstream::out | ofstream::app);
 
 	if (ofs->fail()) {
 		throw IOException(errno);
 	}
 
-	setOutput(ofs.release());
+	setOutputStream(ofs);
 }
 
 void Logger::setLevel(LogLevel logLevel) {

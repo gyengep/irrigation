@@ -59,9 +59,9 @@ static void logExceptionsOnAllLevels() {
 
 
 TEST(LoggerTest, logTextOff) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::OFF);
 
 	logEntriesOnAllLevels();
@@ -74,9 +74,9 @@ TEST(LoggerTest, logTextOff) {
 }
 
 TEST(LoggerTest, logExceptionOff) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::OFF);
 
 	logExceptionsOnAllLevels();
@@ -99,9 +99,9 @@ TEST(LoggerTest, logExceptionOff) {
 }
 
 TEST(LoggerTest, logTextError) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::ERROR);
 
 	logEntriesOnAllLevels();
@@ -114,9 +114,9 @@ TEST(LoggerTest, logTextError) {
 }
 
 TEST(LoggerTest, logExceptionError) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::ERROR);
 
 	logExceptionsOnAllLevels();
@@ -139,9 +139,9 @@ TEST(LoggerTest, logExceptionError) {
 }
 
 TEST(LoggerTest, logTextWarning) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::WARNING);
 
 	logEntriesOnAllLevels();
@@ -154,9 +154,9 @@ TEST(LoggerTest, logTextWarning) {
 }
 
 TEST(LoggerTest, logExceptionWarning) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::WARNING);
 
 	logExceptionsOnAllLevels();
@@ -179,9 +179,9 @@ TEST(LoggerTest, logExceptionWarning) {
 }
 
 TEST(LoggerTest, logTextInfo) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::INFO);
 
 	logEntriesOnAllLevels();
@@ -194,9 +194,9 @@ TEST(LoggerTest, logTextInfo) {
 }
 
 TEST(LoggerTest, logExceptionInfo) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::INFO);
 
 	logExceptionsOnAllLevels();
@@ -219,10 +219,9 @@ TEST(LoggerTest, logExceptionInfo) {
 }
 
 TEST(LoggerTest, logTextDebug) {
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	ostringstream* o = new ostringstream;
-
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::DEBUG);
 
 	logEntriesOnAllLevels();
@@ -235,9 +234,9 @@ TEST(LoggerTest, logTextDebug) {
 }
 
 TEST(LoggerTest, logExceptionDebug) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::DEBUG);
 
 	logExceptionsOnAllLevels();
@@ -260,10 +259,9 @@ TEST(LoggerTest, logExceptionDebug) {
 }
 
 TEST(LoggerTest, logTextTrace) {
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	ostringstream* o = new ostringstream;
-
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::TRACE);
 
 	logEntriesOnAllLevels();
@@ -276,9 +274,9 @@ TEST(LoggerTest, logTextTrace) {
 }
 
 TEST(LoggerTest, logExceptionTrace) {
-	ostringstream* o = new ostringstream;
+	shared_ptr<ostringstream> o(new ostringstream);
 
-	LOGGER.setOutput(o);
+	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::TRACE);
 
 	logExceptionsOnAllLevels();

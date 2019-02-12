@@ -27,7 +27,7 @@ std::string to_string(LogLevel logLevel);
 class Logger {
 	mutable std::mutex mtx;
 	std::atomic<LogLevel> logLevel;
-	std::unique_ptr<std::ostream> output;
+	std::shared_ptr<std::ostream> output;
 
 	Logger();
 
@@ -41,7 +41,7 @@ public:
 
 	LogLevel getLevel() const { return logLevel; }
 	void setLevel(LogLevel logLevel);
-	void setOutput(std::ostream* output);
+	void setOutputStream(std::shared_ptr<std::ostream> output);
 	void setFileName(std::string fileName);
 	bool isLoggable(LogLevel logLevel) const;
 
