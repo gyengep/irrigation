@@ -14,88 +14,22 @@
 using namespace std;
 
 
-std::mutex WebServer::mtx;
-std::map<void*, WebServer*> WebServer::webServers;
-
-
-WebServer* WebServer::getWebserver(void *cls) {
-	lock_guard<mutex> lock(mtx);
-
-	auto it = webServers.find(cls);
-	if (webServers.end() == it) {
-		return NULL;
-	}
-	return it->second;
-}
-
-bool WebServer::addWebserver(WebServer* webServer) {
-	lock_guard<mutex> lock(mtx);
-
-	auto it = webServers.find(webServer);
-	if (webServers.end() != it) {
-		return false;
-	}
-
-	webServers.insert(make_pair(webServer, webServer));
-	return true;
-}
-
-bool WebServer::deleteWebserver(void *cls) {
-	lock_guard<mutex> lock(mtx);
-
-	auto it = webServers.find(cls);
-	if (webServers.end() == it) {
-		return false;
-	}
-
-	webServers.erase(it);
-	return true;
-}
-
 void WebServer::MHD_PanicCallback(void *cls, const char *file, unsigned int line, const char *reason) {
-	WebServer* webServer = getWebserver(cls);
+	static_cast<WebServer*>(cls)->panicCallback(file, line, reason);
+}
 
-	if (NULL == webServer) 	{
-		logic_error("WebServer::MHD_PanicCallback() webserver doesn't exist");
-	}
-
-	return webServer->panicCallback(file, line, reason);
+int WebServer::MHD_AccessHandlerCallback(void *cls, struct MHD_Connection *connection,
+		const char *url, const char *method, const char *version,
+		const char *upload_data, size_t *upload_data_size, void **con_cls) {
+	return static_cast<WebServer*>(cls)->accessHandlerCallback(connection,
+			url, method, version, upload_data, upload_data_size, con_cls);
 }
 
 void WebServer::MHD_RequestCompletedCallback(void *cls, struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe) {
-	WebServer* webServer = getWebserver(cls);
-
-	if (NULL == webServer) 	{
-		logic_error("WebServer::MHD_RequestCompletedCallback() webserver doesn't exist");
-	}
-
-	return webServer->requestCompletedCallback(connection, con_cls, toe);
-}
-
-int WebServer::MHD_AccessHandlerCallback(
-		void *cls,
-		struct MHD_Connection* connection,
-		const char* url,
-		const char* method,
-		const char* version,
-		const char* upload_data,
-		size_t* upload_data_size,
-		void** con_cls) {
-
-	WebServer* webServer = getWebserver(cls);
-
-	if (NULL == webServer) 	{
-		logic_error("WebServer::MHD_PanicCallback() webserver doesn't exist");
-	}
-
-	return webServer->accessHandlerCallback(connection,
-			url, method, version,
-			upload_data, upload_data_size,
-			con_cls);
+	static_cast<WebServer*>(cls)->requestCompletedCallback(connection, con_cls, toe);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 WebServer::WebServer(shared_ptr<WebService> webService, uint16_t port) :
 	webService(webService),
 	port(port),
@@ -107,10 +41,6 @@ WebServer::~WebServer() {
 }
 
 void WebServer::start() {
-	if (!addWebserver(this)) {
-		throw logic_error("WebServer::WebServer() webServer already exist with same this pointer");
-	}
-
 	MHD_set_panic_func(MHD_PanicCallback, this);
 
 	daemon.reset(MHD_start_daemon(
@@ -124,7 +54,6 @@ void WebServer::start() {
 
 
 	if (daemon == nullptr) {
-		deleteWebserver(this);
 		throw runtime_error("Can not create webserver");
 	}
 
@@ -134,12 +63,8 @@ void WebServer::start() {
 void WebServer::stop() {
 	daemon.reset();
 
-	if (!datas.empty()) {
+	if (!uploadDatas.empty()) {
 		logic_error("WebServer::stop() !datas.empty()");
-	}
-
-	if (!deleteWebserver(this)) {
-		logic_error("WebServer::stop() webServer doesn't exist with current this pointer");
 	}
 
 	LOGGER.info("WebServer is stopped");
@@ -150,13 +75,13 @@ void WebServer::panicCallback(const char *file, unsigned int line, const char *r
 }
 
 void WebServer::requestCompletedCallback(struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe) {
-	auto it = datas.find(*con_cls);
+	auto it = uploadDatas.find(*con_cls);
 
-	if (datas.end() == it) {
+	if (uploadDatas.end() == it) {
 		throw logic_error("WebServer::requestCompletedCallback() datas.end() == it");
 	}
 
-	datas.erase(it);
+	uploadDatas.erase(it);
 }
 
 int WebServer::accessHandlerCallback(
@@ -185,13 +110,13 @@ int WebServer::accessHandlerCallback(
 		/* do never respond on first call */
 		shared_ptr<ByteBuffer> connectionUploadData(new ByteBuffer());
 		context = connectionUploadData.get();
-		datas.insert(make_pair(context, connectionUploadData));
+		uploadDatas.insert(make_pair(context, connectionUploadData));
 		LOGGER.trace("creating upload data: %p", connectionUploadData.get());
 		return MHD_YES;
 	}
 
-	auto it = datas.find(context);
-	if (datas.end() == it) {
+	auto it = uploadDatas.find(context);
+	if (uploadDatas.end() == it) {
 		throw logic_error("WebServer::accessHandlerCallback() datas.end() == it");
 	}
 

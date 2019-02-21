@@ -16,23 +16,11 @@ public:
 };
 
 class WebServer {
-	static std::mutex mtx;
-	static std::map<void*, WebServer*> webServers;
-
-	static WebServer* getWebserver(void *cls);
-	static bool addWebserver(WebServer* webServer);
-	static bool deleteWebserver(void *cls);
-	static int MHD_AccessHandlerCallback(void *cls, struct MHD_Connection *connection,
-		const char *url, const char *method, const char *version,
-		const char *upload_data, size_t *upload_data_size, void **con_cls);
-	static void MHD_PanicCallback(void *cls, const char *file, unsigned int line, const char *reason);
-	static void MHD_RequestCompletedCallback(void *cls, struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe);
-
 
 	const std::shared_ptr<WebService> webService;
 	const uint16_t port;
 
-	std::map<void*, std::shared_ptr<ByteBuffer>> datas;
+	std::map<void*, std::shared_ptr<ByteBuffer>> uploadDatas;
 	std::unique_ptr<MHD_Daemon, void(*)(struct MHD_Daemon*)> daemon;
 
 	int accessHandlerCallback(struct MHD_Connection *connection,
@@ -41,6 +29,12 @@ class WebServer {
 	void panicCallback(const char *file, unsigned int line, const char *reason);
 	void requestCompletedCallback(struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe);
 	int sendResponse(struct MHD_Connection* connection, const std::unique_ptr<HttpResponse>& httpResponse);
+
+	static void MHD_PanicCallback(void *cls, const char *file, unsigned int line, const char *reason);
+	static int MHD_AccessHandlerCallback(void *cls, struct MHD_Connection *connection,
+			const char *url, const char *method, const char *version,
+			const char *upload_data, size_t *upload_data_size, void **con_cls);
+	static void MHD_RequestCompletedCallback(void *cls, struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe);
 
 public:
 	WebServer(std::shared_ptr<WebService> webService, uint16_t port);

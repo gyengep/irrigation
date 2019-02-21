@@ -22,8 +22,7 @@ void WebServerTest::SetUp() {
 
 void WebServerTest::TearDown() {
 	webServer->stop();
-
-	cout << "LOG: " << logOss->str() << endl;
+	//cout << "LOG: " << logOss->str() << endl;
 }
 
 WebServerTest::TestWebService::TestWebService() :
