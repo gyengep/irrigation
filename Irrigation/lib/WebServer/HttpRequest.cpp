@@ -17,9 +17,9 @@ HttpRequest::HttpRequest(MHD_Connection* connection, const char* version, const 
 {
 }
 
-const Parameters& HttpRequest::getParameters() const {
+const KeyValue& HttpRequest::getParameters() const {
 	if (nullptr == parameters.get()) {
-		const_cast<std::unique_ptr<Parameters>&>(parameters).reset(new Parameters());
+		const_cast<std::unique_ptr<KeyValue>&>(parameters).reset(new KeyValue());
 
 		if (nullptr != connection) {
 			MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, iterateOnValues, parameters.get());
@@ -29,9 +29,9 @@ const Parameters& HttpRequest::getParameters() const {
 	return *parameters;
 }
 
-const Parameters& HttpRequest::getHeaders() const {
+const KeyValue& HttpRequest::getHeaders() const {
 	if (nullptr == headers.get()) {
-		const_cast<std::unique_ptr<Parameters>&>(headers).reset(new Parameters());
+		const_cast<std::unique_ptr<KeyValue>&>(headers).reset(new KeyValue());
 
 		if (nullptr != connection) {
 			MHD_get_connection_values(connection, MHD_HEADER_KIND, iterateOnValues, headers.get());
@@ -58,7 +58,7 @@ int HttpRequest::iterateOnValues(void *cls, enum MHD_ValueKind kind, const char 
 		LOGGER.trace("iterate on Request%s: \"%s\" - \"%s\"", kindText, key, value);
 	}
 
-	Parameters* parameters = static_cast<Parameters*>(cls);
+	KeyValue* parameters = static_cast<KeyValue*>(cls);
 	parameters->insert(std::make_pair(std::string(key), std::string(value)));
 	return MHD_YES;
 }

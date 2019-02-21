@@ -16,13 +16,13 @@ protected:
 		std::string lastRequestedUrl;
 		std::string lastRequestedMethod;
 		std::string lastRequestedVersion;
-		Parameters lastRequestedParameters;
-		Parameters lastRequestedHeaders;
+		KeyValue lastRequestedParameters;
+		KeyValue lastRequestedHeaders;
 		ByteBuffer lastRequestedData;
 
 		std::string httpResponse;
 		int httpResponseCode;
-		Parameters httpResponseHeaders;
+		KeyValue httpResponseHeaders;
 
 		virtual std::unique_ptr<HttpResponse> onRequest(const HttpRequest& request);
 	};
@@ -52,7 +52,7 @@ protected:
     virtual void TearDown();
 
 public:
-	static std::string createUrl(uint16_t port, const std::string& path, const Parameters& parameters);
+	static std::string createUrl(uint16_t port, const std::string& path, const KeyValue& parameters);
 	static size_t writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
 	static size_t readCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
 	static size_t headerCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-typedef std::map<std::string, std::string> Parameters;
+typedef std::map<std::string, std::string> KeyValue;
 typedef std::vector<char> ByteBuffer;
 
 
@@ -15,8 +15,8 @@ class HttpRequest {
 	const std::string method;
 	const std::string version;
 	const std::shared_ptr<ByteBuffer> uploadData;
-	std::unique_ptr<Parameters> parameters;
-	std::unique_ptr<Parameters> headers;
+	std::unique_ptr<KeyValue> parameters;
+	std::unique_ptr<KeyValue> headers;
 
 	static int iterateOnValues(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 
@@ -33,6 +33,6 @@ public:
 	const std::string& getMethod() const { return method; }
 	const std::string& getVersion() const { return version; }
 	const std::shared_ptr<ByteBuffer>& getUploadData() const { return uploadData; }
-	const Parameters& getParameters() const;
-	const Parameters& getHeaders() const;
+	const KeyValue& getParameters() const;
+	const KeyValue& getHeaders() const;
 };
