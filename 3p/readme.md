@@ -1,6 +1,6 @@
 microhttpd
 ----------
- - ./configure
+ - ./configure --disable-shared
  - make
  - make install
  
