@@ -35,3 +35,9 @@ class HttpNotSupported : public WebServerException {
 public:
 	HttpNotSupported(const std::string& message) : WebServerException(505, "HTTP version is not supported: " + message) {}
 };
+
+class HttpMethodNotAllowed : public WebServerException {
+public:
+	HttpMethodNotAllowed(const std::string& message) : WebServerException(405, "Method not allowed: " + message) {}
+};
+

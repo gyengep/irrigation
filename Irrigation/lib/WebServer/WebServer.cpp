@@ -1,15 +1,11 @@
+#include "WebServer.h"
 #include "HttpResponse.h"
 #include "HttpRequest.h"
-#include "WebServer.h"
 #include "WebServerException.h"
 #include "Logger/Logger.h"
-
 #include <algorithm>
-#include <cstring>
-#include <functional>
-#include <inttypes.h>
+#include <cinttypes>
 #include <sstream>
-#include <vector>
 
 using namespace std;
 
@@ -57,7 +53,7 @@ void WebServer::start() {
 		throw runtime_error("Can not create webserver");
 	}
 
-	LOGGER.info("WebServer is started on port: %" PRIu16 , port);
+	LOGGER.info("WebServer is started on port: %" PRIu16, port);
 }
 
 void WebServer::stop() {

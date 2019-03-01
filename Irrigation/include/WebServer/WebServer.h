@@ -1,8 +1,7 @@
 #pragma once
 #include <map>
 #include <memory>
-#include <mutex>
-#include <string>
+#include <vector>
 #include <microhttpd.h>
 
 class HttpResponse;
@@ -16,6 +15,7 @@ public:
 };
 
 class WebServer {
+	typedef std::vector<char> ByteBuffer;
 
 	const std::shared_ptr<WebService> webService;
 	const uint16_t port;

@@ -1,13 +1,14 @@
 #include "IrrigationApplication.h"
 #include "Configuration.h"
-#include <stdexcept>
-#include <thread>
 #include "DtoReaderWriter/XMLParseException.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
+#include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
+#include <stdexcept>
+#include <thread>
 
 using namespace std;
 
@@ -51,7 +52,8 @@ void IrrigationApplication::initDocument() {
 		throw_with_nested(runtime_error("Can't initialize document"));
 	}
 
-	document->addView(unique_ptr<View>(new TimerView(*document.get())));
+	document->addView(unique_ptr<View>(new TimerView(*document)));
+	document->addView(unique_ptr<View>(new RestView(*document, Configuration::getInstance().getRestPort())));
 }
 
 void IrrigationApplication::onInitialize() {

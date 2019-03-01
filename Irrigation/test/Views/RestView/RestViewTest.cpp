@@ -1,0 +1,9 @@
+#include <gmock/gmock.h>
+
+using namespace std;
+using namespace testing;
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(RestViewTest, test) {
+}
