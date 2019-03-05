@@ -37,7 +37,7 @@ void PathTemplate::removeVariableDelimiter(std::string& str) {
 	str.erase(str.size() - 1);
 }
 
-bool PathTemplate::evaluate(const Path& otherPath, Parameters& parameters) const {
+bool PathTemplate::evaluate(const Path& otherPath, KeyValue& parameters) const {
 	parameters.clear();
 
 	if (path.size() != otherPath.size()) {

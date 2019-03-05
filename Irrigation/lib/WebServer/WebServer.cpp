@@ -125,20 +125,28 @@ int WebServer::accessHandlerCallback(
 		return MHD_YES;
 	}
 
+	unique_ptr<HttpResponse> response;
+
 	try {
-		HttpRequest request(connection, version, method, url, connectionUploadData);
-		unique_ptr<HttpResponse> response = webService->onRequest(request);
+		try {
+			HttpRequest request(connection, version, method, url, connectionUploadData);
+			response = webService->onRequest(request);
 
-		if (response.get() == nullptr) {
-			throw std::runtime_error("HTTP response is NULL");
+			if (response.get() == nullptr) {
+				throw std::runtime_error("HTTP response is NULL");
+			}
+
+		} catch (const WebServerException& e) {
+			throw;
+		} catch (const exception& e) {
+			LOGGER.warning("WebServer caught an expection: ", e);
+			throw WebServerException(MHD_HTTP_INTERNAL_SERVER_ERROR, "Internal Server Error", KeyValue({{"Content-type", "text/plain"}}));
 		}
-
-		return sendResponse(connection, response);
-	} catch (const exception& e) {
-		LOGGER.warning("WebServer caught an expection: ", e);
+	} catch (const WebServerException& e) {
+		response.reset(new HttpResponse(e.getErrorMessage(), e.getHeaders(), e.getStatusCode()));
 	}
 
-	return MHD_NO;
+	return sendResponse(connection, response);
 }
 
 int WebServer::sendResponse(struct MHD_Connection* connection, const std::unique_ptr<HttpResponse>& httpResponse) {

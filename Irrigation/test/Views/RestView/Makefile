@@ -21,10 +21,10 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -l$(TARGET_NAME)
+LOCAL_LIBS      = -l$(TARGET_NAME) -lModel -lLogger -lWebServer -lDTO -lDtoReaderWriter -lDocumentView -lLogic -lSchedulers -lValves -lUtils
 INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(COMMON_DIR)
-LIBDIRS         = -L$(LIBRARY_DIR)
-LIBS            = $(LOCAL_LIBS) -pthread -lgmock
+LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib 
+LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lcurl -lpugixml -lmicrohttpd
 
 # Detect the Raspberry Pi from cpuinfo
 # Count the matches for BCMxxxx in cpuinfo

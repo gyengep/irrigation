@@ -2,12 +2,13 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include "KeyValue.h"
 #include "PathTemplate.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 #include "WebServer.h"
 
-typedef std::function<std::unique_ptr<HttpResponse>(const HttpRequest& request, const Parameters& pathParameters)> RestServiceCallback;
+typedef std::function<std::unique_ptr<HttpResponse>(const HttpRequest& request, const KeyValue& pathParameters)> RestServiceCallback;
 
 
 class RestService : public WebService {

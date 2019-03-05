@@ -1,12 +1,11 @@
 #include "WebServerTest.h"
-#include <algorithm>
-#include <curl/curl.h>
-
+#include "CurlCallbacks/CurlCallbacks.h"
 #include "Logger/Logger.h"
+#include <curl/curl.h>
 
 using namespace std;
 using namespace testing;
-using ::testing::AllOf;
+using testing::AllOf;
 
 
 void WebServerTest::SetUp() {
@@ -39,63 +38,6 @@ unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequ
 	lastRequestedData = *request.getUploadData();
 
 	return unique_ptr<HttpResponse>(new HttpResponse(httpResponse, httpResponseHeaders, httpResponseCode));
-}
-
-string WebServerTest::createUrl(uint16_t port, const string& path, const KeyValue& parameters) {
-	ostringstream o;
-
-	o << "http://localhost:" << port;
-	o << path;
-
-	if (!parameters.empty()) {
-		o << "?";
-
-		for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-			if (parameters.begin() != it) {
-				o << "&";
-			}
-
-			o << it->first << "=" << it->second;
-		}
-	}
-
-	return o.str();
-}
-
-size_t WebServerTest::headerCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	HeaderCallbackData* headerCallbackData = static_cast<HeaderCallbackData*>(ctxt);
-
-    if (!headerCallbackData) {
-    	throw logic_error("WebServerTest::headerCallback()  nullptr == headerCallbackData");
-    }
-
-    const size_t length = size * nmemb;
-    headerCallbackData->headers.push_back(string(buffer, length));
-	return length;
-}
-
-size_t WebServerTest::writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	WriteCallbackData* writeCallbackData = static_cast<WriteCallbackData*>(ctxt);
-
-    if (!writeCallbackData) {
-    	throw logic_error("WebServerTest::writeCallback()  nullptr == writeCallbackData");
-    }
-
-    const size_t length = size * nmemb;
-    writeCallbackData->text.append(&buffer[0], &buffer[length]);
-   	return length;
-}
-
-size_t WebServerTest::readCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	ReadCallbackData* readCallbackData = static_cast<ReadCallbackData*>(ctxt);
-
-	const size_t maxDataSize = size * nmemb;
-	const size_t remainingDataSize = readCallbackData->text.length() - readCallbackData->position;
-	const size_t length = min(maxDataSize, remainingDataSize);
-
-	copy_n(&readCallbackData->text[readCallbackData->position], length, buffer);
-    readCallbackData->position += length;
-    return length;
 }
 
 

@@ -1,9 +1,8 @@
 #pragma once
-#include <map>
 #include <microhttpd.h>
 #include <string>
+#include "KeyValue.h"
 
-typedef std::map<std::string, std::string> KeyValue;
 
 
 class HttpResponse {
@@ -12,7 +11,7 @@ class HttpResponse {
 	const unsigned statusCode;
 
 public:
-	HttpResponse(const std::string& message, const KeyValue& responseHeaders = KeyValue(), int statusCode = MHD_HTTP_OK) :
+	HttpResponse(const std::string& message, const KeyValue& responseHeaders = KeyValue(), unsigned statusCode = MHD_HTTP_OK) :
 		message(message),
 		responseHeaders(responseHeaders),
 		statusCode(statusCode)

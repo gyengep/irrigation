@@ -24,7 +24,7 @@ unique_ptr<HttpResponse> RestService::onRequest(const HttpRequest& request) {
 	for (it = pathInfos.begin(); pathInfos.end() != it; ++it) {
 
 		const PathInfo& pathInfo = it->second;
-		Parameters parameters;
+		KeyValue parameters;
 
 		if (pathInfo.path->evaluate(requestPath, parameters)) {
 			pathFound = true;

@@ -2,9 +2,9 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "KeyValue.h"
 
 typedef std::vector<std::string> Path;
-typedef std::map<std::string, std::string> Parameters;
 
 
 class PathTemplate {
@@ -23,5 +23,5 @@ public:
 
 	static void split(const std::string& pathStr, Path& result);
 
-	bool evaluate(const Path& otherPath, Parameters& parameters) const;
+	bool evaluate(const Path& otherPath, KeyValue& parameters) const;
 };

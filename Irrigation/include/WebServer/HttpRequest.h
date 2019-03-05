@@ -1,11 +1,10 @@
 #pragma once
-#include <map>
 #include <memory>
 #include <microhttpd.h>
 #include <string>
 #include <vector>
+#include "KeyValue.h"
 
-typedef std::map<std::string, std::string> KeyValue;
 typedef std::vector<char> ByteBuffer;
 
 
