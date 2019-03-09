@@ -42,14 +42,14 @@ TEST_F(RestServiceTest, methodNotAllowed) {
 }
 
 TEST_F(RestServiceTest, testCallback) {
-	EXPECT_CALL(*this, callback1(_, Parameters())).Times(1);
+	EXPECT_CALL(*this, callback1(_, KeyValue())).Times(1);
 
 	HttpRequest request1(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_GET, "/tom/and/jerry", shared_ptr<ByteBuffer>(new ByteBuffer()));
 	restService.onRequest(request1);
 }
 
 TEST_F(RestServiceTest, testParameters) {
-	EXPECT_CALL(*this, callback3(_, Parameters({{"value1", "12345"}, {"value2", "ASDFG"}}))).Times(1);
+	EXPECT_CALL(*this, callback3(_, KeyValue({{"value1", "12345"}, {"value2", "ASDFG"}}))).Times(1);
 
 	HttpRequest request1(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_POST, "/resource1/12345/resource2/ASDFG", shared_ptr<ByteBuffer>(new ByteBuffer()));
 	restService.onRequest(request1);

@@ -14,7 +14,7 @@ protected:
     virtual void TearDown();
 
 public:
-	MOCK_METHOD2(callback1, std::unique_ptr<HttpResponse>(const HttpRequest& request, const Parameters& pathParameters));
-	MOCK_METHOD2(callback2, std::unique_ptr<HttpResponse>(const HttpRequest& request, const Parameters& pathParameters));
-	MOCK_METHOD2(callback3, std::unique_ptr<HttpResponse>(const HttpRequest& request, const Parameters& pathParameters));
+	MOCK_METHOD2(callback1, std::unique_ptr<HttpResponse>(const HttpRequest& request, const KeyValue& pathParameters));
+	MOCK_METHOD2(callback2, std::unique_ptr<HttpResponse>(const HttpRequest& request, const KeyValue& pathParameters));
+	MOCK_METHOD2(callback3, std::unique_ptr<HttpResponse>(const HttpRequest& request, const KeyValue& pathParameters));
 };

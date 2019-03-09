@@ -1,7 +1,9 @@
 #include "RestServerTest.h"
 #include "WebServerTest.h"
-#include <functional>
+#include "CurlCallbacks/CurlCallbacks.h"
+#include "WebServer/KeyValue.h"
 #include <curl/curl.h>
+#include <functional>
 
 using namespace std;
 using namespace testing;
@@ -29,8 +31,7 @@ TEST_F(RestServerTest, invalidPath) {
 }
 
 TEST_F(RestServerTest, callbackWithoutParameter) {
-	const string path = "/programs";
-	const string url = WebServerTest::createUrl(port, path, Parameters());
+	const string url = createUrl(port, "/programs");
 
 	CURL *curl = curl_easy_init();
 
@@ -47,13 +48,12 @@ TEST_F(RestServerTest, callbackWithoutParameter) {
 }
 
 TEST_F(RestServerTest, callbackWithParameter) {
-	const string path = "/programs/567";
-	const string url = WebServerTest::createUrl(port, path, Parameters());
+	const string url = createUrl(port, "/programs/567");
 
 	CURL *curl = curl_easy_init();
 
 	ASSERT_NE(nullptr, curl);
-	EXPECT_CALL(*this, onGetProgram(_, Parameters({{"programID", "567"}}))).Times(1);
+	EXPECT_CALL(*this, onGetProgram(_, KeyValue({{"programID", "567"}}))).Times(1);
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());

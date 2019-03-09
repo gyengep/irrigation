@@ -22,3 +22,11 @@ public:
 	}
 };
 
+class RestBadRequest : public RestServiceException {
+public:
+	RestBadRequest(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const KeyValue& headers) :
+		RestServiceException(errorWriter, 400, message, headers)
+	{
+	}
+};
+

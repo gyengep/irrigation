@@ -17,4 +17,5 @@ public:
 	operator unsigned() const { return id; }
 
 	friend std::string to_string(const IdType& idType);
+	static IdType from_string(const std::string& id);
 };

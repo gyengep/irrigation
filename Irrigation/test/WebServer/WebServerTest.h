@@ -32,8 +32,6 @@ protected:
 	std::shared_ptr<TestWebService> testWebService;
 	std::unique_ptr<WebServer> webServer;
 
-	std::shared_ptr<std::ostringstream> logOss;
-
     virtual void SetUp();
     virtual void TearDown();
 };

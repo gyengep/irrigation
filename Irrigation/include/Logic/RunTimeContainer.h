@@ -31,7 +31,7 @@ public:
 	virtual ~RunTimeContainer() = default;
 
 	// for testing
-	RunTimeContainer(std::unique_ptr<RunTimeFactory> runTimeFactory);
+	RunTimeContainer(std::shared_ptr<RunTimeFactory> runTimeFactory);
 
 	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
 	RunTimeContainer& operator= (const RunTimeContainer& other) = delete;
@@ -55,5 +55,5 @@ public:
 class RunTimeFactory {
 public:
 	virtual ~RunTimeFactory() = default;
-	virtual std::shared_ptr<RunTime> createRunTime() const;
+	virtual std::shared_ptr<RunTime> createRunTime();
 };

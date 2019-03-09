@@ -23,7 +23,7 @@ public:
 	void setSeconds(unsigned seconds);
 
 	RunTimeDTO toRunTimeDto() const;
-	void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO);
+	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO);
 
 	friend std::string to_string(const RunTime& runTime);
 	friend std::ostream& operator<<(std::ostream& os, const RunTime& runTime);

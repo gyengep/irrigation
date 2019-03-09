@@ -2,6 +2,7 @@
 #include <memory>
 #include "DocumentView/View.h"
 #include "DtoReaderWriter/DtoReaderWriter.h"
+#include "Logic/IdType.h"
 #include "Model/IrrigationDocument.h"
 #include "WebServer/ErrorWriter.h"
 #include "WebServer/RestServiceException.h"
@@ -44,17 +45,26 @@ class RestView : public View {
 	RestReaderWriterFactory textRestReaderWriterFactory;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
-	std::unique_ptr<HttpResponse> onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
-	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
-	std::unique_ptr<HttpResponse> onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
 	std::unique_ptr<HttpResponse> onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
 	std::unique_ptr<HttpResponse> onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
-
-	std::unique_ptr<HttpResponse> onPostStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
+	std::unique_ptr<HttpResponse> onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory);
 
 	const std::shared_ptr<Program>& getProgram(const std::string& programIdText) const;
 	const std::shared_ptr<RunTime>& getRunTime(const std::string& programIdText, const std::string& runTimeIdText) const;
 	const std::shared_ptr<StartTime>& getStartTime(const std::string& programIdText, const std::string& startTimeIdText) const;
+
+	static std::string getProgramUrl(const IdType& programId);
+	static std::string getRunTimeUrl(const IdType& programId, const IdType& runTimeId);
+	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 
 public:
 	RestView(IrrigationDocument& irrigationDocument, uint16_t port);

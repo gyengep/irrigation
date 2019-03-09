@@ -8,7 +8,7 @@
 using namespace std;
 
 
-shared_ptr<RunTime> RunTimeFactory::createRunTime() const {
+shared_ptr<RunTime> RunTimeFactory::createRunTime() {
 	return shared_ptr<RunTime>(new RunTime());
 }
 
@@ -22,7 +22,7 @@ RunTimeContainer::RunTimeContainer() {
 	}
 }
 
-RunTimeContainer::RunTimeContainer(unique_ptr<RunTimeFactory> runTimeFactory) {
+RunTimeContainer::RunTimeContainer(shared_ptr<RunTimeFactory> runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
 		shared_ptr<RunTime> runTime = runTimeFactory->createRunTime();

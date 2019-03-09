@@ -27,7 +27,7 @@ public:
 	unsigned getMinutes() const;
 
 	StartTimeDTO toStartTimeDto() const;
-	void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO);
+	virtual void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO);
 
 	friend std::string to_string(const StartTime& startTime);
 	friend std::ostream& operator<<(std::ostream& os, const StartTime& startTime);

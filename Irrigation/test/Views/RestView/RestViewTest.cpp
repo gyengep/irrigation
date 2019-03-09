@@ -1,23 +1,9 @@
 #include "RestViewTest.h"
-#include "Dto2Object/ProgramSamples.h"
-#include "CurlCallbacks/CurlCallbacks.h"
-#include "DtoReaderWriter/XmlWriter.h"
-#include "Logic/Program.h"
-#include "Logic/ProgramContainer.h"
-#include "Logic/RunTime.h"
-#include "Logic/RunTimeContainer.h"
-#include "Logic/StartTime.h"
-#include "Logic/StartTimeContainer.h"
 #include "Model/IrrigationDocument.h"
 #include "Views/RestView/RestView.h"
 #include <curl/curl.h>
 
 using namespace std;
-using namespace testing;
-using namespace Dto2ObjectTest;
-
-const string urlPrefix = "";
-const uint16_t port = 8080;
 
 
 void RestViewTest::SetUp() {
@@ -28,66 +14,55 @@ void RestViewTest::SetUp() {
 void RestViewTest::TearDown() {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(RestViewTest, getRunTimes) {
-
-	const shared_ptr<Program> program = Program::Builder().build();
-	const IdType id = IdType();
-	const string path = "/programs/" + to_string(id) + "/runtimes";
-	const string url = createUrl(port, path, KeyValue());
-
-	document->getPrograms().insert(id, ProgramSample1().getObject());
-
-	CURL *curl = curl_easy_init();
-	ASSERT_THAT(curl, NotNull());
-
-    long actualResponseCode = 0;
-    WriteCallbackData writeCallbackData;
-
-    if (curl) {
-    	cout << "CURL OK" << endl;
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &writeCallbackData);
-        curl_easy_perform(curl);
-	    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &actualResponseCode);
-		curl_easy_cleanup(curl);
-	} else {
-    	cout << "CURL NOK" << endl;
+std::string RestViewTest::createUrl(const std::string& path) {
+	if ('/' != path[0]) {
+		throw std::logic_error("The path has to start with '/'");
 	}
 
-	EXPECT_THAT(actualResponseCode, Eq(200));
-	EXPECT_THAT(writeCallbackData.text, Eq(XmlWriter().save(ProgramSample1().getDto().getRunTimes())));
+	std::ostringstream o;
+
+	o << "http://localhost:" << port;
+	o << path;
+/*
+	if (!parameters.empty()) {
+		o << "?";
+
+		for (auto it = parameters.begin(); it != parameters.end(); ++it) {
+			if (parameters.begin() != it) {
+				o << "&";
+			}
+
+			o << it->first << "=" << it->second;
+		}
+	}
+*/
+	return o.str();
 }
 
-TEST_F(RestViewTest, getStartTimes) {
-
-	const shared_ptr<Program> program = Program::Builder().build();
-	const IdType id = IdType();
-	const string path = "/programs/" + to_string(id) + "/starttimes";
-	const string url = createUrl(port, path, KeyValue());
-
-	document->getPrograms().insert(id, ProgramSample1().getObject());
+RestViewTest::Response RestViewTest::executeRequest(const std::string& method, const std::string&  url, const std::string& sendData) {
+	Response response;
 
 	CURL *curl = curl_easy_init();
-	ASSERT_THAT(curl, NotNull());
-
-    long actualResponseCode = 0;
-    WriteCallbackData writeCallbackData;
-
-    if (curl) {
-    	cout << "CURL OK" << endl;
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &writeCallbackData);
-        curl_easy_perform(curl);
-	    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &actualResponseCode);
-		curl_easy_cleanup(curl);
-	} else {
-    	cout << "CURL NOK" << endl;
+	if (curl == nullptr) {
+		throw logic_error("RestViewTest::executeRequest()  curl == nullptr");
 	}
 
-	EXPECT_THAT(actualResponseCode, Eq(200));
-	EXPECT_THAT(writeCallbackData.text, Eq(XmlWriter().save(ProgramSample1().getDto().getStartTimes())));
+	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.writeCallbackData);
+	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, headerCallback);
+	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.headerCallbackData);
+
+	if (!sendData.empty()) {
+		curl_easy_setopt(curl, CURLOPT_POST, 1);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, sendData.c_str());
+	}
+
+	curl_easy_perform(curl);
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.responseCode);
+	curl_easy_cleanup(curl);
+
+    return response;
 }
+

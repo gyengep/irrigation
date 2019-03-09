@@ -1,5 +1,6 @@
 #pragma once
 #include <gmock/gmock.h>
+#include "WebServer/KeyValue.h"
 #include "WebServer/RestService.h"
 #include "WebServer/WebServer.h"
 
@@ -15,6 +16,6 @@ protected:
     virtual void TearDown();
 
 public:
-	MOCK_METHOD2(onCreateProgram, std::unique_ptr<HttpResponse>(const HttpRequest& request, const Parameters& pathParameters));
-	MOCK_METHOD2(onGetProgram, std::unique_ptr<HttpResponse>(const HttpRequest& request, const Parameters& pathParameters));
+	MOCK_METHOD2(onCreateProgram, std::unique_ptr<HttpResponse>(const HttpRequest& request, const KeyValue& pathParameters));
+	MOCK_METHOD2(onGetProgram, std::unique_ptr<HttpResponse>(const HttpRequest& request, const KeyValue& pathParameters));
 };

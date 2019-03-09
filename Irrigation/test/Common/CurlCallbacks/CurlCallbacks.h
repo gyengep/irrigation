@@ -23,10 +23,10 @@ struct HeaderCallbackData {
 };
 
 
-std::string createUrl(uint16_t port, const std::string& path, const KeyValue& parameters);
-size_t writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
-size_t readCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
-size_t headerCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
+inline std::string createUrl(uint16_t port, const std::string& path, const KeyValue& parameters = KeyValue());
+inline size_t writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
+inline size_t readCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
+inline size_t headerCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
 
 
 std::string createUrl(uint16_t port, const std::string& path, const KeyValue& parameters) {
