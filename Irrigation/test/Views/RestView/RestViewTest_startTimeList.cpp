@@ -17,6 +17,7 @@ void RestViewTest::testGetStartTimeList(const IdType& programId, const list<Star
 	Response response = executeRequest("GET", createStartTimeListUrl(programId));
 	EXPECT_THAT(response.responseCode, Eq(200));
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeDtoList)));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,8 +35,8 @@ TEST_F(RestViewTest, postStartTimeList) {
 	const IdType startTimeId = document->getPrograms().at(programId)->getStartTimes().begin()->first;
 
 	EXPECT_THAT(response.responseCode, Eq(201));
-	EXPECT_THAT(response.headerCallbackData.headers,
-			Contains("Location: /programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId) + "\r\n"));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId) + "\r\n"));
+	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
 }
 
 TEST_F(RestViewTest, postStartTimeListInvalidXml) {
@@ -44,11 +45,13 @@ TEST_F(RestViewTest, postStartTimeListInvalidXml) {
 
 	const Response response = executeRequest("POST", createStartTimeListUrl(programId), "InvalidXml");
 	EXPECT_THAT(response.responseCode, Eq(400));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, postStartTimeListNotFound) {
 	const Response response = executeRequest("POST", createStartTimeListUrl(IdType()), XmlWriter().save(StartTimeSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(404));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, getStartTimeList1) {
@@ -94,19 +97,23 @@ TEST_F(RestViewTest, getStartTimeList4) {
 TEST_F(RestViewTest, getStartTimeListNotFound) {
 	Response response = executeRequest("GET", createStartTimeListUrl(IdType()));
 	EXPECT_THAT(response.responseCode, Eq(404));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, putStartTimeList) {
-	Response response = executeRequest("PUT", createStartTimeListUrl(IdType()));
+	Response response = executeRequest("PUT", createStartTimeListUrl(IdType()), XmlWriter().save(StartTimeSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, patchStartTimeList) {
-	Response response = executeRequest("PATCH", createStartTimeListUrl(IdType()));
+	Response response = executeRequest("PATCH", createStartTimeListUrl(IdType()), XmlWriter().save(StartTimeSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, deleteStartTimeList) {
 	Response response = executeRequest("DELETE", createStartTimeListUrl(IdType()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }

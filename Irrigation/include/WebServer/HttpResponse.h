@@ -6,19 +6,38 @@
 
 
 class HttpResponse {
-	const std::string message;
-	const KeyValue responseHeaders;
 	const unsigned statusCode;
+	const std::string message;
+	KeyValue headers;
 
 public:
-	HttpResponse(const std::string& message, const KeyValue& responseHeaders = KeyValue(), unsigned statusCode = MHD_HTTP_OK) :
-		message(message),
-		responseHeaders(responseHeaders),
-		statusCode(statusCode)
+	HttpResponse(unsigned statusCode = MHD_HTTP_OK) :
+		statusCode(statusCode),
+		message(),
+		headers()
 	{
 	}
 
+	HttpResponse(unsigned statusCode, const std::string& message, const std::string& contentType) :
+		statusCode(statusCode),
+		message(message),
+		headers()
+	{
+		addHeader("Content-Type", contentType);
+	}
+
+	HttpResponse(unsigned statusCode, const std::string& message, const KeyValue& headers) :
+		statusCode(statusCode),
+		message(message),
+		headers(headers)
+	{
+	}
+
+	void addHeader(const std::string& key, const std::string& value) {
+		headers.insert(std::make_pair(key, value));
+	}
+
 	const std::string& getMessage() const { return message; }
-	const KeyValue& gerHeaders() const { return responseHeaders; }
+	const KeyValue& gerHeaders() const { return headers; }
 	unsigned getStatusCode() const { return statusCode; }
 };

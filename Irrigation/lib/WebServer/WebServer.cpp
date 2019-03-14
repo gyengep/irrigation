@@ -140,10 +140,10 @@ int WebServer::accessHandlerCallback(
 			throw;
 		} catch (const exception& e) {
 			LOGGER.warning("WebServer caught an expection: ", e);
-			throw WebServerException(MHD_HTTP_INTERNAL_SERVER_ERROR, "Internal Server Error", KeyValue({{"Content-type", "text/plain"}}));
+			throw HttpInternalServerError();
 		}
 	} catch (const WebServerException& e) {
-		response.reset(new HttpResponse(e.getErrorMessage(), e.getHeaders(), e.getStatusCode()));
+		response.reset(new HttpResponse(e.getStatusCode(), e.getErrorMessage(), e.getHeaders()));
 	}
 
 	return sendResponse(connection, response);

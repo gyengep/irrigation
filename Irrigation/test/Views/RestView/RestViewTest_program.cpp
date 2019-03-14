@@ -18,13 +18,15 @@ void RestViewTest::testGetProgram(const IdType& programId, const ProgramDTO& pro
 	Response response = executeRequest("GET", createProgramUrl(programId));
 	EXPECT_THAT(response.responseCode, Eq(200));
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programDto)));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postProgram) {
-	Response response = executeRequest("POST", createProgramUrl(IdType()));
+	Response response = executeRequest("POST", createProgramUrl(IdType()), XmlWriter().save(ProgramSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, getProgram) {
@@ -42,11 +44,13 @@ TEST_F(RestViewTest, getProgram) {
 TEST_F(RestViewTest, getProgramNotFound) {
 	Response response = executeRequest("GET", createProgramUrl(IdType()));
 	EXPECT_THAT(response.responseCode, Eq(404));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, putProgram) {
-	Response response = executeRequest("PUT", createProgramUrl(IdType()));
+	Response response = executeRequest("PUT", createProgramUrl(IdType()), XmlWriter().save(ProgramSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, patchProgram) {
@@ -60,11 +64,13 @@ TEST_F(RestViewTest, patchProgram) {
 
 	Response response = executeRequest("PATCH", createProgramUrl(programId), XmlWriter().save(programSample.getDto()));
 	EXPECT_THAT(response.responseCode, Eq(204));
+	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
 }
 
 TEST_F(RestViewTest, patchProgramNotFound) {
-	Response response = executeRequest("PATCH", createProgramUrl(IdType()));
+	Response response = executeRequest("PATCH", createProgramUrl(IdType()), XmlWriter().save(ProgramSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(404));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, patchProgramInvalidXml) {
@@ -74,6 +80,7 @@ TEST_F(RestViewTest, patchProgramInvalidXml) {
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "InvalidXml");
 	EXPECT_THAT(response.responseCode, Eq(400));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, deleteProgram) {
@@ -89,9 +96,12 @@ TEST_F(RestViewTest, deleteProgram) {
 
 	Response response = executeRequest("DELETE", createProgramUrl(programId));
 	EXPECT_THAT(response.responseCode, Eq(200));
+	EXPECT_THAT(response.writeCallbackData.text, IsEmpty());
+	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
 }
 
 TEST_F(RestViewTest, deleteProgramNotFound) {
 	Response response = executeRequest("DELETE", createProgramUrl(IdType()));
 	EXPECT_THAT(response.responseCode, Eq(404));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }

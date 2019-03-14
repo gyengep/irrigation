@@ -16,13 +16,15 @@ void RestViewTest::testGetRunTimeList(const IdType& programId, const list<RunTim
 	Response response = executeRequest("GET", createRunTimeListUrl(programId));
 	EXPECT_THAT(response.responseCode, Eq(200));
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeDtoList)));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postRunTimeList) {
-	Response response = executeRequest("POST", createRunTimeListUrl(IdType()));
+	Response response = executeRequest("POST", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, getRunTimeList1) {
@@ -68,19 +70,23 @@ TEST_F(RestViewTest, getRunTimeList4) {
 TEST_F(RestViewTest, getRunTimeListNotFound) {
 	Response response = executeRequest("GET", createRunTimeListUrl(IdType()));
 	EXPECT_THAT(response.responseCode, Eq(404));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, putRunTimeList) {
-	Response response = executeRequest("PUT", createRunTimeListUrl(IdType()));
+	Response response = executeRequest("PUT", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, patchRunTimeList) {
-	Response response = executeRequest("PATCH", createRunTimeListUrl(IdType()));
+	Response response = executeRequest("PATCH", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 TEST_F(RestViewTest, deleteRunTimeList) {
 	Response response = executeRequest("DELETE", createRunTimeListUrl(IdType()));
 	EXPECT_THAT(response.responseCode, Eq(405));
+	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }

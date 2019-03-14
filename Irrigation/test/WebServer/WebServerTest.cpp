@@ -31,7 +31,7 @@ unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequ
 	lastRequestedHeaders = request.getHeaders();
 	lastRequestedData = *request.getUploadData();
 
-	return unique_ptr<HttpResponse>(new HttpResponse(httpResponse, httpResponseHeaders, httpResponseCode));
+	return unique_ptr<HttpResponse>(new HttpResponse(httpResponseCode, httpResponse, httpResponseHeaders));
 }
 
 

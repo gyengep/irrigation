@@ -1,6 +1,6 @@
 #include "RestView.h"
-#include "TextReaderWriter.h"
-#include "XmlReaderWriter.h"
+#include "RestService.h"
+#include "XmlErrorWriter.h"
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
@@ -11,57 +11,33 @@
 #include "Logic/StartTimeContainer.h"
 #include "Model/IrrigationDocument.h"
 #include "WebServer/KeyValue.h"
-#include "WebServer/RestService.h"
 
 using namespace std;
-
-
-RestView::RestReaderWriterFactory::RestReaderWriterFactory(
-	std::unique_ptr<DtoReaderWriterFactory>&& dtoReaderWriterFactory,
-	std::unique_ptr<ErrorWriterFactory>&& errorWriterFactory,
-	const std::string& contentType) :
-
-		dtoReaderWriterFactory(move(dtoReaderWriterFactory)),
-		errorWriterFactory(move(errorWriterFactory)),
-		contentType(contentType)
-	{
-	}
 
 
 RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
 	View(irrigationDocument),
 	port(port),
-	irrigationDocument(irrigationDocument),
-	xmlRestReaderWriterFactory(
-		unique_ptr<DtoReaderWriterFactory>(new XmlReaderWriterFactory()),
-		unique_ptr<ErrorWriterFactory>(new XmlErrorWriterFactory()),
-		"application/xml"),
-	textRestReaderWriterFactory(
-		unique_ptr<DtoReaderWriterFactory>(new TextReaderWriterFactory()),
-		unique_ptr<ErrorWriterFactory>(new TextErrorWriterFactory()),
-		"text/plain")
+	irrigationDocument(irrigationDocument)
 {
-
-
-	//restReaderWriterFactory.reset(new RestReaderWriterFactory());
 	restService.reset(new RestService());
 	webServer.reset(new WebServer(restService, port));
 
 	using namespace placeholders;
 
-	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs", bind(&RestView::onGetProgramList, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_POST,   "/programs", bind(&RestView::onPostProgramList, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}", bind(&RestView::onGetProgram, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}", bind(&RestView::onPatchProgram, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_DELETE, "/programs/{programId}", bind(&RestView::onDeleteProgram, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/runtimes", bind(&RestView::onGetRunTimeList, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs/{programId}/runtimes/{runTimeId}", bind(&RestView::onGetRunTime, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/runtimes/{runTimeId}", bind(&RestView::onPatchRunTime, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/starttimes", bind(&RestView::onGetStartTimeList, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_POST, 	 "/programs/{programId}/starttimes", bind(&RestView::onPostStartTimeList, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onGetStartTime, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onPatchStartTime, this, _1, _2, cref(xmlRestReaderWriterFactory)));
-	restService->addPath(MHD_HTTP_METHOD_DELETE,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2, cref(xmlRestReaderWriterFactory)));
+	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs", bind(&RestView::onGetProgramList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_POST,   "/programs", bind(&RestView::onPostProgramList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}", bind(&RestView::onGetProgram, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}", bind(&RestView::onPatchProgram, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_DELETE, "/programs/{programId}", bind(&RestView::onDeleteProgram, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/runtimes", bind(&RestView::onGetRunTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs/{programId}/runtimes/{runTimeId}", bind(&RestView::onGetRunTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/runtimes/{runTimeId}", bind(&RestView::onPatchRunTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/starttimes", bind(&RestView::onGetStartTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_POST, 	 "/programs/{programId}/starttimes", bind(&RestView::onPostStartTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onGetStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onPatchStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_DELETE,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -111,115 +87,101 @@ string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTim
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
-	const unique_ptr<DtoWriter> dtoWriter = restReaderWriterFactory.createDtoWriter();
+unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
+	const unique_ptr<DtoWriter> dtoWriter = xmlReaderWriterFactory.createDtoWriter();
 	const list<ProgramDTO> programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
 	const string text = dtoWriter->save(programDtoList);
 
-	return unique_ptr<HttpResponse>(new HttpResponse(text, headers));
+	return unique_ptr<HttpResponse>(new HttpResponse(200, text, "application/xml"));
 }
 
-unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const unique_ptr<DtoWriter> dtoWriter = restReaderWriterFactory.createDtoWriter();
+		const unique_ptr<DtoWriter> dtoWriter = xmlReaderWriterFactory.createDtoWriter();
 		const list<RunTimeDTO> runTimeDtoList = getProgram(pathParameters.at("programId"))->getRunTimes().toRunTimeDtoList();
 		const string text = dtoWriter->save(runTimeDtoList);
 
-		return unique_ptr<HttpResponse>(new HttpResponse(text, headers));
+		return unique_ptr<HttpResponse>(new HttpResponse(200, text, "application/xml"));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const unique_ptr<DtoWriter> dtoWriter = restReaderWriterFactory.createDtoWriter();
+		const unique_ptr<DtoWriter> dtoWriter = xmlReaderWriterFactory.createDtoWriter();
 		const list<StartTimeDTO> startTimeDtoList = getProgram(pathParameters.at("programId"))->getStartTimes().toStartTimeDtoList();
 		const string text = dtoWriter->save(startTimeDtoList);
 
-		return unique_ptr<HttpResponse>(new HttpResponse(text, headers));
+		return unique_ptr<HttpResponse>(new HttpResponse(200, text, "application/xml"));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const unique_ptr<DtoWriter> dtoWriter = restReaderWriterFactory.createDtoWriter();
+		const unique_ptr<DtoWriter> dtoWriter = xmlReaderWriterFactory.createDtoWriter();
 		const ProgramDTO programDto = getProgram(pathParameters.at("programId"))->toProgramDto();
 		const string text = dtoWriter->save(programDto);
 
-		return unique_ptr<HttpResponse>(new HttpResponse(text, headers));
+		return unique_ptr<HttpResponse>(new HttpResponse(200, text, "application/xml"));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const IllegalArgumentException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const unique_ptr<DtoWriter> dtoWriter = restReaderWriterFactory.createDtoWriter();
+		const unique_ptr<DtoWriter> dtoWriter = xmlReaderWriterFactory.createDtoWriter();
 		const RunTimeDTO runTimeDto = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"))->toRunTimeDto();
 		const string text = dtoWriter->save(runTimeDto);
 
-		return unique_ptr<HttpResponse>(new HttpResponse(text, headers));
+		return unique_ptr<HttpResponse>(new HttpResponse(200, text, "application/xml"));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const unique_ptr<DtoWriter> dtoWriter = restReaderWriterFactory.createDtoWriter();
+		const unique_ptr<DtoWriter> dtoWriter = xmlReaderWriterFactory.createDtoWriter();
 		const StartTimeDTO startTimeDto = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"))->toStartTimeDto();
 		const string text = dtoWriter->save(startTimeDto);
 
-		return unique_ptr<HttpResponse>(new HttpResponse(text, headers));
+		return unique_ptr<HttpResponse>(new HttpResponse(200, text, "application/xml"));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const unique_ptr<DtoReader> dtoReader = restReaderWriterFactory.createDtoReader();
+		const unique_ptr<DtoReader> dtoReader = xmlReaderWriterFactory.createDtoReader();
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<Program> program(new Program());
 		program->updateFromProgramDto(programDto);
 
 		const IdType programId = irrigationDocument.getPrograms().insert(IdType(), program).first;
 
+		KeyValue headers;
 		headers.insert(make_pair("Location", getProgramUrl(programId)));
-		return unique_ptr<HttpResponse>(new HttpResponse("", headers, 201));
+		return unique_ptr<HttpResponse>(new HttpResponse(201, "", headers));
 	} catch (const exception& e) {
-		throw RestBadRequest(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestBadRequest(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
+unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 
 	try {
-		const unique_ptr<DtoReader> dtoReader = restReaderWriterFactory.createDtoReader();
+		const unique_ptr<DtoReader> dtoReader = xmlReaderWriterFactory.createDtoReader();
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<StartTime> startTime(new StartTime());
 		startTime->updateFromStartTimeDto(startTimeDto);
@@ -227,91 +189,82 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 		const IdType programId = IdType::from_string(pathParameters.at("programId"));
 		const IdType startTimeId = irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(IdType(), startTime).first;
 
+		KeyValue headers;
 		headers.insert(make_pair("Location", getStartTimeUrl(programId, startTimeId)));
-		return unique_ptr<HttpResponse>(new HttpResponse("", headers, 201));
+		return unique_ptr<HttpResponse>(new HttpResponse(201, "", headers));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const exception& e) {
-		throw RestBadRequest(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestBadRequest(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const unique_ptr<DtoReader> dtoReader = restReaderWriterFactory.createDtoReader();
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
+		const unique_ptr<DtoReader> dtoReader = xmlReaderWriterFactory.createDtoReader();
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		program->updateFromProgramDto(programDto);
-		return unique_ptr<HttpResponse>(new HttpResponse("No Content", KeyValue(), 204));
+		return unique_ptr<HttpResponse>(new HttpResponse(204));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const exception& e) {
-		throw RestBadRequest(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestBadRequest(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const unique_ptr<DtoReader> dtoReader = restReaderWriterFactory.createDtoReader();
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const shared_ptr<RunTime> runTime = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"));
+		const unique_ptr<DtoReader> dtoReader = xmlReaderWriterFactory.createDtoReader();
 		const RunTimeDTO runTimeDto = dtoReader->loadRunTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const shared_ptr<RunTime> runTime = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"));
 		runTime->updateFromRunTimeDto(runTimeDto);
-		return unique_ptr<HttpResponse>(new HttpResponse("No Content", KeyValue(), 204));
+		return unique_ptr<HttpResponse>(new HttpResponse(204));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const exception& e) {
-		throw RestBadRequest(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestBadRequest(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const unique_ptr<DtoReader> dtoReader = restReaderWriterFactory.createDtoReader();
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
+		const unique_ptr<DtoReader> dtoReader = xmlReaderWriterFactory.createDtoReader();
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
 		startTime->updateFromStartTimeDto(startTimeDto);
-		return unique_ptr<HttpResponse>(new HttpResponse("No Content", KeyValue(), 204));
+		return unique_ptr<HttpResponse>(new HttpResponse(204));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const exception& e) {
-		throw RestBadRequest(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestBadRequest(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
 		irrigationDocument.getPrograms().erase(IdType::from_string(pathParameters.at("programId")));
-		return unique_ptr<HttpResponse>(new HttpResponse("", KeyValue()));
+		return unique_ptr<HttpResponse>(new HttpResponse(200));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const IllegalArgumentException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters, const RestReaderWriterFactory& restReaderWriterFactory) {
-	const KeyValue headers ({{"Content-Type", restReaderWriterFactory.getContentType()}});
-
+unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		program->getStartTimes().erase(IdType::from_string(pathParameters.at("startTimeId")));
-		return unique_ptr<HttpResponse>(new HttpResponse("", KeyValue()));
+		return unique_ptr<HttpResponse>(new HttpResponse(200));
 	} catch (const NoSuchElementException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	} catch (const IllegalArgumentException& e) {
-		throw RestHttpNotFount(restReaderWriterFactory.createErrorWriter(), e.what(), headers);
+		throw RestHttpNotFound(xmlErrorWriterFactory.create(), e.what(), "application/xml");
 	}
 }
 
