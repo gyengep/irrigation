@@ -1,6 +1,6 @@
 #include "RestServiceTest.h"
+#include "Views/RestView/RestServiceException.h"
 #include "WebServer/HttpResponse.h"
-#include "WebServer/WebServerException.h"
 
 using namespace std;
 using namespace testing;
@@ -22,7 +22,7 @@ TEST_F(RestServiceTest, notFound) {
 		HttpRequest request(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_GET, "/123456789", shared_ptr<ByteBuffer>(new ByteBuffer()));
 		restService.onRequest(request);
 		FAIL();
-	} catch (WebServerException& e) {
+	} catch (RestServiceException& e) {
 		EXPECT_EQ(MHD_HTTP_NOT_FOUND, e.getStatusCode());
 	} catch (...) {
 		FAIL();
@@ -34,7 +34,7 @@ TEST_F(RestServiceTest, methodNotAllowed) {
 		HttpRequest request(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_POST, "/tom/and/jerry", shared_ptr<ByteBuffer>(new ByteBuffer()));
 		restService.onRequest(request);
 		FAIL();
-	} catch (WebServerException& e) {
+	} catch (RestServiceException& e) {
 		EXPECT_EQ(MHD_HTTP_METHOD_NOT_ALLOWED, e.getStatusCode());
 	} catch (...) {
 		FAIL();

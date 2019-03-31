@@ -128,22 +128,22 @@ int WebServer::accessHandlerCallback(
 	unique_ptr<HttpResponse> response;
 
 	try {
-		try {
-			HttpRequest request(connection, version, method, url, connectionUploadData);
-			response = webService->onRequest(request);
+		const HttpRequest request(connection, version, method, url, connectionUploadData);
+		response = webService->onRequest(request);
 
-			if (response.get() == nullptr) {
-				throw std::runtime_error("HTTP response is NULL");
-			}
-
-		} catch (const WebServerException& e) {
-			throw;
-		} catch (const exception& e) {
-			LOGGER.warning("WebServer caught an expection: ", e);
-			throw HttpInternalServerError();
+		if (response.get() == nullptr) {
+			throw std::runtime_error("HTTP response is NULL");
 		}
+
 	} catch (const WebServerException& e) {
-		response.reset(new HttpResponse(e.getStatusCode(), e.getErrorMessage(), e.getHeaders()));
+		response = HttpResponse::Builder().
+				setStatusCode(e.getStatusCode()).
+				setMessage(e.getErrorMessage()).
+				setHeaders(e.getHeaders()).
+				build();
+	} catch (const exception& e) {
+		LOGGER.warning("WebServer caught an unhandled expection: ", e);
+		return MHD_NO;
 	}
 
 	return sendResponse(connection, response);

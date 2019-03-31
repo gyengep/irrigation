@@ -20,42 +20,60 @@ RestService::~RestService() {
 }
 
 unique_ptr<HttpResponse> RestService::onRequest(const HttpRequest& request) {
-	Path requestPath;
-	PathTemplate::split(request.getUrl(), requestPath);
+	try {
+		Path requestPath;
+		PathTemplate::split(request.getUrl(), requestPath);
 
-	bool pathFound = false;
+		bool pathFound = false;
 
-	for (auto it = pathInfos.begin(); pathInfos.end() != it; ++it) {
+		for (auto it = pathInfos.begin(); pathInfos.end() != it; ++it) {
 
-		const PathInfo& pathInfo = it->second;
-		KeyValue parameters;
+			const PathInfo& pathInfo = it->second;
+			KeyValue parameters;
 
-		if (pathInfo.path->evaluate(requestPath, parameters)) {
-			pathFound = true;
+			if (pathInfo.path->evaluate(requestPath, parameters)) {
+				pathFound = true;
 
-			const RestServiceCallback* restServiceCallback = findCallback(pathInfo.callbacks, request.getMethod());
-			if (restServiceCallback) {
-				checkAccept(request.getHeaders());
-				return restServiceCallback->operator() (request, parameters);
+				const RestServiceCallback* restServiceCallback = findCallback(pathInfo.callbacks, request.getMethod());
+				if (restServiceCallback) {
+					checkContentType(request);
+					checkAccept(request);
+					return restServiceCallback->operator() (request, parameters);
+				}
 			}
 		}
-	}
 
-	checkAccept(request.getHeaders());
-
-	if (pathFound) {
-		throw RestHttpMethodNotAllowed(errorWriterFactory->create(), request.getMethod(), "application/xml");
-	} else {
-		throw RestHttpNotFound(errorWriterFactory->create(), request.getUrl(), "application/xml");
+		if (pathFound) {
+			throw RestMethodNotAllowed(errorWriterFactory->create(), request.getMethod(), "application/xml");
+		} else {
+			throw RestNotFound(errorWriterFactory->create(), request.getUrl(), "application/xml");
+		}
+	} catch (const WebServerException& e) {
+		throw;
+	} catch (const exception& e) {
+		throw RestInternalServerError(errorWriterFactory->create(), e.what(), "application/xml");
 	}
 }
 
-void RestService::checkAccept(const KeyValue& headers) {
-	const auto it = headers.find("Accept");
+void RestService::checkAccept(const HttpRequest& request) {
+	const auto it = request.getHeaders().find("Accept");
 
-	if (headers.end() != it) {
+	if (request.getHeaders().end() != it) {
 		if (it->second != "application/xml" && it->second != "*/*") {
-			throw HttpNotAcceptable();
+			LOGGER.debug("Not acceptable: %s", it->second.c_str());
+			throw RestNotAcceptable(errorWriterFactory->create(), request.getUrl(), "application/xml");
+		}
+	}
+}
+
+void RestService::checkContentType(const HttpRequest& request) {
+	const auto it = request.getHeaders().find("Content-Type");
+
+	if (request.getHeaders().end() != it) {
+		if (it->second != "application/xml") {
+			cout << "Unsupported media type: " << it->second << endl;
+			LOGGER.debug("Unsupported media type: %s", it->second.c_str());
+			throw RestUnsupportedMediaType(errorWriterFactory->create(), request.getUrl(), "application/xml");
 		}
 	}
 }

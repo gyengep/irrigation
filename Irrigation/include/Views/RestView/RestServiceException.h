@@ -15,9 +15,33 @@ public:
 };
 
 
-class RestHttpNotFound : public RestServiceException {
+class RestNotAcceptable : public RestServiceException {
 public:
-	RestHttpNotFound(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
+	RestNotAcceptable(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
+		RestServiceException(errorWriter, 404, message, contentType)
+	{
+	}
+};
+
+class RestUnsupportedMediaType : public RestServiceException {
+public:
+	RestUnsupportedMediaType(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
+		RestServiceException(errorWriter, 415, message, contentType)
+	{
+	}
+};
+
+class RestInternalServerError : public RestServiceException {
+public:
+	RestInternalServerError(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
+		RestServiceException(errorWriter, 500, message, contentType)
+	{
+	}
+};
+
+class RestNotFound : public RestServiceException {
+public:
+	RestNotFound(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
 		RestServiceException(errorWriter, 404, message, contentType)
 	{
 	}
@@ -31,9 +55,9 @@ public:
 	}
 };
 
-class RestHttpMethodNotAllowed : public RestServiceException {
+class RestMethodNotAllowed : public RestServiceException {
 public:
-	RestHttpMethodNotAllowed(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
+	RestMethodNotAllowed(const std::unique_ptr<ErrorWriter>& errorWriter, const std::string& message, const std::string& contentType) :
 		RestServiceException(errorWriter, 405, message, contentType)
 	{
 	}

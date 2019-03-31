@@ -55,8 +55,10 @@ RestViewTest::Response RestViewTest::executeRequest(const std::string& method, c
 	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.headerCallbackData);
 
 	if (!sendData.empty()) {
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, sendData.c_str());
+		ReadCallbackData readCallbackData(sendData);
+		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
+		curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
 	}
 
 	curl_easy_perform(curl);

@@ -12,7 +12,7 @@ using namespace placeholders;
 void RestServerTest::SetUp() {
 	restService.reset(new RestService());
 
-	restService->addPath("POST", "/programs", bind(onCreateProgram, this, _1, _2));
+	restService->addPath("PUT", "/programs", bind(onCreateProgram, this, _1, _2));
 	restService->addPath("GET", "/programs/{programID}", bind(onGetProgram, this, _1, _2));
 
 	webServer.reset(new WebServer(restService, port));
@@ -35,12 +35,16 @@ TEST_F(RestServerTest, callbackWithoutParameter) {
 	CURL *curl = curl_easy_init();
 
 	ASSERT_NE(nullptr, curl);
-	EXPECT_CALL(*this, onCreateProgram(_, _)).Times(1);
+	EXPECT_CALL(*this, onCreateProgram(_, KeyValue())).Times(1);
 
 	if (curl) {
+		ReadCallbackData readCallbackData("");
+
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
+		curl_easy_setopt(curl, CURLOPT_PUT, 1);
+		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
+		curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
         curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 	}

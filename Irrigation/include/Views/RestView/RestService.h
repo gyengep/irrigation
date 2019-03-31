@@ -29,9 +29,10 @@ class RestService : public WebService {
 	PathInfos pathInfos;
 	std::shared_ptr<ErrorWriterFactory> errorWriterFactory;
 
+	void checkAccept(const HttpRequest& request);
+	void checkContentType(const HttpRequest& request);
 	Callbacks& getCallbacksForPath(const std::string& path);
 	static const RestServiceCallback* findCallback(const Callbacks& callbacks, const std::string& method);
-	static void checkAccept(const KeyValue& headers);
 
 public:
 	RestService();

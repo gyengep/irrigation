@@ -1,30 +1,19 @@
 #pragma once
-#include <microhttpd.h>
+#include <memory>
 #include <string>
+#include <microhttpd.h>
 #include "KeyValue.h"
 
 
 
 class HttpResponse {
+public:
+	class Builder;
+
+private:
 	const unsigned statusCode;
 	const std::string message;
 	KeyValue headers;
-
-public:
-	HttpResponse(unsigned statusCode = MHD_HTTP_OK) :
-		statusCode(statusCode),
-		message(),
-		headers()
-	{
-	}
-
-	HttpResponse(unsigned statusCode, const std::string& message, const std::string& contentType) :
-		statusCode(statusCode),
-		message(message),
-		headers()
-	{
-		addHeader("Content-Type", contentType);
-	}
 
 	HttpResponse(unsigned statusCode, const std::string& message, const KeyValue& headers) :
 		statusCode(statusCode),
@@ -33,11 +22,26 @@ public:
 	{
 	}
 
-	void addHeader(const std::string& key, const std::string& value) {
-		headers.insert(std::make_pair(key, value));
-	}
-
+public:
 	const std::string& getMessage() const { return message; }
 	const KeyValue& gerHeaders() const { return headers; }
 	unsigned getStatusCode() const { return statusCode; }
+};
+
+
+class HttpResponse::Builder {
+	unsigned statusCode;
+	std::string message;
+	KeyValue headers;
+
+public:
+	Builder();
+	~Builder();
+
+	Builder& setStatusCode(unsigned statusCode);
+	Builder& setMessage(const std::string& message);
+	Builder& setHeaders(const KeyValue& headers);
+	Builder& addHeader(const std::string& key, const std::string& value);
+
+	std::unique_ptr<HttpResponse> build();
 };
