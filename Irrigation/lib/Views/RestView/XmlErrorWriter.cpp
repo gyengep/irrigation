@@ -5,7 +5,11 @@
 using namespace std;
 
 
-string XmlErrorWriter::to(const string& errorMessage, unsigned errorCode) {
+string XmlErrorWriter::contentType() const {
+	return "application/xml";
+}
+
+string XmlErrorWriter::toString(unsigned errorCode, const std::string& errorMessage) const {
 	ostringstream oss;
 	oss << "<?xml version=\"1.0\"?>" << endl;
 	oss << "<error>" << endl;
@@ -13,8 +17,4 @@ string XmlErrorWriter::to(const string& errorMessage, unsigned errorCode) {
 	oss << "\t<code>" << errorCode << "</code>" << endl;
 	oss << "</error>" << endl;
 	return oss.str();
-}
-
-unique_ptr<ErrorWriter> XmlErrorWriterFactory::create() const {
-	return unique_ptr<ErrorWriter>(new XmlErrorWriter());
 }

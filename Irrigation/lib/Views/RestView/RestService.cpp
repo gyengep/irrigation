@@ -4,7 +4,6 @@
 #include "Logger/Logger.h"
 #include "WebServer/HttpResponse.h"
 #include <algorithm>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -12,7 +11,7 @@ using namespace std;
 
 
 RestService::RestService() :
-	errorWriterFactory(new XmlErrorWriterFactory())
+	errorWriter(new XmlErrorWriter())
 {
 }
 
@@ -44,14 +43,14 @@ unique_ptr<HttpResponse> RestService::onRequest(const HttpRequest& request) {
 		}
 
 		if (pathFound) {
-			throw RestMethodNotAllowed(errorWriterFactory->create(), request.getMethod(), "application/xml");
+			throw RestMethodNotAllowed(errorWriter, request.getMethod());
 		} else {
-			throw RestNotFound(errorWriterFactory->create(), request.getUrl(), "application/xml");
+			throw RestNotFound(errorWriter, request.getUrl());
 		}
 	} catch (const WebServerException& e) {
 		throw;
 	} catch (const exception& e) {
-		throw RestInternalServerError(errorWriterFactory->create(), e.what(), "application/xml");
+		throw RestInternalServerError(errorWriter, e.what());
 	}
 }
 
@@ -61,7 +60,7 @@ void RestService::checkAccept(const HttpRequest& request) {
 	if (request.getHeaders().end() != it) {
 		if (it->second != "application/xml" && it->second != "*/*") {
 			LOGGER.debug("Not acceptable: %s", it->second.c_str());
-			throw RestNotAcceptable(errorWriterFactory->create(), request.getUrl(), "application/xml");
+			throw RestNotAcceptable(errorWriter, request.getUrl());
 		}
 	}
 }
@@ -71,9 +70,8 @@ void RestService::checkContentType(const HttpRequest& request) {
 
 	if (request.getHeaders().end() != it) {
 		if (it->second != "application/xml") {
-			cout << "Unsupported media type: " << it->second << endl;
 			LOGGER.debug("Unsupported media type: %s", it->second.c_str());
-			throw RestUnsupportedMediaType(errorWriterFactory->create(), request.getUrl(), "application/xml");
+			throw RestUnsupportedMediaType(errorWriter, request.getUrl());
 		}
 	}
 }

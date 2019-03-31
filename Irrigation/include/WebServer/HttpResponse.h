@@ -15,6 +15,7 @@ private:
 	const std::string message;
 	KeyValue headers;
 
+public:
 	HttpResponse(unsigned statusCode, const std::string& message, const KeyValue& headers) :
 		statusCode(statusCode),
 		message(message),
@@ -22,7 +23,6 @@ private:
 	{
 	}
 
-public:
 	const std::string& getMessage() const { return message; }
 	const KeyValue& gerHeaders() const { return headers; }
 	unsigned getStatusCode() const { return statusCode; }
@@ -31,7 +31,7 @@ public:
 
 class HttpResponse::Builder {
 	unsigned statusCode;
-	std::string message;
+	std::string body;
 	KeyValue headers;
 
 public:
@@ -39,8 +39,7 @@ public:
 	~Builder();
 
 	Builder& setStatusCode(unsigned statusCode);
-	Builder& setMessage(const std::string& message);
-	Builder& setHeaders(const KeyValue& headers);
+	Builder& setBody(const std::string& body, const std::string& contentType);
 	Builder& addHeader(const std::string& key, const std::string& value);
 
 	std::unique_ptr<HttpResponse> build();

@@ -20,7 +20,7 @@ protected:
 		KeyValue lastRequestedHeaders;
 		ByteBuffer lastRequestedData;
 
-		std::string httpResponse;
+		std::string httpResponseBody;
 		int httpResponseCode;
 		KeyValue httpResponseHeaders;
 

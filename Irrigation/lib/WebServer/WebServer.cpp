@@ -136,11 +136,7 @@ int WebServer::accessHandlerCallback(
 		}
 
 	} catch (const WebServerException& e) {
-		response = HttpResponse::Builder().
-				setStatusCode(e.getStatusCode()).
-				setMessage(e.getErrorMessage()).
-				setHeaders(e.getHeaders()).
-				build();
+		response.reset(new HttpResponse(e.getStatusCode(), e.getErrorMessage(), e.getHeaders()));
 	} catch (const exception& e) {
 		LOGGER.warning("WebServer caught an unhandled expection: ", e);
 		return MHD_NO;

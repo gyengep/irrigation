@@ -31,11 +31,7 @@ unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequ
 	lastRequestedHeaders = request.getHeaders();
 	lastRequestedData = *request.getUploadData();
 
-	return HttpResponse::Builder().
-			setStatusCode(httpResponseCode).
-			setMessage(httpResponse).
-			setHeaders(httpResponseHeaders).
-			build();
+	return unique_ptr<HttpResponse>(new HttpResponse(httpResponseCode, httpResponseBody, httpResponseHeaders));
 }
 
 
@@ -123,7 +119,7 @@ TEST_F(WebServerTest, resultOK) {
 	const int expectedHttpResponseCode = 200;
 	const char* expectedHttpResponse = "TEST_RESPONE";
 
-	testWebService->httpResponse = expectedHttpResponse;
+	testWebService->httpResponseBody = expectedHttpResponse;
 	testWebService->httpResponseCode = expectedHttpResponseCode;
 
 	CURL *curl = curl_easy_init();
@@ -152,7 +148,7 @@ TEST_F(WebServerTest, result404) {
 	const int expectedHttpResponseCode = 404;
 	const char* expectedHttpResponse = "NOT FOUND";
 
-	testWebService->httpResponse = expectedHttpResponse;
+	testWebService->httpResponseBody = expectedHttpResponse;
 	testWebService->httpResponseCode = expectedHttpResponseCode;
 
 	CURL *curl = curl_easy_init();

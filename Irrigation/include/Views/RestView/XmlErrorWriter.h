@@ -5,13 +5,6 @@
 class XmlErrorWriter : public ErrorWriter {
 public:
 	virtual ~XmlErrorWriter() = default;
-	virtual std::string to(const std::string& errorMessage, unsigned errorCode) override;
+	virtual std::string contentType() const override;
+	virtual std::string toString(unsigned errorCode, const std::string& errorMessage) const override;
 };
-
-
-class XmlErrorWriterFactory : public ErrorWriterFactory {
-public:
-	virtual ~XmlErrorWriterFactory() = default;
-	virtual std::unique_ptr<ErrorWriter> create() const override;
-};
-

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "DocumentView/View.h"
-#include "DtoReaderWriter/XmlReaderWriterFactory.h"
+#include "DtoReaderWriter/DtoReaderWriter.h"
 #include "Logic/IdType.h"
 #include "Model/IrrigationDocument.h"
 #include "XmlErrorWriter.h"
@@ -23,8 +23,8 @@ class RestView : public View {
 	IrrigationDocument& irrigationDocument;
 	std::shared_ptr<RestService> restService;
 	std::unique_ptr<WebServer> webServer;
-	XmlReaderWriterFactory xmlReaderWriterFactory;
-	XmlErrorWriterFactory xmlErrorWriterFactory;
+	std::shared_ptr<DtoReader> dtoReader;
+	std::shared_ptr<DtoWriter> dtoWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters);

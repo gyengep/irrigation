@@ -6,13 +6,6 @@
 class ErrorWriter {
 public:
 	virtual ~ErrorWriter() = default;
-	virtual std::string to(const std::string& errorMessage, unsigned errorCode) = 0;
+	virtual std::string contentType() const = 0;
+	virtual std::string toString(unsigned errorCode, const std::string& errorMessage) const = 0;
 };
-
-
-class ErrorWriterFactory {
-public:
-	virtual ~ErrorWriterFactory() = default;
-	virtual std::unique_ptr<ErrorWriter> create() const = 0;
-};
-

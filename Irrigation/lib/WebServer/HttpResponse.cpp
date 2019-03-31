@@ -15,14 +15,9 @@ HttpResponse::Builder& HttpResponse::Builder::setStatusCode(unsigned statusCode)
 	return *this;
 }
 
-HttpResponse::Builder& HttpResponse::Builder::setMessage(const std::string& message) {
-	this->message = message;
-	addHeader("Content-Length", to_string(message.length()));
-	return *this;
-}
-
-HttpResponse::Builder& HttpResponse::Builder::setHeaders(const KeyValue& headers) {
-	this->headers = headers;
+HttpResponse::Builder& HttpResponse::Builder::setBody(const std::string& body, const std::string& contentType) {
+	this->body = body;
+	addHeader("Content-Type", contentType);
 	return *this;
 }
 
@@ -33,5 +28,5 @@ HttpResponse::Builder& HttpResponse::Builder::addHeader(const std::string& key, 
 
 
 unique_ptr<HttpResponse> HttpResponse::Builder::build() {
-	return unique_ptr<HttpResponse>(new HttpResponse(statusCode, message, headers));
+	return unique_ptr<HttpResponse>(new HttpResponse(statusCode, body, headers));
 }

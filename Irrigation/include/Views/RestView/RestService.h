@@ -27,7 +27,7 @@ class RestService : public WebService {
 	typedef std::map<const std::string, std::shared_ptr<ErrorWriter>> ErrorWriters;
 
 	PathInfos pathInfos;
-	std::shared_ptr<ErrorWriterFactory> errorWriterFactory;
+	std::shared_ptr<ErrorWriter> errorWriter;
 
 	void checkAccept(const HttpRequest& request);
 	void checkContentType(const HttpRequest& request);
@@ -39,6 +39,7 @@ public:
 	virtual ~RestService();
 
 	void addPath(const std::string& method, const std::string& path, RestServiceCallback restServiceCallback);
+	std::shared_ptr<ErrorWriter> getErrorWriter() const { return errorWriter; }
 
 	virtual std::unique_ptr<HttpResponse> onRequest(const HttpRequest& request) override;
 };
