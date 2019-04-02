@@ -15,18 +15,18 @@ std::string RestViewTest::createRunTimeUrl(IdType programId, IdType runTimeId) {
 
 void RestViewTest::testGetRunTime(const IdType& programId, const IdType& runTimeId, const RunTimeDTO& runTimeDTO) {
 	Response response = executeRequest("GET", createRunTimeUrl(programId, runTimeId));
-	EXPECT_THAT(response.responseCode, Eq(200));
+	checkResponseWithBody(response, 200, "application/xml");
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeDTO)));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postRunTime) {
-	Response response = executeRequest("POST", createRunTimeUrl(IdType(), IdType()), XmlWriter().save(RunTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	Response response = executeRequest("POST", createRunTimeUrl(IdType(), IdType()), XmlWriter().save(RunTimeSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 405, "application/xml");
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getRunTime) {
 	const IdType programId;
@@ -51,8 +51,7 @@ TEST_F(RestViewTest, getRunTime) {
 
 TEST_F(RestViewTest, getRunTimeNotFound1) {
 	Response response = executeRequest("GET", createRunTimeUrl(IdType(), IdType(0)));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 404, "application/xml");
 }
 
 TEST_F(RestViewTest, getRunTimeNotFound2) {
@@ -60,15 +59,30 @@ TEST_F(RestViewTest, getRunTimeNotFound2) {
 	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createRunTimeUrl(programId, IdType()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 404, "application/xml");
 }
 
-TEST_F(RestViewTest, putRunTime) {
-	Response response = executeRequest("PUT", createRunTimeUrl(IdType(), IdType()), XmlWriter().save(RunTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+TEST_F(RestViewTest, getRunTimeAcceptable) {
+	const IdType programId;
+	const IdType runTimeId(0);
+
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+
+	Response response = executeRequest("GET", createRunTimeUrl(programId, runTimeId), "Accept: application/xml");
+	checkResponseWithBody(response, 200, "application/xml");
 }
+
+TEST_F(RestViewTest, getRunTimeNotAcceptable) {
+	const IdType programId;
+	const IdType runTimeId(0);
+
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+
+	Response response = executeRequest("GET", createRunTimeUrl(programId, runTimeId), "Accept: application/json");
+	checkErrorResponse(response, 406, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, patchRunTime) {
 	const IdType programId;
@@ -82,15 +96,13 @@ TEST_F(RestViewTest, patchRunTime) {
 
 	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes.at(runTimeId), updateFromRunTimeDto(runTimeSample.getDto()));
 
-	const Response response = executeRequest("PATCH", createRunTimeUrl(programId, runTimeId), XmlWriter().save(runTimeSample.getDto()));
-	EXPECT_THAT(response.responseCode, Eq(204));
-	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
+	const Response response = executeRequest("PATCH", createRunTimeUrl(programId, runTimeId), XmlWriter().save(runTimeSample.getDto()), "application/xml");
+	checkResponseWithoutBody(response, 204);
 }
 
 TEST_F(RestViewTest, patchRunTimeNotFound) {
-	const Response response = executeRequest("PATCH", createRunTimeUrl(IdType(), IdType()), XmlWriter().save(RunTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	const Response response = executeRequest("PATCH", createRunTimeUrl(IdType(), IdType()), XmlWriter().save(RunTimeSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 404, "application/xml");
 }
 
 TEST_F(RestViewTest, patchRunTimeInvalidXml) {
@@ -99,13 +111,23 @@ TEST_F(RestViewTest, patchRunTimeInvalidXml) {
 
 	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
-	const Response response = executeRequest("PATCH", createRunTimeUrl(programId, runTimeId), "InvalidXml");
-	EXPECT_THAT(response.responseCode, Eq(400));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	const Response response = executeRequest("PATCH", createRunTimeUrl(programId, runTimeId), "InvalidXml", "application/xml");
+	checkErrorResponse(response, 400, "application/xml");
 }
+
+TEST_F(RestViewTest, patchRunTimeInvalidContentType) {
+	const IdType programId;
+	const IdType runTimeId(2);
+
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+
+	const Response response = executeRequest("PATCH", createRunTimeUrl(programId, runTimeId), "{ \"key\" = \"value\" }", "application/json");
+	checkErrorResponse(response, 415, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, deleteRunTime) {
 	Response response = executeRequest("DELETE", createRunTimeUrl(IdType(), IdType()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 405, "application/xml");
 }

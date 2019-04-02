@@ -12,18 +12,25 @@ class RestView;
 class RestViewTest : public  testing::Test {
 protected:
 	struct Response {
-	    long responseCode;
+		long responseCode;
 	    WriteCallbackData writeCallbackData;
 	    HeaderCallbackData headerCallbackData;
 	};
 
+
+private:
+	Response __executeRequest__(const std::string& method, const std::string&  url, const std::string& body, const std::string& customHeader);
+
+protected:
 	static const uint16_t port = 8080;
 	std::shared_ptr<IrrigationDocument> document;
 
     virtual void SetUp();
     virtual void TearDown();
 
-    Response executeRequest(const std::string& method, const std::string&  url, const std::string& sendData = std::string());
+    Response executeRequest(const std::string& method, const std::string&  url);
+    Response executeRequest(const std::string& method, const std::string&  url, const std::string& customHeader);
+    Response executeRequest(const std::string& method, const std::string&  url, const std::string& body, const std::string& contentType);
 
     void testGetProgram(const IdType& programId, const ProgramDTO& programDto);
     void testGetRunTime(const IdType& programId, const IdType& runTimeId, const RunTimeDTO& runTimeDto);
@@ -31,6 +38,10 @@ protected:
     void testGetProgramList(const std::list<ProgramDTO>& programDtoList);
     void testGetRunTimeList(const IdType& programId, const std::list<RunTimeDTO>& runTimeDtoList);
     void testGetStartTimeList(const IdType& programId, const std::list<StartTimeDTO>& startTimeDtoList);
+
+    static void checkErrorResponse(const Response& response, long statusCode, const std::string& contentType);
+    static void checkResponseWithoutBody(const Response& response, long statusCode);
+    static void checkResponseWithBody(const Response& response, long statusCode, const std::string& contentType);
 
     static std::string createUrl(const std::string& path);
     static std::string createProgramUrl(IdType programId);

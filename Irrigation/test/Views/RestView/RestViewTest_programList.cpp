@@ -15,9 +15,8 @@ std::string RestViewTest::createProgramListUrl() {
 
 void RestViewTest::testGetProgramList(const list<ProgramDTO>& programDtoList) {
 	Response response = executeRequest("GET", createProgramListUrl());
-	EXPECT_THAT(response.responseCode, Eq(200));
+	checkResponseWithBody(response, 200, "application/xml");
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programDtoList)));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,19 +29,24 @@ TEST_F(RestViewTest, postProgramList) {
 	document = IrrigationDocument::Builder().setProgramContainer(mockProgramContainer).build();
 	document->addView(unique_ptr<View>(new RestView(*document, port)));
 
-	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()));
+	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
 	const IdType programId = document->getPrograms().begin()->first;
 
-	EXPECT_THAT(response.responseCode, Eq(201));
+	checkResponseWithoutBody(response, 201);
 	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "\r\n"));
-	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
 }
 
 TEST_F(RestViewTest, postProgramListInvalidXml) {
-	const Response response = executeRequest("POST", createProgramListUrl(), "InvalidXml");
-	EXPECT_THAT(response.responseCode, Eq(400));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	const Response response = executeRequest("POST", createProgramListUrl(), "InvalidXml", "application/xml");
+	checkErrorResponse(response, 400, "application/xml");
 }
+
+TEST_F(RestViewTest, postProgramListInvalidContentType) {
+	const Response response = executeRequest("POST", createProgramListUrl(), "{ \"key\" : \"value\" }", "application/json");
+	checkErrorResponse(response, 415, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getProgramList1) {
 	const std::list<ProgramDTO> programDtoList = ProgramListSample1().getDtoList();
@@ -68,20 +72,32 @@ TEST_F(RestViewTest, getProgramList4) {
 	testGetProgramList(programDtoList);
 }
 
-TEST_F(RestViewTest, putProgramList) {
-	Response response = executeRequest("PUT", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+TEST_F(RestViewTest, getProgramListAcceptable) {
+	const std::list<ProgramDTO> programDtoList = ProgramListSample4().getDtoList();
+	document->getPrograms().updateFromProgramDtoList(programDtoList);
+
+	Response response = executeRequest("GET", createProgramListUrl(), "Accept: application/xml");
+	checkResponseWithBody(response, 200, "application/xml");
 }
 
-TEST_F(RestViewTest, patchProgramList) {
-	Response response = executeRequest("PATCH", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+TEST_F(RestViewTest, getProgramListNotAcceptable) {
+	const std::list<ProgramDTO> programDtoList = ProgramListSample4().getDtoList();
+	document->getPrograms().updateFromProgramDtoList(programDtoList);
+
+	Response response = executeRequest("GET", createProgramListUrl(), "Accept: application/json");
+	checkErrorResponse(response, 406, "application/xml");
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(RestViewTest, patchProgramList) {
+	Response response = executeRequest("PATCH", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 405, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, deleteProgramList) {
 	Response response = executeRequest("DELETE", createProgramListUrl());
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 405, "application/xml");
 }

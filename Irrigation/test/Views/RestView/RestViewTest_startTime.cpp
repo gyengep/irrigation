@@ -16,18 +16,18 @@ std::string RestViewTest::createStartTimeUrl(IdType programId, IdType startTimeI
 
 void RestViewTest::testGetStartTime(const IdType& programId, const IdType& startTimeId, const StartTimeDTO& startTimeDTO) {
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId));
-	EXPECT_THAT(response.responseCode, Eq(200));
+	checkResponseWithBody(response, 200, "application/xml");
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeDTO)));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postStartTime) {
-	Response response = executeRequest("POST", createStartTimeUrl(IdType(), IdType()), XmlWriter().save(StartTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	Response response = executeRequest("POST", createStartTimeUrl(IdType(), IdType()), XmlWriter().save(StartTimeSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 405, "application/xml");
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getStartTime) {
 	const IdType programId;
@@ -48,8 +48,7 @@ TEST_F(RestViewTest, getStartTime) {
 
 TEST_F(RestViewTest, getStartTimeNotFound1) {
 	Response response = executeRequest("GET", createStartTimeUrl(IdType(), IdType()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 404, "application/xml");
 }
 
 TEST_F(RestViewTest, getStartTimeNotFound2) {
@@ -57,15 +56,34 @@ TEST_F(RestViewTest, getStartTimeNotFound2) {
 	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, IdType()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 404, "application/xml");
 }
 
-TEST_F(RestViewTest, putStartTime) {
-	Response response = executeRequest("PUT", createStartTimeUrl(IdType(), IdType()), XmlWriter().save(StartTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+TEST_F(RestViewTest, getStartTimeAcceptable) {
+	const IdType programId;
+	const IdType startTimeId;
+	const shared_ptr<Program> program(new Program());
+
+	document->getPrograms().insert(programId, program);
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime));
+
+	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/xml");
+	checkResponseWithBody(response, 200, "application/xml");
 }
+
+TEST_F(RestViewTest, getStartTimeNotAcceptable) {
+	const IdType programId;
+	const IdType startTimeId;
+	const shared_ptr<Program> program(new Program());
+
+	document->getPrograms().insert(programId, program);
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime));
+
+	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/json");
+	checkErrorResponse(response, 406, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, patchStartTime) {
 	const IdType programId;
@@ -79,15 +97,13 @@ TEST_F(RestViewTest, patchStartTime) {
 
 	EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(startTimeSample.getDto()));
 
-	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), XmlWriter().save(startTimeSample.getDto()));
-	EXPECT_THAT(response.responseCode, Eq(204));
-	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
+	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), XmlWriter().save(startTimeSample.getDto()), "application/xml");
+	checkResponseWithoutBody(response, 204);
 }
 
 TEST_F(RestViewTest, patchStartTimeNotFound) {
-	const Response response = executeRequest("PATCH", createStartTimeUrl(IdType(), IdType()), XmlWriter().save(StartTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	const Response response = executeRequest("PATCH", createStartTimeUrl(IdType(), IdType()), XmlWriter().save(StartTimeSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 404, "application/xml");
 }
 
 TEST_F(RestViewTest, patchStartTimeInvalidXml) {
@@ -98,10 +114,23 @@ TEST_F(RestViewTest, patchStartTimeInvalidXml) {
 	document->getPrograms().insert(programId, program);
 	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
 
-	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "InvalidXml");
-	EXPECT_THAT(response.responseCode, Eq(400));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "InvalidXml", "application/xml");
+	checkErrorResponse(response, 400, "application/xml");
 }
+
+TEST_F(RestViewTest, patchStartTimeInvalidContentType) {
+	const IdType programId;
+	const IdType startTimeId;
+	const shared_ptr<Program> program(new Program());
+
+	document->getPrograms().insert(programId, program);
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
+
+	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "{ \"key\" : \"value\" }", "application/json");
+	checkErrorResponse(response, 415, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, deleteStartTime) {
 	const IdType programId;
@@ -116,12 +145,10 @@ TEST_F(RestViewTest, deleteStartTime) {
 	document->getPrograms().insert(programId, program);
 
 	Response response = executeRequest("DELETE", createStartTimeUrl(programId, startTimeId));
-	EXPECT_THAT(response.responseCode, Eq(200));
-	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
+	checkResponseWithoutBody(response, 200);
 }
 
 TEST_F(RestViewTest, deleteStartTimeNotFound) {
 	Response response = executeRequest("DELETE", createStartTimeUrl(IdType(), IdType()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 404, "application/xml");
 }

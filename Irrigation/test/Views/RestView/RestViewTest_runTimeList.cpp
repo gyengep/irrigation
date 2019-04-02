@@ -14,18 +14,18 @@ std::string RestViewTest::createRunTimeListUrl(IdType programId) {
 
 void RestViewTest::testGetRunTimeList(const IdType& programId, const list<RunTimeDTO>& runTimeDtoList) {
 	Response response = executeRequest("GET", createRunTimeListUrl(programId));
-	EXPECT_THAT(response.responseCode, Eq(200));
+	checkResponseWithBody(response, 200, "application/xml");
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeDtoList)));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postRunTimeList) {
-	Response response = executeRequest("POST", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	Response response = executeRequest("POST", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 405, "application/xml");
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getRunTimeList1) {
 	const IdType programId;
@@ -67,26 +67,39 @@ TEST_F(RestViewTest, getRunTimeList4) {
 	testGetRunTimeList(programId, runTimeDtoList);
 }
 
+TEST_F(RestViewTest, getRunTimeListAcceptable) {
+	const IdType programId;
+
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	Response response = executeRequest("GET", createRunTimeListUrl(programId), "Accept: application/xml");
+
+	checkResponseWithBody(response, 200, "application/xml");
+}
+
 TEST_F(RestViewTest, getRunTimeListNotFound) {
 	Response response = executeRequest("GET", createRunTimeListUrl(IdType()));
-	EXPECT_THAT(response.responseCode, Eq(404));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 404, "application/xml");
 }
 
-TEST_F(RestViewTest, putRunTimeList) {
-	Response response = executeRequest("PUT", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+TEST_F(RestViewTest, getRunTimeListNotAcceptable) {
+	const IdType programId;
+
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	Response response = executeRequest("GET", createRunTimeListUrl(programId), "Accept: application/json");
+
+	checkErrorResponse(response, 406, "application/xml");
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, patchRunTimeList) {
-	Response response = executeRequest("PATCH", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	Response response = executeRequest("PATCH", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()), "application/xml");
+	checkErrorResponse(response, 405, "application/xml");
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, deleteRunTimeList) {
 	Response response = executeRequest("DELETE", createRunTimeListUrl(IdType()));
-	EXPECT_THAT(response.responseCode, Eq(405));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: application/xml\r\n"));
+	checkErrorResponse(response, 405, "application/xml");
 }
