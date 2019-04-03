@@ -17,6 +17,6 @@ public:
 
 	unsigned getStatusCode() const { return statusCode; }
 	const char* getErrorMessage() const { return what(); }
-	const KeyValue getHeaders() const { return headers; }
+	const KeyValue& getHeaders() const { return headers; }
 };
 

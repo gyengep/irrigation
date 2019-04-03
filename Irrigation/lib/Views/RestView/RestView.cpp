@@ -112,7 +112,8 @@ unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, 
 
 	return HttpResponse::Builder().
 			setStatusCode(200).
-			setBody(text, "application/xml").
+			setBody(text).
+			addHeader("Content-Type", "application/xml").
 			build();
 }
 
@@ -123,7 +124,8 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -137,7 +139,8 @@ unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -153,7 +156,8 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -169,7 +173,8 @@ unique_ptr<HttpResponse> RestView::onGetRunTime(const HttpRequest& request, cons
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -183,7 +188,8 @@ unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, co
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -197,7 +203,8 @@ unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& req
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -211,7 +218,8 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 
 		return HttpResponse::Builder().
 				setStatusCode(200).
-				setBody(text, "application/xml").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
@@ -228,7 +236,10 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 
 		const IdType programId = irrigationDocument.getPrograms().insert(IdType(), program).first;
 
-		return HttpResponse::Builder().setStatusCode(201).addHeader("Location", getProgramUrl(programId)).build();
+		return HttpResponse::Builder().
+				setStatusCode(201).
+				addHeader("Location", getProgramUrl(programId)).
+				build();
 	} catch (const exception& e) {
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
@@ -244,7 +255,10 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 		const IdType programId = IdType::from_string(pathParameters.at("programId"));
 		const IdType startTimeId = irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(IdType(), startTime).first;
 
-		return HttpResponse::Builder().setStatusCode(201).addHeader("Location", getStartTimeUrl(programId, startTimeId)).build();
+		return HttpResponse::Builder().
+				setStatusCode(201).
+				addHeader("Location", getStartTimeUrl(programId, startTimeId)).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
@@ -259,7 +273,9 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		program->updateFromProgramDto(programDto);
-		return HttpResponse::Builder().setStatusCode(204).build();
+		return HttpResponse::Builder().
+				setStatusCode(204).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
@@ -272,7 +288,9 @@ unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, co
 		const shared_ptr<RunTime> runTime = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"));
 		const RunTimeDTO runTimeDto = dtoReader->loadRunTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		runTime->updateFromRunTimeDto(runTimeDto);
-		return HttpResponse::Builder().setStatusCode(204).build();
+		return HttpResponse::Builder().
+				setStatusCode(204).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
@@ -285,7 +303,9 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		startTime->updateFromStartTimeDto(startTimeDto);
-		return HttpResponse::Builder().setStatusCode(204).build();
+		return HttpResponse::Builder().
+				setStatusCode(204).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
@@ -298,7 +318,9 @@ unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& r
 		PeriodicScheduler& periodicScheduler = getPeriodicScheduler(pathParameters.at("programId"));
 		const PeriodicSchedulerDTO periodicSchedulerDto = dtoReader->loadPeriodicScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		periodicScheduler.updateFromPeriodicSchedulerDto(periodicSchedulerDto);
-		return HttpResponse::Builder().setStatusCode(204).build();
+		return HttpResponse::Builder().
+				setStatusCode(204).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
@@ -311,7 +333,9 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 		WeeklyScheduler& weeklyScheduler = getWeeklyScheduler(pathParameters.at("programId"));
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
-		return HttpResponse::Builder().setStatusCode(204).build();
+		return HttpResponse::Builder().
+				setStatusCode(204).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
@@ -324,7 +348,9 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
 		irrigationDocument.getPrograms().erase(IdType::from_string(pathParameters.at("programId")));
-		return HttpResponse::Builder().setStatusCode(200).build();
+		return HttpResponse::Builder().
+				setStatusCode(200).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
@@ -336,7 +362,9 @@ unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request,
 	try {
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		program->getStartTimes().erase(IdType::from_string(pathParameters.at("startTimeId")));
-		return HttpResponse::Builder().setStatusCode(200).build();
+		return HttpResponse::Builder().
+				setStatusCode(200).
+				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {

@@ -15,9 +15,15 @@ HttpResponse::Builder& HttpResponse::Builder::setStatusCode(unsigned statusCode)
 	return *this;
 }
 
-HttpResponse::Builder& HttpResponse::Builder::setBody(const std::string& body, const std::string& contentType) {
+HttpResponse::Builder& HttpResponse::Builder::setBody(const std::string& body) {
 	this->body = body;
-	addHeader("Content-Type", contentType);
+	return *this;
+}
+
+HttpResponse::Builder& HttpResponse::Builder::addHeaders(const KeyValue& headers) {
+	for (auto& header : headers) {
+		this->headers.insert(make_pair(header.first, header.second));
+	}
 	return *this;
 }
 
