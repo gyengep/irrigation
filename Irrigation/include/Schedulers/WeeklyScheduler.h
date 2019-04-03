@@ -44,7 +44,7 @@ public:
 	virtual unsigned getAdjustment() const override;
 
 	WeeklySchedulerDTO toWeeklySchedulerDto() const;
-	void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO);
+	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO);
 
 	friend std::string to_string(const WeeklyScheduler& weeklyScheduler);
 	friend std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler);

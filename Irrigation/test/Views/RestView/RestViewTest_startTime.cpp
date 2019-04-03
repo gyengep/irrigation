@@ -14,12 +14,6 @@ std::string RestViewTest::createStartTimeUrl(IdType programId, IdType startTimeI
 	return createUrl("/programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId));
 }
 
-void RestViewTest::testGetStartTime(const IdType& programId, const IdType& startTimeId, const StartTimeDTO& startTimeDTO) {
-	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId));
-	checkResponseWithBody(response, 200, "application/xml");
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeDTO)));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postStartTime) {
@@ -29,21 +23,34 @@ TEST_F(RestViewTest, postStartTime) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, getStartTime) {
+void RestViewTest::testGetStartTime(const StartTimeListSample& startTimeListSample) {
 	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-
-	program->getStartTimes().insert(1, StartTimeSample1().getObject());
-	program->getStartTimes().insert(2, StartTimeSample2().getObject());
-	program->getStartTimes().insert(3, StartTimeSample3().getObject());
-	program->getStartTimes().insert(4, StartTimeSample4().getObject());
+	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainer()).build();
 
 	document->getPrograms().insert(programId, program);
 
-	testGetStartTime(programId, 1, StartTimeSample1().getDto());
-	testGetStartTime(programId, 2, StartTimeSample2().getDto());
-	testGetStartTime(programId, 3, StartTimeSample3().getDto());
-	testGetStartTime(programId, 4, StartTimeSample4().getDto());
+	for (const auto& startTimeWithId : *startTimeListSample.getContainer()) {
+		const Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeWithId.first));
+		checkResponseWithBody(response, 200, "application/xml");
+
+		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeWithId.second->toStartTimeDto())));
+	}
+}
+
+TEST_F(RestViewTest, getStartTime1) {
+	testGetStartTime(StartTimeListSample1());
+}
+
+TEST_F(RestViewTest, getStartTime2) {
+	testGetStartTime(StartTimeListSample2());
+}
+
+TEST_F(RestViewTest, getStartTime3) {
+	testGetStartTime(StartTimeListSample3());
+}
+
+TEST_F(RestViewTest, getStartTime4) {
+	testGetStartTime(StartTimeListSample4());
 }
 
 TEST_F(RestViewTest, getStartTimeNotFound1) {

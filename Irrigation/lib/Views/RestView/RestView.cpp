@@ -11,6 +11,8 @@
 #include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
+#include "Schedulers/PeriodicScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 #include "Model/IrrigationDocument.h"
 #include "WebServer/KeyValue.h"
 
@@ -41,7 +43,11 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
 	restService->addPath(MHD_HTTP_METHOD_POST, 	 "/programs/{programId}/starttimes", bind(&RestView::onPostStartTimeList, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onGetStartTime, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onPatchStartTime, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_DELETE,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_DELETE, "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/periodic", bind(&RestView::onGetPeriodicScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/periodic", bind(&RestView::onPatchPeriodicScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -72,9 +78,18 @@ const shared_ptr<RunTime>& RestView::getRunTime(const string& programIdText, con
 	const RunTimeContainer& runTimes = getProgram(programIdText)->getRunTimes();
 	return runTimes.at(IdType::from_string(runTimeIdText));
 }
+
 const shared_ptr<StartTime>& RestView::getStartTime(const string& programIdText, const string& startTimeIdText) const {
 	const StartTimeContainer& startTimes = getProgram(programIdText)->getStartTimes();
 	return startTimes.at(stoul(startTimeIdText));
+}
+
+PeriodicScheduler& RestView::getPeriodicScheduler(const std::string& programIdText) {
+	return getProgram(programIdText)->getPeriodicScheduler();
+}
+
+WeeklyScheduler& RestView::getWeeklyScheduler(const std::string& programIdText) {
+	return getProgram(programIdText)->getWeeklyScheduler();
 }
 
 string RestView::getProgramUrl(const IdType& programId) {
@@ -175,6 +190,34 @@ unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, co
 	}
 }
 
+unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	try {
+		const PeriodicSchedulerDTO periodicSchedulerDto = getPeriodicScheduler(pathParameters.at("programId")).toPeriodicSchedulerDto();
+		const string text = dtoWriter->save(periodicSchedulerDto);
+
+		return HttpResponse::Builder().
+				setStatusCode(200).
+				setBody(text, "application/xml").
+				build();
+	} catch (const NoSuchElementException& e) {
+		throw RestNotFound(restService->getErrorWriter(), e.what());
+	}
+}
+
+unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	try {
+		const WeeklySchedulerDTO weeklySchedulerDto = getWeeklyScheduler(pathParameters.at("programId")).toWeeklySchedulerDto();
+		const string text = dtoWriter->save(weeklySchedulerDto);
+
+		return HttpResponse::Builder().
+				setStatusCode(200).
+				setBody(text, "application/xml").
+				build();
+	} catch (const NoSuchElementException& e) {
+		throw RestNotFound(restService->getErrorWriter(), e.what());
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
@@ -213,8 +256,8 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 
 unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
+		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		program->updateFromProgramDto(programDto);
 		return HttpResponse::Builder().setStatusCode(204).build();
 	} catch (const NoSuchElementException& e) {
@@ -226,8 +269,8 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 
 unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const RunTimeDTO runTimeDto = dtoReader->loadRunTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<RunTime> runTime = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"));
+		const RunTimeDTO runTimeDto = dtoReader->loadRunTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		runTime->updateFromRunTimeDto(runTimeDto);
 		return HttpResponse::Builder().setStatusCode(204).build();
 	} catch (const NoSuchElementException& e) {
@@ -239,9 +282,35 @@ unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, co
 
 unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
+		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		startTime->updateFromStartTimeDto(startTimeDto);
+		return HttpResponse::Builder().setStatusCode(204).build();
+	} catch (const NoSuchElementException& e) {
+		throw RestNotFound(restService->getErrorWriter(), e.what());
+	} catch (const exception& e) {
+		throw RestBadRequest(restService->getErrorWriter(), e.what());
+	}
+}
+
+unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	try {
+		PeriodicScheduler& periodicScheduler = getPeriodicScheduler(pathParameters.at("programId"));
+		const PeriodicSchedulerDTO periodicSchedulerDto = dtoReader->loadPeriodicScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		periodicScheduler.updateFromPeriodicSchedulerDto(periodicSchedulerDto);
+		return HttpResponse::Builder().setStatusCode(204).build();
+	} catch (const NoSuchElementException& e) {
+		throw RestNotFound(restService->getErrorWriter(), e.what());
+	} catch (const exception& e) {
+		throw RestBadRequest(restService->getErrorWriter(), e.what());
+	}
+}
+
+unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	try {
+		WeeklyScheduler& weeklyScheduler = getWeeklyScheduler(pathParameters.at("programId"));
+		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
 		return HttpResponse::Builder().setStatusCode(204).build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());

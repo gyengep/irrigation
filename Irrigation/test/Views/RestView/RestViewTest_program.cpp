@@ -14,12 +14,6 @@ std::string RestViewTest::createProgramUrl(IdType programId) {
 	return createUrl("/programs/" + to_string(programId));
 }
 
-void RestViewTest::testGetProgram(const IdType& programId, const ProgramDTO& programDto) {
-	Response response = executeRequest("GET", createProgramUrl(programId));
-	checkResponseWithBody(response, 200, "application/xml");
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programDto)));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postProgram) {
@@ -29,17 +23,32 @@ TEST_F(RestViewTest, postProgram) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, getProgram) {
-	const IdType programId1, programId2, programId3, programId4;
-	document->getPrograms().insert(programId1, ProgramSample1().getObject());
-	document->getPrograms().insert(programId2, ProgramSample2().getObject());
-	document->getPrograms().insert(programId3, ProgramSample3().getObject());
-	document->getPrograms().insert(programId4, ProgramSample4().getObject());
+void RestViewTest::testGetProgram(const ProgramListSample& programListSample) {
+	document = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
+	document->addView(unique_ptr<View>(new RestView(*document, port)));
 
-	testGetProgram(programId1, ProgramSample1().getDto());
-	testGetProgram(programId2, ProgramSample2().getDto());
-	testGetProgram(programId3, ProgramSample3().getDto());
-	testGetProgram(programId4, ProgramSample4().getDto());
+	for (const auto& programWithId : *programListSample.getContainer()) {
+		const Response response = executeRequest("GET", createProgramUrl(programWithId.first));
+		checkResponseWithBody(response, 200, "application/xml");
+
+		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programWithId.second->toProgramDto())));
+	}
+}
+
+TEST_F(RestViewTest, getProgram1) {
+	testGetProgram(ProgramListSample1());
+}
+
+TEST_F(RestViewTest, getProgram2) {
+	testGetProgram(ProgramListSample2());
+}
+
+TEST_F(RestViewTest, getProgram3) {
+	testGetProgram(ProgramListSample3());
+}
+
+TEST_F(RestViewTest, getProgram4) {
+	testGetProgram(ProgramListSample4());
 }
 
 TEST_F(RestViewTest, getProgramNotFound) {
@@ -49,7 +58,7 @@ TEST_F(RestViewTest, getProgramNotFound) {
 
 TEST_F(RestViewTest, getProgramAcceptable) {
 	const IdType programId;
-	document->getPrograms().insert(programId, ProgramSample1().getObject());
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -57,7 +66,7 @@ TEST_F(RestViewTest, getProgramAcceptable) {
 
 TEST_F(RestViewTest, getProgramNotAcceptable) {
 	const IdType programId;
-	document->getPrograms().insert(programId, ProgramSample1().getObject());
+	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");

@@ -13,12 +13,6 @@ std::string RestViewTest::createProgramListUrl() {
 	return createUrl("/programs");
 }
 
-void RestViewTest::testGetProgramList(const list<ProgramDTO>& programDtoList) {
-	Response response = executeRequest("GET", createProgramListUrl());
-	checkResponseWithBody(response, 200, "application/xml");
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programDtoList)));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postProgramList) {
@@ -48,42 +42,38 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void RestViewTest::testGetProgramList(const ProgramListSample& programListSample) {
+	document = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
+	document->addView(unique_ptr<View>(new RestView(*document, port)));
+
+	const Response response = executeRequest("GET", createProgramListUrl());
+	checkResponseWithBody(response, 200, "application/xml");
+
+	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList())));
+}
+
 TEST_F(RestViewTest, getProgramList1) {
-	const std::list<ProgramDTO> programDtoList = ProgramListSample1().getDtoList();
-	document->getPrograms().updateFromProgramDtoList(programDtoList);
-	testGetProgramList(programDtoList);
+	testGetProgramList(ProgramListSample1());
 }
 
 TEST_F(RestViewTest, getProgramList2) {
-	const std::list<ProgramDTO> programDtoList = ProgramListSample2().getDtoList();
-	document->getPrograms().updateFromProgramDtoList(programDtoList);
-	testGetProgramList(programDtoList);
+	testGetProgramList(ProgramListSample2());
 }
 
 TEST_F(RestViewTest, getProgramList3) {
-	const std::list<ProgramDTO> programDtoList = ProgramListSample3().getDtoList();
-	document->getPrograms().updateFromProgramDtoList(programDtoList);
-	testGetProgramList(programDtoList);
+	testGetProgramList(ProgramListSample2());
 }
 
 TEST_F(RestViewTest, getProgramList4) {
-	const std::list<ProgramDTO> programDtoList = ProgramListSample4().getDtoList();
-	document->getPrograms().updateFromProgramDtoList(programDtoList);
-	testGetProgramList(programDtoList);
+	testGetProgramList(ProgramListSample4());
 }
 
 TEST_F(RestViewTest, getProgramListAcceptable) {
-	const std::list<ProgramDTO> programDtoList = ProgramListSample4().getDtoList();
-	document->getPrograms().updateFromProgramDtoList(programDtoList);
-
 	Response response = executeRequest("GET", createProgramListUrl(), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
 }
 
 TEST_F(RestViewTest, getProgramListNotAcceptable) {
-	const std::list<ProgramDTO> programDtoList = ProgramListSample4().getDtoList();
-	document->getPrograms().updateFromProgramDtoList(programDtoList);
-
 	Response response = executeRequest("GET", createProgramListUrl(), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
 }

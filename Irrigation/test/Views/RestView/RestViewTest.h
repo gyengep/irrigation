@@ -8,7 +8,6 @@
 class IrrigationDocument;
 class RestView;
 
-
 class RestViewTest : public  testing::Test {
 protected:
 	struct Response {
@@ -19,7 +18,7 @@ protected:
 
 
 private:
-	Response __executeRequest__(const std::string& method, const std::string&  url, const std::string& body, const std::string& customHeader);
+	Response __executeRequest__(const std::string& method, const std::string& url, const std::string& body, const std::string& customHeader);
 
 protected:
 	static const uint16_t port = 8080;
@@ -32,12 +31,14 @@ protected:
     Response executeRequest(const std::string& method, const std::string&  url, const std::string& customHeader);
     Response executeRequest(const std::string& method, const std::string&  url, const std::string& body, const std::string& contentType);
 
-    void testGetProgram(const IdType& programId, const ProgramDTO& programDto);
-    void testGetRunTime(const IdType& programId, const IdType& runTimeId, const RunTimeDTO& runTimeDto);
-    void testGetStartTime(const IdType& programId, const IdType& startTimeId, const StartTimeDTO& startTimeDto);
-    void testGetProgramList(const std::list<ProgramDTO>& programDtoList);
-    void testGetRunTimeList(const IdType& programId, const std::list<RunTimeDTO>& runTimeDtoList);
-    void testGetStartTimeList(const IdType& programId, const std::list<StartTimeDTO>& startTimeDtoList);
+    void testGetProgram(const Dto2ObjectTest::ProgramListSample& programListSample);
+    void testGetRunTime(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
+    void testGetStartTime(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
+    void testGetProgramList(const Dto2ObjectTest::ProgramListSample& programListSample);
+    void testGetRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
+    void testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
+    void testGetPeriodicScheduler(const Dto2ObjectTest::PeriodicSchedulerSample& periodicSchedulerSample);
+    void testGetWeeklyScheduler(const Dto2ObjectTest::WeeklySchedulerSample& weeklySchedulerSample);
 
     static void checkErrorResponse(const Response& response, long statusCode, const std::string& contentType);
     static void checkResponseWithoutBody(const Response& response, long statusCode);
@@ -50,4 +51,6 @@ protected:
     static std::string createProgramListUrl();
     static std::string createRunTimeListUrl(IdType programId);
     static std::string createStartTimeListUrl(IdType programId);
+    static std::string createPeriodicSchedulerUrl(IdType programId);
+    static std::string createWeeklySchedulerUrl(IdType programId);
 };

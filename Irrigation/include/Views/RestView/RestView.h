@@ -11,6 +11,8 @@
 class Program;
 class RunTime;
 class StartTime;
+class PeriodicScheduler;
+class WeeklyScheduler;
 class RestService;
 class WebServer;
 class HttpResponse;
@@ -39,10 +41,16 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 
 	const std::shared_ptr<Program>& getProgram(const std::string& programIdText) const;
 	const std::shared_ptr<RunTime>& getRunTime(const std::string& programIdText, const std::string& runTimeIdText) const;
 	const std::shared_ptr<StartTime>& getStartTime(const std::string& programIdText, const std::string& startTimeIdText) const;
+	PeriodicScheduler& getPeriodicScheduler(const std::string& programIdText);
+	WeeklyScheduler& getWeeklyScheduler(const std::string& programIdText);
 
 	static std::string getProgramUrl(const IdType& programId);
 	static std::string getRunTimeUrl(const IdType& programId, const IdType& runTimeId);

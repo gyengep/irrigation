@@ -12,12 +12,6 @@ std::string RestViewTest::createRunTimeListUrl(IdType programId) {
 	return createUrl("/programs/" + to_string(programId) + "/runtimes");
 }
 
-void RestViewTest::testGetRunTimeList(const IdType& programId, const list<RunTimeDTO>& runTimeDtoList) {
-	Response response = executeRequest("GET", createRunTimeListUrl(programId));
-	checkResponseWithBody(response, 200, "application/xml");
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeDtoList)));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postRunTimeList) {
@@ -27,44 +21,32 @@ TEST_F(RestViewTest, postRunTimeList) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, getRunTimeList1) {
+void RestViewTest::testGetRunTimeList(const RunTimeListSample& runTimeListSample) {
 	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<RunTimeDTO> runTimeDtoList = RunTimeListSample1().getDtoList();
+	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(runTimeListSample.getContainer()).build();
 
 	document->getPrograms().insert(programId, program);
-	program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
-	testGetRunTimeList(programId, runTimeDtoList);
+
+	const Response response = executeRequest("GET", createRunTimeListUrl(programId));
+	checkResponseWithBody(response, 200, "application/xml");
+
+	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeListSample.getDtoList())));
+}
+
+TEST_F(RestViewTest, getRunTimeList1) {
+	testGetRunTimeList(RunTimeListSample1());
 }
 
 TEST_F(RestViewTest, getRunTimeList2) {
-	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<RunTimeDTO> runTimeDtoList = RunTimeListSample1().getDtoList();
-
-	document->getPrograms().insert(programId, program);
-	program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
-	testGetRunTimeList(programId, runTimeDtoList);
+	testGetRunTimeList(RunTimeListSample2());
 }
 
 TEST_F(RestViewTest, getRunTimeList3) {
-	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<RunTimeDTO> runTimeDtoList = RunTimeListSample1().getDtoList();
-
-	document->getPrograms().insert(programId, program);
-	program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
-	testGetRunTimeList(programId, runTimeDtoList);
+	testGetRunTimeList(RunTimeListSample3());
 }
 
 TEST_F(RestViewTest, getRunTimeList4) {
-	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<RunTimeDTO> runTimeDtoList = RunTimeListSample1().getDtoList();
-
-	document->getPrograms().insert(programId, program);
-	program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
-	testGetRunTimeList(programId, runTimeDtoList);
+	testGetRunTimeList(RunTimeListSample4());
 }
 
 TEST_F(RestViewTest, getRunTimeListAcceptable) {

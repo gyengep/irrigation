@@ -13,12 +13,6 @@ std::string RestViewTest::createStartTimeListUrl(IdType programId) {
 	return createUrl("/programs/" + to_string(programId) + "/starttimes");
 }
 
-void RestViewTest::testGetStartTimeList(const IdType& programId, const list<StartTimeDTO>& startTimeDtoList) {
-	Response response = executeRequest("GET", createStartTimeListUrl(programId));
-	checkResponseWithBody(response, 200, "application/xml");
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeDtoList)));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postStartTimeList) {
@@ -60,45 +54,34 @@ TEST_F(RestViewTest, postStartTimeListNotFound) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, getStartTimeList1) {
+void RestViewTest::testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample) {
 	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<StartTimeDTO> startTimeDtoList = StartTimeListSample1().getDtoList();
+	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainer()).build();
 
 	document->getPrograms().insert(programId, program);
-	program->getStartTimes().updateFromStartTimeDtoList(startTimeDtoList);
-	testGetStartTimeList(programId, startTimeDtoList);
+
+	const Response response = executeRequest("GET", createStartTimeListUrl(programId));
+	checkResponseWithBody(response, 200, "application/xml");
+
+	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeListSample.getDtoList())));
+}
+
+TEST_F(RestViewTest, getStartTimeList1) {
+	testGetStartTimeList(StartTimeListSample1());
 }
 
 TEST_F(RestViewTest, getStartTimeList2) {
-	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<StartTimeDTO> startTimeDtoList = StartTimeListSample2().getDtoList();
-
-	document->getPrograms().insert(programId, program);
-	program->getStartTimes().updateFromStartTimeDtoList(startTimeDtoList);
-	testGetStartTimeList(programId, startTimeDtoList);
+	testGetStartTimeList(StartTimeListSample2());
 }
 
 TEST_F(RestViewTest, getStartTimeList3) {
-	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<StartTimeDTO> startTimeDtoList = StartTimeListSample3().getDtoList();
-
-	document->getPrograms().insert(programId, program);
-	program->getStartTimes().updateFromStartTimeDtoList(startTimeDtoList);
-	testGetStartTimeList(programId, startTimeDtoList);
+	testGetStartTimeList(StartTimeListSample3());
 }
 
 TEST_F(RestViewTest, getStartTimeList4) {
-	const IdType programId;
-	const shared_ptr<Program> program(new Program());
-	const list<StartTimeDTO> startTimeDtoList = StartTimeListSample4().getDtoList();
-
-	document->getPrograms().insert(programId, program);
-	program->getStartTimes().updateFromStartTimeDtoList(startTimeDtoList);
-	testGetStartTimeList(programId, startTimeDtoList);
+	testGetStartTimeList(StartTimeListSample4());
 }
+
 
 TEST_F(RestViewTest, getStartTimeListAcceptable) {
 	const IdType programId;
