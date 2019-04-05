@@ -44,7 +44,8 @@ RestViewTest::Response RestViewTest::__executeRequest__(const std::string& metho
 	Response response;
 
 	CURL *curl = curl_easy_init();
-	struct curl_slist *header = NULL;
+	curl_slist *header = NULL;
+	ReadCallbackData readCallbackData(body);
 
 	if (curl == nullptr) {
 		throw logic_error("RestViewTest::executeRequest()  curl == nullptr");
@@ -63,7 +64,6 @@ RestViewTest::Response RestViewTest::__executeRequest__(const std::string& metho
 	}
 
 	if (!body.empty()) {
-		ReadCallbackData readCallbackData(body);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
 		curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
