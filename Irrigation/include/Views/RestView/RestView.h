@@ -45,6 +45,7 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters);
 
 	const std::shared_ptr<Program>& getProgram(const std::string& programIdText) const;
 	const std::shared_ptr<RunTime>& getRunTime(const std::string& programIdText, const std::string& runTimeIdText) const;

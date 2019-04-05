@@ -11,12 +11,15 @@
 #include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/WateringController.h"
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
 #include "Model/IrrigationDocument.h"
 #include "WebServer/KeyValue.h"
+#include <chrono>
 
 using namespace std;
+using namespace chrono;
 
 
 RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
@@ -48,6 +51,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/periodic", bind(&RestView::onPatchPeriodicScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -335,6 +339,39 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 		weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
 		return HttpResponse::Builder().
 				setStatusCode(204).
+				build();
+	} catch (const NoSuchElementException& e) {
+		throw RestNotFound(restService->getErrorWriter(), e.what());
+	} catch (const exception& e) {
+		throw RestBadRequest(restService->getErrorWriter(), e.what());
+	}
+}
+
+unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters) {
+	try {
+		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		RunTimeContainer runTimeContainer;
+		runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList);
+
+		bool allIsZero = true;
+		for (auto runtimeWithId : runTimeContainer) {
+			if (runtimeWithId.second->getSeconds() != 0) {
+				allIsZero = false;
+				break;
+			}
+		}
+
+		if (allIsZero) {
+			irrigationDocument.getWateringController().stop();
+		} else {
+			irrigationDocument.getWateringController().start(
+				system_clock::to_time_t(system_clock::now()),
+				runTimeContainer
+			);
+		}
+
+		return HttpResponse::Builder().
+				setStatusCode(200).
 				build();
 	} catch (const NoSuchElementException& e) {
 		throw RestNotFound(restService->getErrorWriter(), e.what());
