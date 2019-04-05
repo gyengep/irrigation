@@ -63,6 +63,7 @@ void WateringController::start(const time_t& rawTime, const RunTimeContainer& ru
 
 void WateringController::stop() {
 	LOGGER.info("Irrigation stopped");
+	zoneHandler->deactivate();
 	wateringProperties.reset();
 }
 
