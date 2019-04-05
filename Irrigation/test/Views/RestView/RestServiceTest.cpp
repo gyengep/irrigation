@@ -8,9 +8,9 @@ using namespace placeholders;
 
 
 void RestServiceTest::SetUp() {
-	restService.addPath(MHD_HTTP_METHOD_GET, "/tom/and/jerry", bind(callback1, this, _1, _2));
-	restService.addPath(MHD_HTTP_METHOD_DELETE, "/tom/and/jerry", bind(callback2, this, _1, _2));
-	restService.addPath(MHD_HTTP_METHOD_POST, "/resource1/{value1}/resource2/{value2}", bind(callback3, this, _1, _2));
+	restService.addPath(MHD_HTTP_METHOD_GET, "/tom/and/jerry", bind(&RestServiceTest::callback1, this, _1, _2));
+	restService.addPath(MHD_HTTP_METHOD_DELETE, "/tom/and/jerry", bind(&RestServiceTest::callback2, this, _1, _2));
+	restService.addPath(MHD_HTTP_METHOD_POST, "/resource1/{value1}/resource2/{value2}", bind(&RestServiceTest::callback3, this, _1, _2));
 }
 
 void RestServiceTest::TearDown() {

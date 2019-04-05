@@ -12,8 +12,8 @@ using namespace placeholders;
 void RestServerTest::SetUp() {
 	restService.reset(new RestService());
 
-	restService->addPath("PUT", "/programs", bind(onCreateProgram, this, _1, _2));
-	restService->addPath("GET", "/programs/{programID}", bind(onGetProgram, this, _1, _2));
+	restService->addPath("PUT", "/programs", bind(&RestServerTest::onCreateProgram, this, _1, _2));
+	restService->addPath("GET", "/programs/{programID}", bind(&RestServerTest::onGetProgram, this, _1, _2));
 
 	webServer.reset(new WebServer(restService, port));
 	webServer->start();
@@ -26,7 +26,7 @@ void RestServerTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestServerTest, invalidPath) {
-	EXPECT_ANY_THROW(restService->addPath("GET", "/programs/", bind(onCreateProgram, this, _1, _2)));
+	EXPECT_ANY_THROW(restService->addPath("GET", "/programs/", bind(&RestServerTest::onCreateProgram, this, _1, _2)));
 }
 
 TEST_F(RestServerTest, callbackWithoutParameter) {
