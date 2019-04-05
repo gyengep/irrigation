@@ -111,6 +111,8 @@ string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTim
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetProgramList() called");
+
 	const list<ProgramDTO> programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
 	const string text = dtoWriter->save(programDtoList);
 
@@ -122,6 +124,8 @@ unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, 
 }
 
 unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetRunTimeList() called");
+
 	try {
 		const list<RunTimeDTO> runTimeDtoList = getProgram(pathParameters.at("programId"))->getRunTimes().toRunTimeDtoList();
 		const string text = dtoWriter->save(runTimeDtoList);
@@ -137,6 +141,8 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 }
 
 unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetStartTimeList() called");
+
 	try {
 		const list<StartTimeDTO> startTimeDtoList = getProgram(pathParameters.at("programId"))->getStartTimes().toStartTimeDtoList();
 		const string text = dtoWriter->save(startTimeDtoList);
@@ -154,6 +160,8 @@ unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetProgram() called");
+
 	try {
 		const ProgramDTO programDto = getProgram(pathParameters.at("programId"))->toProgramDto();
 		const string text = dtoWriter->save(programDto);
@@ -171,6 +179,8 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 }
 
 unique_ptr<HttpResponse> RestView::onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetRunTime() called");
+
 	try {
 		const RunTimeDTO runTimeDto = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"))->toRunTimeDto();
 		const string text = dtoWriter->save(runTimeDto);
@@ -186,6 +196,8 @@ unique_ptr<HttpResponse> RestView::onGetRunTime(const HttpRequest& request, cons
 }
 
 unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetStartTime() called");
+
 	try {
 		const StartTimeDTO startTimeDto = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"))->toStartTimeDto();
 		const string text = dtoWriter->save(startTimeDto);
@@ -201,6 +213,8 @@ unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, co
 }
 
 unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetPeriodicScheduler() called");
+
 	try {
 		const PeriodicSchedulerDTO periodicSchedulerDto = getPeriodicScheduler(pathParameters.at("programId")).toPeriodicSchedulerDto();
 		const string text = dtoWriter->save(periodicSchedulerDto);
@@ -216,6 +230,8 @@ unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& req
 }
 
 unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onGetWeeklyScheduler() called");
+
 	try {
 		const WeeklySchedulerDTO weeklySchedulerDto = getWeeklyScheduler(pathParameters.at("programId")).toWeeklySchedulerDto();
 		const string text = dtoWriter->save(weeklySchedulerDto);
@@ -233,6 +249,8 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPostProgramList() called");
+
 	try {
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<Program> program(new Program());
@@ -250,6 +268,7 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 }
 
 unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPostStartTimeList() called");
 
 	try {
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
@@ -273,6 +292,8 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPatchProgram() called");
+
 	try {
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
@@ -288,6 +309,8 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 }
 
 unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPatchRunTime() called");
+
 	try {
 		const shared_ptr<RunTime> runTime = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"));
 		const RunTimeDTO runTimeDto = dtoReader->loadRunTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
@@ -303,6 +326,8 @@ unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, co
 }
 
 unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPatchStartTime() called");
+
 	try {
 		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
@@ -318,6 +343,8 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 }
 
 unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPatchPeriodicScheduler() called");
+
 	try {
 		PeriodicScheduler& periodicScheduler = getPeriodicScheduler(pathParameters.at("programId"));
 		const PeriodicSchedulerDTO periodicSchedulerDto = dtoReader->loadPeriodicScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
@@ -333,6 +360,8 @@ unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& r
 }
 
 unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPatchWeeklyScheduler() called");
+
 	try {
 		WeeklyScheduler& weeklyScheduler = getWeeklyScheduler(pathParameters.at("programId"));
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
@@ -348,6 +377,8 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 }
 
 unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onPatchIrrigation() called");
+
 	try {
 		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		RunTimeContainer runTimeContainer;
@@ -383,6 +414,8 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onDeleteProgram() called");
+
 	try {
 		irrigationDocument.getPrograms().erase(IdType::from_string(pathParameters.at("programId")));
 		return HttpResponse::Builder().
@@ -396,6 +429,8 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 }
 
 unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
+	LOGGER.trace("RestView::onDeleteStartTime() called");
+
 	try {
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		program->getStartTimes().erase(IdType::from_string(pathParameters.at("startTimeId")));
