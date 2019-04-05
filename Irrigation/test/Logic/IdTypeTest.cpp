@@ -58,5 +58,4 @@ TEST(IdTypeTest, fromStringInvalid) {
 	EXPECT_THROW(IdType::from_string("1 "), IllegalArgumentException);
 	EXPECT_THROW(IdType::from_string(" 1"), IllegalArgumentException);
 	EXPECT_THROW(IdType::from_string("1 2"), IllegalArgumentException);
-	EXPECT_THROW(IdType::from_string("4294967296"), IllegalArgumentException);
 }
