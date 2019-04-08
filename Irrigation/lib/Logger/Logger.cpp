@@ -150,7 +150,7 @@ string Logger::getTime() {
 
 string Logger::getThread() {
 	ostringstream oss;
-	oss << setw(8) << setfill('0') << hex << this_thread::get_id();
+	oss << setw(8) << setfill('0') << hex << uppercase << showbase << this_thread::get_id();
 	return oss.str();
 }
 
