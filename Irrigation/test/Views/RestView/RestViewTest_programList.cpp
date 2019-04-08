@@ -49,7 +49,7 @@ void RestViewTest::testGetProgramList(const ProgramListSample& programListSample
 	const Response response = executeRequest("GET", createProgramListUrl());
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList())));
+	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList(), false)));
 }
 
 TEST_F(RestViewTest, getProgramList1) {

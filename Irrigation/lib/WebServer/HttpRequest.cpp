@@ -55,7 +55,7 @@ int HttpRequest::iterateOnValues(void *cls, enum MHD_ValueKind kind, const char 
 			throw logic_error("HttpRequest::iterateOnValues() invalid valueKind: " + to_string(kind));
 		}
 
-		LOGGER.trace("iterate on HttpRequest%s: \"%s\" - \"%s\"", kindText, key, value);
+		//LOGGER.trace("iterate on HttpRequest%s: \"%s\" - \"%s\"", kindText, key, value);
 	}
 
 	KeyValue* parameters = static_cast<KeyValue*>(cls);

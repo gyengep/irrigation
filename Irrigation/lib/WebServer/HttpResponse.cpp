@@ -4,14 +4,17 @@ using namespace std;
 
 
 
-HttpResponse::Builder::Builder() {
+HttpResponse::Builder::Builder() :
+	statusCode(200)
+{
 }
 
 HttpResponse::Builder::~Builder() {
 }
 
-HttpResponse::Builder& HttpResponse::Builder::setStatusCode(unsigned statusCode) {
+HttpResponse::Builder& HttpResponse::Builder::setStatus(unsigned statusCode, const std::string& statusMessage) {
 	this->statusCode = statusCode;
+	this->statusMessage = statusMessage;
 	return *this;
 }
 
@@ -34,5 +37,5 @@ HttpResponse::Builder& HttpResponse::Builder::addHeader(const std::string& key, 
 
 
 unique_ptr<HttpResponse> HttpResponse::Builder::build() {
-	return unique_ptr<HttpResponse>(new HttpResponse(statusCode, body, headers));
+	return unique_ptr<HttpResponse>(new HttpResponse(statusCode, statusMessage, body, headers));
 }

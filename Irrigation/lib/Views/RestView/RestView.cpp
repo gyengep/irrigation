@@ -17,6 +17,7 @@
 #include "Model/IrrigationDocument.h"
 #include "WebServer/KeyValue.h"
 #include <chrono>
+#include <sstream>
 
 using namespace std;
 using namespace chrono;
@@ -31,6 +32,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
 	webServer.reset(new WebServer(restService, port));
 	dtoReader.reset(new XmlReader());
 	dtoWriter.reset(new XmlWriter());
+	logWriter.reset(new XmlLogWriter());
 
 	using namespace placeholders;
 
@@ -52,6 +54,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/logs", bind(&RestView::onGetLogs, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -111,48 +114,51 @@ string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTim
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetProgramList() called");
-
 	const list<ProgramDTO> programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
-	const string text = dtoWriter->save(programDtoList);
+
+	bool includeContainers = false;
+	auto it = request.getParameters().find("includeContainers");
+	if (request.getParameters().end() != it) {
+		includeContainers = (it->second == "true");
+	}
+
+	const string text = dtoWriter->save(programDtoList, includeContainers);
 
 	return HttpResponse::Builder().
-			setStatusCode(200).
+			setStatus(200, "OK").
 			setBody(text).
 			addHeader("Content-Type", "application/xml").
 			build();
 }
 
 unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetRunTimeList() called");
-
 	try {
 		const list<RunTimeDTO> runTimeDtoList = getProgram(pathParameters.at("programId"))->getRunTimes().toRunTimeDtoList();
 		const string text = dtoWriter->save(runTimeDtoList);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve runTime container", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetStartTimeList() called");
-
 	try {
 		const list<StartTimeDTO> startTimeDtoList = getProgram(pathParameters.at("programId"))->getStartTimes().toStartTimeDtoList();
 		const string text = dtoWriter->save(startTimeDtoList);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve startTime container", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
@@ -160,97 +166,114 @@ unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetProgram() called");
-
 	try {
 		const ProgramDTO programDto = getProgram(pathParameters.at("programId"))->toProgramDto();
-		const string text = dtoWriter->save(programDto);
+
+		bool includeContainers = false;
+		auto it = request.getParameters().find("includeContainers");
+		if (request.getParameters().end() != it) {
+			includeContainers = (it->second == "true");
+		}
+
+		const string text = dtoWriter->save(programDto, includeContainers);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve program", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
+		LOGGER.warning("Can not retrieve program", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetRunTime() called");
-
 	try {
 		const RunTimeDTO runTimeDto = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"))->toRunTimeDto();
 		const string text = dtoWriter->save(runTimeDto);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve runTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetStartTime() called");
-
 	try {
 		const StartTimeDTO startTimeDto = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"))->toStartTimeDto();
 		const string text = dtoWriter->save(startTimeDto);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve startTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetPeriodicScheduler() called");
-
 	try {
 		const PeriodicSchedulerDTO periodicSchedulerDto = getPeriodicScheduler(pathParameters.at("programId")).toPeriodicSchedulerDto();
 		const string text = dtoWriter->save(periodicSchedulerDto);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve periodic scheduler", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onGetWeeklyScheduler() called");
-
 	try {
 		const WeeklySchedulerDTO weeklySchedulerDto = getWeeklyScheduler(pathParameters.at("programId")).toWeeklySchedulerDto();
 		const string text = dtoWriter->save(weeklySchedulerDto);
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				setBody(text).
 				addHeader("Content-Type", "application/xml").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not retrieve weekly scheduler", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
+unique_ptr<HttpResponse> RestView::onGetLogs(const HttpRequest& request, const KeyValue& pathParameters) {
+	try {
+		const string text = logWriter->toString(LOGGER.getEntries());
+
+		return HttpResponse::Builder().
+				setStatus(200, "OK").
+				setBody(text).
+				addHeader("Content-Type", "application/xml").
+				build();
+	} catch (const exception& e) {
+		LOGGER.warning("Can not retrieve log entries", e);
+		throw RestBadRequest(restService->getErrorWriter(), e.what());
+	}
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPostProgramList() called");
-
 	try {
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<Program> program(new Program());
@@ -259,17 +282,16 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 		const IdType programId = irrigationDocument.getPrograms().insert(IdType(), program).first;
 
 		return HttpResponse::Builder().
-				setStatusCode(201).
+				setStatus(201, "Created").
 				addHeader("Location", getProgramUrl(programId)).
 				build();
 	} catch (const exception& e) {
+		LOGGER.warning("Can not create program", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPostStartTimeList() called");
-
 	try {
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<StartTime> startTime(new StartTime());
@@ -279,12 +301,14 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 		const IdType startTimeId = irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(IdType(), startTime).first;
 
 		return HttpResponse::Builder().
-				setStatusCode(201).
+				setStatus(201, "Created").
 				addHeader("Location", getStartTimeUrl(programId, startTimeId)).
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not create startTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not create startTime", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
@@ -292,93 +316,91 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPatchProgram() called");
-
 	try {
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		program->updateFromProgramDto(programDto);
 		return HttpResponse::Builder().
-				setStatusCode(204).
+				setStatus(204, "No Content").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not modify program", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not modify program", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPatchRunTime() called");
-
 	try {
 		const shared_ptr<RunTime> runTime = getRunTime(pathParameters.at("programId"), pathParameters.at("runTimeId"));
 		const RunTimeDTO runTimeDto = dtoReader->loadRunTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		runTime->updateFromRunTimeDto(runTimeDto);
 		return HttpResponse::Builder().
-				setStatusCode(204).
+				setStatus(204, "No Content").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not modify runTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not modify runTime", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPatchStartTime() called");
-
 	try {
 		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		startTime->updateFromStartTimeDto(startTimeDto);
 		return HttpResponse::Builder().
-				setStatusCode(204).
+				setStatus(204, "No Content").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not modify startTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not modify startTime", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPatchPeriodicScheduler() called");
-
 	try {
 		PeriodicScheduler& periodicScheduler = getPeriodicScheduler(pathParameters.at("programId"));
 		const PeriodicSchedulerDTO periodicSchedulerDto = dtoReader->loadPeriodicScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		periodicScheduler.updateFromPeriodicSchedulerDto(periodicSchedulerDto);
 		return HttpResponse::Builder().
-				setStatusCode(204).
+				setStatus(204, "No Content").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not modify periodic scheduler", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not modify periodic scheduler", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPatchWeeklyScheduler() called");
-
 	try {
 		WeeklyScheduler& weeklyScheduler = getWeeklyScheduler(pathParameters.at("programId"));
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
 		return HttpResponse::Builder().
-				setStatusCode(204).
+				setStatus(204, "No Content").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not modify weekly scheduler", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not modify weekly scheduler", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onPatchIrrigation() called");
-
 	try {
 		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		RunTimeContainer runTimeContainer;
@@ -402,11 +424,13 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 		}
 
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not start or stop irrigation", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const exception& e) {
+		LOGGER.warning("Can not start or stop irrigation", e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());
 	}
 }
@@ -414,32 +438,32 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onDeleteProgram() called");
-
 	try {
 		irrigationDocument.getPrograms().erase(IdType::from_string(pathParameters.at("programId")));
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not delete program", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
+		LOGGER.warning("Can not delete program", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }
 
 unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
-	LOGGER.trace("RestView::onDeleteStartTime() called");
-
 	try {
 		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
 		program->getStartTimes().erase(IdType::from_string(pathParameters.at("startTimeId")));
 		return HttpResponse::Builder().
-				setStatusCode(200).
+				setStatus(200, "OK").
 				build();
 	} catch (const NoSuchElementException& e) {
+		LOGGER.warning("Can not delete startTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
+		LOGGER.warning("Can not delete startTime", e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
 	}
 }

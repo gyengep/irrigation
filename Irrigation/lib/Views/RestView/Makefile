@@ -19,7 +19,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Views/$(TARGET_NAME)
+INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Views/$(TARGET_NAME) -I$(PROJECT_ROOT)/3p/pugixml
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = $(INCLUDE_PATH) 

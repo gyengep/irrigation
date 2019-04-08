@@ -5,6 +5,7 @@
 #include "Logic/IdType.h"
 #include "Model/IrrigationDocument.h"
 #include "XmlErrorWriter.h"
+#include "XmlLogWriter.h"
 #include "RestServiceException.h"
 
 
@@ -27,6 +28,7 @@ class RestView : public View {
 	std::unique_ptr<WebServer> webServer;
 	std::shared_ptr<DtoReader> dtoReader;
 	std::shared_ptr<DtoWriter> dtoWriter;
+	std::shared_ptr<LogWriter> logWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters);
@@ -46,6 +48,7 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
 
 	const std::shared_ptr<Program>& getProgram(const std::string& programIdText) const;
 	const std::shared_ptr<RunTime>& getRunTime(const std::string& programIdText, const std::string& runTimeIdText) const;

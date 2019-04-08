@@ -31,7 +31,7 @@ void RestViewTest::testGetProgram(const ProgramListSample& programListSample) {
 		const Response response = executeRequest("GET", createProgramUrl(programWithId.first));
 		checkResponseWithBody(response, 200, "application/xml");
 
-		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programWithId.second->toProgramDto())));
+		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programWithId.second->toProgramDto(), false)));
 	}
 }
 

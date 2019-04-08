@@ -8,8 +8,14 @@
 
 class RestServiceException : public WebServerException {
 public:
-	RestServiceException(const std::shared_ptr<ErrorWriter>& errorWriter, unsigned statusCode, const std::string& message) :
-		WebServerException(statusCode, errorWriter->toString(statusCode, message), KeyValue({{"Content-Type", errorWriter->contentType()}}))
+	RestServiceException(
+			const std::shared_ptr<ErrorWriter>& errorWriter, unsigned statusCode, const std::string& genericMessage, const std::string& detailedMessage) :
+		WebServerException(
+				statusCode,
+				genericMessage,
+				errorWriter->toString(statusCode, genericMessage, detailedMessage),
+				KeyValue({{"Content-Type", errorWriter->contentType()}})
+			)
 	{
 	}
 };
@@ -18,7 +24,7 @@ public:
 class RestBadRequest : public RestServiceException {
 public:
 	RestBadRequest(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 400, message)
+		RestServiceException(errorWriter, 400, "Bad Request", message)
 	{
 	}
 };
@@ -26,7 +32,7 @@ public:
 class RestNotFound : public RestServiceException {
 public:
 	RestNotFound(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 404, message)
+		RestServiceException(errorWriter, 404, "Not Found", message)
 	{
 	}
 };
@@ -34,7 +40,7 @@ public:
 class RestMethodNotAllowed : public RestServiceException {
 public:
 	RestMethodNotAllowed(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 405, message)
+		RestServiceException(errorWriter, 405, "Method Not Allowed", message)
 	{
 	}
 };
@@ -42,7 +48,7 @@ public:
 class RestNotAcceptable : public RestServiceException {
 public:
 	RestNotAcceptable(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 406, message)
+		RestServiceException(errorWriter, 406, "Not Acceptable", message)
 	{
 	}
 };
@@ -50,7 +56,7 @@ public:
 class RestUnsupportedMediaType : public RestServiceException {
 public:
 	RestUnsupportedMediaType(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 415, message)
+		RestServiceException(errorWriter, 415, "Unsupported Media Type", message)
 	{
 	}
 };
@@ -58,7 +64,7 @@ public:
 class RestInternalServerError : public RestServiceException {
 public:
 	RestInternalServerError(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 500, message)
+		RestServiceException(errorWriter, 500, "Internal Server Error", message)
 	{
 	}
 };

@@ -32,7 +32,7 @@ unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequ
 	lastRequestedData = *request.getUploadData();
 
 	return HttpResponse::Builder().
-			setStatusCode(httpResponseCode).
+			setStatus(httpResponseCode, "").
 			setBody(httpResponseBody).
 			addHeaders(httpResponseHeaders).
 			build();
