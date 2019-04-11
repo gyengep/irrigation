@@ -26,7 +26,7 @@ void RestServerTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestServerTest, invalidPath) {
-	EXPECT_ANY_THROW(restService->addPath("GET", "/programs/", bind(&RestServerTest::onCreateProgram, this, _1, _2)));
+	EXPECT_ANY_THROW(restService->addPath("GET", "//programs", bind(&RestServerTest::onCreateProgram, this, _1, _2)));
 }
 
 TEST_F(RestServerTest, callbackWithoutParameter) {

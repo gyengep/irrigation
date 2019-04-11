@@ -30,8 +30,15 @@ TEST(PathTemplateTest, pathTemplateEquals1) {
 	EXPECT_EQ(KeyValue({{"variable1", "value1"}}), parameters);
 }
 
-
 TEST(PathTemplateTest, pathTemplateEquals2) {
+	PathTemplate pathTemplate("/abc/{variable1}/123/");
+	KeyValue parameters;
+
+	EXPECT_TRUE(pathTemplate.evaluate(Path{"abc", "value1", "123", ""}, parameters));
+	EXPECT_EQ(KeyValue({{"variable1", "value1"}}), parameters);
+}
+
+TEST(PathTemplateTest, pathTemplateEquals3) {
 	PathTemplate pathTemplate("/path1/{variable1}/resource1/{variable2}/resource2");
 	KeyValue parameters;
 
@@ -39,7 +46,7 @@ TEST(PathTemplateTest, pathTemplateEquals2) {
 	EXPECT_EQ(KeyValue({{"variable1", "1234"}, {"variable2", "value2"}}), parameters);
 }
 
-TEST(PathTemplateTest, pathTemplateEquals3) {
+TEST(PathTemplateTest, pathTemplateEquals4) {
 	PathTemplate pathTemplate("/{variable1}/resource1/{variable2}");
 	KeyValue parameters;
 

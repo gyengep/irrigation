@@ -16,6 +16,7 @@
 #include "Schedulers/WeeklyScheduler.h"
 #include "Model/IrrigationDocument.h"
 #include "WebServer/KeyValue.h"
+#include <algorithm>
 #include <chrono>
 #include <sstream>
 
@@ -406,20 +407,23 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 		RunTimeContainer runTimeContainer;
 		runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList);
 
-		bool allIsZero = true;
-		for (auto runtimeWithId : runTimeContainer) {
-			if (runtimeWithId.second->getSeconds() != 0) {
-				allIsZero = false;
-				break;
-			}
+		unsigned adjustmentPercent = 100;
+		auto it = request.getParameters().find("adjustment");
+		if (request.getParameters().end() != it) {
+			adjustmentPercent = stoul(it->second);
 		}
 
-		if (allIsZero) {
+		auto runTimeIsZero = [](const RunTimeContainer::value_type& runTimeWithId) {
+			return (runTimeWithId.second->getSeconds() == 0);
+		};
+
+		if (all_of(runTimeContainer.begin(), runTimeContainer.end(), runTimeIsZero)) {
 			irrigationDocument.getWateringController().stop();
 		} else {
 			irrigationDocument.getWateringController().start(
 				system_clock::to_time_t(system_clock::now()),
-				runTimeContainer
+				runTimeContainer,
+				adjustmentPercent
 			);
 		}
 

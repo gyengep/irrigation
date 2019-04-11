@@ -17,9 +17,21 @@ void RestServiceTest::TearDown() {
 }
 
 
-TEST_F(RestServiceTest, notFound) {
+TEST_F(RestServiceTest, notFound1) {
 	try {
 		HttpRequest request(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_GET, "/123456789", shared_ptr<ByteBuffer>(new ByteBuffer()));
+		restService.onRequest(request);
+		FAIL();
+	} catch (RestServiceException& e) {
+		EXPECT_EQ(MHD_HTTP_NOT_FOUND, e.getStatusCode());
+	} catch (...) {
+		FAIL();
+	}
+}
+
+TEST_F(RestServiceTest, notFound2) {
+	try {
+		HttpRequest request(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_GET, "/tom/and/jerry/", shared_ptr<ByteBuffer>(new ByteBuffer()));
 		restService.onRequest(request);
 		FAIL();
 	} catch (RestServiceException& e) {

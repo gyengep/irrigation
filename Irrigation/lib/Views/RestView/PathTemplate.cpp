@@ -62,21 +62,20 @@ void PathTemplate::split(const std::string& pathStr, Path& result) {
 
 	result.clear();
 
-	if (pathStr.empty() || pathStr.front() != '/' || (pathStr.size() > 1 && pathStr.back() == '/')) {
+	if (pathStr.empty() || pathStr.front() != '/') {
 		throw std::invalid_argument("Invalid path: \"" + pathStr + "\"");
 	}
 
-	std::string path(pathStr, 1);
-
-	std::istringstream f(path);
-	std::string token;
-	while (std::getline(f, token, '/')) {
-
-		if (token.empty()) {
+	size_t posBegin = 1, posEnd;
+	while ((posEnd = pathStr.find('/', posBegin)) != string::npos) {
+		if (posEnd == posBegin) {
 			result.clear();
 			throw std::invalid_argument("Invalid path: \"" + pathStr + "\"");
 		}
 
-		result.push_back(token);
+		result.push_back(pathStr.substr(posBegin, posEnd - posBegin));
+		posBegin = posEnd + 1;
 	}
+
+	result.push_back(pathStr.substr(posBegin));
 }
