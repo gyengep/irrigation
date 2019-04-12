@@ -14,7 +14,7 @@ std::string RestViewTest::createProgramUrl(IdType programId, const std::string& 
 	if (requestParameters.empty()) {
 		return createUrl("/programs/" + to_string(programId));
 	} else {
-		return createUrl("/programs/" + to_string(programId)) + "/" + requestParameters;
+		return createUrl("/programs/" + to_string(programId)) + "?" + requestParameters;
 	}
 }
 
