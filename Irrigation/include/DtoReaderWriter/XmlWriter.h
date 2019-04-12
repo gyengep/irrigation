@@ -12,6 +12,7 @@ namespace pugi {
 
 
 class XmlWriter : public DtoWriter {
+protected:
 	static std::string toString(const pugi::xml_document* doc, bool humanReadable);
 
 	const bool humanReadable;

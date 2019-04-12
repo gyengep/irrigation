@@ -1,3 +1,4 @@
+#include <XmlIrrigationActionReader.h>
 #include "RestView.h"
 #include "RestService.h"
 #include "XmlErrorWriter.h"
@@ -118,7 +119,7 @@ unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, 
 	const list<ProgramDTO> programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
 
 	bool includeContainers = false;
-	auto it = request.getParameters().find("includeContainers");
+	auto it = request.getParameters().find("include-containers");
 	if (request.getParameters().end() != it) {
 		includeContainers = (it->second == "true");
 	}
@@ -403,28 +404,62 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 
 unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
-		RunTimeContainer runTimeContainer;
-		runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList);
+		const IrrigationActionDTO irrigationResourceDTO = XmlIrrigationActionReader().load(string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		unsigned adjustmentPercent = 100;
-		auto it = request.getParameters().find("adjustment");
-		if (request.getParameters().end() != it) {
-			adjustmentPercent = stoul(it->second);
+		if (irrigationResourceDTO.action.get() == nullptr) {
+			const char* message = "The 'action' element tag not found";
+			LOGGER.warning(message);
+			throw RestBadRequest(restService->getErrorWriter(), message);
 		}
 
-		auto runTimeIsZero = [](const RunTimeContainer::value_type& runTimeWithId) {
-			return (runTimeWithId.second->getSeconds() == 0);
-		};
+		if (*irrigationResourceDTO.action.get() == "start") {
+			if (irrigationResourceDTO.runTimeDtoList.get() == nullptr) {
+				const char* message = "The 'runtimes' element tag not found";
+				LOGGER.warning(message);
+				throw RestBadRequest(restService->getErrorWriter(), message);
+			}
 
-		if (all_of(runTimeContainer.begin(), runTimeContainer.end(), runTimeIsZero)) {
-			irrigationDocument.getWateringController().stop();
-		} else {
+			RunTimeContainer runTimeContainer;
+			unsigned adjustment = 100;
+
+			if (irrigationResourceDTO.adjustment.get() != nullptr) {
+				adjustment = *irrigationResourceDTO.adjustment;
+			}
+
+			runTimeContainer.updateFromRunTimeDtoList(*irrigationResourceDTO.runTimeDtoList);
+
 			irrigationDocument.getWateringController().start(
 				system_clock::to_time_t(system_clock::now()),
 				runTimeContainer,
-				adjustmentPercent
+				adjustment
 			);
+		} else if (*irrigationResourceDTO.action.get() == "start-program") {
+			if (irrigationResourceDTO.programId.get() == nullptr) {
+				const char* message = "The 'program-id' element tag not found";
+				LOGGER.warning(message);
+				throw RestBadRequest(restService->getErrorWriter(), message);
+			}
+
+			const IdType programId = *irrigationResourceDTO.programId;
+			const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+
+			unsigned adjustment = program->getCurrentScheduler().getAdjustment();
+
+			if (irrigationResourceDTO.adjustment.get() != nullptr) {
+				adjustment = *irrigationResourceDTO.adjustment;
+			}
+
+			irrigationDocument.getWateringController().start(
+				system_clock::to_time_t(system_clock::now()),
+				program->getRunTimes(),
+				adjustment
+			);
+		} else if (*irrigationResourceDTO.action.get() == "stop") {
+			irrigationDocument.getWateringController().stop();
+		} else {
+			const string message = "Invalid value of 'action': " + *irrigationResourceDTO.action.get();
+			LOGGER.warning(message.c_str());
+			throw RestBadRequest(restService->getErrorWriter(), message);
 		}
 
 		return HttpResponse::Builder().

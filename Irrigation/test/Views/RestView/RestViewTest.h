@@ -2,11 +2,11 @@
 #include <memory>
 #include <gmock/gmock.h>
 #include "CurlCallbacks/CurlCallbacks.h"
-#include "Dto2Object/ProgramSamples.h"
 #include "Dto2Object/ProgramListSamples.h"
 
 class IrrigationDocument;
 class RestView;
+
 
 class RestViewTest : public  testing::Test {
 protected:
@@ -53,4 +53,5 @@ protected:
     static std::string createStartTimeListUrl(IdType programId);
     static std::string createPeriodicSchedulerUrl(IdType programId);
     static std::string createWeeklySchedulerUrl(IdType programId);
+    static std::string createIrrigationActionUrl();
 };
