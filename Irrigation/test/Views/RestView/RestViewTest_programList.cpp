@@ -9,8 +9,12 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-std::string RestViewTest::createProgramListUrl() {
-	return createUrl("/programs");
+std::string RestViewTest::createProgramListUrl(const std::string& requestParameters) {
+	if (requestParameters.empty()) {
+		return createUrl("/programs");
+	} else {
+		return createUrl("/programs") + "?" + requestParameters;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,30 +46,62 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RestViewTest::testGetProgramList(const ProgramListSample& programListSample) {
+void RestViewTest::testGetProgramList(const ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers) {
 	document = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
 	document->addView(unique_ptr<View>(new RestView(*document, port)));
 
-	const Response response = executeRequest("GET", createProgramListUrl());
+	const Response response = executeRequest("GET", createProgramListUrl(requestParameters));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList(), false)));
+	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList(), includeContainers)));
 }
 
 TEST_F(RestViewTest, getProgramList1) {
-	testGetProgramList(ProgramListSample1());
+	testGetProgramList(ProgramListSample1(), "", false);
 }
 
 TEST_F(RestViewTest, getProgramList2) {
-	testGetProgramList(ProgramListSample2());
+	testGetProgramList(ProgramListSample2(), "", false);
 }
 
 TEST_F(RestViewTest, getProgramList3) {
-	testGetProgramList(ProgramListSample2());
+	testGetProgramList(ProgramListSample2(), "", false);
 }
 
 TEST_F(RestViewTest, getProgramList4) {
-	testGetProgramList(ProgramListSample4());
+	testGetProgramList(ProgramListSample4(), "", false);
+}
+
+TEST_F(RestViewTest, getProgramListIncludeContainers1) {
+	testGetProgramList(ProgramListSample1(), "include-containers=true", true);
+}
+
+TEST_F(RestViewTest, getProgramListIncludeContainers2) {
+	testGetProgramList(ProgramListSample2(), "include-containers=true", true);
+}
+
+TEST_F(RestViewTest, getProgramListIncludeContainers3) {
+	testGetProgramList(ProgramListSample2(), "include-containers=true", true);
+}
+
+TEST_F(RestViewTest, getProgramListIncludeContainers4) {
+	testGetProgramList(ProgramListSample4(), "include-containers=true", true);
+}
+
+TEST_F(RestViewTest, getProgramListNotIncludeContainers1) {
+	testGetProgramList(ProgramListSample1(), "include-containers=false", false);
+}
+
+TEST_F(RestViewTest, getProgramListNotIncludeContainers2) {
+	testGetProgramList(ProgramListSample2(), "include-containers=false", false);
+}
+
+TEST_F(RestViewTest, getProgramListNotIncludeContainers3) {
+	testGetProgramList(ProgramListSample2(), "include-containers=false", false);
+}
+
+TEST_F(RestViewTest, getProgramListNotIncludeContainers4) {
+	testGetProgramList(ProgramListSample4(), "include-containers=false", false);
 }
 
 TEST_F(RestViewTest, getProgramListAcceptable) {

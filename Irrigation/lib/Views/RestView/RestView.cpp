@@ -172,7 +172,7 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 		const ProgramDTO programDto = getProgram(pathParameters.at("programId"))->toProgramDto();
 
 		bool includeContainers = false;
-		auto it = request.getParameters().find("includeContainers");
+		auto it = request.getParameters().find("include-containers");
 		if (request.getParameters().end() != it) {
 			includeContainers = (it->second == "true");
 		}
