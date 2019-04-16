@@ -34,20 +34,18 @@ TEST_F(RestServerTest, callbackWithoutParameter) {
 
 	CURL *curl = curl_easy_init();
 
-	ASSERT_NE(nullptr, curl);
+	ASSERT_THAT(curl, NotNull());
 	EXPECT_CALL(*this, onCreateProgram(_, KeyValue())).Times(1);
 
-	if (curl) {
-		ReadCallbackData readCallbackData("");
+	ReadCallbackData readCallbackData("");
 
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_PUT, 1);
-		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
-		curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
-        curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-	}
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(curl, CURLOPT_PUT, 1);
+	curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+	curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
+	curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
+	curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
 }
 
 TEST_F(RestServerTest, callbackWithParameter) {
@@ -55,12 +53,23 @@ TEST_F(RestServerTest, callbackWithParameter) {
 
 	CURL *curl = curl_easy_init();
 
-	ASSERT_NE(nullptr, curl);
+	ASSERT_THAT(curl, NotNull());
 	EXPECT_CALL(*this, onGetProgram(_, KeyValue({{"programID", "567"}}))).Times(1);
 
-	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-	}
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+	curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+}
+
+TEST_F(RestServerTest, acceptable) {
+	const string url = createUrl(port, "/programs");
+
+	CURL *curl = curl_easy_init();
+
+	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*this, onGetProgram(_, KeyValue({{"programID", "567"}}))).Times(1);
+
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+	curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
 }
