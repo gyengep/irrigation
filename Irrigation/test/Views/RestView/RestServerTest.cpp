@@ -60,16 +60,3 @@ TEST_F(RestServerTest, callbackWithParameter) {
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 }
-
-TEST_F(RestServerTest, acceptable) {
-	const string url = createUrl(port, "/programs");
-
-	CURL *curl = curl_easy_init();
-
-	ASSERT_THAT(curl, NotNull());
-	EXPECT_CALL(*this, onGetProgram(_, KeyValue({{"programID", "567"}}))).Times(1);
-
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
-}
