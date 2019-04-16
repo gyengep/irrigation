@@ -58,10 +58,36 @@ void RestService::checkAccept(const HttpRequest& request) {
 	const auto it = request.getHeaders().find("Accept");
 
 	if (request.getHeaders().end() != it) {
-		if (it->second != "application/xml" && it->second != "*/*") {
-			LOGGER.debug("Not acceptable: %s", it->second.c_str());
-			throw RestNotAcceptable(errorWriter, request.getUrl());
+		const string& accept = it->second;
+
+		size_t posBegin = 0, posEnd;
+		while ((posEnd = accept.find_first_of(",;", posBegin)) != string::npos) {
+			size_t trimmedPosBegin = accept.find_first_not_of(' ', posBegin);
+			size_t trimmedPosEnd = accept.find_last_not_of(' ', posEnd - 1);
+			const string subItem = accept.substr(trimmedPosBegin, trimmedPosEnd - trimmedPosBegin + 1);
+
+			if (subItem == "*/*" || subItem == "application/xml") {
+				return;
+			}
+
+			posBegin = posEnd + 1;
 		}
+
+		size_t trimmedPosBegin = accept.find_first_not_of(' ', posBegin);
+		size_t trimmedPosEnd = accept.find_last_not_of(" ,;", posEnd - 1);
+		string subItem;
+		if (trimmedPosEnd == string::npos) {
+			subItem = accept.substr(trimmedPosBegin);
+		} else {
+			subItem = accept.substr(trimmedPosBegin, trimmedPosEnd - trimmedPosBegin + 1);
+		}
+
+		if (subItem == "*/*" || subItem == "application/xml") {
+			return;
+		}
+
+		LOGGER.debug("Not acceptable: %s", accept.c_str());
+		throw RestNotAcceptable(errorWriter, request.getUrl());
 	}
 }
 
