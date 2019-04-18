@@ -1,16 +1,11 @@
 #pragma once
 #include <memory>
 #include "DocumentView/View.h"
-#include "DtoReaderWriter/DtoReaderWriter.h"
-#include "Logic/IdType.h"
-#include "Model/IrrigationDocument.h"
-#include "XmlErrorWriter.h"
-#include "XmlLogWriter.h"
-#include "RestServiceException.h"
+#include "WebServer/KeyValue.h"
+#include "XmlIrrigationActionReader.h"
 
-
+class IdType;
 class Program;
-class RunTime;
 class StartTime;
 class PeriodicScheduler;
 class WeeklyScheduler;
@@ -18,6 +13,10 @@ class RestService;
 class WebServer;
 class HttpResponse;
 class HttpRequest;
+class DtoReader;
+class DtoWriter;
+class LogWriter;
+class IrrigationDocument;
 
 
 class RestView : public View {
@@ -31,7 +30,6 @@ class RestView : public View {
 	std::shared_ptr<LogWriter> logWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetRunTime(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters);
@@ -39,7 +37,7 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPostProgramList(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchProgram(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onPatchRunTime(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onPatchRunTimeList(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters);
@@ -51,13 +49,16 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
 
 	const std::shared_ptr<Program>& getProgram(const std::string& programIdText) const;
-	const std::shared_ptr<RunTime>& getRunTime(const std::string& programIdText, const std::string& runTimeIdText) const;
 	const std::shared_ptr<StartTime>& getStartTime(const std::string& programIdText, const std::string& startTimeIdText) const;
 	PeriodicScheduler& getPeriodicScheduler(const std::string& programIdText);
 	WeeklyScheduler& getWeeklyScheduler(const std::string& programIdText);
 
+	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
+	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);
+	void onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActionDTO);
+
+	static bool includeContainers(const KeyValue& keyValue);
 	static std::string getProgramUrl(const IdType& programId);
-	static std::string getRunTimeUrl(const IdType& programId, const IdType& runTimeId);
 	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 
 public:

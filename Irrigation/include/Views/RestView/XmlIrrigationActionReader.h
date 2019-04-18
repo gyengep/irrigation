@@ -1,8 +1,10 @@
 #pragma once
+#include <list>
 #include <memory>
 #include "DTO/RunTimeDTO.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "Logic/IdType.h"
+
 
 struct IrrigationActionDTO {
 	std::unique_ptr<std::string> action;

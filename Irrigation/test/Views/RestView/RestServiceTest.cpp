@@ -66,3 +66,31 @@ TEST_F(RestServiceTest, testParameters) {
 	HttpRequest request1(nullptr, MHD_HTTP_VERSION_1_1, MHD_HTTP_METHOD_POST, "/resource1/12345/resource2/ASDFG", shared_ptr<ByteBuffer>(new ByteBuffer()));
 	restService.onRequest(request1);
 }
+
+TEST_F(RestServiceTest, isAcceptableXml) {
+	EXPECT_TRUE(RestService::isAcceptable("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange;v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng; q=0.8, application/signed-exchange; v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html ,application/xhtml+xml ,application/xml ;q=0.9 ,image/webp ,image/apng ;q=0.8 ,application/signed-exchange ;v=b3 "));
+	EXPECT_TRUE(RestService::isAcceptable("application/xml,text/html,application/xhtml+xml;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange;v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("application/xml, text/html, application/xhtml+xml; q=0.9, image/webp, image/apng; q=0.8, application/signed-exchange; v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("application/xml ,text/html ,application/xhtml+xml ;q=0.9 ,image/webp ,image/apng ;q=0.8 ,application/signed-exchange ;v=b3 "));
+	EXPECT_TRUE(RestService::isAcceptable("text/html,application/xhtml+xml;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange;application/xml"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html, application/xhtml+xml; q=0.9, image/webp, image/apng; q=0.8, application/signed-exchange; application/xml"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html ,application/xhtml+xml ;q=0.9 ,image/webp ,image/apng ;q=0.8 ,application/signed-exchange ;application/xml "));
+}
+
+TEST_F(RestServiceTest, isAcceptableEverithing) {
+	EXPECT_TRUE(RestService::isAcceptable("text/html,application/xhtml+xml,*/*;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange;v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html, application/xhtml+xml, */*; q=0.9, image/webp, image/apng; q=0.8, application/signed-exchange; v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html ,application/xhtml+xml ,*/* ;q=0.9 ,image/webp ,image/apng ;q=0.8 ,application/signed-exchange ;v=b3 "));
+	EXPECT_TRUE(RestService::isAcceptable("*/*,text/html,application/xhtml+xml;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange;v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("*/*, text/html, application/xhtml+xml; q=0.9, image/webp, image/apng; q=0.8, application/signed-exchange; v=b3"));
+	EXPECT_TRUE(RestService::isAcceptable("*/* ,text/html ,application/xhtml+xml ;q=0.9 ,image/webp ,image/apng ;q=0.8 ,application/signed-exchange ;v=b3 "));
+	EXPECT_TRUE(RestService::isAcceptable("text/html,application/xhtml+xml;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange;*/*"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html, application/xhtml+xml; q=0.9, image/webp, image/apng; q=0.8, application/signed-exchange; */*"));
+	EXPECT_TRUE(RestService::isAcceptable("text/html ,application/xhtml+xml ;q=0.9 ,image/webp ,image/apng ;q=0.8 ,application/signed-exchange ;*/* "));
+}
+
+TEST_F(RestServiceTest, notAcceptable) {
+	EXPECT_FALSE(RestService::isAcceptable("text/html,application/xhtml+xml;q=0.9,image/webp,image/apng;q=0.8,application/signed-exchange"));
+}

@@ -14,6 +14,10 @@ StartTime::StartTime(unsigned hour, unsigned minute) {
 	set(hour, minute);
 }
 
+StartTime::StartTime(const StartTimeDTO& startTimeDTO) : StartTime() {
+	updateFromStartTimeDto(startTimeDTO);
+}
+
 StartTime::~StartTime() {
 }
 

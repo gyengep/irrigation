@@ -29,8 +29,8 @@ class RestService : public WebService {
 	PathInfos pathInfos;
 	std::shared_ptr<ErrorWriter> errorWriter;
 
-	void checkAccept(const HttpRequest& request);
 	void checkContentType(const HttpRequest& request);
+	void checkAccept(const HttpRequest& request);
 	Callbacks& getCallbacksForPath(const std::string& path);
 	static const RestServiceCallback* findCallback(const Callbacks& callbacks, const std::string& method);
 
@@ -42,4 +42,6 @@ public:
 	std::shared_ptr<ErrorWriter> getErrorWriter() const { return errorWriter; }
 
 	virtual std::unique_ptr<HttpResponse> onRequest(const HttpRequest& request) override;
+
+	static bool isAcceptable(const std::string& acceptHeader);
 };

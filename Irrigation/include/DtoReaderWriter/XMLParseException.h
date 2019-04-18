@@ -1,13 +1,13 @@
 #pragma once
 #include <string>
-#include <stdexcept>
+#include "Exceptions/ParserException.h"
 
 
 
-class XMLParseException : public std::runtime_error {
+class XMLParseException : public ParserException {
 public:
 	XMLParseException(const char* what) :
-		std::runtime_error(what) {}
+		ParserException(what) {}
 };
 
 

@@ -13,6 +13,7 @@ public:
 	StartTime(StartTime&&) = default;
 	StartTime(const StartTime&) = default;
 	StartTime(unsigned hour, unsigned minute);
+	StartTime(const StartTimeDTO& startTimeDTO);
 	virtual ~StartTime();
 
 	StartTime& operator= (StartTime&&) = delete;

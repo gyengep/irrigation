@@ -32,10 +32,10 @@ protected:
     Response executeRequest(const std::string& method, const std::string&  url, const std::string& body, const std::string& contentType);
 
     void testGetProgram(const Dto2ObjectTest::ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers);
-    void testGetRunTime(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
     void testGetStartTime(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
     void testGetProgramList(const Dto2ObjectTest::ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers);
     void testGetRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
+    void testPatchRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
     void testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
     void testGetPeriodicScheduler(const Dto2ObjectTest::PeriodicSchedulerSample& periodicSchedulerSample);
     void testGetWeeklyScheduler(const Dto2ObjectTest::WeeklySchedulerSample& weeklySchedulerSample);
@@ -46,7 +46,6 @@ protected:
 
     static std::string createUrl(const std::string& path);
     static std::string createProgramUrl(IdType programId, const std::string& requestParameters = "");
-    static std::string createRunTimeUrl(IdType programId, IdType runTimeId);
     static std::string createStartTimeUrl(IdType programId, IdType runTimeId);
     static std::string createProgramListUrl(const std::string& requestParameters = "");
     static std::string createRunTimeListUrl(IdType programId);

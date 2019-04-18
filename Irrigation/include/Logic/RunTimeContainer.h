@@ -28,6 +28,7 @@ public:
 	RunTimeContainer(RunTimeContainer&&) = default;
 	RunTimeContainer(const RunTimeContainer& other);
 	RunTimeContainer(std::initializer_list<RunTime> initializer);
+	RunTimeContainer(const std::list<RunTimeDTO>& runTimeDtoList);
 	virtual ~RunTimeContainer() = default;
 
 	// for testing
@@ -44,7 +45,7 @@ public:
 	const mapped_type& at(const key_type& key) const;
 
 	std::list<RunTimeDTO> toRunTimeDtoList() const;
-	void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
+	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
 
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
 	friend std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer);

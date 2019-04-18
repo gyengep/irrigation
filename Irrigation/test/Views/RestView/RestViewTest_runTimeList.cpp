@@ -1,4 +1,5 @@
 #include "RestViewTest.h"
+#include "Mocks/MockRunTimeContainer.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Model/IrrigationDocument.h"
 #include "Views/RestView/RestView.h"
@@ -74,9 +75,33 @@ TEST_F(RestViewTest, getRunTimeListNotAcceptable) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, patchRunTimeList) {
-	Response response = executeRequest("PATCH", createRunTimeListUrl(IdType()), XmlWriter().save(RunTimeSample1().getDto()), "application/xml");
-	checkErrorResponse(response, 405, "application/xml");
+void RestViewTest::testPatchRunTimeList(const RunTimeListSample& runTimeListSample) {
+	const IdType programId;
+	const shared_ptr<MockRunTimeContainer> mockRunTimeContainer(new MockRunTimeContainer());
+	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(mockRunTimeContainer).build();
+
+	document->getPrograms().insert(programId, program);
+
+	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(runTimeListSample.getDtoList()));
+
+	const Response response = executeRequest("PATCH", createRunTimeListUrl(programId), XmlWriter().save(runTimeListSample.getDtoList()), "application/xml");
+	checkResponseWithoutBody(response, 204);
+}
+
+TEST_F(RestViewTest, patchRunTimeList1) {
+	testPatchRunTimeList(RunTimeListSample1());
+}
+
+TEST_F(RestViewTest, patchRunTimeList2) {
+	testPatchRunTimeList(RunTimeListSample2());
+}
+
+TEST_F(RestViewTest, patchRunTimeList3) {
+	testPatchRunTimeList(RunTimeListSample3());
+}
+
+TEST_F(RestViewTest, patchRunTimeList4) {
+	testPatchRunTimeList(RunTimeListSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

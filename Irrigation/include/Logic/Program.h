@@ -33,6 +33,7 @@ public:
 		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
 		std::shared_ptr<RunTimeContainer> runTimes,
 		std::shared_ptr<StartTimeContainer> startTimes);
+	Program(const ProgramDTO& programDTO);
 
 	virtual ~Program();
 
