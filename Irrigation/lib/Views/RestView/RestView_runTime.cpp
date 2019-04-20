@@ -5,6 +5,7 @@
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
+#include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
 #include "Model/IrrigationDocument.h"
 
@@ -16,7 +17,9 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const list<RunTimeDTO> runTimeDtoList = getProgram(pathParameters.at("programId"))->getRunTimes().toRunTimeDtoList();
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const list<RunTimeDTO> runTimeDtoList = program->getRunTimes().toRunTimeDtoList();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -39,9 +42,11 @@ unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
+		LOGGER.debug("Program[%s].RunTimes are modified: %s", to_string(programId).c_str(), to_string(program->getRunTimes()).c_str());
 		lock.unlock();
 
 		return HttpResponse::Builder().

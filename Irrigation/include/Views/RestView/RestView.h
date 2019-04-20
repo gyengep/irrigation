@@ -48,14 +48,12 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
 
-	const std::shared_ptr<Program>& getProgram(const std::string& programIdText) const;
-	const std::shared_ptr<StartTime>& getStartTime(const std::string& programIdText, const std::string& startTimeIdText) const;
-	PeriodicScheduler& getPeriodicScheduler(const std::string& programIdText);
-	WeeklyScheduler& getWeeklyScheduler(const std::string& programIdText);
-
 	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActionDTO);
+
+	static IdType getProgramId(const KeyValue& pathParameters);
+	static IdType getStartTimeId(const KeyValue& pathParameters);
 
 	static bool includeContainers(const KeyValue& keyValue);
 	static std::string getProgramUrl(const IdType& programId);

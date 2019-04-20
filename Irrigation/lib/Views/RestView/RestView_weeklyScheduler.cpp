@@ -4,24 +4,22 @@
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
+#include "Logic/ProgramContainer.h"
 #include "Schedulers/WeeklyScheduler.h"
 #include "Model/IrrigationDocument.h"
 
 using namespace std;
 
 
-WeeklyScheduler& RestView::getWeeklyScheduler(const std::string& programIdText) {
-	return getProgram(programIdText)->getWeeklyScheduler();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not retrieve weekly scheduler";
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const WeeklySchedulerDTO weeklySchedulerDto = getWeeklyScheduler(pathParameters.at("programId")).toWeeklySchedulerDto();
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const WeeklyScheduler& weeklyScheduler = program->getWeeklyScheduler();
+		const WeeklySchedulerDTO weeklySchedulerDto = weeklyScheduler.toWeeklySchedulerDto();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -44,9 +42,16 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		WeeklyScheduler& weeklyScheduler = getWeeklyScheduler(pathParameters.at("programId"));
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		WeeklyScheduler& weeklyScheduler = program->getWeeklyScheduler();
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
+
+		LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
+				to_string(programId).c_str(),
+				to_string(weeklyScheduler).c_str());
+
 		lock.unlock();
 
 		return HttpResponse::Builder().

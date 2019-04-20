@@ -4,24 +4,22 @@
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
+#include "Logic/ProgramContainer.h"
 #include "Schedulers/PeriodicScheduler.h"
 #include "Model/IrrigationDocument.h"
 
 using namespace std;
 
 
-PeriodicScheduler& RestView::getPeriodicScheduler(const std::string& programIdText) {
-	return getProgram(programIdText)->getPeriodicScheduler();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not retrieve periodic scheduler";
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const PeriodicSchedulerDTO periodicSchedulerDto = getPeriodicScheduler(pathParameters.at("programId")).toPeriodicSchedulerDto();
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const PeriodicScheduler& periodicScheduler = program->getPeriodicScheduler();
+		const PeriodicSchedulerDTO periodicSchedulerDto = periodicScheduler.toPeriodicSchedulerDto();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -44,9 +42,16 @@ unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& r
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		PeriodicScheduler& periodicScheduler = getPeriodicScheduler(pathParameters.at("programId"));
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		PeriodicScheduler& periodicScheduler = program->getPeriodicScheduler();
 		const PeriodicSchedulerDTO periodicSchedulerDto = dtoReader->loadPeriodicScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		periodicScheduler.updateFromPeriodicSchedulerDto(periodicSchedulerDto);
+
+		LOGGER.debug("Program[%s].PeriodicScheduler is modified: %s",
+				to_string(programId).c_str(),
+				to_string(periodicScheduler).c_str());
+
 		lock.unlock();
 
 		return HttpResponse::Builder().

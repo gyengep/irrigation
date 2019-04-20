@@ -48,6 +48,14 @@ void IrrigationDocument::updateFromDocumentDto(const DocumentDTO& documentDTO) {
 	if (documentDTO.hasPrograms()) {
 		programs->updateFromProgramDtoList(documentDTO.getPrograms());
 	}
+
+	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+		for (const auto& programWithId : getPrograms()) {
+			LOGGER.debug("Program[%s] is added: %s", to_string(programWithId.first).c_str(), to_string(*programWithId.second).c_str());
+		}
+
+ 		LOGGER.debug("Configuration is successfully loaded");
+	}
 }
 
 void IrrigationDocument::load(const string& fileName) {
@@ -60,8 +68,6 @@ void IrrigationDocument::load(const string& fileName) {
 	const DocumentDTO documentDTO = dtoReader->loadDocument(text);
 
 	updateFromDocumentDto(documentDTO);
-
-	LOGGER.debug("Configuration is successfully loaded");
 }
 
 void IrrigationDocument::save(const string& fileName) const {

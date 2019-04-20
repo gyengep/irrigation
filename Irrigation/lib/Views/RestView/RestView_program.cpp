@@ -10,9 +10,8 @@
 using namespace std;
 
 
-const shared_ptr<Program>& RestView::getProgram(const string& programIdText) const {
-	const ProgramContainer& programs = irrigationDocument.getPrograms();
-	return programs.at(IdType::from_string(programIdText));
+IdType RestView::getProgramId(const KeyValue& pathParameters) {
+	return IdType::from_string(pathParameters.at("programId"));
 }
 
 bool RestView::includeContainers(const KeyValue& keyValue) {
@@ -47,7 +46,10 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const IdType programId = irrigationDocument.getPrograms().insert(IdType(), program).first;
+
+		LOGGER.debug("Program[%s] is added: %s", to_string(programId).c_str(), to_string(*program).c_str());
 		lock.unlock();
+
 
 		return HttpResponse::Builder().
 				setStatus(201, "Created").
@@ -67,7 +69,9 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const ProgramDTO programDto = getProgram(pathParameters.at("programId"))->toProgramDto();
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const ProgramDTO programDto = program->toProgramDto();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -90,10 +94,14 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		program->updateFromProgramDto(programDto);
+
+		LOGGER.debug("Program[%s] is modified: %s", to_string(programId).c_str(), to_string(*program).c_str());
 		lock.unlock();
+
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").
@@ -116,8 +124,11 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		irrigationDocument.getPrograms().erase(IdType::from_string(pathParameters.at("programId")));
+		const IdType programId = getProgramId(pathParameters);
+		irrigationDocument.getPrograms().erase(programId);
 		lock.unlock();
+
+		LOGGER.debug("Program[%s] is deleted", to_string(programId).c_str());
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").

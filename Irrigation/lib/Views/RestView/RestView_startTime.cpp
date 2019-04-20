@@ -12,9 +12,8 @@
 using namespace std;
 
 
-const shared_ptr<StartTime>& RestView::getStartTime(const string& programIdText, const string& startTimeIdText) const {
-	const StartTimeContainer& startTimes = getProgram(programIdText)->getStartTimes();
-	return startTimes.at(stoul(startTimeIdText));
+IdType RestView::getStartTimeId(const KeyValue& pathParameters) {
+	return IdType::from_string(pathParameters.at("startTimeId"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,7 +23,9 @@ unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const list<StartTimeDTO> startTimeDtoList = getProgram(pathParameters.at("programId"))->getStartTimes().toStartTimeDtoList();
+		const IdType programId = getProgramId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const list<StartTimeDTO> startTimeDtoList = program->getStartTimes().toStartTimeDtoList();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -48,10 +49,17 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 	try {
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<StartTime> startTime(new StartTime(startTimeDto));
-		const IdType programId = IdType::from_string(pathParameters.at("programId"));
+		const IdType programId = getProgramId(pathParameters);
 
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const IdType startTimeId = irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(IdType(), startTime).first;
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const IdType startTimeId = program->getStartTimes().insert(IdType(), startTime).first;
+
+		LOGGER.debug("Program[%s].StartTime[%s] is added: %s",
+				to_string(programId).c_str(),
+				to_string(startTimeId).c_str(),
+				to_string(*startTime).c_str());
+
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -78,7 +86,10 @@ unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, co
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const StartTimeDTO startTimeDto = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"))->toStartTimeDto();
+		const IdType programId = getProgramId(pathParameters);
+		const IdType startTimeId = getStartTimeId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		const StartTimeDTO startTimeDto = program->getStartTimes().at(startTimeId)->toStartTimeDto();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -101,9 +112,18 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<StartTime> startTime = getStartTime(pathParameters.at("programId"), pathParameters.at("startTimeId"));
+		const IdType programId = getProgramId(pathParameters);
+		const IdType startTimeId = getStartTimeId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		shared_ptr<StartTime> startTime = program->getStartTimes().at(startTimeId);
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		startTime->updateFromStartTimeDto(startTimeDto);
+
+		LOGGER.debug("Program[%s].StartTime[%s] is modified: %s",
+				to_string(programId).c_str(),
+				to_string(startTimeId).c_str(),
+				to_string(*startTime).c_str());
+
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -127,8 +147,15 @@ unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request,
 
 	try {
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = getProgram(pathParameters.at("programId"));
-		program->getStartTimes().erase(IdType::from_string(pathParameters.at("startTimeId")));
+		const IdType programId = getProgramId(pathParameters);
+		const IdType startTimeId = getStartTimeId(pathParameters);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		program->getStartTimes().erase(startTimeId);
+
+		LOGGER.debug("Program[%s].StartTime[%s] is deleted",
+				to_string(programId).c_str(),
+				to_string(startTimeId).c_str());
+
 		lock.unlock();
 
 		return HttpResponse::Builder().
