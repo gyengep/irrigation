@@ -93,7 +93,7 @@ TEST_F(RestViewTest, patchWeeklyScheduler) {
 }
 
 TEST_F(RestViewTest, patchWeeklySchedulerNotFound) {
-	Response response = executeRequest("PATCH", createWeeklySchedulerUrl(IdType()), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
+	Response response = executeRequest("PATCH", createWeeklySchedulerUrl(IdType()), XmlWriter().save(WeeklySchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 404, "application/xml");
 }
 

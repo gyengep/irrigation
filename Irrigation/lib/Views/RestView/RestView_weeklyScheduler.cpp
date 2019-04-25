@@ -15,11 +15,11 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 	static const char* logMessage = "Can not retrieve weekly scheduler";
 
 	try {
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const IdType programId = getProgramId(pathParameters);
+
+		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		const WeeklyScheduler& weeklyScheduler = program->getWeeklyScheduler();
-		const WeeklySchedulerDTO weeklySchedulerDto = weeklyScheduler.toWeeklySchedulerDto();
+		const WeeklySchedulerDTO weeklySchedulerDto = program->getWeeklyScheduler().toWeeklySchedulerDto();
 		lock.unlock();
 
 		return HttpResponse::Builder().
@@ -41,18 +41,18 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 	static const char* logMessage = "Can not modify weekly scheduler";
 
 	try {
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const IdType programId = getProgramId(pathParameters);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		WeeklyScheduler& weeklyScheduler = program->getWeeklyScheduler();
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
-		weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
+
+		unique_lock<IrrigationDocument> lock(irrigationDocument);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+		program->getWeeklyScheduler().updateFromWeeklySchedulerDto(weeklySchedulerDto);
+		const WeeklyScheduler weeklySchedulerCopy(program->getWeeklyScheduler());
+		lock.unlock();
 
 		LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
 				to_string(programId).c_str(),
-				to_string(weeklyScheduler).c_str());
-
-		lock.unlock();
+				to_string(weeklySchedulerCopy).c_str());
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

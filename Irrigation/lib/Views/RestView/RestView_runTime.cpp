@@ -16,8 +16,9 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 	static const char* logMessage = "Can not retrieve runTime container";
 
 	try {
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const IdType programId = getProgramId(pathParameters);
+
+		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 		const list<RunTimeDTO> runTimeDtoList = program->getRunTimes().toRunTimeDtoList();
 		lock.unlock();
@@ -41,13 +42,18 @@ unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request
 	static const char* logMessage = "Can not modify runTime container";
 
 	try {
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		const IdType programId = getProgramId(pathParameters);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
+
+		unique_lock<IrrigationDocument> lock(irrigationDocument);
+		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 		program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
-		LOGGER.debug("Program[%s].RunTimes are modified: %s", to_string(programId).c_str(), to_string(program->getRunTimes()).c_str());
+		const RunTimeContainer runTimeContainerCopy(program->getRunTimes());
 		lock.unlock();
+
+		LOGGER.debug("Program[%s].RunTimes are modified: %s",
+				to_string(programId).c_str(),
+				to_string(runTimeContainerCopy).c_str());
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

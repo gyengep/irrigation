@@ -93,7 +93,7 @@ TEST_F(RestViewTest, patchPeriodicScheduler) {
 }
 
 TEST_F(RestViewTest, patchPeriodicSchedulerNotFound) {
-	Response response = executeRequest("PATCH", createPeriodicSchedulerUrl(IdType()), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
+	Response response = executeRequest("PATCH", createPeriodicSchedulerUrl(IdType()), XmlWriter().save(PeriodicSchedulerSample2().getDto()), "application/xml");
 	checkErrorResponse(response, 404, "application/xml");
 }
 
