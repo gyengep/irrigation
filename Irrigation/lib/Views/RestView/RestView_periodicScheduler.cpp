@@ -16,11 +16,12 @@ unique_ptr<HttpResponse> RestView::onGetPeriodicScheduler(const HttpRequest& req
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
+		PeriodicSchedulerDTO periodicSchedulerDto;
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		const PeriodicSchedulerDTO periodicSchedulerDto = program->getPeriodicScheduler().toPeriodicSchedulerDto();
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			periodicSchedulerDto = irrigationDocument.getPrograms().at(programId)->getPeriodicScheduler().toPeriodicSchedulerDto();
+		}
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -44,15 +45,20 @@ unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& r
 		const IdType programId = getProgramId(pathParameters);
 		const PeriodicSchedulerDTO periodicSchedulerDto = dtoReader->loadPeriodicScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		program->getPeriodicScheduler().updateFromPeriodicSchedulerDto(periodicSchedulerDto);
-		const PeriodicScheduler periodicSchedulerCopy(program->getPeriodicScheduler());
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			PeriodicScheduler& periodicScheduler = irrigationDocument.getPrograms().at(programId)->getPeriodicScheduler();
+			periodicScheduler.updateFromPeriodicSchedulerDto(periodicSchedulerDto);
 
-		LOGGER.debug("Program[%s].PeriodicScheduler is modified: %s",
-				to_string(programId).c_str(),
-				to_string(periodicSchedulerCopy).c_str());
+			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+				const PeriodicScheduler periodicSchedulerCopy(periodicScheduler);
+				lock.unlock();
+
+				LOGGER.debug("Program[%s].PeriodicScheduler is modified: %s",
+						to_string(programId).c_str(),
+						to_string(periodicSchedulerCopy).c_str());
+			}
+		}
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

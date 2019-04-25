@@ -26,9 +26,13 @@ bool RestView::includeContainers(const KeyValue& keyValue) {
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
-	unique_lock<IrrigationDocument> lock(irrigationDocument);
-	const list<ProgramDTO> programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
-	lock.unlock();
+
+	list<ProgramDTO> programDtoList;
+
+	{
+		unique_lock<IrrigationDocument> lock(irrigationDocument);
+		programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
+	}
 
 	return HttpResponse::Builder().
 			setStatus(200, "OK").
@@ -43,16 +47,22 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 	try {
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const shared_ptr<Program> program(new Program(programDto));
-		const Program programCopy(*program);
 		const IdType programId;
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		irrigationDocument.getPrograms().insert(programId, program);
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.getPrograms().insert(programId, program);
 
-		LOGGER.debug("Program[%s] is added: %s",
-				to_string(programId).c_str(),
-				to_string(programCopy).c_str());
+			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+				const Program programCopy(*program);
+				lock.unlock();
+
+				LOGGER.debug("Program[%s] is added: %s",
+						to_string(programId).c_str(),
+						to_string(programCopy).c_str());
+			}
+		}
+
 
 		return HttpResponse::Builder().
 				setStatus(201, "Created").
@@ -72,11 +82,12 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
+		ProgramDTO programDto;
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		const ProgramDTO programDto = program->toProgramDto();
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			programDto = irrigationDocument.getPrograms().at(programId)->toProgramDto();
+		}
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -100,15 +111,21 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 		const IdType programId = getProgramId(pathParameters);
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		program->updateFromProgramDto(programDto);
-		const Program programCopy(*program);
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+			program->updateFromProgramDto(programDto);
 
-		LOGGER.debug("Program[%s] is modified: %s",
-				to_string(programId).c_str(),
-				to_string(programCopy).c_str());
+			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+				const Program programCopy(*program);
+				lock.unlock();
+
+				LOGGER.debug("Program[%s] is modified: %s",
+						to_string(programId).c_str(),
+						to_string(programCopy).c_str());
+			}
+		}
+
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").
@@ -132,9 +149,10 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 	try {
 		const IdType programId = getProgramId(pathParameters);
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		irrigationDocument.getPrograms().erase(programId);
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.getPrograms().erase(programId);
+		}
 
 		LOGGER.debug("Program[%s] is deleted",
 				to_string(programId).c_str());

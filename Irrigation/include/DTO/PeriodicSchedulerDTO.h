@@ -15,7 +15,7 @@ public:
 	PeriodicSchedulerDTO(unsigned adjustment, std::list<bool>&& values,
 			unsigned periodStartYear, unsigned periodStartMonth, unsigned periodStartDay);
 
-	PeriodicSchedulerDTO& operator= (PeriodicSchedulerDTO&&) = delete;
+	PeriodicSchedulerDTO& operator= (PeriodicSchedulerDTO&&) = default;
 	PeriodicSchedulerDTO& operator= (const PeriodicSchedulerDTO&) = delete;
 	bool operator== (const PeriodicSchedulerDTO& other) const;
 

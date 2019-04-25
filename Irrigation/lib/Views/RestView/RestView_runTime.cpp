@@ -17,11 +17,12 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
+		list<RunTimeDTO> runTimeDtoList;
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		const list<RunTimeDTO> runTimeDtoList = program->getRunTimes().toRunTimeDtoList();
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			runTimeDtoList = irrigationDocument.getPrograms().at(programId)->getRunTimes().toRunTimeDtoList();
+		}
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -45,15 +46,20 @@ unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request
 		const IdType programId = getProgramId(pathParameters);
 		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		program->getRunTimes().updateFromRunTimeDtoList(runTimeDtoList);
-		const RunTimeContainer runTimeContainerCopy(program->getRunTimes());
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			RunTimeContainer& runTimes = irrigationDocument.getPrograms().at(programId)->getRunTimes();
+			runTimes.updateFromRunTimeDtoList(runTimeDtoList);
 
-		LOGGER.debug("Program[%s].RunTimes are modified: %s",
-				to_string(programId).c_str(),
-				to_string(runTimeContainerCopy).c_str());
+			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+				const RunTimeContainer runTimeContainerCopy(runTimes);
+				lock.unlock();
+
+				LOGGER.debug("Program[%s].RunTimes are modified: %s",
+						to_string(programId).c_str(),
+						to_string(runTimeContainerCopy).c_str());
+			}
+		}
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

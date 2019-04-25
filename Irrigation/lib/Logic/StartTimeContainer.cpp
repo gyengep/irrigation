@@ -104,7 +104,7 @@ ostream& operator<<(ostream& os, const StartTimeContainer& startTimeContainer) {
 		if (it != startTimeContainer.begin()) {
 			os << ", ";
 		}
-		os << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
+		os << "{" << to_string(it->first) << ", " << to_string_short(*it->second) << "}";
 	}
 	os << "]";
 	return os;

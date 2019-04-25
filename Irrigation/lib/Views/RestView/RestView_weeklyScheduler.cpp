@@ -16,11 +16,12 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
+		WeeklySchedulerDTO weeklySchedulerDto;
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		const WeeklySchedulerDTO weeklySchedulerDto = program->getWeeklyScheduler().toWeeklySchedulerDto();
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			weeklySchedulerDto = irrigationDocument.getPrograms().at(programId)->getWeeklyScheduler().toWeeklySchedulerDto();
+		}
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -44,15 +45,20 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 		const IdType programId = getProgramId(pathParameters);
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
-		program->getWeeklyScheduler().updateFromWeeklySchedulerDto(weeklySchedulerDto);
-		const WeeklyScheduler weeklySchedulerCopy(program->getWeeklyScheduler());
-		lock.unlock();
+		{
+			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			WeeklyScheduler& weeklyScheduler = irrigationDocument.getPrograms().at(programId)->getWeeklyScheduler();
+			weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
 
-		LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
-				to_string(programId).c_str(),
-				to_string(weeklySchedulerCopy).c_str());
+			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+				const WeeklyScheduler weeklySchedulerCopy(weeklyScheduler);
+				lock.unlock();
+
+				LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
+						to_string(programId).c_str(),
+						to_string(weeklySchedulerCopy).c_str());
+			}
+		}
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

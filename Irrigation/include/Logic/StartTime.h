@@ -2,11 +2,16 @@
 #include <string>
 #include "DTO/StartTimeDTO.h"
 
+class StartTimeContainer;
+
 
 class StartTime {
+	friend StartTimeContainer;
 
 	unsigned hour, minute;
 	static const unsigned second = 0;
+
+	friend std::string to_string_short(const StartTime& startTime);
 
 public:
 	StartTime();

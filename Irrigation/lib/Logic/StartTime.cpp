@@ -82,6 +82,13 @@ void StartTime::updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) {
 	}
 }
 
+string to_string_short(const StartTime& startTime) {
+	ostringstream oss;
+	oss << setfill('0') << setw(2) << startTime.getHours() << ":";
+	oss << setfill('0') << setw(2) << startTime.getMinutes();
+	return oss.str();
+}
+
 string to_string(const StartTime& startTime) {
 	ostringstream oss;
 	oss << startTime;
@@ -89,7 +96,9 @@ string to_string(const StartTime& startTime) {
 }
 
 ostream& operator<<(ostream& os, const StartTime& startTime) {
+	os << "StartTime{";
 	os << setfill('0') << setw(2) << startTime.getHours() << ":";
 	os << setfill('0') << setw(2) << startTime.getMinutes();
+	os << "}";
 	return os;
 }
