@@ -5,4 +5,5 @@
 #include "IndexOutOfBoundsException.h"
 #include "IOException.h"
 #include "NoSuchElementException.h"
+#include "ParserException.h"
 #include "ValueOutOfBoundsException.h"

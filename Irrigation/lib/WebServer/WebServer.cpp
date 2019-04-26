@@ -1,15 +1,11 @@
+#include "WebServer.h"
 #include "HttpResponse.h"
 #include "HttpRequest.h"
-#include "WebServer.h"
 #include "WebServerException.h"
 #include "Logger/Logger.h"
-
 #include <algorithm>
-#include <cstring>
-#include <functional>
-#include <inttypes.h>
+#include <cinttypes>
 #include <sstream>
-#include <vector>
 
 using namespace std;
 
@@ -57,7 +53,7 @@ void WebServer::start() {
 		throw runtime_error("Can not create webserver");
 	}
 
-	LOGGER.info("WebServer is started on port: %" PRIu16 , port);
+	LOGGER.info("WebServer is started on port: %" PRIu16, port);
 }
 
 void WebServer::stop() {
@@ -95,23 +91,23 @@ int WebServer::accessHandlerCallback(
 
 	void*& context = *con_cls;
 
-	if (LOGGER.isLoggable(LogLevel::TRACE)) {
-		ostringstream oss;
-		oss << "HTTP request received: " << method << " " << url << " " << version << endl;
-		oss << "\tconnection: " << connection << endl;
-		oss << "\tupload data ptr: " << (upload_data ? upload_data : "<nullptr>") << endl;
-		oss << "\tupload data size: " << *upload_data_size;
-		LOGGER.trace(oss.str().c_str());
-	} else {
-		LOGGER.debug("HTTP request received: %s %s", method, url);
-	}
+//	if (LOGGER.isLoggable(LogLevel::TRACE)) {
+//		ostringstream oss;
+//		oss << "HTTP request received: " << method << " " << url << " " << version << endl;
+//		oss << "\tconnection: " << connection << endl;
+//		oss << "\tupload data ptr: " << (upload_data ? upload_data : "<nullptr>") << endl;
+//		oss << "\tupload data size: " << *upload_data_size;
+//		LOGGER.trace(oss.str().c_str());
+//	} else {
+//		LOGGER.debug("HTTP request received: %s %s", method, url);
+//	}
 
 	if (NULL == context) {
 		/* do never respond on first call */
 		shared_ptr<ByteBuffer> connectionUploadData(new ByteBuffer());
 		context = connectionUploadData.get();
 		uploadDatas.insert(make_pair(context, connectionUploadData));
-		LOGGER.trace("creating upload data: %p", connectionUploadData.get());
+//		LOGGER.trace("creating upload data: %p", connectionUploadData.get());
 		return MHD_YES;
 	}
 
@@ -123,45 +119,55 @@ int WebServer::accessHandlerCallback(
 	shared_ptr<ByteBuffer> connectionUploadData = it->second;
 
 	if (0 < *upload_data_size) {
-		LOGGER.trace("concatenate upload data");
+//		LOGGER.trace("concatenate upload data");
 		copy_n(upload_data, *upload_data_size, back_inserter(*connectionUploadData));
 		*upload_data_size = 0;
 		return MHD_YES;
 	}
 
+	LOGGER.debug("HTTP request received: %s %s %s", method, url, version);
+
+	unique_ptr<HttpResponse> response;
+
 	try {
-		HttpRequest request(connection, version, method, url, connectionUploadData);
-		unique_ptr<HttpResponse> response = webService->onRequest(request);
+		const HttpRequest request(connection, version, method, url, connectionUploadData);
+		response = webService->onRequest(request);
 
 		if (response.get() == nullptr) {
 			throw std::runtime_error("HTTP response is NULL");
 		}
 
-		return sendResponse(connection, response);
+	} catch (const WebServerException& e) {
+		response = HttpResponse::Builder().
+				setStatus(e.getStatusCode(), e.getStatusMessage()).
+				setBody(e.getErrorMessage()).
+				addHeaders(e.getHeaders()).
+				build();
 	} catch (const exception& e) {
-		LOGGER.warning("WebServer caught an expection: ", e);
+		LOGGER.warning("WebServer caught an unhandled expection", e);
+		return MHD_NO;
 	}
 
-	return MHD_NO;
+	return sendResponse(connection, response);
 }
 
 int WebServer::sendResponse(struct MHD_Connection* connection, const std::unique_ptr<HttpResponse>& httpResponse) {
-	if (LOGGER.isLoggable(LogLevel::TRACE)) {
-		ostringstream oss;
-		oss << "Sending HTTP response" << endl;
-		oss << "\tmessage: \"" << httpResponse->getMessage() << "\"" << endl;
-		oss << "\tstatus code: " << httpResponse->getStatusCode();
-		for (const auto& header : httpResponse->gerHeaders()) {
-			oss << endl << "\theader: \"" << header.first << "\": \"" << header.second << "\"";
-		}
+//	if (LOGGER.isLoggable(LogLevel::TRACE)) {
+//		ostringstream oss;
+//		oss << "Sending HTTP response" << endl;
+//		oss << "\tmessage: \"" << httpResponse->getMessage() << "\"" << endl;
+//		oss << "\tstatus code: " << httpResponse->getStatusCode();
+//		for (const auto& header : httpResponse->gerHeaders()) {
+//			oss << endl << "\theader: \"" << header.first << "\": \"" << header.second << "\"";
+//		}
 
-		LOGGER.trace(oss.str().c_str());
-	} else {
-		LOGGER.debug("sending HTTP response. status code: %u", httpResponse->getStatusCode());
-	}
+//		LOGGER.trace(oss.str().c_str());
+//	} else {
+		LOGGER.debug("Sending HTTP response: %u %s", httpResponse->getStatusCode(), httpResponse->getStatusMessage().c_str());
+//	}
 
 	unique_ptr<MHD_Response, void(*)(struct MHD_Response*)> mhd_response(
-		MHD_create_response_from_buffer(httpResponse->getMessage().length(), const_cast<char*>(httpResponse->getMessage().data()), MHD_RESPMEM_MUST_COPY),
+		MHD_create_response_from_buffer(httpResponse->getBody().length(), const_cast<char*>(httpResponse->getBody().data()), MHD_RESPMEM_MUST_COPY),
 		MHD_destroy_response
 		);
 

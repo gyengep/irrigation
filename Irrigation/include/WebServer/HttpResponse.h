@@ -1,25 +1,52 @@
 #pragma once
-#include <map>
-#include <microhttpd.h>
+#include <memory>
 #include <string>
+#include <microhttpd.h>
+#include "KeyValue.h"
 
-typedef std::map<std::string, std::string> KeyValue;
 
 
 class HttpResponse {
-	const std::string message;
-	const KeyValue responseHeaders;
-	const unsigned statusCode;
-
 public:
-	HttpResponse(const std::string& message, const KeyValue& responseHeaders = KeyValue(), int statusCode = MHD_HTTP_OK) :
-		message(message),
-		responseHeaders(responseHeaders),
-		statusCode(statusCode)
+	class Builder;
+
+private:
+	const unsigned statusCode;
+	const std::string statusMessage;
+	const std::string body;
+	KeyValue headers;
+
+	HttpResponse(unsigned statusCode, const std::string& statusMessage, const std::string& body, const KeyValue& headers) :
+		statusCode(statusCode),
+		statusMessage(statusMessage),
+		body(body),
+		headers(headers)
 	{
 	}
 
-	const std::string& getMessage() const { return message; }
-	const KeyValue& gerHeaders() const { return responseHeaders; }
+public:
+
+	const std::string& getBody() const { return body; }
+	const KeyValue& gerHeaders() const { return headers; }
 	unsigned getStatusCode() const { return statusCode; }
+	const std::string& getStatusMessage() const { return statusMessage; }
+};
+
+
+class HttpResponse::Builder {
+	unsigned statusCode;
+	std::string statusMessage;
+	std::string body;
+	KeyValue headers;
+
+public:
+	Builder();
+	~Builder();
+
+	Builder& setStatus(unsigned statusCode, const std::string& statusMessage);
+	Builder& setBody(const std::string& body);
+	Builder& addHeaders(const KeyValue& headers);
+	Builder& addHeader(const std::string& key, const std::string& value);
+
+	std::unique_ptr<HttpResponse> build();
 };

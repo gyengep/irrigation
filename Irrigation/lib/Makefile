@@ -1,9 +1,33 @@
 
 .PHONY: all
-all: DocumentView-all DTO-all DtoReaderWriter-all Logger-all Logic-all Model-all Schedulers-all TimerView-all Utils-all Valves-all WebServer-all
+all: \
+	DocumentView-all \
+	DTO-all \
+	DtoReaderWriter-all \
+	Logger-all \
+	Logic-all \
+	Model-all \
+	RestView-all \
+	Schedulers-all \
+	TimerView-all \
+	Utils-all \
+	Valves-all \
+	WebServer-all
 
 .PHONY: clean
-clean: DocumentView-clean DTO-clean DtoReaderWriter-clean Logger-clean Logic-clean Model-clean Schedulers-clean TimerView-clean Utils-clean Valves-clean WebServer-clean
+clean: \
+	DocumentView-clean \
+	DTO-clean \
+	DtoReaderWriter-clean \
+	Logger-clean \
+	Logic-clean \
+	Model-clean \
+	RestView-clean \
+	Schedulers-clean \
+	TimerView-clean \
+	Utils-clean \
+	Valves-clean \
+	WebServer-clean
 
 .PHONY: DocumentView-all
 DocumentView-all:
@@ -52,6 +76,14 @@ Model-all:
 .PHONY: Model-clean
 Model-clean:
 	@$(MAKE) -C Model clean
+
+.PHONY: RestView-all
+RestView-all:
+	@$(MAKE) -C Views/RestView all
+
+.PHONY: RestView-clean
+RestView-clean:
+	@$(MAKE) -C Views/RestView clean
 
 .PHONY: Schedulers-all
 Schedulers-all:

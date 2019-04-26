@@ -1,37 +1,26 @@
 #pragma once
 #include <stdexcept>
+#include <string>
+#include "KeyValue.h"
+
 
 
 class WebServerException : public std::runtime_error {
-	unsigned statusCode;
+	const unsigned statusCode;
+	const std::string statusMessage;
+	const KeyValue headers;
 
 public:
-	WebServerException(int statusCode, const std::string& errorMessage) :
+	WebServerException(unsigned statusCode, const std::string& statusMessage, const std::string& errorMessage, const KeyValue& headers) :
 		std::runtime_error(errorMessage),
-		statusCode(statusCode)
+		statusCode(statusCode),
+		statusMessage(statusMessage),
+		headers(headers)
 	{}
 
 	unsigned getStatusCode() const { return statusCode; }
+	const char* getStatusMessage() const { return statusMessage.c_str(); }
 	const char* getErrorMessage() const { return what(); }
+	const KeyValue& getHeaders() const { return headers; }
 };
 
-
-class HttpInternalServerError : public WebServerException {
-public:
-	HttpInternalServerError(const std::string& message) : WebServerException(500, "Internal Server Error: " + message) {}
-};
-
-class HttpNotFount : public WebServerException {
-public:
-	HttpNotFount(const std::string& message) : WebServerException(404, "Not found: " + message) {}
-};
-
-class HttpNotImplemented : public WebServerException {
-public:
-	HttpNotImplemented(const std::string& message) : WebServerException(501, "Not implemented: " + message) {}
-};
-
-class HttpNotSupported : public WebServerException {
-public:
-	HttpNotSupported(const std::string& message) : WebServerException(505, "HTTP version is not supported: " + message) {}
-};

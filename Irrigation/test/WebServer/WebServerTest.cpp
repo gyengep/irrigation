@@ -1,19 +1,13 @@
 #include "WebServerTest.h"
-#include <algorithm>
+#include "CurlCallbacks/CurlCallbacks.h"
 #include <curl/curl.h>
-
-#include "Logger/Logger.h"
 
 using namespace std;
 using namespace testing;
-using ::testing::AllOf;
+using testing::AllOf;
 
 
 void WebServerTest::SetUp() {
-	logOss.reset(new ostringstream());
-
-	//LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(logOss);
 	testWebService.reset(new TestWebService());
 	webServer.reset(new WebServer(testWebService, port));
 
@@ -22,7 +16,6 @@ void WebServerTest::SetUp() {
 
 void WebServerTest::TearDown() {
 	webServer->stop();
-	//cout << "LOG: " << logOss->str() << endl;
 }
 
 WebServerTest::TestWebService::TestWebService() :
@@ -38,70 +31,17 @@ unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequ
 	lastRequestedHeaders = request.getHeaders();
 	lastRequestedData = *request.getUploadData();
 
-	return unique_ptr<HttpResponse>(new HttpResponse(httpResponse, httpResponseHeaders, httpResponseCode));
-}
-
-string WebServerTest::createUrl(uint16_t port, const string& path, const KeyValue& parameters) {
-	ostringstream o;
-
-	o << "http://localhost:" << port;
-	o << path;
-
-	if (!parameters.empty()) {
-		o << "?";
-
-		for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-			if (parameters.begin() != it) {
-				o << "&";
-			}
-
-			o << it->first << "=" << it->second;
-		}
-	}
-
-	return o.str();
-}
-
-size_t WebServerTest::headerCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	HeaderCallbackData* headerCallbackData = static_cast<HeaderCallbackData*>(ctxt);
-
-    if (!headerCallbackData) {
-    	throw logic_error("WebServerTest::headerCallback()  nullptr == headerCallbackData");
-    }
-
-    const size_t length = size * nmemb;
-    headerCallbackData->headers.push_back(string(buffer, length));
-	return length;
-}
-
-size_t WebServerTest::writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	WriteCallbackData* writeCallbackData = static_cast<WriteCallbackData*>(ctxt);
-
-    if (!writeCallbackData) {
-    	throw logic_error("WebServerTest::writeCallback()  nullptr == writeCallbackData");
-    }
-
-    const size_t length = size * nmemb;
-    writeCallbackData->text.append(&buffer[0], &buffer[length]);
-   	return length;
-}
-
-size_t WebServerTest::readCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	ReadCallbackData* readCallbackData = static_cast<ReadCallbackData*>(ctxt);
-
-	const size_t maxDataSize = size * nmemb;
-	const size_t remainingDataSize = readCallbackData->text.length() - readCallbackData->position;
-	const size_t length = min(maxDataSize, remainingDataSize);
-
-	copy_n(&readCallbackData->text[readCallbackData->position], length, buffer);
-    readCallbackData->position += length;
-    return length;
+	return HttpResponse::Builder().
+			setStatus(httpResponseCode, "").
+			setBody(httpResponseBody).
+			addHeaders(httpResponseHeaders).
+			build();
 }
 
 
 TEST_F(WebServerTest, connectGET) {
 	const string expectedPath = "/connectGET";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
@@ -119,7 +59,7 @@ TEST_F(WebServerTest, connectGET) {
 
 TEST_F(WebServerTest, connectPOST) {
 	const string expectedPath = "/connectPOST";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
@@ -139,7 +79,7 @@ TEST_F(WebServerTest, connectPOST) {
 
 TEST_F(WebServerTest, connectPATCH) {
 	const string expectedPath = "/connectPATCH";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
@@ -159,7 +99,7 @@ TEST_F(WebServerTest, connectPATCH) {
 
 TEST_F(WebServerTest, connectDELETE) {
 	const string expectedPath = "/connectDELETE";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
@@ -178,12 +118,12 @@ TEST_F(WebServerTest, connectDELETE) {
 
 TEST_F(WebServerTest, resultOK) {
 	const string path = "/result200";
-	const string url = createUrl(port, path, KeyValue());
+	const string url = createUrl(port, path);
 
 	const int expectedHttpResponseCode = 200;
 	const char* expectedHttpResponse = "TEST_RESPONE";
 
-	testWebService->httpResponse = expectedHttpResponse;
+	testWebService->httpResponseBody = expectedHttpResponse;
 	testWebService->httpResponseCode = expectedHttpResponseCode;
 
 	CURL *curl = curl_easy_init();
@@ -207,12 +147,12 @@ TEST_F(WebServerTest, resultOK) {
 
 TEST_F(WebServerTest, result404) {
 	const string path = "/result404";
-	const string url = createUrl(port, path, KeyValue());
+	const string url = createUrl(port, path);
 
 	const int expectedHttpResponseCode = 404;
 	const char* expectedHttpResponse = "NOT FOUND";
 
-	testWebService->httpResponse = expectedHttpResponse;
+	testWebService->httpResponseBody = expectedHttpResponse;
 	testWebService->httpResponseCode = expectedHttpResponseCode;
 
 	CURL *curl = curl_easy_init();
@@ -270,7 +210,7 @@ TEST_F(WebServerTest, noRequestParameters) {
 
 TEST_F(WebServerTest, uploadDataPOST) {
 	const string path = "/uploadDataPost";
-	const string url = createUrl(port, path, KeyValue());
+	const string url = createUrl(port, path);
     const string uploadData = "POST_UPLOAD_DATA";
 
 	CURL *curl = curl_easy_init();
@@ -289,7 +229,7 @@ TEST_F(WebServerTest, uploadDataPOST) {
 
 TEST_F(WebServerTest, uploadDataPATCH) {
 	const string expectedPath = "/uploadDataPATCH";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
     const string uploadData = "PATCH_UPLOAD_DATA";
 
 	CURL *curl = curl_easy_init();
@@ -312,7 +252,7 @@ TEST_F(WebServerTest, uploadDataPATCH) {
 
 TEST_F(WebServerTest, requestHeader) {
 	const string expectedPath = "/requestHeader";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
@@ -342,7 +282,7 @@ TEST_F(WebServerTest, requestHeader) {
 
 TEST_F(WebServerTest, responseHeader) {
 	const string expectedPath = "/responseHeader";
-	const string url = createUrl(port, expectedPath, KeyValue());
+	const string url = createUrl(port, expectedPath);
 
 	const pair<string, string> h1 {"h1", "v1"};
 	const pair<string, string> h2 {"headerName", "headerValue"};

@@ -28,10 +28,11 @@ public:
 	RunTimeContainer(RunTimeContainer&&) = default;
 	RunTimeContainer(const RunTimeContainer& other);
 	RunTimeContainer(std::initializer_list<RunTime> initializer);
+	RunTimeContainer(const std::list<RunTimeDTO>& runTimeDtoList);
 	virtual ~RunTimeContainer() = default;
 
 	// for testing
-	RunTimeContainer(std::unique_ptr<RunTimeFactory> runTimeFactory);
+	RunTimeContainer(std::shared_ptr<RunTimeFactory> runTimeFactory);
 
 	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
 	RunTimeContainer& operator= (const RunTimeContainer& other) = delete;
@@ -44,7 +45,7 @@ public:
 	const mapped_type& at(const key_type& key) const;
 
 	std::list<RunTimeDTO> toRunTimeDtoList() const;
-	void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
+	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
 
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
 	friend std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer);
@@ -55,5 +56,5 @@ public:
 class RunTimeFactory {
 public:
 	virtual ~RunTimeFactory() = default;
-	virtual std::shared_ptr<RunTime> createRunTime() const;
+	virtual std::shared_ptr<RunTime> createRunTime();
 };

@@ -15,7 +15,7 @@ public:
 	StartTimeDTO(const StartTimeDTO& other);
 	StartTimeDTO(unsigned hour, unsigned minute);
 
-	StartTimeDTO& operator= (StartTimeDTO&&) = delete;
+	StartTimeDTO& operator= (StartTimeDTO&&) = default;
 	StartTimeDTO& operator= (const StartTimeDTO&) = delete;
 	bool operator== (const StartTimeDTO& other) const;
 

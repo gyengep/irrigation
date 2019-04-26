@@ -35,7 +35,7 @@ const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) c
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("Program[" + to_string(key) + "] not found");
+		throw NoSuchElementException("Program[" + to_string(key) + "] does not exist");
 	}
 
 	return it->second;
@@ -45,7 +45,7 @@ void ProgramContainer::erase(const key_type& key) {
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("Program[" + to_string(key) + "] not found");
+		throw NoSuchElementException("Program[" + to_string(key) + "] does not exist");
 	}
 
 	container.erase(it);
@@ -53,7 +53,7 @@ void ProgramContainer::erase(const key_type& key) {
 
 ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
 	if (container.end() != find_if(container.begin(), container.end(), findKey(key))) {
-		throw AlreadyExistException("Program[" + to_string(key) + "] is already exist");
+		throw AlreadyExistException("Program[" + to_string(key) + "] already exists");
 	}
 
 	container.push_back(make_pair(key, value));

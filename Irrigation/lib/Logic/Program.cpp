@@ -43,6 +43,10 @@ Program::Program(const string& name, SchedulerType schedulerType,
 {
 }
 
+Program::Program(const ProgramDTO& programDTO) : Program() {
+	updateFromProgramDto(programDTO);
+}
+
 Program::~Program() {
 }
 

@@ -15,7 +15,7 @@ public:
 	WeeklySchedulerDTO(const WeeklySchedulerDTO& other);
 	WeeklySchedulerDTO(unsigned adjustment, std::list<bool>&& values);
 
-	WeeklySchedulerDTO& operator= (WeeklySchedulerDTO&&) = delete;
+	WeeklySchedulerDTO& operator= (WeeklySchedulerDTO&&) = default;
 	WeeklySchedulerDTO& operator= (const WeeklySchedulerDTO&) = delete;
 	bool operator== (const WeeklySchedulerDTO& other) const;
 

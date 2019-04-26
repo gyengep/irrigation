@@ -33,6 +33,7 @@ public:
 		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
 		std::shared_ptr<RunTimeContainer> runTimes,
 		std::shared_ptr<StartTimeContainer> startTimes);
+	Program(const ProgramDTO& programDTO);
 
 	virtual ~Program();
 
@@ -60,7 +61,7 @@ public:
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
 	ProgramDTO toProgramDto() const;
-	void updateFromProgramDto(const ProgramDTO& programDTO);
+	virtual void updateFromProgramDto(const ProgramDTO& programDTO);
 
 	friend std::string to_string(const Program& program);
 	friend std::ostream& operator<<(std::ostream& os, const Program& program);

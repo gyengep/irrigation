@@ -35,7 +35,7 @@ const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& ke
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + to_string(key) + "] not found");
+		throw NoSuchElementException("StartTime[" + to_string(key) + "] does not exist");
 	}
 
 	return it->second;
@@ -45,7 +45,7 @@ void StartTimeContainer::erase(const key_type& key) {
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + to_string(key) + "] not found");
+		throw NoSuchElementException("StartTime[" + to_string(key) + "] does not exist");
 	}
 
 	container.erase(it);
@@ -53,7 +53,7 @@ void StartTimeContainer::erase(const key_type& key) {
 
 StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
 	if (container.end() != find_if(container.begin(), container.end(), findKey(key))) {
-		throw AlreadyExistException("StartTime[" + to_string(key) + "] is already exist");
+		throw AlreadyExistException("StartTime[" + to_string(key) + "] already exists");
 	}
 
 	container.push_back(make_pair(key, value));
@@ -104,7 +104,7 @@ ostream& operator<<(ostream& os, const StartTimeContainer& startTimeContainer) {
 		if (it != startTimeContainer.begin()) {
 			os << ", ";
 		}
-		os << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
+		os << "{" << to_string(it->first) << ", " << to_string_short(*it->second) << "}";
 	}
 	os << "]";
 	return os;

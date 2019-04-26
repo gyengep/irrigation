@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -34,6 +35,14 @@ using namespace std;
 		log(LEVEL, message, &e);							\
 	}
 
+
+Logger::Entry::Entry(const std::string time, const std::string thread, const std::string level, const std::string text) :
+	time(time),
+	thread(thread),
+	level(level),
+	text(text)
+{
+}
 
 string to_string(LogLevel logLevel) {
 	switch(logLevel) {
@@ -115,16 +124,39 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 	lock_guard<mutex> lock(mtx);
 
 	if (output.get() != nullptr) {
-		time_t t = time(nullptr);
+		logEntries.emplace_back(getTime(), getThread(), to_string(logLevel), message);
 
-		(*output) << put_time(localtime(&t), "%Y.%m.%d %H:%M:%S") << ' ';
-		(*output) << "0x" << setw(8) << setfill('0') << hex << this_thread::get_id() << " ";
+		if (logEntries.size() > 100) {
+			logEntries.pop_front();
+		}
+
+		(*output) << logEntries.back().time << " ";
+		(*output) << logEntries.back().thread << " ";
 		(*output) << to_string(logLevel) << ": ";
 		(*output) << message;
 		(*output) << logException(e, 1);
 		(*output) << endl;
 		(*output).flush();
 	}
+}
+
+string Logger::getTime() {
+	const time_t t = time(nullptr);
+
+	ostringstream oss;
+	oss << put_time(localtime(&t), "%Y.%m.%d %H:%M:%S");
+	return oss.str();
+}
+
+string Logger::getThread() {
+	ostringstream oss;
+	oss << setw(8) << setfill('0') << hex << showbase << this_thread::get_id();
+	return oss.str();
+}
+
+deque<Logger::Entry> Logger::getEntries() const {
+	lock_guard<mutex> lock(mtx);
+	return logEntries;
 }
 
 void Logger::error(const char* message, const exception& e) {

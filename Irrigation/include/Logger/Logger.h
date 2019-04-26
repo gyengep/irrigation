@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <atomic>
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <ostream>
@@ -25,14 +26,32 @@ std::string to_string(LogLevel logLevel);
 
 
 class Logger {
+public:
+
+	struct Entry {
+		const std::string time;
+		const std::string thread;
+		const std::string level;
+		const std::string text;
+
+		Entry(const std::string time,
+				const std::string thread,
+				const std::string level,
+				const std::string text);
+	};
+
+private:
 	mutable std::mutex mtx;
 	std::atomic<LogLevel> logLevel;
 	std::shared_ptr<std::ostream> output;
+	std::deque<Entry> logEntries;
 
 	Logger();
 
 	void log(LogLevel logLevel, const char* message, const std::exception* e);
 
+	static std::string getTime();
+	static std::string getThread();
 	static std::string logException(const std::exception* e, unsigned level);
 
 public:
@@ -56,4 +75,6 @@ public:
 	void info(const char* format, ...);
 	void debug(const char* format, ...);
 	void trace(const char* format, ...);
+
+	std::deque<Entry> getEntries() const;
 };

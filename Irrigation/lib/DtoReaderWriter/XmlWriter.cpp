@@ -31,19 +31,19 @@ void XmlWriter::saveDocument(xml_node* parent, const DocumentDTO& document) {
 	xml_node node = parent->append_child("irrigation");
 
 	if (document.hasPrograms()) {
-		saveProgramList(&node, document.getPrograms());
+		saveProgramList(&node, document.getPrograms(), true);
 	}
 }
 
-void XmlWriter::saveProgramList(pugi::xml_node* parent, const list<ProgramDTO>& programs) {
+void XmlWriter::saveProgramList(pugi::xml_node* parent, const list<ProgramDTO>& programs, bool includeContainers) {
 	xml_node programListNode = parent->append_child("programs");
 
 	for (auto& program : programs) {
-		saveProgram(&programListNode, program);
+		saveProgram(&programListNode, program, includeContainers);
 	}
 }
 
-void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
+void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool includeContainers) {
 	xml_node node = parent->append_child("program");
 
 	if (program.hasId()) {
@@ -58,26 +58,28 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program) {
 		node.append_child("schedulertype").text().set(program.getSchedulerType().c_str());
 	}
 
-	if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler()) {
-		xml_node schedulersListNode = node.append_child("schedulers");
+	if (includeContainers) {
+		if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler()) {
+			xml_node schedulersListNode = node.append_child("schedulers");
 
-		if (program.hasPeriodicScheduler()) {
-			const PeriodicSchedulerDTO& periodicScheduler = program.getPeriodicScheduler();
-			savePeriodicScheduler(&schedulersListNode, periodicScheduler);
+			if (program.hasPeriodicScheduler()) {
+				const PeriodicSchedulerDTO& periodicScheduler = program.getPeriodicScheduler();
+				savePeriodicScheduler(&schedulersListNode, periodicScheduler);
+			}
+
+			if (program.hasWeeklyScheduler()) {
+				const WeeklySchedulerDTO& weeklyScheduler = program.getWeeklyScheduler();
+				saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
+			}
 		}
 
-		if (program.hasWeeklyScheduler()) {
-			const WeeklySchedulerDTO& weeklyScheduler = program.getWeeklyScheduler();
-			saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
+		if (program.hasRunTimes()) {
+			saveRunTimeList(&node, program.getRunTimes());
 		}
-	}
 
-	if (program.hasRunTimes()) {
-		saveRunTimeList(&node, program.getRunTimes());
-	}
-
-	if (program.hasStartTimes()) {
-		saveStartTimeList(&node, program.getStartTimes());
+		if (program.hasStartTimes()) {
+			saveStartTimeList(&node, program.getStartTimes());
+		}
 	}
 }
 
@@ -189,15 +191,15 @@ string XmlWriter::save(const DocumentDTO& document) {
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const ProgramDTO& program) {
+string XmlWriter::save(const ProgramDTO& program, bool includeContainers) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveProgram(doc.get(), program);
+	saveProgram(doc.get(), program, includeContainers);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<ProgramDTO>& programs) {
+string XmlWriter::save(const list<ProgramDTO>& programs, bool includeContainers) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveProgramList(doc.get(), programs);
+	saveProgramList(doc.get(), programs, includeContainers);
 	return toString(doc.get(), humanReadable);
 }
 

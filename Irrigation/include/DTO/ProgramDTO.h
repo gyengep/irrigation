@@ -28,7 +28,7 @@ public:
 			std::list<RunTimeDTO>&& runTimes,
 			std::list<StartTimeDTO>&& startTimes);
 
-	ProgramDTO& operator= (ProgramDTO&&) = delete;
+	ProgramDTO& operator= (ProgramDTO&&) = default;
 	ProgramDTO& operator= (const ProgramDTO&) = delete;
 	bool operator== (const ProgramDTO& other) const;
 

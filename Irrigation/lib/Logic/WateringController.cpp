@@ -38,6 +38,7 @@ void WateringController::on1SecTimer(const time_t& rawTime) {
 }
 
 void WateringController::start(const time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent) {
+	zoneHandler->deactivate();
 	wateringProperties.reset(new WateringProperties());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
@@ -63,6 +64,7 @@ void WateringController::start(const time_t& rawTime, const RunTimeContainer& ru
 
 void WateringController::stop() {
 	LOGGER.info("Irrigation stopped");
+	zoneHandler->deactivate();
 	wateringProperties.reset();
 }
 

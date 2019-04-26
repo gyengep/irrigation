@@ -8,7 +8,7 @@
 using namespace std;
 
 
-shared_ptr<RunTime> RunTimeFactory::createRunTime() const {
+shared_ptr<RunTime> RunTimeFactory::createRunTime() {
 	return shared_ptr<RunTime>(new RunTime());
 }
 
@@ -22,7 +22,7 @@ RunTimeContainer::RunTimeContainer() {
 	}
 }
 
-RunTimeContainer::RunTimeContainer(unique_ptr<RunTimeFactory> runTimeFactory) {
+RunTimeContainer::RunTimeContainer(shared_ptr<RunTimeFactory> runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
 		shared_ptr<RunTime> runTime = runTimeFactory->createRunTime();
@@ -50,6 +50,10 @@ RunTimeContainer::RunTimeContainer(initializer_list<RunTime> initializer) {
 	}
 }
 
+RunTimeContainer::RunTimeContainer(const std::list<RunTimeDTO>& runTimeDtoList) : RunTimeContainer() {
+	updateFromRunTimeDtoList(runTimeDtoList);
+}
+
 bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
 	if (container.size() != other.container.size()) {
 		return false;
@@ -64,7 +68,7 @@ bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
 
 const RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) const {
 	if (container.size() <= key) {
-		throw NoSuchElementException("RunTime[" + to_string(key) + "] not found");
+		throw NoSuchElementException("RunTime[" + to_string(key) + "] does not exist");
 	}
 
 	return container[key].second;
@@ -81,7 +85,7 @@ list<RunTimeDTO> RunTimeContainer::toRunTimeDtoList() const {
 void RunTimeContainer::updateFromRunTimeDtoList(const list<RunTimeDTO>& runTimeDtoList) {
 	if (runTimeDtoList.size() != container.size()) {
 		throw IllegalArgumentException(
-				"RunTimeDTO list must contains " + to_string(size()) + " elements");
+				"RunTimeDtoList has to contain " + to_string(size()) + " elements");
 	}
 
 	auto it = runTimeDtoList.begin();

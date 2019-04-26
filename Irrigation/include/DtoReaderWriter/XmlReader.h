@@ -12,6 +12,7 @@ namespace pugi {
 
 
 class XmlReader : public DtoReader {
+protected:
 	static void loadFromString(pugi::xml_document* doc, const std::string& text);
 
 	DocumentDTO loadDocument(const pugi::xml_node& node) const;
