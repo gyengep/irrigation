@@ -10,14 +10,13 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(100, array<bool, 7>({false, false, false, false, false, false, false})) {
+WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(array<bool, 7>({false, false, false, false, false, false, false})) {
 }
 
-WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.adjustment, other.days) {
+WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.days) {
 }
 
-WeeklyScheduler::WeeklyScheduler(unsigned adjustment, const array<bool, 7>& days) :
-	adjustment(adjustment),
+WeeklyScheduler::WeeklyScheduler(const array<bool, 7>& days) :
 	days(days)
 {
 }
@@ -26,8 +25,7 @@ WeeklyScheduler::~WeeklyScheduler() {
 }
 
 bool WeeklyScheduler::operator== (const WeeklyScheduler& other) const {
-	return (adjustment == other.adjustment &&
-			days == other.days);
+	return (days == other.days);
 }
 
 void WeeklyScheduler::checkIndex(size_t day) const {
@@ -36,14 +34,6 @@ void WeeklyScheduler::checkIndex(size_t day) const {
 				"Day index shall be less than " + to_string(days.size()) +
 				", while actual value is " + to_string(day));
 	}
-}
-
-void WeeklyScheduler::setAdjustment(unsigned adjustment) {
-	this->adjustment = adjustment;
-}
-
-unsigned WeeklyScheduler::getAdjustment() const {
-	return adjustment;
 }
 
 void WeeklyScheduler::enableDay(size_t day, bool enable) {
@@ -63,14 +53,10 @@ bool WeeklyScheduler::isDayScheduled(const tm& timeinfo) const {
 }
 
 WeeklySchedulerDTO WeeklyScheduler::toWeeklySchedulerDto() const {
-	return WeeklySchedulerDTO(adjustment, list<bool>(days.begin(), days.end()));
+	return WeeklySchedulerDTO(move(list<bool>(days.begin(), days.end())));
 }
 
 void WeeklyScheduler::updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasAdjustment()) {
-		setAdjustment(schedulerDTO.getAdjustment());
-	}
-
 	if (schedulerDTO.hasValues()) {
 		if (schedulerDTO.getValues().size() != days.size()) {
 			throw runtime_error("WeeklyScheduler::updateFromDTO(): " + to_string(days.size()) +
@@ -89,7 +75,6 @@ string to_string(const WeeklyScheduler& weeklyScheduler) {
 
 ostream& operator<<(ostream& os, const WeeklyScheduler& weeklyScheduler) {
 	os << "WeeklyScheduler{";
-	os << "adjustment=" << weeklyScheduler.getAdjustment() << "%, ";
 	os << "values=" << to_string(weeklyScheduler.days.begin(), weeklyScheduler.days.end());
 	os << "}";
 	return os;

@@ -157,7 +157,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 
 	EXPECT_CALL(*mockWateringController, start(_,
 			programListSample.getContainer()->begin()->second->getRunTimes(),
-			programListSample.getContainer()->begin()->second->getCurrentScheduler().getAdjustment()
+			programListSample.getContainer()->begin()->second->getAdjustment()
 		));
 
 	document = IrrigationDocument::Builder().

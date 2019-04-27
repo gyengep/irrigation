@@ -8,7 +8,6 @@
 class PeriodicScheduler: public Scheduler {
 	const static size_t maxPeriod = 7;
 
-	unsigned adjustment;
 	std::vector<bool> days;
 	unsigned periodStartYear, periodStartMonth, periodStartDay;
 
@@ -20,7 +19,7 @@ public:
 	PeriodicScheduler();
 	PeriodicScheduler(PeriodicScheduler&&) = default;
 	PeriodicScheduler(const PeriodicScheduler&);
-	PeriodicScheduler(unsigned adjustment, const std::vector<bool>& days, unsigned year, unsigned month, unsigned day);
+	PeriodicScheduler(const std::vector<bool>& days, unsigned year, unsigned month, unsigned day);
 	virtual ~PeriodicScheduler();
 
 	PeriodicScheduler& operator= (PeriodicScheduler&&) = delete;
@@ -32,7 +31,6 @@ public:
 	unsigned getPeriodStartMonth() const { return periodStartMonth; }
 	unsigned getPeriodStartDay() const { return periodStartDay; }
 
-	void setAdjustment(unsigned adjustment);
 	void setPeriod(unsigned days);
 	void enableDay(size_t day, bool enable);
 
@@ -40,7 +38,6 @@ public:
 	unsigned getPeriod() const;
 
 	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
-	virtual unsigned getAdjustment() const override;
 
 	PeriodicSchedulerDTO toPeriodicSchedulerDto() const;
 	virtual void updateFromPeriodicSchedulerDto(const PeriodicSchedulerDTO& schedulerDTO);

@@ -55,7 +55,7 @@ void TimerView::onTimer(const time_t rawTime) {
 						to_string(idType).c_str(),
 						program->getName().c_str(),
 						to_string(program->getSchedulerType()).c_str());
-				wateringController.start(rawTime, program->getRunTimes(), program->getCurrentScheduler().getAdjustment());
+				wateringController.start(rawTime, program->getRunTimes(), program->getAdjustment());
 				break;
 			}
 		}

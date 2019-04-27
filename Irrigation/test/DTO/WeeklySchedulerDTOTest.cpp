@@ -10,63 +10,35 @@ using namespace testing;
 TEST(WeeklySchedulerDTOTest, defaultConstructor) {
 	WeeklySchedulerDTO schedulerDTO;
 
-	EXPECT_FALSE(schedulerDTO.hasAdjustment());
 	EXPECT_FALSE(schedulerDTO.hasValues());
 }
 
 TEST(WeeklySchedulerDTOTest, parametrizedConstructor) {
-	const unsigned expectedAdjustment = 50;
 	const list<bool> expectedValues({ false, true });
-	WeeklySchedulerDTO schedulerDTO(expectedAdjustment, list<bool>(expectedValues));
+	WeeklySchedulerDTO schedulerDTO(move(list<bool>(expectedValues)));
 
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 }
 
 TEST(WeeklySchedulerDTOTest, copyConstructor) {
-	const unsigned expectedAdjustment = 130;
 	const list<bool> expectedValues({ false, true, false, false });
-	const WeeklySchedulerDTO source(expectedAdjustment, list<bool>(expectedValues));
+	const WeeklySchedulerDTO source(move(list<bool>(expectedValues)));
 
 	WeeklySchedulerDTO schedulerDTO(source);
 
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 }
 
 TEST(WeeklySchedulerDTOTest, moveConstructor) {
-	const unsigned expectedAdjustment = 130;
 	const list<bool> expectedValues({ false, true, false, false });
-	WeeklySchedulerDTO source(expectedAdjustment, list<bool>(expectedValues));
+	WeeklySchedulerDTO source(move(list<bool>(expectedValues)));
 
 	WeeklySchedulerDTO schedulerDTO(move(source));
 
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
-}
-
-TEST(WeeklySchedulerDTOTest, hasAdjustment) {
-	WeeklySchedulerDTO schedulerDTO;
-
-	EXPECT_FALSE(schedulerDTO.hasAdjustment());
-	schedulerDTO.setAdjustment(100);
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
-}
-
-TEST(WeeklySchedulerDTOTest, getAdjustment) {
-	const unsigned expectedAdjustment = 130;
-	WeeklySchedulerDTO schedulerDTO;
-
-	EXPECT_THROW(schedulerDTO.getAdjustment(), logic_error);
-	schedulerDTO.setAdjustment(expectedAdjustment);
-	ASSERT_NO_THROW(schedulerDTO.getAdjustment());
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 }
 
 TEST(WeeklySchedulerDTOTest, hasValues) {
@@ -107,23 +79,6 @@ TEST(WeeklySchedulerDTOTest, equalsOperator) {
 		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
 		schedulerDTO1.setValues(list<bool>(expectedValues2));
-		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
-	}
-
-	{
-		const unsigned expectedAdjustment1 = 40;
-		const unsigned expectedAdjustment2 = 60;
-
-		schedulerDTO1.setAdjustment(expectedAdjustment1);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO2.setAdjustment(expectedAdjustment2);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO1.setAdjustment(expectedAdjustment2);
 		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
 		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
 	}

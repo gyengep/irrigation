@@ -11,8 +11,16 @@ ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 		setId(other.getId());
 	}
 
+	if (other.hasDisabled()) {
+		setDisabled(other.getDisabled());
+	}
+
 	if (other.hasName()) {
 		setName(other.getName());
+	}
+
+	if (other.hasAdjustment()) {
+		setAdjustment(other.getAdjustment());
 	}
 
 	if (other.hasSchedulerType()) {
@@ -36,13 +44,17 @@ ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 	}
 }
 
-ProgramDTO::ProgramDTO(const string& name, const string& schedulerType,
+ProgramDTO::ProgramDTO(bool disabled, const std::string& name,
+		unsigned adjustment,
+		const string& schedulerType,
 		PeriodicSchedulerDTO&& periodicScheduler,
 		WeeklySchedulerDTO&& weeklyScheduler,
 		list<RunTimeDTO>&& runTimes,
 		list<StartTimeDTO>&& startTimes) {
 
+	setDisabled(disabled);
 	setName(name);
+	setAdjustment(adjustment);
 	setSchedulerType(schedulerType);
 	setPeriodicScheduler(move(periodicScheduler));
 	setWeeklyScheduler(move(weeklyScheduler));
@@ -52,7 +64,9 @@ ProgramDTO::ProgramDTO(const string& name, const string& schedulerType,
 
 bool ProgramDTO::operator== (const ProgramDTO& other) const {
 	return (equalsPtr(id.get(), other.id.get()) &&
+			equalsPtr(disabled.get(), other.disabled.get()) &&
 			equalsPtr(name.get(), other.name.get()) &&
+			equalsPtr(adjustment.get(), other.adjustment.get()) &&
 			equalsPtr(schedulerType.get(), other.schedulerType.get()) &&
 			equalsPtr(periodicScheduler.get(), other.periodicScheduler.get()) &&
 			equalsPtr(weeklyScheduler.get(), other.weeklyScheduler.get()) &&
@@ -64,8 +78,16 @@ bool ProgramDTO::hasId() const {
 	return (id.get() != nullptr);
 }
 
+bool ProgramDTO::hasDisabled() const {
+	return (disabled.get() != nullptr);
+}
+
 bool ProgramDTO::hasName() const {
 	return (name.get() != nullptr);
+}
+
+bool ProgramDTO::hasAdjustment() const {
+	return (adjustment.get() != nullptr);
 }
 
 bool ProgramDTO::hasSchedulerType() const {
@@ -96,12 +118,28 @@ unsigned ProgramDTO::getId() const {
 	return *id.get();
 }
 
+bool ProgramDTO::getDisabled() const {
+	if (!hasDisabled()) {
+		throw logic_error("ProgramDTO::getDisabled(): !hasDisabled()");
+	}
+
+	return *disabled.get();
+}
+
 const string& ProgramDTO::getName() const {
 	if (!hasName()) {
 		throw logic_error("ProgramDTO::getName(): !hasName()");
 	}
 
 	return *name.get();
+}
+
+unsigned ProgramDTO::getAdjustment() const {
+	if (!hasAdjustment()) {
+		throw logic_error("ProgramDTO::getAdjustment(): !hasAdjustment()");
+	}
+
+	return *adjustment.get();
 }
 
 const string& ProgramDTO::getSchedulerType() const {
@@ -149,8 +187,18 @@ ProgramDTO& ProgramDTO::setId(unsigned id) {
 	return *this;
 }
 
+ProgramDTO& ProgramDTO::setDisabled(bool disabled) {
+	this->disabled.reset(new bool(disabled));
+	return *this;
+}
+
 ProgramDTO& ProgramDTO::setName(const string& name) {
 	this->name.reset(new string(name));
+	return *this;
+}
+
+ProgramDTO& ProgramDTO::setAdjustment(unsigned adjustment) {
+	this->adjustment.reset(new unsigned(adjustment));
 	return *this;
 }
 
@@ -183,7 +231,11 @@ ostream& operator<<(ostream& os, const ProgramDTO& program) {
 	os << "ProgramDTO{";
 	PRINT_PTR(os, "id", program.id.get());
 	os << ", ";
+	PRINT_PTR(os, "disabled", program.disabled.get());
+	os << ", ";
 	PRINT_STR(os, "name", program.name.get());
+	os << ", ";
+	PRINT_PTR(os, "adjustment", program.adjustment.get());
 	os << ", ";
 	PRINT_STR(os, "schedulerType", program.schedulerType.get());
 	os << ", ";

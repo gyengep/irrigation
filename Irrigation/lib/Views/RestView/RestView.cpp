@@ -166,7 +166,7 @@ void RestView::onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigat
 	irrigationDocument.getWateringController().start(
 		system_clock::to_time_t(system_clock::now()),
 		program->getRunTimes(),
-		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : program->getCurrentScheduler().getAdjustment()
+		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : program->getAdjustment()
 	);
 }
 

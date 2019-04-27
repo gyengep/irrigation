@@ -22,12 +22,13 @@ void TimerViewTest::SetUp() {
 	program2->setRunTimes(shared_ptr<RunTimeContainer>(new RunTimeContainer(runTimes2)));
 
 	ON_CALL(*wateringController, isWateringActive()).WillByDefault(Return(false));
-	ON_CALL(*scheduler1, getAdjustment()).WillByDefault(Return(adjustment1));
 	ON_CALL(*program1, isScheduled(_)).WillByDefault(Return(false));
 	ON_CALL(*program1, getCurrentScheduler()).WillByDefault(ReturnPointee(scheduler1));
-	ON_CALL(*scheduler2, getAdjustment()).WillByDefault(Return(adjustment2));
 	ON_CALL(*program2, isScheduled(_)).WillByDefault(Return(false));
 	ON_CALL(*program2, getCurrentScheduler()).WillByDefault(ReturnPointee(scheduler2));
+
+	program1->setAdjustment(adjustment1);
+	program2->setAdjustment(adjustment2);
 
 	document = IrrigationDocument::Builder().
 		setWateringController(wateringController).
@@ -66,8 +67,6 @@ TEST_F(TimerViewTest, notActiveScheduledFirst) {
 	EXPECT_CALL(*wateringController, start(rawtime, runTimes1, adjustment1)).Times(1);
 	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
 	EXPECT_CALL(*program1, isScheduled(timeinfo)).Times(1).WillOnce(Return(true));
-	EXPECT_CALL(*program1, getCurrentScheduler()).Times(1);
-	EXPECT_CALL(*scheduler1, getAdjustment()).Times(1);
 
 	view->onTimer(rawtime);
 }
@@ -78,8 +77,6 @@ TEST_F(TimerViewTest, notActiveScheduledSecond) {
 	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
 	EXPECT_CALL(*program1, isScheduled(timeinfo)).Times(1);
 	EXPECT_CALL(*program2, isScheduled(timeinfo)).Times(1).WillOnce(Return(true));
-	EXPECT_CALL(*program2, getCurrentScheduler()).Times(1);
-	EXPECT_CALL(*scheduler2, getAdjustment()).Times(1);
 
 	view->onTimer(rawtime);
 }

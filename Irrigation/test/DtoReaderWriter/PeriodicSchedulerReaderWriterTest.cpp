@@ -42,10 +42,6 @@ TEST_F(PeriodicSchedulerReaderTest, schedulerAll) {
 	testPeriodicSchedulerRead(periodicSchedulerSample_all, reader);
 }
 
-TEST_F(PeriodicSchedulerReaderTest, schedulerAdjustment) {
-	testPeriodicSchedulerRead(periodicSchedulerSample_adjustment, reader);
-}
-
 TEST_F(PeriodicSchedulerReaderTest, schedulerValues) {
 	testPeriodicSchedulerRead(periodicSchedulerSample_values, reader);
 }
@@ -62,10 +58,6 @@ TEST_F(PeriodicSchedulerReaderTest, schedulerEmpty) {
 
 TEST_F(PeriodicSchedulerWriterTest, schedulerAll) {
 	testPeriodicSchedulerWrite(periodicSchedulerSample_all, writer);
-}
-
-TEST_F(PeriodicSchedulerWriterTest, schedulerAdjustment) {
-	testPeriodicSchedulerWrite(periodicSchedulerSample_adjustment, writer);
 }
 
 TEST_F(PeriodicSchedulerWriterTest, schedulerValues) {

@@ -209,7 +209,7 @@ TEST(ProgramTest, isScheduled1) {
 	}
 }
 
-TEST(ProgramTest, isScheduled2) {
+TEST(ProgramTest, isScheduled2_enabled) {
 	MockProgram program;
 	MockScheduler scheduler;
 
@@ -240,6 +240,30 @@ TEST(ProgramTest, isScheduled2) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				EXPECT_THAT(program.isScheduled(timeinfo), Eq(expectedResult));
+			}
+		}
+	}
+}
+
+TEST(ProgramTest, isScheduled2_disabled) {
+	MockProgram program;
+	MockScheduler scheduler;
+
+	EXPECT_CALL(program, isScheduled(_)).
+			Times(AnyNumber()).
+			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
+
+	program.setDisabled(true);
+	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+
+	for (int hour = 0; hour < 24; hour++) {
+		for (int min = 0; min < 60; min++) {
+			for (int sec = 0; sec < 60; sec++) {
+				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
+				EXPECT_FALSE(program.isScheduled(timeinfo));
 			}
 		}
 	}
@@ -307,7 +331,9 @@ TEST(ProgramTest, partialUpdateFromProgramDto_empty) {
 
 unique_ptr<Program::Builder> createBuilder(const Program& program) {
 	unique_ptr<Program::Builder> builder(new Program::Builder());
+	builder->setDisabled(program.isDisabled());
 	builder->setName(program.getName());
+	builder->setAdjustment(program.getAdjustment());
 	builder->setSchedulerType(program.getSchedulerType());
 	builder->setPeriodicScheduler(shared_ptr<PeriodicScheduler>(new PeriodicScheduler(program.getPeriodicScheduler())));
 	builder->setWeeklyScheduler(shared_ptr<WeeklyScheduler>(new WeeklyScheduler(program.getWeeklyScheduler())));

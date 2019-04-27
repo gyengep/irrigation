@@ -17,7 +17,9 @@ public:
 	class Builder;
 
 protected:
+	bool disabled;
 	std::string name;
+	unsigned adjustment;
 	SchedulerType schedulerType;
 	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
@@ -28,7 +30,9 @@ public:
 	Program();
 	Program(Program&&) = default;
 	Program(const Program&);
-	Program(const std::string& name, SchedulerType schedulerType,
+	Program(bool disabled, const std::string& name,
+		unsigned adjustment,
+		SchedulerType schedulerType,
 		std::shared_ptr<PeriodicScheduler> periodicScheduler,
 		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
 		std::shared_ptr<RunTimeContainer> runTimes,
@@ -41,8 +45,14 @@ public:
 	Program& operator= (const Program&) = delete;
 	bool operator== (const Program&) const;
 
+	void setDisabled(bool disabled);
+	bool isDisabled() const;
+
 	void setName(const std::string& name);
 	const std::string& getName() const;
+
+	void setAdjustment(unsigned adjustment);
+	unsigned getAdjustment() const;
 
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
@@ -68,7 +78,9 @@ public:
 };
 
 class Program::Builder {
+	bool disabled;
 	std::string name;
+	unsigned adjustment;
 	SchedulerType schedulerType;
 	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
@@ -79,7 +91,9 @@ public:
 	Builder();
 	~Builder();
 
+	Builder& setDisabled(bool disabled);
 	Builder& setName(const std::string& name);
+	Builder& setAdjustment(unsigned adjustment);
 	Builder& setSchedulerType(SchedulerType schedulerType);
 	Builder& setPeriodicScheduler(std::shared_ptr<PeriodicScheduler> periodicScheduler);
 	Builder& setWeeklyScheduler(std::shared_ptr<WeeklyScheduler> weeklyScheduler);

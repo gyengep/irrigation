@@ -42,10 +42,6 @@ TEST_F(WeeklySchedulerReaderTest, scheduler_all) {
 	testWeeklySchedulerRead(weeklySchedulerSample_all, reader);
 }
 
-TEST_F(WeeklySchedulerReaderTest, schedulerAdjustment) {
-	testWeeklySchedulerRead(weeklySchedulerSample_adjustment, reader);
-}
-
 TEST_F(WeeklySchedulerReaderTest, schedulerValues) {
 	testWeeklySchedulerRead(weeklySchedulerSample_values, reader);
 }
@@ -58,10 +54,6 @@ TEST_F(WeeklySchedulerReaderTest, schedulerEmpty) {
 
 TEST_F(WeeklySchedulerWriterTest, scheduler_all) {
 	testWeeklySchedulerWrite(weeklySchedulerSample_all, writer);
-}
-
-TEST_F(WeeklySchedulerWriterTest, schedulerAdjustment) {
-	testWeeklySchedulerWrite(weeklySchedulerSample_adjustment, writer);
 }
 
 TEST_F(WeeklySchedulerWriterTest, schedulerValues) {

@@ -7,12 +7,13 @@
 #include "Logger/Logger.h"
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
+#include "Utils/ToString.h"
 
 using namespace std;
 
 
 Program::Program() :
-	Program("", SchedulerType::WEEKLY,
+	Program(false, "", 100, SchedulerType::WEEKLY,
 		shared_ptr<PeriodicScheduler>(new PeriodicScheduler()),
 		shared_ptr<WeeklyScheduler>(new WeeklyScheduler()),
 		shared_ptr<RunTimeContainer>(new RunTimeContainer()),
@@ -22,7 +23,9 @@ Program::Program() :
 }
 
 Program::Program(const Program& other) :
-	Program(other.getName(), other.getSchedulerType(),
+	Program(other.isDisabled(), other.getName(),
+		other.getAdjustment(),
+		other.getSchedulerType(),
 		shared_ptr<PeriodicScheduler>(new PeriodicScheduler(other.getPeriodicScheduler())),
 		shared_ptr<WeeklyScheduler>(new WeeklyScheduler(other.getWeeklyScheduler())),
 		shared_ptr<RunTimeContainer>(new RunTimeContainer(other.getRunTimes())),
@@ -31,10 +34,12 @@ Program::Program(const Program& other) :
 {
 }
 
-Program::Program(const string& name, SchedulerType schedulerType,
+Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
 	shared_ptr<PeriodicScheduler> periodicScheduler, shared_ptr<WeeklyScheduler> weeklyScheduler,
 	shared_ptr<RunTimeContainer> runTimes, shared_ptr<StartTimeContainer> startTimes) :
+	disabled(disabled),
 	name(name),
+	adjustment(adjustment),
 	schedulerType(schedulerType),
 	periodicScheduler(periodicScheduler),
 	weeklyScheduler(weeklyScheduler),
@@ -51,12 +56,22 @@ Program::~Program() {
 }
 
 bool Program::operator== (const Program& other) const {
-	return (getName() == other.getName() &&
+	return (isDisabled() == other.isDisabled() &&
+			getName() == other.getName() &&
+			getAdjustment() == other.getAdjustment() &&
 			getSchedulerType() == other.getSchedulerType() &&
 			getPeriodicScheduler() == other.getPeriodicScheduler() &&
 			getWeeklyScheduler() == other.getWeeklyScheduler() &&
 			getRunTimes() == other.getRunTimes() &&
 			getStartTimes() == other.getStartTimes());
+}
+
+void Program::setDisabled(bool disabled) {
+	this->disabled = disabled;
+}
+
+bool Program::isDisabled() const {
+	return disabled;
 }
 
 const string& Program::getName() const {
@@ -65,6 +80,14 @@ const string& Program::getName() const {
 
 void Program::setName(const string& name) {
 	this->name = name;
+}
+
+void Program::setAdjustment(unsigned adjustment) {
+	this->adjustment = adjustment;
+}
+
+unsigned Program::getAdjustment() const {
+	return adjustment;
 }
 
 void Program::setSchedulerType(SchedulerType schedulerType) {
@@ -87,11 +110,12 @@ const Scheduler& Program::getCurrentScheduler() const {
 }
 
 bool Program::isScheduled(const tm& timeinfo) const {
-
-	for (auto& startTimeAndIdPair : *startTimes) {
-		const StartTime& startTime = *startTimeAndIdPair.second;
-		if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
-			return getCurrentScheduler().isDayScheduled(timeinfo);
+	if (false == disabled) {
+		for (auto& startTimeAndIdPair : *startTimes) {
+			const StartTime& startTime = *startTimeAndIdPair.second;
+			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
+				return getCurrentScheduler().isDayScheduled(timeinfo);
+			}
 		}
 	}
 
@@ -99,7 +123,8 @@ bool Program::isScheduled(const tm& timeinfo) const {
 }
 
 ProgramDTO Program::toProgramDto() const {
-	return ProgramDTO(name, to_string(getSchedulerType()),
+	return ProgramDTO(disabled, name, adjustment,
+			to_string(getSchedulerType()),
 			getPeriodicScheduler().toPeriodicSchedulerDto(),
 			getWeeklyScheduler().toWeeklySchedulerDto(),
 			getRunTimes().toRunTimeDtoList(),
@@ -107,8 +132,16 @@ ProgramDTO Program::toProgramDto() const {
 }
 
 void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
+	if (programDTO.hasDisabled()) {
+		setDisabled(programDTO.getDisabled());
+	}
+
 	if (programDTO.hasName()) {
 		setName(programDTO.getName());
+	}
+
+	if (programDTO.hasAdjustment()) {
+		setAdjustment(programDTO.getAdjustment());
 	}
 
 	if (programDTO.hasSchedulerType()) {
@@ -149,7 +182,9 @@ string to_string(const Program& program) {
 
 ostream& operator<<(ostream& os, const Program& program) {
 	os << "Program{";
+	os << "disabled=" << to_string(program.isDisabled()) << ", ";
 	os << "name=\"" << program.getName() << "\", ";
+	os << "adjustment=\"" << program.getAdjustment() << "\", ";
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
 			to_string(program.getPeriodicScheduler()) << ", " <<
@@ -163,6 +198,8 @@ ostream& operator<<(ostream& os, const Program& program) {
 ///////////////////////////////////////////////////////////////////////////////
 
 Program::Builder::Builder() :
+	disabled(false),
+	adjustment(100),
 	schedulerType(SchedulerType::WEEKLY)
 {
 }
@@ -170,8 +207,18 @@ Program::Builder::Builder() :
 Program::Builder::~Builder() {
 }
 
+Program::Builder& Program::Builder::setDisabled(bool disabled) {
+	this->disabled = disabled;
+	return *this;
+}
+
 Program::Builder& Program::Builder::setName(const string& name) {
 	this->name = name;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setAdjustment(unsigned adjustment) {
+	this->adjustment = adjustment;
 	return *this;
 }
 
@@ -218,7 +265,11 @@ shared_ptr<Program> Program::Builder::build() {
 		startTimes.reset(new StartTimeContainer());
 	}
 
-	return shared_ptr<Program>(new Program(name, schedulerType,
+	return shared_ptr<Program>(new Program(
+			disabled, 
+			name,
+			adjustment,
+			schedulerType,
 			periodicScheduler,
 			weeklyScheduler,
 			runTimes,

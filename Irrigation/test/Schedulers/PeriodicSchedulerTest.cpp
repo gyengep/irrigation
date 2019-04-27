@@ -12,7 +12,6 @@ using namespace Dto2ObjectTest;
 TEST(PeriodicSchedulerTest, defaultConstructor) {
 	PeriodicScheduler scheduler;
 
-	EXPECT_THAT(scheduler.getAdjustment(), 100);
 	EXPECT_THAT(scheduler.getPeriod(), 0);
 	EXPECT_THAT(scheduler.getPeriodStartYear(), 1970);
 	EXPECT_THAT(scheduler.getPeriodStartMonth(), 1);
@@ -20,9 +19,8 @@ TEST(PeriodicSchedulerTest, defaultConstructor) {
 }
 
 TEST(PeriodicSchedulerTest, parametrizedConstructor) {
-	PeriodicScheduler scheduler(150, vector<bool>({true, false, true}), 2011, 12, 13);
+	PeriodicScheduler scheduler(vector<bool>({true, false, true}), 2011, 12, 13);
 
-	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
 	EXPECT_THAT(scheduler.getPeriod(), Eq(3));
 	EXPECT_TRUE(scheduler.isDayEnabled(0));
 	EXPECT_FALSE(scheduler.isDayEnabled(1));
@@ -33,9 +31,8 @@ TEST(PeriodicSchedulerTest, parametrizedConstructor) {
 }
 
 TEST(PeriodicSchedulerTest, copyConstructor) {
-	PeriodicScheduler scheduler(PeriodicScheduler(150, vector<bool>({true, false, true}), 2011, 12, 13));
+	PeriodicScheduler scheduler(PeriodicScheduler(vector<bool>({true, false, true}), 2011, 12, 13));
 
-	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
 	EXPECT_THAT(scheduler.getPeriod(), Eq(3));
 	EXPECT_TRUE(scheduler.isDayEnabled(0));
 	EXPECT_FALSE(scheduler.isDayEnabled(1));
@@ -51,23 +48,6 @@ TEST(PeriodicSchedulerTest, equalsOperator) {
 
 	EXPECT_TRUE(scheduler1 == scheduler2);
 	EXPECT_TRUE(scheduler2 == scheduler1);
-
-	{
-		const unsigned adjustment1 = 80;
-		const unsigned adjustment2 = 110;
-
-		scheduler1.setAdjustment(adjustment1);
-		EXPECT_FALSE(scheduler1 == scheduler2);
-		EXPECT_FALSE(scheduler2 == scheduler1);
-
-		scheduler2.setAdjustment(adjustment2);
-		EXPECT_FALSE(scheduler1 == scheduler2);
-		EXPECT_FALSE(scheduler2 == scheduler1);
-
-		scheduler1.setAdjustment(adjustment2);
-		EXPECT_TRUE(scheduler1 == scheduler2);
-		EXPECT_TRUE(scheduler2 == scheduler1);
-	}
 
 	{
 		const unsigned period1 = 2;
@@ -300,13 +280,6 @@ TEST(PeriodicSchedulerTest, isDayEnableAfterResize) {
 	EXPECT_FALSE(scheduler.isDayEnabled(3));
 }
 
-TEST(PeriodicSchedulerTest, adjustment) {
-	PeriodicScheduler scheduler;
-
-	scheduler.setAdjustment(20);
-	EXPECT_THAT(scheduler.getAdjustment(), 20);
-}
-
 TEST(PeriodicSchedulerTest, isDayScheduled) {
 	PeriodicScheduler scheduler;
 
@@ -428,22 +401,6 @@ TEST(PeriodicSchedulerTest, partialUpdateFromPeriodicSchedulerDto_empty) {
 
 	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(PeriodicSchedulerDTO());
 
-	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
-}
-
-TEST(PeriodicSchedulerTest, partialUpdateFromPeriodicSchedulerDto_adjustment) {
-	const unsigned adjustment1 = 80;
-	const unsigned adjustment2 = 104;
-
-	PeriodicScheduler actualPeriodicScheduler(*PeriodicSchedulerSample2().getObject());
-	PeriodicScheduler expectedPeriodicScheduler(*PeriodicSchedulerSample2().getObject());
-
-	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(PeriodicSchedulerDTO().setAdjustment(adjustment1));
-	expectedPeriodicScheduler.setAdjustment(adjustment1);
-	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
-
-	actualPeriodicScheduler.updateFromPeriodicSchedulerDto(PeriodicSchedulerDTO().setAdjustment(adjustment2));
-	expectedPeriodicScheduler.setAdjustment(adjustment2);
 	EXPECT_THAT(actualPeriodicScheduler, Eq(expectedPeriodicScheduler));
 }
 

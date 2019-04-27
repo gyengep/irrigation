@@ -5,7 +5,6 @@
 #include "DTO/PeriodicSchedulerDTO.h"
 
 #define PERIODIC_SCHEDULER_SAMPLE_1 periodicSchedulerSample_all
-#define PERIODIC_SCHEDULER_SAMPLE_2 periodicSchedulerSample_adjustment
 #define PERIODIC_SCHEDULER_SAMPLE_3 periodicSchedulerSample_values
 #define PERIODIC_SCHEDULER_SAMPLE_4 periodicSchedulerSample_date
 #define PERIODIC_SCHEDULER_SAMPLE_5 periodicSchedulerSample_empty
@@ -18,7 +17,6 @@ typedef std::pair<std::string, PeriodicSchedulerDTO> PeriodicSchedulerSample;
 
 const PeriodicSchedulerSample periodicSchedulerSample_all(
 		"<scheduler type=\"periodic\">"
-			"<adjustment>239</adjustment>"
 			"<days>"
 				"<day>true</day>"
 				"<day>false</day>"
@@ -33,16 +31,8 @@ const PeriodicSchedulerSample periodicSchedulerSample_all(
 			"</periodStartDate>"
 		"</scheduler>",
 		PeriodicSchedulerDTO(
-				239,
 				std::list<bool>({ true, false, false, true, true }),
 				2018, 11, 16)
-		);
-
-const PeriodicSchedulerSample periodicSchedulerSample_adjustment(
-		"<scheduler type=\"periodic\">"
-			"<adjustment>8560</adjustment>"
-		"</scheduler>",
-		PeriodicSchedulerDTO().setAdjustment(8560)
 		);
 
 const PeriodicSchedulerSample periodicSchedulerSample_values(

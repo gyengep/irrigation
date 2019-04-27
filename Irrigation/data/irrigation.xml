@@ -2,11 +2,12 @@
 <irrigation>
 	<programs>
 		<program>
+			<disabled>false</disabled>
 			<name>fulocsolas</name>
+			<adjustment>30</adjustment>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
 				<scheduler type="weekly">
-					<adjustment>30</adjustment>
 					<days>
 						<day>true</day>
 						<day>true</day>
@@ -31,11 +32,12 @@
 			</starttimes>
 		</program>
 		<program>
+			<disabled>false</disabled>
 			<name>buxus</name>
+			<adjustment>100</adjustment>
 			<schedulertype>periodic</schedulertype>
 			<schedulers>
 				<scheduler type="periodic">
-					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>
 						<day>false</day>
@@ -56,11 +58,12 @@
 			</starttimes>
 		</program>
 		<program>
+			<disabled>false</disabled>
 			<name>paradicsom</name>
+			<adjustment>100</adjustment>
 			<schedulertype>periodic</schedulertype>
 			<schedulers>
 				<scheduler type="periodic">
-					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>
 						<day>false</day>
@@ -81,15 +84,17 @@
 			</starttimes>
 		</program>
 		<program>
+			<disabled>true</disabled>
 			<name>kanikula</name>
+			<adjustment>10</adjustment>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
 				<scheduler type="periodic">
-					<adjustment>100</adjustment>
-					<days/>
+					<days>
+						<day>true</day>
+					</days>
 				</scheduler>
 				<scheduler type="weekly">
-					<adjustment>10</adjustment>
 					<days>
 						<day>true</day>
 						<day>true</day>
@@ -113,15 +118,15 @@
 			</starttimes>
 		</program>
 		<program>
+			<disabled>true</disabled>
 			<name>test</name>
+			<adjustment>100</adjustment>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
 				<scheduler type="periodic">
-					<adjustment>100</adjustment>
 					<days/>
 				</scheduler>
 				<scheduler type="weekly">
-					<adjustment>100</adjustment>
 					<days>
 						<day>true</day>
 						<day>true</day>

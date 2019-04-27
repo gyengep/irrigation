@@ -55,8 +55,16 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 
 	xml_node tmpNode;
 
+	if ((tmpNode = node.child("disabled")) != nullptr) {
+		program.setDisabled(tmpNode.text().as_bool());
+	}
+
 	if ((tmpNode = node.child("name")) != nullptr) {
 		program.setName(tmpNode.text().as_string());
+	}
+
+	if ((tmpNode = node.child("adjustment")) != nullptr) {
+		program.setAdjustment(tmpNode.text().as_uint());
 	}
 
 	if ((tmpNode = node.child("schedulertype")) != nullptr) {
@@ -97,10 +105,6 @@ PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const xml_node& node) cons
 	}
 
 	xml_node tmpNode;
-
-	if ((tmpNode = node.child("adjustment")) != nullptr) {
-		scheduler.setAdjustment(tmpNode.text().as_uint());
-	}
 
 	if ((tmpNode = node.child("days")) != nullptr) {
 		list<bool> values;
@@ -143,10 +147,6 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const xml_node& node) const {
 	}
 
 	xml_node tmpNode;
-
-	if ((tmpNode = node.child("adjustment")) != nullptr) {
-		scheduler.setAdjustment(tmpNode.text().as_uint());
-	}
 
 	if ((tmpNode = node.child("days")) != nullptr) {
 		list<bool> values;

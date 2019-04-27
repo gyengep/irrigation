@@ -29,7 +29,6 @@ void checkDay(tm& timeinfo, const Scheduler& scheduler, bool expectedResult) {
 TEST(WeeklySchedulerTest, defaultConstructor) {
 	WeeklyScheduler scheduler;
 
-	EXPECT_THAT(scheduler.getAdjustment(), Eq(100));
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::MONDAY));
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::TUESDAY));
 	EXPECT_FALSE(scheduler.isDayEnabled(WeeklyScheduler::WEDNESDAY));
@@ -40,9 +39,8 @@ TEST(WeeklySchedulerTest, defaultConstructor) {
 }
 
 TEST(WeeklySchedulerTest, parametrizedConstructor) {
-	WeeklyScheduler scheduler(150, array<bool, 7>({true, false, true, true, false, false, false}));
+	WeeklyScheduler scheduler(move(array<bool, 7>({true, false, true, true, false, false, false})));
 
-	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
 	EXPECT_TRUE(scheduler.isDayEnabled(0));
 	EXPECT_FALSE(scheduler.isDayEnabled(1));
 	EXPECT_TRUE(scheduler.isDayEnabled(2));
@@ -53,9 +51,8 @@ TEST(WeeklySchedulerTest, parametrizedConstructor) {
 }
 
 TEST(WeeklySchedulerTest, copyConstructor) {
-	WeeklyScheduler scheduler(WeeklyScheduler(150, array<bool, 7>({true, false, true, true, false, false, false})));
+	WeeklyScheduler scheduler(WeeklyScheduler(move(array<bool, 7>({true, false, true, true, false, false, false}))));
 
-	EXPECT_THAT(scheduler.getAdjustment(), Eq(150));
 	EXPECT_TRUE(scheduler.isDayEnabled(0));
 	EXPECT_FALSE(scheduler.isDayEnabled(1));
 	EXPECT_TRUE(scheduler.isDayEnabled(2));
@@ -71,23 +68,6 @@ TEST(WeeklySchedulerTest, equalsOperator) {
 
 	EXPECT_TRUE(scheduler1 == scheduler2);
 	EXPECT_TRUE(scheduler2 == scheduler1);
-
-	{
-		const unsigned adjustment1 = 80;
-		const unsigned adjustment2 = 110;
-
-		scheduler1.setAdjustment(adjustment1);
-		EXPECT_FALSE(scheduler1 == scheduler2);
-		EXPECT_FALSE(scheduler2 == scheduler1);
-
-		scheduler2.setAdjustment(adjustment2);
-		EXPECT_FALSE(scheduler1 == scheduler2);
-		EXPECT_FALSE(scheduler2 == scheduler1);
-
-		scheduler1.setAdjustment(adjustment2);
-		EXPECT_TRUE(scheduler1 == scheduler2);
-		EXPECT_TRUE(scheduler2 == scheduler1);
-	}
 
 	{
 		scheduler1.enableDay(1, true);
@@ -106,13 +86,6 @@ TEST(WeeklySchedulerTest, equalsOperator) {
 		EXPECT_TRUE(scheduler1 == scheduler2);
 		EXPECT_TRUE(scheduler2 == scheduler1);
 	}
-}
-
-TEST(WeeklySchedulerTest, setAdjustment) {
-	WeeklyScheduler scheduler;
-
-	scheduler.setAdjustment(53);
-	EXPECT_THAT(scheduler.getAdjustment(), Eq(53));
 }
 
 TEST(WeeklySchedulerTest, enableDay) {
@@ -235,22 +208,6 @@ TEST(WeeklySchedulerTest, partialUpdateFromWeeklySchedulerDto_empty) {
 
 	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO());
 
-	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
-}
-
-TEST(WeeklySchedulerTest, partialUpdateFromWeeklySchedulerDto_adjustment) {
-	const unsigned adjustment1 = 37;
-	const unsigned adjustment2 = 92;
-
-	WeeklyScheduler actualWeeklyScheduler(*WeeklySchedulerSample2().getObject());
-	WeeklyScheduler expectedWeeklyScheduler(*WeeklySchedulerSample2().getObject());
-
-	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setAdjustment(adjustment1));
-	expectedWeeklyScheduler.setAdjustment(adjustment1);
-	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
-
-	actualWeeklyScheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO().setAdjustment(adjustment2));
-	expectedWeeklyScheduler.setAdjustment(adjustment2);
 	EXPECT_THAT(actualWeeklyScheduler, Eq(expectedWeeklyScheduler));
 }
 

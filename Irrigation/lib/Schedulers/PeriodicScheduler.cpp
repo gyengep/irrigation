@@ -11,11 +11,10 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(100, vector<bool>(), 1970, 1, 1) {
+PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(vector<bool>(), 1970, 1, 1) {
 }
 
 PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
-	adjustment(other.adjustment),
 	days(other.days),
 	periodStartYear(other.periodStartYear),
 	periodStartMonth(other.periodStartMonth),
@@ -24,9 +23,7 @@ PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
 {
 }
 
-PeriodicScheduler::PeriodicScheduler(unsigned adjustment, const vector<bool>& days, unsigned year, unsigned month, unsigned day) :
-	adjustment(adjustment)
-{
+PeriodicScheduler::PeriodicScheduler(const vector<bool>& days, unsigned year, unsigned month, unsigned day) {
 	setPeriod(days.size());
 	this->days = days;
 
@@ -37,8 +34,7 @@ PeriodicScheduler::~PeriodicScheduler() {
 }
 
 bool PeriodicScheduler::operator== (const PeriodicScheduler& other) const {
-	return (adjustment == other.adjustment &&
-			days == other.days &&
+	return (days == other.days &&
 			periodStartYear == other.periodStartYear &&
 			periodStartMonth == other.periodStartMonth &&
 			periodStartDay == other.periodStartDay);
@@ -76,14 +72,6 @@ bool PeriodicScheduler::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-void PeriodicScheduler::setAdjustment(unsigned adjustment) {
-	this->adjustment = adjustment;
-}
-
-unsigned PeriodicScheduler::getAdjustment() const {
-	return adjustment;
-}
-
 void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsigned day) {
 	const tm timeinfo = toCalendarTime(year, month, day);
 	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
@@ -106,15 +94,11 @@ bool PeriodicScheduler::isDayScheduled(const tm& timeinfo) const {
 }
 
 PeriodicSchedulerDTO PeriodicScheduler::toPeriodicSchedulerDto() const {
-	return PeriodicSchedulerDTO(adjustment, list<bool>(days.begin(), days.end()),
+	return PeriodicSchedulerDTO(move(list<bool>(days.begin(), days.end())),
 			periodStartYear, periodStartMonth, periodStartDay);
 }
 
 void PeriodicScheduler::updateFromPeriodicSchedulerDto(const PeriodicSchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasAdjustment()) {
-		setAdjustment(schedulerDTO.getAdjustment());
-	}
-
 	if (schedulerDTO.hasValues()) {
 		setPeriod(schedulerDTO.getValues().size());
 		copy(schedulerDTO.getValues().begin(), schedulerDTO.getValues().end(), days.begin());
@@ -147,7 +131,6 @@ string to_string(const PeriodicScheduler& periodicScheduler) {
 
 ostream& operator<<(ostream& os, const PeriodicScheduler& periodicScheduler) {
 	os << "PeriodicScheduler{";
-	os << "adjustment=" << periodicScheduler.getAdjustment() << "%, ";
 	os << "values=" << to_string(periodicScheduler.days.begin(), periodicScheduler.days.end()) << ", ";
 	os << "periodStartDate=" <<
 			setw(4) << setfill('0') << to_string(periodicScheduler.periodStartYear) << "-" <<

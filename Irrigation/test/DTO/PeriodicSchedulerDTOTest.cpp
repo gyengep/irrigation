@@ -10,7 +10,6 @@ using namespace testing;
 TEST(PeriodicSchedulerDTOTest, defaultConstructor) {
 	PeriodicSchedulerDTO schedulerDTO;
 
-	EXPECT_FALSE(schedulerDTO.hasAdjustment());
 	EXPECT_FALSE(schedulerDTO.hasValues());
 	EXPECT_FALSE(schedulerDTO.hasPeriodStartYear());
 	EXPECT_FALSE(schedulerDTO.hasPeriodStartMonth());
@@ -18,21 +17,18 @@ TEST(PeriodicSchedulerDTOTest, defaultConstructor) {
 }
 
 TEST(PeriodicSchedulerDTOTest, parametrizedConstructor) {
-	const unsigned expectedAdjustment = 50;
 	const list<bool> expectedValues({ false, true, false, true, false });
 	const unsigned expectedPeriodStartYear = 2018;
 	const unsigned expectedPeriodStartMon = 5;
 	const unsigned expectedPeriodStartDay = 15;
-	PeriodicSchedulerDTO schedulerDTO(expectedAdjustment, list<bool>(expectedValues),
+	PeriodicSchedulerDTO schedulerDTO(list<bool>(expectedValues),
 			expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
 
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartYear());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartMonth());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartDay());
 
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 	EXPECT_THAT(schedulerDTO.getPeriodStartYear(), Eq(expectedPeriodStartYear));
 	EXPECT_THAT(schedulerDTO.getPeriodStartMonth(), Eq(expectedPeriodStartMon));
@@ -40,23 +36,20 @@ TEST(PeriodicSchedulerDTOTest, parametrizedConstructor) {
 }
 
 TEST(PeriodicSchedulerDTOTest, copyConstructor) {
-	const unsigned expectedAdjustment = 50;
 	const list<bool> expectedValues({ false, true, false, true, false });
 	const unsigned expectedPeriodStartYear = 2018;
 	const unsigned expectedPeriodStartMon = 5;
 	const unsigned expectedPeriodStartDay = 15;
-	const PeriodicSchedulerDTO source(expectedAdjustment, list<bool>(expectedValues),
+	const PeriodicSchedulerDTO source(list<bool>(expectedValues),
 			expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
 
 	PeriodicSchedulerDTO schedulerDTO(source);
 
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartYear());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartMonth());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartDay());
 
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 	EXPECT_THAT(schedulerDTO.getPeriodStartYear(), Eq(expectedPeriodStartYear));
 	EXPECT_THAT(schedulerDTO.getPeriodStartMonth(), Eq(expectedPeriodStartMon));
@@ -64,45 +57,24 @@ TEST(PeriodicSchedulerDTOTest, copyConstructor) {
 }
 
 TEST(PeriodicSchedulerDTOTest, moveConstructor) {
-	const unsigned expectedAdjustment = 50;
 	const list<bool> expectedValues({ false, true, false, true, false });
 	const unsigned expectedPeriodStartYear = 2018;
 	const unsigned expectedPeriodStartMon = 5;
 	const unsigned expectedPeriodStartDay = 15;
-	PeriodicSchedulerDTO source(expectedAdjustment, list<bool>(expectedValues),
+	PeriodicSchedulerDTO source(list<bool>(expectedValues),
 			expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
 
 	PeriodicSchedulerDTO schedulerDTO(move(source));
 
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
 	EXPECT_TRUE(schedulerDTO.hasValues());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartYear());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartMonth());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartDay());
 
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
 	EXPECT_THAT(schedulerDTO.getPeriodStartYear(), Eq(expectedPeriodStartYear));
 	EXPECT_THAT(schedulerDTO.getPeriodStartMonth(), Eq(expectedPeriodStartMon));
 	EXPECT_THAT(schedulerDTO.getPeriodStartDay(), Eq(expectedPeriodStartDay));
-}
-
-TEST(PeriodicSchedulerDTOTest, hasAdjustment) {
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_FALSE(schedulerDTO.hasAdjustment());
-	schedulerDTO.setAdjustment(100);
-	EXPECT_TRUE(schedulerDTO.hasAdjustment());
-}
-
-TEST(PeriodicSchedulerDTOTest, getAdjustment) {
-	const unsigned expectedAdjustment = 130;
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_THROW(schedulerDTO.getAdjustment(), logic_error);
-	schedulerDTO.setAdjustment(expectedAdjustment);
-	ASSERT_NO_THROW(schedulerDTO.getAdjustment());
-	EXPECT_THAT(schedulerDTO.getAdjustment(), Eq(expectedAdjustment));
 }
 
 TEST(PeriodicSchedulerDTOTest, hasValues) {
@@ -197,23 +169,6 @@ TEST(PeriodicSchedulerDTOTest, equalsOperator) {
 		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
 
 		schedulerDTO1.setValues(list<bool>(expectedValues2));
-		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
-	}
-
-	{
-		const unsigned expectedAdjustment1 = 40;
-		const unsigned expectedAdjustment2 = 60;
-
-		schedulerDTO1.setAdjustment(expectedAdjustment1);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO2.setAdjustment(expectedAdjustment2);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO1.setAdjustment(expectedAdjustment2);
 		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
 		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
 	}

@@ -11,7 +11,9 @@
 
 class ProgramDTO {
 	std::unique_ptr<const unsigned> id;
+	std::unique_ptr<const bool> disabled;
 	std::unique_ptr<const std::string> name;
+	std::unique_ptr<const unsigned> adjustment;
 	std::unique_ptr<const std::string> schedulerType;
 	std::unique_ptr<const PeriodicSchedulerDTO> periodicScheduler;
 	std::unique_ptr<const WeeklySchedulerDTO> weeklyScheduler;
@@ -22,7 +24,9 @@ public:
 	ProgramDTO() = default;
 	ProgramDTO(ProgramDTO&& other) = default;
 	ProgramDTO(const ProgramDTO& other);
-	ProgramDTO(const std::string& name, const std::string& schedulerType,
+	ProgramDTO(bool disabled, const std::string& name,
+			unsigned adjustment,
+			const std::string& schedulerType,
 			PeriodicSchedulerDTO&& periodicScheduler,
 			WeeklySchedulerDTO&& weeklyScheduler,
 			std::list<RunTimeDTO>&& runTimes,
@@ -33,7 +37,9 @@ public:
 	bool operator== (const ProgramDTO& other) const;
 
 	bool hasId() const;
+	bool hasDisabled() const;
 	bool hasName() const;
+	bool hasAdjustment() const;
 	bool hasSchedulerType() const;
 	bool hasPeriodicScheduler() const;
 	bool hasWeeklyScheduler() const;
@@ -41,7 +47,9 @@ public:
 	bool hasStartTimes() const;
 
 	unsigned getId() const;
+	bool getDisabled() const;
 	const std::string& getName() const;
+	unsigned getAdjustment() const;
 	const std::string& getSchedulerType() const;
 	const PeriodicSchedulerDTO& getPeriodicScheduler() const;
 	const WeeklySchedulerDTO& getWeeklyScheduler() const;
@@ -49,7 +57,9 @@ public:
 	const std::list<StartTimeDTO>& getStartTimes() const;
 
 	ProgramDTO& setId(unsigned id);
+	ProgramDTO& setDisabled(bool disabled);
 	ProgramDTO& setName(const std::string& name);
+	ProgramDTO& setAdjustment(unsigned adjustment);
 	ProgramDTO& setSchedulerType(const std::string& schedulerType);
 	ProgramDTO& setPeriodicScheduler(PeriodicSchedulerDTO&& periodicScheduler);
 	ProgramDTO& setWeeklyScheduler(WeeklySchedulerDTO&& weeklyScheduler);

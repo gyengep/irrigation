@@ -17,7 +17,9 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample1() : ProgramSample(
 				Program::Builder().
+					setDisabled(true).
 					setName("name1").
+					setAdjustment(54).
 					setSchedulerType(SchedulerType::PERIODIC).
 					setPeriodicScheduler(PeriodicSchedulerSample1().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample1().getObject()).
@@ -25,7 +27,7 @@ namespace Dto2ObjectTest {
 					setStartTimeContainer(StartTimeListSample1().getContainer()).
 					build(),
 				ProgramDTO(
-					"name1", to_string(SchedulerType::PERIODIC),
+					true, "name1", 54, to_string(SchedulerType::PERIODIC),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample1().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample1().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample1().getDtoList()),
@@ -39,14 +41,16 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample2() : ProgramSample(
 				Program::Builder().
+					setDisabled(false).
 					setName("name2").
+					setAdjustment(61).
 					setSchedulerType(SchedulerType::WEEKLY).
 					setPeriodicScheduler(PeriodicSchedulerSample2().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample2().getObject()).
 					setRunTimeContainer(RunTimeListSample2().getContainer()).
 					setStartTimeContainer(StartTimeListSample2().getContainer()).
 					build(),
-				ProgramDTO("name2", to_string(SchedulerType::WEEKLY),
+				ProgramDTO(false, "name2", 61, to_string(SchedulerType::WEEKLY),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample2().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample2().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample2().getDtoList()),
@@ -60,7 +64,9 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample3() : ProgramSample(
 				Program::Builder().
+					setDisabled(true).
 					setName("name3").
+					setAdjustment(159).
 					setSchedulerType(SchedulerType::PERIODIC).
 					setPeriodicScheduler(PeriodicSchedulerSample3().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample3().getObject()).
@@ -68,7 +74,7 @@ namespace Dto2ObjectTest {
 					setStartTimeContainer(StartTimeListSample3().getContainer()).
 					build(),
 				ProgramDTO(
-					"name3", to_string(SchedulerType::PERIODIC),
+					true, "name3", 159, to_string(SchedulerType::PERIODIC),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample3().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample3().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample3().getDtoList()),
@@ -82,7 +88,9 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample4() : ProgramSample(
 				Program::Builder().
+					setDisabled(false).
 					setName("name4").
+					setAdjustment(238).
 					setSchedulerType(SchedulerType::WEEKLY).
 					setPeriodicScheduler(PeriodicSchedulerSample4().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample4().getObject()).
@@ -90,7 +98,7 @@ namespace Dto2ObjectTest {
 					setStartTimeContainer(StartTimeListSample4().getContainer()).
 					build(),
 				ProgramDTO(
-					"name4", to_string(SchedulerType::WEEKLY),
+					false, "name4", 238, to_string(SchedulerType::WEEKLY),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample4().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample4().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample4().getDtoList()),

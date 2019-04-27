@@ -38,8 +38,16 @@ TEST_F(ProgramReaderTest, programAll) {
 	testProgramRead(programSample_all, reader);
 }
 
+TEST_F(ProgramReaderTest, programDisabled) {
+	testProgramRead(programSample_disabled, reader);
+}
+
 TEST_F(ProgramReaderTest, programName) {
 	testProgramRead(programSample_name, reader);
+}
+
+TEST_F(ProgramReaderTest, programAdjustment) {
+	testProgramRead(programSample_adjustment, reader);
 }
 
 TEST_F(ProgramReaderTest, programSchedulerType) {
@@ -76,8 +84,16 @@ TEST_F(ProgramWriterTest, programAll) {
 	testProgramWrite(programSample_all, writer);
 }
 
+TEST_F(ProgramWriterTest, programDisabled) {
+	testProgramWrite(programSample_disabled, writer);
+}
+
 TEST_F(ProgramWriterTest, programName) {
 	testProgramWrite(programSample_name, writer);
+}
+
+TEST_F(ProgramWriterTest, programAdjustment) {
+	testProgramWrite(programSample_adjustment, writer);
 }
 
 TEST_F(ProgramWriterTest, programSchedulerType) {

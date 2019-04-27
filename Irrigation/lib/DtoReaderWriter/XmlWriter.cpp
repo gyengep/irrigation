@@ -50,8 +50,16 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 		node.append_attribute("id").set_value(program.getId());
 	}
 
+	if (program.hasDisabled()) {
+		node.append_child("disabled").text().set(program.getDisabled());
+	}
+
 	if (program.hasName()) {
 		node.append_child("name").text().set(program.getName().c_str());
+	}
+
+	if (program.hasAdjustment()) {
+		node.append_child("adjustment").text().set(program.getAdjustment());
 	}
 
 	if (program.hasSchedulerType()) {
@@ -135,10 +143,6 @@ void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerD
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("periodic");
 
-	if (scheduler.hasAdjustment()) {
-		node.append_child("adjustment").text().set(scheduler.getAdjustment());
-	}
-
 	if (scheduler.hasValues()) {
 		xml_node daysNode = node.append_child("days");
 		const list<bool>& values = scheduler.getValues();
@@ -169,10 +173,6 @@ void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerD
 void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("weekly");
-
-	if (scheduler.hasAdjustment()) {
-		node.append_child("adjustment").text().set(scheduler.getAdjustment());
-	}
 
 	if (scheduler.hasValues()) {
 		xml_node daysNode = node.append_child("days");

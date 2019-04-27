@@ -17,6 +17,8 @@
 #define PROGRAM_SAMPLE_7 programSample_startTimes
 #define PROGRAM_SAMPLE_8 programSample_id
 #define PROGRAM_SAMPLE_9 programSample_empty
+#define PROGRAM_SAMPLE_10 programSample_disabled
+#define PROGRAM_SAMPLE_11 programSample_adjustment
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +28,9 @@ typedef std::pair<std::string, ProgramDTO> ProgramSample;
 
 const ProgramSample programSample_all(
 		"<program id=\"123\">"
+			"<disabled>true</disabled>"
 			"<name>abcdefg</name>"
+			"<adjustment>183</adjustment>"
 			"<schedulertype>weekly</schedulertype>"
 			"<schedulers>" +
 				PERIODIC_SCHEDULER_SAMPLE_1.first +
@@ -37,7 +41,9 @@ const ProgramSample programSample_all(
 		"</program>",
 		ProgramDTO()
 		.setId(123)
+		.setDisabled(true)
 		.setName("abcdefg")
+		.setAdjustment(183)
 		.setSchedulerType("weekly")
 		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_1.second))
 		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_1.second))
@@ -46,11 +52,25 @@ const ProgramSample programSample_all(
 		);
 
 
+const ProgramSample programSample_disabled(
+		"<program>"
+			"<disabled>true</disabled>"
+		"</program>",
+		ProgramDTO().setDisabled(true)
+		);
+
 const ProgramSample programSample_name(
 		"<program>"
 			"<name>abcdefg</name>"
 		"</program>",
 		ProgramDTO().setName("abcdefg")
+		);
+
+const ProgramSample programSample_adjustment(
+		"<program>"
+			"<adjustment>57</adjustment>"
+		"</program>",
+		ProgramDTO().setAdjustment(57)
 		);
 
 const ProgramSample programSample_schedulerType(
@@ -63,19 +83,19 @@ const ProgramSample programSample_schedulerType(
 const ProgramSample programSample_periodicScheduler(
 		"<program>"
 			"<schedulers>" +
-				PERIODIC_SCHEDULER_SAMPLE_2.first +
+				PERIODIC_SCHEDULER_SAMPLE_3.first +
 			"</schedulers>"
 		"</program>",
-		ProgramDTO().setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_2.second))
+		ProgramDTO().setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_3.second))
 		);
 
 const ProgramSample programSample_weeklyScheduler(
 		"<program>"
 			"<schedulers>" +
-				WEEKLY_SCHEDULER_SAMPLE_2.first +
+				WEEKLY_SCHEDULER_SAMPLE_3.first +
 			"</schedulers>"
 		"</program>",
-		ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_2.second))
+		ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_3.second))
 		);
 
 const ProgramSample programSample_runTimes(

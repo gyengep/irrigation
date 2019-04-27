@@ -7,10 +7,6 @@ using namespace std;
 
 
 PeriodicSchedulerDTO::PeriodicSchedulerDTO(const PeriodicSchedulerDTO& other) {
-	if (other.hasAdjustment()) {
-		setAdjustment(other.getAdjustment());
-	}
-
 	if (other.hasValues()) {
 		setValues(list<bool>(other.getValues()));
 	}
@@ -28,9 +24,8 @@ PeriodicSchedulerDTO::PeriodicSchedulerDTO(const PeriodicSchedulerDTO& other) {
 	}
 }
 
-PeriodicSchedulerDTO::PeriodicSchedulerDTO(unsigned adjustment, list<bool>&& values,
+PeriodicSchedulerDTO::PeriodicSchedulerDTO(list<bool>&& values,
 		unsigned periodStartYear, unsigned periodStartMonth, unsigned periodStartDay) {
-	setAdjustment(adjustment);
 	setValues(move(values));
 	setPeriodStartYear(periodStartYear);
 	setPeriodStartMonth(periodStartMonth);
@@ -38,15 +33,10 @@ PeriodicSchedulerDTO::PeriodicSchedulerDTO(unsigned adjustment, list<bool>&& val
 }
 
 bool PeriodicSchedulerDTO::operator== (const PeriodicSchedulerDTO& other) const {
-	return (equalsPtr(adjustment.get(), other.adjustment.get()) &&
-			equalsPtr(values.get(), other.values.get()) &&
+	return (equalsPtr(values.get(), other.values.get()) &&
 			equalsPtr(periodStartYear.get(), other.periodStartYear.get()) &&
 			equalsPtr(periodStartMonth.get(), other.periodStartMonth.get()) &&
 			equalsPtr(periodStartDay.get(), other.periodStartDay.get()));
-}
-
-bool PeriodicSchedulerDTO::hasAdjustment() const {
-	return (adjustment.get() != nullptr);
 }
 
 bool PeriodicSchedulerDTO::hasValues() const {
@@ -63,14 +53,6 @@ bool PeriodicSchedulerDTO::hasPeriodStartMonth() const {
 
 bool PeriodicSchedulerDTO::hasPeriodStartDay() const {
 	return (periodStartDay.get() != nullptr);
-}
-
-unsigned PeriodicSchedulerDTO::getAdjustment() const {
-	if (!hasAdjustment()) {
-		throw logic_error("PeriodicSchedulerDTO::getAdjustment(): !hasAdjustment()");
-	}
-
-	return *adjustment.get();
 }
 
 const list<bool>& PeriodicSchedulerDTO::getValues() const {
@@ -105,11 +87,6 @@ unsigned PeriodicSchedulerDTO::getPeriodStartDay() const {
 	return *periodStartDay.get();
 }
 
-PeriodicSchedulerDTO& PeriodicSchedulerDTO::setAdjustment(unsigned adjustment) {
-	this->adjustment.reset(new unsigned(adjustment));
-	return *this;
-}
-
 PeriodicSchedulerDTO& PeriodicSchedulerDTO::setValues(list<bool>&& values) {
 	this->values.reset(new list<bool>(move(values)));
 	return *this;
@@ -132,8 +109,6 @@ PeriodicSchedulerDTO& PeriodicSchedulerDTO::setPeriodStartDay(unsigned periodSta
 
 ostream& operator<<(ostream& os, const PeriodicSchedulerDTO& scheduler) {
 	os << "PeriodicSchedulerDTO{";
-	PRINT_PTR(os, "adjustment", scheduler.adjustment.get());
-	os << ", ";
 	PRINT_PTR(os, "values", scheduler.values.get());
 	os << ", ";
 	PRINT_PTR(os, "periodStartYear", scheduler.periodStartYear.get());
