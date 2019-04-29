@@ -2,8 +2,8 @@
 <irrigation>
 	<programs>
 		<program>
-			<disabled>false</disabled>
 			<name>fulocsolas</name>
+			<disabled>false</disabled>
 			<adjustment>30</adjustment>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
@@ -32,8 +32,8 @@
 			</starttimes>
 		</program>
 		<program>
-			<disabled>false</disabled>
 			<name>buxus</name>
+			<disabled>false</disabled>
 			<adjustment>100</adjustment>
 			<schedulertype>periodic</schedulertype>
 			<schedulers>
@@ -58,8 +58,8 @@
 			</starttimes>
 		</program>
 		<program>
-			<disabled>false</disabled>
 			<name>paradicsom</name>
+			<disabled>false</disabled>
 			<adjustment>100</adjustment>
 			<schedulertype>periodic</schedulertype>
 			<schedulers>
@@ -84,8 +84,8 @@
 			</starttimes>
 		</program>
 		<program>
-			<disabled>true</disabled>
 			<name>kanikula</name>
+			<disabled>true</disabled>
 			<adjustment>10</adjustment>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>
@@ -118,8 +118,8 @@
 			</starttimes>
 		</program>
 		<program>
-			<disabled>true</disabled>
 			<name>test</name>
+			<disabled>true</disabled>
 			<adjustment>100</adjustment>
 			<schedulertype>weekly</schedulertype>
 			<schedulers>

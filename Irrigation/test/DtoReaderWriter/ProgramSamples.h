@@ -28,8 +28,8 @@ typedef std::pair<std::string, ProgramDTO> ProgramSample;
 
 const ProgramSample programSample_all(
 		"<program id=\"123\">"
-			"<disabled>true</disabled>"
 			"<name>abcdefg</name>"
+			"<disabled>true</disabled>"
 			"<adjustment>183</adjustment>"
 			"<schedulertype>weekly</schedulertype>"
 			"<schedulers>" +

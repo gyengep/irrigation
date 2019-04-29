@@ -55,12 +55,12 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 
 	xml_node tmpNode;
 
-	if ((tmpNode = node.child("disabled")) != nullptr) {
-		program.setDisabled(tmpNode.text().as_bool());
-	}
-
 	if ((tmpNode = node.child("name")) != nullptr) {
 		program.setName(tmpNode.text().as_string());
+	}
+
+	if ((tmpNode = node.child("disabled")) != nullptr) {
+		program.setDisabled(tmpNode.text().as_bool());
 	}
 
 	if ((tmpNode = node.child("adjustment")) != nullptr) {

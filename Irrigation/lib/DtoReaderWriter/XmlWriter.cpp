@@ -50,12 +50,12 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 		node.append_attribute("id").set_value(program.getId());
 	}
 
-	if (program.hasDisabled()) {
-		node.append_child("disabled").text().set(program.getDisabled());
-	}
-
 	if (program.hasName()) {
 		node.append_child("name").text().set(program.getName().c_str());
+	}
+
+	if (program.hasDisabled()) {
+		node.append_child("disabled").text().set(program.getDisabled());
 	}
 
 	if (program.hasAdjustment()) {

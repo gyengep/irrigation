@@ -182,8 +182,8 @@ string to_string(const Program& program) {
 
 ostream& operator<<(ostream& os, const Program& program) {
 	os << "Program{";
-	os << "disabled=" << to_string(program.isDisabled()) << ", ";
 	os << "name=\"" << program.getName() << "\", ";
+	os << "disabled=" << to_string(program.isDisabled()) << ", ";
 	os << "adjustment=\"" << program.getAdjustment() << "\", ";
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
