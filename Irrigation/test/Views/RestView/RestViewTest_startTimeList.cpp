@@ -29,6 +29,7 @@ TEST_F(RestViewTest, postStartTimeList) {
 
 	checkResponseWithoutBody(response, 201);
 	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId) + "\r\n"));
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, postStartTimeListInvalidXml) {
@@ -64,6 +65,7 @@ void RestViewTest::testGetStartTimeList(const Dto2ObjectTest::StartTimeListSampl
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeListSample.getDtoList())));
+	EXPECT_FALSE(document->isModified());
 }
 
 TEST_F(RestViewTest, getStartTimeList1) {

@@ -1,17 +1,41 @@
 #include "IrrigationApplication.h"
 #include "Configuration.h"
+#include "DocumentSaver.h"
 #include "DtoReaderWriter/XMLParseException.h"
+#include "DtoReaderWriter/XmlReader.h"
+#include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
 #include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
+#include "Utils/FileReaderWriterImpl.h"
 #include <stdexcept>
-#include <thread>
 
 using namespace std;
 
+
+class XmlWriterFactory : public DocumentSaver::DtoWriterFactory {
+public:
+	virtual ~XmlWriterFactory() = default;
+	virtual std::shared_ptr<DtoWriter> create() override {
+		return make_shared<XmlWriter>();
+	}
+};
+
+class FileWriterFactory : public DocumentSaver::FileWriterFactory {
+	const std::string fileName;
+
+public:
+	FileWriterFactory(const std::string& fileName) : fileName(fileName) {}
+	virtual ~FileWriterFactory() = default;
+	virtual std::shared_ptr<FileWriter> create() override {
+		return make_shared<FileWriterImpl>(fileName);
+	}
+};
+
+///////////////////////////////////////////////////////////////////////////////
 
 IrrigationApplication::IrrigationApplication() {
 }
@@ -37,10 +61,20 @@ void IrrigationApplication::initGpio() {
 }
 
 void IrrigationApplication::initDocument() {
-	document = IrrigationDocument::Builder().build();
+	irrigationDocument = IrrigationDocument::Builder().build();
+	documentSaver.reset(new DocumentSaver(
+		irrigationDocument,
+		make_shared<XmlWriterFactory>(),
+		make_shared<FileWriterFactory>(Configuration::getInstance().getConfigFileName())
+	));
 
 	try {
-		document->load(Configuration::getInstance().getConfigFileName());
+		LOGGER.debug("Loading configuration...");
+
+		documentSaver->load(
+			make_shared<XmlReader>(),
+			make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
+		);
 
 	} catch (const FileNotFoundException& e) {
 		LOGGER.debug("Configuration file not found. Default configuration is loaded.");
@@ -52,8 +86,8 @@ void IrrigationApplication::initDocument() {
 		throw_with_nested(runtime_error("Can't initialize document"));
 	}
 
-	document->addView(unique_ptr<View>(new TimerView(*document)));
-	document->addView(unique_ptr<View>(new RestView(*document, Configuration::getInstance().getRestPort())));
+	irrigationDocument->addView(unique_ptr<View>(new TimerView(*irrigationDocument)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, Configuration::getInstance().getRestPort())));
 }
 
 void IrrigationApplication::onInitialize() {
@@ -63,14 +97,25 @@ void IrrigationApplication::onInitialize() {
 	initGpio();
 	initDocument();
 
+	documentSaver->start();
 	LOGGER.info("Irrigation System started");
 }
 
 void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
-	//saveDocument(Configuration::getInstance().getConfigFileName());
-	document.reset();
+	documentSaver->stop();
+
+	try {
+		documentSaver->saveIfModified();
+		LOGGER.debug("Configuration successfully saved.");
+
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't save configuration"));
+	}
+
+	documentSaver.reset();
+	irrigationDocument.reset();
 
 	LOGGER.info("Irrigation System stopped");
 }

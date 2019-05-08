@@ -36,6 +36,7 @@ void RestViewTest::testGetProgram(const ProgramListSample& programListSample, co
 		checkResponseWithBody(response, 200, "application/xml");
 
 		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programWithId.second->toProgramDto(), includeContainers)));
+		EXPECT_FALSE(document->isModified());
 	}
 }
 
@@ -121,6 +122,7 @@ TEST_F(RestViewTest, patchProgram) {
 
 	Response response = executeRequest("PATCH", createProgramUrl(programId), XmlWriter().save(programSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, patchProgramNotFound) {
@@ -162,6 +164,7 @@ TEST_F(RestViewTest, deleteProgram) {
 	Response response = executeRequest("DELETE", createProgramUrl(programId));
 	checkResponseWithoutBody(response, 200);
 	EXPECT_THAT(response.writeCallbackData.text, IsEmpty());
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, deleteProgramNotFound) {

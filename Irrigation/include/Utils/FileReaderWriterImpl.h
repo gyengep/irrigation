@@ -4,22 +4,17 @@
 
 
 class FileReaderImpl : public FileReader {
+	const std::string fileName;
+
 public:
-	virtual std::string read(const std::string& fileName) const override;
+	FileReaderImpl(const std::string& fileName);
+	virtual std::string read() const override;
 };
 
 class FileWriterImpl : public FileWriter {
-public:
-	virtual void write(const std::string& fileName, const std::string& text) const override;
-};
+	const std::string fileName;
 
-class FileReaderWriterFactoryImpl : public FileReaderWriterFactory {
 public:
-	virtual std::unique_ptr<FileReader> createFileReader() const override {
-		return std::unique_ptr<FileReader>(new FileReaderImpl());
-	}
-
-	virtual std::unique_ptr<FileWriter> createFileWriter() const override {
-		return std::unique_ptr<FileWriter>(new FileWriterImpl());
-	}
+	FileWriterImpl(const std::string& fileName);
+	virtual void write(const std::string& text) const override;
 };

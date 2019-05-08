@@ -6,8 +6,6 @@
 #include "DTO/DocumentDTO.h"
 
 class ProgramContainer;
-class DtoReaderWriterFactory;
-class FileReaderWriterFactory;
 class WateringController;
 
 
@@ -19,19 +17,14 @@ private:
 	mutable std::mutex mtx;
 	std::shared_ptr<ProgramContainer> programs;
 	std::shared_ptr<WateringController> wateringController;
-	std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
-	std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
+	bool modified;
 
 public:
 	IrrigationDocument(
-			std::shared_ptr<ProgramContainer> programContainer,
-			std::shared_ptr<WateringController> wateringController,
-			std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory,
-			std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory
-			);
-
+		std::shared_ptr<ProgramContainer> programContainer,
+		std::shared_ptr<WateringController> wateringController
+		);
 	IrrigationDocument(const IrrigationDocument&);
-
 	virtual ~IrrigationDocument();
 
 	void lock() const;
@@ -43,18 +36,16 @@ public:
 	const WateringController& getWateringController() const { return *wateringController; }
 	WateringController& getWateringController() { return *wateringController; }
 
+	bool isModified() const { return modified; }
+	void setModified(bool modified = true) { this->modified = modified; }
+
 	DocumentDTO toDocumentDto() const;
 	void updateFromDocumentDto(const DocumentDTO& documentDTO);
-
-	void load(const std::string& fileName);
-	void save(const std::string& fileName) const;
 };
 
 class IrrigationDocument::Builder {
 	std::shared_ptr<ProgramContainer> programContainer;
 	std::shared_ptr<WateringController> wateringController;
-	std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory;
-	std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory;
 
 public:
 	Builder();
@@ -62,8 +53,6 @@ public:
 
 	Builder& setProgramContainer(std::shared_ptr<ProgramContainer> programContainer);
 	Builder& setWateringController(std::shared_ptr<WateringController> wateringController);
-	Builder& setDtoReaderWriterFactory(std::shared_ptr<DtoReaderWriterFactory> dtoReaderWriterFactory);
-	Builder& setFileReaderWriterFactory(std::shared_ptr<FileReaderWriterFactory> fileReaderWriterFactory);
 
 	std::shared_ptr<IrrigationDocument> build();
 };

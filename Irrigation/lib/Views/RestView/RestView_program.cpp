@@ -51,6 +51,7 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.setModified();
 			irrigationDocument.getPrograms().insert(programId, program);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
@@ -113,6 +114,8 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.setModified();
+
 			const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 			program->updateFromProgramDto(programDto);
 
@@ -151,6 +154,7 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.setModified();
 			irrigationDocument.getPrograms().erase(programId);
 		}
 

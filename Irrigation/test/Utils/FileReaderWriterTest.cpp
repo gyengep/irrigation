@@ -8,8 +8,8 @@ using namespace testing;
 
 
 TEST(FileReaderTest, fileNotExist) {
-	FileReaderImpl fileReader;
-	EXPECT_THROW(fileReader.read(tmpnam(nullptr)), FileNotFoundException);
+	FileReaderImpl fileReader(tmpnam(nullptr));
+	EXPECT_THROW(fileReader.read(), FileNotFoundException);
 }
 
 TEST(FileReaderTest, read) {
@@ -20,8 +20,8 @@ TEST(FileReaderTest, read) {
 	fputs(text.c_str(), f);
 	fclose(f);
 
-	FileReaderImpl fileReader;
-	EXPECT_THAT(fileReader.read(name), Eq(text));
+	FileReaderImpl fileReader(name);
+	EXPECT_THAT(fileReader.read(), Eq(text));
 
 	remove(name.c_str());
 }

@@ -36,6 +36,7 @@ void RestViewTest::testGetWeeklyScheduler(const WeeklySchedulerSample& weeklySch
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(weeklySchedulerSample.getDto())));
+	EXPECT_FALSE(document->isModified());
 }
 
 TEST_F(RestViewTest, getWeeklyScheduler1) {
@@ -90,6 +91,7 @@ TEST_F(RestViewTest, patchWeeklyScheduler) {
 
 	Response response = executeRequest("PATCH", createWeeklySchedulerUrl(programId), XmlWriter().save(weeklySchedulerSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, patchWeeklySchedulerNotFound) {

@@ -5,7 +5,10 @@
 using namespace std;
 
 
-string FileReaderImpl::read(const string& fileName) const {
+FileReaderImpl::FileReaderImpl(const std::string& fileName) : fileName(fileName) {
+}
+
+string FileReaderImpl::read() const {
 	ifstream ifs(fileName);
 
 	if (ifs.fail()) {
@@ -31,24 +34,25 @@ string FileReaderImpl::read(const string& fileName) const {
 	return buffer;
 }
 
-void FileWriterImpl::write(const string& fileName, const string& text) const {
-	throw logic_error("Function not implemented FileWriterImpl::write()");
+FileWriterImpl::FileWriterImpl(const std::string& fileName) : fileName(fileName) {
+}
 
-	//	ofstream ofs;
-	//
-	//	ofs.open(fileName, ofstream::out | ofstream::trunc);
-	//	if (ofs.fail()) {
-	//		throw IOException(errno);
-	//	}
-	//
-	//	ofs << text;
-	//	if (ofs.fail()) {
-	//		throw IOException(errno);
-	//	}
-	//
-	//	ofs.close();
-	//	if (ofs.fail()) {
-	//		throw IOException(errno);
-	//	}
+void FileWriterImpl::write(const string& text) const {
+	ofstream ofs;
+
+	ofs.open(fileName, ofstream::out | ofstream::trunc);
+	if (ofs.fail()) {
+		throw IOException(errno);
+	}
+
+	ofs << text;
+	if (ofs.fail()) {
+		throw IOException(errno);
+	}
+
+	ofs.close();
+	if (ofs.fail()) {
+		throw IOException(errno);
+	}
 }
 

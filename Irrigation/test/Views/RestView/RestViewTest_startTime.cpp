@@ -34,6 +34,7 @@ void RestViewTest::testGetStartTime(const StartTimeListSample& startTimeListSamp
 		checkResponseWithBody(response, 200, "application/xml");
 
 		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeWithId.second->toStartTimeDto())));
+		EXPECT_FALSE(document->isModified());
 	}
 }
 
@@ -106,6 +107,7 @@ TEST_F(RestViewTest, patchStartTime) {
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), XmlWriter().save(startTimeSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, patchStartTimeNotFound) {
@@ -153,6 +155,7 @@ TEST_F(RestViewTest, deleteStartTime) {
 
 	Response response = executeRequest("DELETE", createStartTimeUrl(programId, startTimeId));
 	checkResponseWithoutBody(response, 200);
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, deleteStartTimeNotFound) {

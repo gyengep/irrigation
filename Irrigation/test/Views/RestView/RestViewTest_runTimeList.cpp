@@ -32,6 +32,7 @@ void RestViewTest::testGetRunTimeList(const RunTimeListSample& runTimeListSample
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeListSample.getDtoList())));
+	EXPECT_FALSE(document->isModified());
 }
 
 TEST_F(RestViewTest, getRunTimeList1) {
@@ -86,6 +87,7 @@ void RestViewTest::testPatchRunTimeList(const RunTimeListSample& runTimeListSamp
 
 	const Response response = executeRequest("PATCH", createRunTimeListUrl(programId), XmlWriter().save(runTimeListSample.getDtoList()), "application/xml");
 	checkResponseWithoutBody(response, 204);
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, patchRunTimeList1) {

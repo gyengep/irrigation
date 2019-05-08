@@ -32,6 +32,7 @@ TEST_F(RestViewTest, postProgramList) {
 
 	checkResponseWithoutBody(response, 201);
 	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "\r\n"));
+	EXPECT_TRUE(document->isModified());
 }
 
 TEST_F(RestViewTest, postProgramListInvalidXml) {
@@ -54,6 +55,7 @@ void RestViewTest::testGetProgramList(const ProgramListSample& programListSample
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList(), includeContainers)));
+	EXPECT_FALSE(document->isModified());
 }
 
 TEST_F(RestViewTest, getProgramList1) {

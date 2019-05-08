@@ -64,15 +64,15 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 }));
 
 void IrrigationDocumentTest::SetUp() {
-	document = IrrigationDocument::Builder().build();
+	irrigationDocument = IrrigationDocument::Builder().build();
 }
 
 void IrrigationDocumentTest::TearDown() {
 }
 
-void IrrigationDocumentTest::waitAndUnlock(IrrigationDocument* document, unsigned waitMs) {
+void IrrigationDocumentTest::waitAndUnlock(IrrigationDocument* irrigationDocument, unsigned waitMs) {
 	this_thread::sleep_for(chrono::milliseconds(waitMs + 10));
-	document->unlock();
+	irrigationDocument->unlock();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,46 +80,18 @@ void IrrigationDocumentTest::waitAndUnlock(IrrigationDocument* document, unsigne
 TEST_F(IrrigationDocumentTest, lockUnlock) {
 	const unsigned waitMs = 100;
 
-	document->lock();
+	irrigationDocument->lock();
 
 	auto start = chrono::high_resolution_clock::now();
-	thread lockAndUnlockThread(&IrrigationDocumentTest::waitAndUnlock, this, document.get(), waitMs);
+	thread lockAndUnlockThread(&IrrigationDocumentTest::waitAndUnlock, this, irrigationDocument.get(), waitMs);
 
-	document->lock();
-	document->unlock();
+	irrigationDocument->lock();
+	irrigationDocument->unlock();
 	auto end = chrono::high_resolution_clock::now();
 
 	EXPECT_THAT(chrono::duration_cast<chrono::milliseconds>(end - start).count(), Ge(waitMs));
 
 	lockAndUnlockThread.join();
-}
-
-TEST_F(IrrigationDocumentTest, loadInvalidFile) {
-	EXPECT_THROW(document->load(tmpnam(nullptr)), FileNotFoundException);
-}
-
-TEST_F(IrrigationDocumentTest, load) {
-	const string fileName("12345678");
-	const string text("abcdefg");
-
-	unique_ptr<MockDtoReader> dtoReader(new MockDtoReader());
-	unique_ptr<MockFileReader> fileReader(new MockFileReader());
-
-	EXPECT_CALL(*fileReader, read(fileName))
-			.Times(1)
-			.WillOnce(Return(text));
-
-	EXPECT_CALL(*dtoReader, loadDocument(text))
-			.Times(1)
-			.WillOnce(Return(expectedDocumentDTO));
-
-	document = IrrigationDocument::Builder()
-			.setDtoReaderWriterFactory(unique_ptr<DtoReaderWriterFactory>(new MockDtoReaderWriterFactory(move(dtoReader))))
-			.setFileReaderWriterFactory(unique_ptr<FileReaderWriterFactory>(new MockFileReaderWriterFactory(move(fileReader))))
-			.build();
-
-	EXPECT_NO_THROW(document->load(fileName));
-	EXPECT_THAT(document->toDocumentDto(), Eq(expectedDocumentDTO));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,30 +118,30 @@ TEST_F(IrrigationDocumentTest, toDocumentDto4) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromDocumentDto(shared_ptr<IrrigationDocument> document, const DocumentSample& documentSample) {
-	EXPECT_THAT(document->getPrograms(), Not(documentSample.getObject()->getPrograms()));
-	document->updateFromDocumentDto(documentSample.getDto());
-	EXPECT_THAT(document->getPrograms(), documentSample.getObject()->getPrograms());
+void testUpdateFromDocumentDto(shared_ptr<IrrigationDocument> irrigationDocument, const DocumentSample& documentSample) {
+	EXPECT_THAT(irrigationDocument->getPrograms(), Not(documentSample.getObject()->getPrograms()));
+	irrigationDocument->updateFromDocumentDto(documentSample.getDto());
+	EXPECT_THAT(irrigationDocument->getPrograms(), documentSample.getObject()->getPrograms());
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto1) {
-	shared_ptr<IrrigationDocument> document = DocumentSample4().getObject();
-	testUpdateFromDocumentDto(document, DocumentSample1());
+	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample4().getObject();
+	testUpdateFromDocumentDto(irrigationDocument, DocumentSample1());
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto2) {
-	shared_ptr<IrrigationDocument> document = DocumentSample1().getObject();
-	testUpdateFromDocumentDto(document, DocumentSample2());
+	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample1().getObject();
+	testUpdateFromDocumentDto(irrigationDocument, DocumentSample2());
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto3) {
-	shared_ptr<IrrigationDocument> document = DocumentSample2().getObject();
-	testUpdateFromDocumentDto(document, DocumentSample3());
+	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample2().getObject();
+	testUpdateFromDocumentDto(irrigationDocument, DocumentSample3());
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto4) {
-	shared_ptr<IrrigationDocument> document = IrrigationDocument::Builder().build();
-	testUpdateFromDocumentDto(document, DocumentSample4());
+	shared_ptr<IrrigationDocument> irrigationDocument = IrrigationDocument::Builder().build();
+	testUpdateFromDocumentDto(irrigationDocument, DocumentSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -180,4 +152,21 @@ TEST_F(IrrigationDocumentTest, partialUpdateFromDocumentDto_empty) {
 	DocumentSample3 actual;
 	actual.getObject()->updateFromDocumentDto(DocumentDTO());
 	EXPECT_THAT(actual.getObject()->getPrograms(), Eq(expected.getObject()->getPrograms()));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(IrrigationDocumentTest, isModified) {
+	EXPECT_FALSE(irrigationDocument->isModified());
+}
+
+TEST_F(IrrigationDocumentTest, setModified) {
+	irrigationDocument->setModified();
+	EXPECT_TRUE(irrigationDocument->isModified());
+
+	irrigationDocument->setModified(false);
+	EXPECT_FALSE(irrigationDocument->isModified());
+
+	irrigationDocument->setModified(true);
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
