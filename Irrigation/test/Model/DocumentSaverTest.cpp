@@ -1,6 +1,6 @@
 #include "DocumentSaverTest.h"
 #include "Dto2Object/DocumentSamples.h"
-#include "DTO/DocumentDto.h"
+#include "DTO/DocumentDTO.h"
 #include "Model/DocumentSaver.h"
 #include "Model/IrrigationDocument.h"
 
