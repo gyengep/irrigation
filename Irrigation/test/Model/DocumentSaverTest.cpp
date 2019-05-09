@@ -42,13 +42,14 @@ TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 	EXPECT_CALL(*mockDtoReader, loadDocument(documentDtoAsText))
 			.WillOnce(Return(expectedDocumentDto));
 
+	irrigationDocument->setModified(true);
 	documentSaver->load(mockDtoReader, mockFileReader);
 
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(DocumentSaverTest, isModifiedAfterSave) {
-	irrigationDocument->setModified();
+	irrigationDocument->setModified(true);
 	documentSaver->saveIfModified();
 
 	EXPECT_FALSE(irrigationDocument->isModified());

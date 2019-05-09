@@ -50,7 +50,6 @@ void DocumentSaver::saveIfModified() {
 			const string documentDtoAsText = dtoWriterFactory->create()->save(documentDto);
 			fileWriterFactory->create()->write(documentDtoAsText);
 		} catch (...) {
-			lock.lock();
 			irrigationDocument->setModified(true);
 			throw;
 		}

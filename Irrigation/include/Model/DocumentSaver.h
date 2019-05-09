@@ -21,6 +21,7 @@ private:
 	std::condition_variable condition;
 	std::mutex mtx;
 	std::thread workerThread;
+
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<DtoWriterFactory> dtoWriterFactory;
 	std::shared_ptr<FileWriterFactory> fileWriterFactory;

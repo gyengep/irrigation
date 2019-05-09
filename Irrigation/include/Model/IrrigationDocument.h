@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -17,7 +18,7 @@ private:
 	mutable std::mutex mtx;
 	std::shared_ptr<ProgramContainer> programs;
 	std::shared_ptr<WateringController> wateringController;
-	bool modified;
+	std::atomic_bool modified;
 
 public:
 	IrrigationDocument(
