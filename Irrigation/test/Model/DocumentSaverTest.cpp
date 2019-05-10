@@ -49,6 +49,12 @@ TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 }
 
 TEST_F(DocumentSaverTest, isModifiedAfterSave) {
+	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(A<const DocumentDTO&>()))
+			.Times(1);
+
+	EXPECT_CALL(*mockFileWriterFactory->mockFileWriter, write(_))
+			.Times(1);
+
 	irrigationDocument->setModified(true);
 	documentSaver->saveIfModified();
 
@@ -88,15 +94,13 @@ TEST_F(DocumentSaverTest, save) {
 			.Times(1);
 
 	documentSaver->saveIfModified();
+	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(DocumentSaverTest, saveNotModified) {
-	const DocumentDTO documentDto = Dto2ObjectTest::DocumentSample4().getDto();
-
-	irrigationDocument->updateFromDocumentDto(Dto2ObjectTest::DocumentSample4().getDto());
 	irrigationDocument->setModified(false);
 
-	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(documentDto))
+	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(A<const DocumentDTO&>()))
 			.Times(0);
 
 	EXPECT_CALL(*mockFileWriterFactory->mockFileWriter, write(_))
