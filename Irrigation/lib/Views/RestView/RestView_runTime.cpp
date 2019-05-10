@@ -48,9 +48,9 @@ unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.setModified();
-
 			RunTimeContainer& runTimes = irrigationDocument.getPrograms().at(programId)->getRunTimes();
+
+			irrigationDocument.setModified();
 			runTimes.updateFromRunTimeDtoList(runTimeDtoList);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {

@@ -127,9 +127,9 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.setModified();
-
 			shared_ptr<StartTime> startTime = irrigationDocument.getPrograms().at(programId)->getStartTimes().at(startTimeId);
+
+			irrigationDocument.setModified();
 			startTime->updateFromStartTimeDto(startTimeDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {

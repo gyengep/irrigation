@@ -26,13 +26,13 @@ void RestViewTest::testGetRunTimeList(const RunTimeListSample& runTimeListSample
 	const IdType programId;
 	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(runTimeListSample.getContainer()).build();
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	const Response response = executeRequest("GET", createRunTimeListUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeListSample.getDtoList())));
-	EXPECT_FALSE(document->isModified());
+	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, getRunTimeList1) {
@@ -54,7 +54,7 @@ TEST_F(RestViewTest, getRunTimeList4) {
 TEST_F(RestViewTest, getRunTimeListAcceptable) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 	Response response = executeRequest("GET", createRunTimeListUrl(programId), "Accept: application/xml");
 
 	checkResponseWithBody(response, 200, "application/xml");
@@ -68,7 +68,7 @@ TEST_F(RestViewTest, getRunTimeListNotFound) {
 TEST_F(RestViewTest, getRunTimeListNotAcceptable) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 	Response response = executeRequest("GET", createRunTimeListUrl(programId), "Accept: application/json");
 
 	checkErrorResponse(response, 406, "application/xml");
@@ -81,13 +81,13 @@ void RestViewTest::testPatchRunTimeList(const RunTimeListSample& runTimeListSamp
 	const shared_ptr<MockRunTimeContainer> mockRunTimeContainer(new MockRunTimeContainer());
 	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(mockRunTimeContainer).build();
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(runTimeListSample.getDtoList()));
 
 	const Response response = executeRequest("PATCH", createRunTimeListUrl(programId), XmlWriter().save(runTimeListSample.getDtoList()), "application/xml");
 	checkResponseWithoutBody(response, 204);
-	EXPECT_TRUE(document->isModified());
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, patchRunTimeList1) {

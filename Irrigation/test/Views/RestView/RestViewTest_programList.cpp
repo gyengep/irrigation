@@ -24,15 +24,15 @@ TEST_F(RestViewTest, postProgramList) {
 
 	EXPECT_CALL(*mockProgramContainer, insert(_, Pointee(*ProgramSample1().getObject())));
 
-	document = IrrigationDocument::Builder().setProgramContainer(mockProgramContainer).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(mockProgramContainer).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
-	const IdType programId = document->getPrograms().begin()->first;
+	const IdType programId = irrigationDocument->getPrograms().begin()->first;
 
 	checkResponseWithoutBody(response, 201);
 	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "\r\n"));
-	EXPECT_TRUE(document->isModified());
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, postProgramListInvalidXml) {
@@ -48,14 +48,14 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::testGetProgramList(const ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers) {
-	document = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	const Response response = executeRequest("GET", createProgramListUrl(requestParameters));
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList(), includeContainers)));
-	EXPECT_FALSE(document->isModified());
+	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, getProgramList1) {

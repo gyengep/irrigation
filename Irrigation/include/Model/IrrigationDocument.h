@@ -25,7 +25,6 @@ public:
 		std::shared_ptr<ProgramContainer> programContainer,
 		std::shared_ptr<WateringController> wateringController
 		);
-	IrrigationDocument(const IrrigationDocument&);
 	virtual ~IrrigationDocument();
 
 	void lock() const;

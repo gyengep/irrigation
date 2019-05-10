@@ -8,8 +8,8 @@ using namespace testing;
 
 
 void RestViewTest::SetUp() {
-	document = IrrigationDocument::Builder().build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 }
 
 void RestViewTest::TearDown() {

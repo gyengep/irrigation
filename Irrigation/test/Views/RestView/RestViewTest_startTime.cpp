@@ -27,14 +27,14 @@ void RestViewTest::testGetStartTime(const StartTimeListSample& startTimeListSamp
 	const IdType programId;
 	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainer()).build();
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	for (const auto& startTimeWithId : *startTimeListSample.getContainer()) {
 		const Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeWithId.first));
 		checkResponseWithBody(response, 200, "application/xml");
 
 		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeWithId.second->toStartTimeDto())));
-		EXPECT_FALSE(document->isModified());
+		EXPECT_FALSE(irrigationDocument->isModified());
 	}
 }
 
@@ -61,7 +61,7 @@ TEST_F(RestViewTest, getStartTimeNotFound1) {
 
 TEST_F(RestViewTest, getStartTimeNotFound2) {
 	IdType programId;
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, IdType()));
 	checkErrorResponse(response, 404, "application/xml");
@@ -72,7 +72,7 @@ TEST_F(RestViewTest, getStartTimeAcceptable) {
 	const IdType startTimeId;
 	const shared_ptr<Program> program(new Program());
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/xml");
@@ -84,7 +84,7 @@ TEST_F(RestViewTest, getStartTimeNotAcceptable) {
 	const IdType startTimeId;
 	const shared_ptr<Program> program(new Program());
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/json");
@@ -101,13 +101,13 @@ TEST_F(RestViewTest, patchStartTime) {
 	const shared_ptr<Program> program(new Program());
 
 	program->getStartTimes().insert(startTimeId, mockStartTime);
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(startTimeSample.getDto()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), XmlWriter().save(startTimeSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
-	EXPECT_TRUE(document->isModified());
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, patchStartTimeNotFound) {
@@ -120,7 +120,7 @@ TEST_F(RestViewTest, patchStartTimeInvalidXml) {
 	const IdType startTimeId;
 	const shared_ptr<Program> program(new Program());
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "InvalidXml", "application/xml");
@@ -132,7 +132,7 @@ TEST_F(RestViewTest, patchStartTimeInvalidContentType) {
 	const IdType startTimeId;
 	const shared_ptr<Program> program(new Program());
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "{ \"key\" : \"value\" }", "application/json");
@@ -151,11 +151,11 @@ TEST_F(RestViewTest, deleteStartTime) {
 	EXPECT_CALL(*mockStartTimeContainer, insert(_, _)).Times(AnyNumber());
 
 	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	Response response = executeRequest("DELETE", createStartTimeUrl(programId, startTimeId));
 	checkResponseWithoutBody(response, 200);
-	EXPECT_TRUE(document->isModified());
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, deleteStartTimeNotFound) {

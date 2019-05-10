@@ -21,7 +21,7 @@ protected:
 	static const RunTimeContainer runTimes1;
 	static const RunTimeContainer runTimes2;
 
-	std::shared_ptr<IrrigationDocument> document;
+	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<TimerView> view;
 	std::shared_ptr<MockProgram> program1, program2;
 	std::shared_ptr<MockScheduler> scheduler1, scheduler2;

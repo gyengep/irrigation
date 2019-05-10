@@ -114,9 +114,9 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.setModified();
-
 			const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+
+			irrigationDocument.setModified();
 			program->updateFromProgramDto(programDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {

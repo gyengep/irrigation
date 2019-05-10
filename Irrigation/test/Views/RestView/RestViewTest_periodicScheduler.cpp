@@ -18,7 +18,7 @@ std::string RestViewTest::createPeriodicSchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postPeriodicScheduler) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("POST", createPeriodicSchedulerUrl(programId), XmlWriter().save(PeriodicSchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -30,13 +30,13 @@ void RestViewTest::testGetPeriodicScheduler(const PeriodicSchedulerSample& perio
 	const IdType programId;
 	const shared_ptr<Program> program = Program::Builder().setPeriodicScheduler(periodicSchedulerSample.getObject()).build();
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	const Response response = executeRequest("GET", createPeriodicSchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
 	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(periodicSchedulerSample.getDto())));
-	EXPECT_FALSE(document->isModified());
+	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, getPeriodicScheduler1) {
@@ -62,7 +62,7 @@ TEST_F(RestViewTest, getPeriodicSchedulerNotFound) {
 
 TEST_F(RestViewTest, getPeriodicSchedulerAcceptable) {
 	const IdType programId;
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
 
 	const Response response = executeRequest("GET", createPeriodicSchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -70,7 +70,7 @@ TEST_F(RestViewTest, getPeriodicSchedulerAcceptable) {
 
 TEST_F(RestViewTest, getPeriodicSchedulerNotAcceptable) {
 	const IdType programId;
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
 
 	const Response response = executeRequest("GET", createPeriodicSchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -87,11 +87,11 @@ TEST_F(RestViewTest, patchPeriodicScheduler) {
 
 	EXPECT_CALL(*mockPeriodicScheduler, updateFromPeriodicSchedulerDto(periodicSchedulerSample.getDto()));
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	Response response = executeRequest("PATCH", createPeriodicSchedulerUrl(programId), XmlWriter().save(periodicSchedulerSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
-	EXPECT_TRUE(document->isModified());
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, patchPeriodicSchedulerNotFound) {
@@ -102,7 +102,7 @@ TEST_F(RestViewTest, patchPeriodicSchedulerNotFound) {
 TEST_F(RestViewTest, patchPeriodicSchedulerInvalidXml) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	const Response response = executeRequest("PATCH", createPeriodicSchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -111,7 +111,7 @@ TEST_F(RestViewTest, patchPeriodicSchedulerInvalidXml) {
 TEST_F(RestViewTest, patchPeriodicSchedulerInvalidContentType) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	const Response response = executeRequest("PATCH", createPeriodicSchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -122,7 +122,7 @@ TEST_F(RestViewTest, patchPeriodicSchedulerInvalidContentType) {
 TEST_F(RestViewTest, deletePeriodicScheduler) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("DELETE", createPeriodicSchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");
