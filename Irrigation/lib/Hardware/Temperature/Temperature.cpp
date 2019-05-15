@@ -30,13 +30,6 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 string Temperature::getTempSensorFileName() {
 	unique_ptr<DIR, int(*)(DIR*)> dirp(opendir(basePath.c_str()), closedir);
 
-	if (dirp == nullptr) {
-		LOGGER.warning("Temperature sensor file path does not exist: %s", basePath.c_str());
-	    return string();
-	}
-
-    struct dirent* dp;
-
     LOGGER.trace("S_IFMT %d", S_IFMT);
     LOGGER.trace("S_IFDIR %d", S_IFDIR);
     LOGGER.trace("S_IFCHR %d", S_IFCHR);
@@ -46,10 +39,35 @@ string Temperature::getTempSensorFileName() {
     LOGGER.trace("S_IFSOCK %d", S_IFSOCK);
     LOGGER.trace("S_IFIFO %d", S_IFIFO);
 
+	if (dirp == nullptr) {
+		LOGGER.warning("Temperature sensor file path does not exist: %s", basePath.c_str());
+	    return string();
+	}
+
+    struct dirent* dp;
+
 
     while ((dp = readdir(dirp.get())) != NULL) {
 		LOGGER.trace("Files found: %s/%s %d", basePath.c_str(), dp->d_name, (int)dp->d_type);
 
+
+		LOGGER.trace("S_ISBLK(m) %s", S_ISBLK(dp->d_type) ? "true" : "false");
+		LOGGER.trace("S_ISCHR(m) %s", S_ISCHR(dp->d_type) ? "true" : "false");
+		LOGGER.trace("S_ISDIR(m) %s", S_ISDIR(dp->d_type) ? "true" : "false");
+		LOGGER.trace("S_ISFIFO(m) %s", S_ISFIFO(dp->d_type) ? "true" : "false");
+		LOGGER.trace("S_ISREG(m) %s", S_ISREG(dp->d_type) ? "true" : "false");
+		LOGGER.trace("S_ISLNK(m) %s", S_ISLNK(dp->d_type) ? "true" : "false");
+		LOGGER.trace("S_ISSOCK(m) %s", S_ISSOCK(dp->d_type) ? "true" : "false");
+/*
+	    LOGGER.trace("S_IFMT %d", S_IFMT);
+	    LOGGER.trace("S_IFDIR %d", S_IFDIR);
+	    LOGGER.trace("S_IFCHR %d", S_IFCHR);
+	    LOGGER.trace("S_IFBLK %d", S_IFBLK);
+	    LOGGER.trace("S_IFREG %d", S_IFREG);
+	    LOGGER.trace("S_IFLNK %d", S_IFLNK);
+	    LOGGER.trace("S_IFSOCK %d", S_IFSOCK);
+	    LOGGER.trace("S_IFIFO %d", S_IFIFO);
+*/
 		if (S_ISDIR(dp->d_type)) {
 
         	if (0 == strncmp(dp->d_name, "28-", 3)) {
