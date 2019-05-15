@@ -5,6 +5,7 @@
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
+#include "Hardware/Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
@@ -60,6 +61,14 @@ void IrrigationApplication::initGpio() {
 	}
 }
 
+void IrrigationApplication::initTemperatureSensor() {
+	try {
+		Temperature::init();
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't initialize temperature sensor"));
+	}
+}
+
 void IrrigationApplication::initDocument() {
 	irrigationDocument = IrrigationDocument::Builder().build();
 	documentSaver.reset(new DocumentSaver(
@@ -95,6 +104,7 @@ void IrrigationApplication::onInitialize() {
 	LOGGER.debug("Irrigation System starting ...");
 
 	initGpio();
+	initTemperatureSensor();
 	initDocument();
 
 	documentSaver->start();

@@ -11,6 +11,7 @@ class IrrigationApplication : public Application {
 	std::unique_ptr<DocumentSaver> documentSaver;
 
 	void initGpio();
+	void initTemperatureSensor();
 	void initDocument();
 
 	virtual void onInitialize() override;
