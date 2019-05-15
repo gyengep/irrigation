@@ -59,15 +59,17 @@ string Temperature::getTempSensorFileName() {
     while ((dp = readdir(dirp.get())) != NULL) {
     	bool isDir;
 
+		LOGGER.trace("Files found: %s/%s", basePath.c_str(), dp->d_name);
+		LOGGER.trace("dp->d_type %u", (unsigned)dp->d_type);
+
         if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
             struct stat stbuf;
             stat(dp->d_name, &stbuf);
             isDir = S_ISDIR(stbuf.st_mode);
+    		LOGGER.trace("stbuf.st_mode %u", (unsigned)stbuf.st_mode);
         } else {
         	isDir = (dp->d_type == DT_DIR);
         }
-
-		LOGGER.trace("Files found: %s/%s %d", basePath.c_str(), dp->d_name, (int)dp->d_type);
 
 
 		LOGGER.trace("S_ISBLK(m) %s", S_ISBLK(dp->d_type) ? "true" : "false");
