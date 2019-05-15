@@ -66,7 +66,7 @@ string Temperature::getTempSensorFileName() {
 
         if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
             struct stat stbuf;
-            stat((basePath + dp->d_name).c_str(), &stbuf);
+            stat((basePath + '/' + dp->d_name).c_str(), &stbuf);
             isDir = S_ISDIR(stbuf.st_mode);
     		LOGGER.trace("stbuf.st_mode %u", (unsigned)stbuf.st_mode);
 
