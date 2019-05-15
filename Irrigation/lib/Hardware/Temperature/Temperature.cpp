@@ -38,9 +38,9 @@ string Temperature::getTempSensorFileName() {
     struct dirent* dp;
 
     while ((dp = readdir(dirp.get())) != NULL) {
-    	if (S_ISDIR(dp->d_type)) {
+		LOGGER.trace("Files found: %s/%s %d", basePath.c_str(), dp->d_name, (int)dp->d_type);
 
-    		LOGGER.trace("Files found: %s/%s", basePath.c_str(), dp->d_name);
+		if (S_ISDIR(dp->d_type)) {
 
         	if (0 == strncmp(dp->d_name, "28-", 3)) {
         		const string result = basePath + '/' + dp->d_name + '/' + fileName;
