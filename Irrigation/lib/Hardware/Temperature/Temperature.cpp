@@ -5,6 +5,15 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+
+
+#include <dirent.h>
+#include <stdint.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
 using namespace std;
 
 
@@ -48,6 +57,16 @@ string Temperature::getTempSensorFileName() {
 
 
     while ((dp = readdir(dirp.get())) != NULL) {
+    	bool isDir;
+
+        if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
+            struct stat stbuf;
+            stat(dp->d_name, &stbuf);
+            isDir = S_ISDIR(stbuf.st_mode);
+        } else {
+        	isDir = (dp->d_type == DT_DIR);
+        }
+
 		LOGGER.trace("Files found: %s/%s %d", basePath.c_str(), dp->d_name, (int)dp->d_type);
 
 
@@ -68,7 +87,8 @@ string Temperature::getTempSensorFileName() {
 	    LOGGER.trace("S_IFSOCK %d", S_IFSOCK);
 	    LOGGER.trace("S_IFIFO %d", S_IFIFO);
 */
-		if (S_ISDIR(dp->d_type)) {
+
+		if (isDir) {
 
         	if (0 == strncmp(dp->d_name, "28-", 3)) {
         		const string result = basePath + '/' + dp->d_name + '/' + fileName;
