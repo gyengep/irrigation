@@ -61,25 +61,6 @@ string Temperature::getTempSensorFileName() {
 
 		LOGGER.trace("Files found: %s/%s", basePath.c_str(), dp->d_name);
 		LOGGER.trace("dp->d_type %u", (unsigned)dp->d_type);
-
-        if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
-            struct stat stbuf;
-            stat(dp->d_name, &stbuf);
-            isDir = S_ISDIR(stbuf.st_mode);
-    		LOGGER.trace("stbuf.st_mode %u", (unsigned)stbuf.st_mode);
-        } else {
-        	isDir = (dp->d_type == DT_DIR);
-        }
-
-
-		LOGGER.trace("S_ISBLK(m) %s", S_ISBLK(dp->d_type) ? "true" : "false");
-		LOGGER.trace("S_ISCHR(m) %s", S_ISCHR(dp->d_type) ? "true" : "false");
-		LOGGER.trace("S_ISDIR(m) %s", S_ISDIR(dp->d_type) ? "true" : "false");
-		LOGGER.trace("S_ISFIFO(m) %s", S_ISFIFO(dp->d_type) ? "true" : "false");
-		LOGGER.trace("S_ISREG(m) %s", S_ISREG(dp->d_type) ? "true" : "false");
-		LOGGER.trace("S_ISLNK(m) %s", S_ISLNK(dp->d_type) ? "true" : "false");
-		LOGGER.trace("S_ISSOCK(m) %s", S_ISSOCK(dp->d_type) ? "true" : "false");
-/*
 	    LOGGER.trace("S_IFMT %d", S_IFMT);
 	    LOGGER.trace("S_IFDIR %d", S_IFDIR);
 	    LOGGER.trace("S_IFCHR %d", S_IFCHR);
@@ -88,7 +69,24 @@ string Temperature::getTempSensorFileName() {
 	    LOGGER.trace("S_IFLNK %d", S_IFLNK);
 	    LOGGER.trace("S_IFSOCK %d", S_IFSOCK);
 	    LOGGER.trace("S_IFIFO %d", S_IFIFO);
-*/
+
+        if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
+            struct stat stbuf;
+            stat(dp->d_name, &stbuf);
+            isDir = S_ISDIR(stbuf.st_mode);
+    		LOGGER.trace("stbuf.st_mode %u", (unsigned)stbuf.st_mode);
+
+    		LOGGER.trace("S_ISBLK(m) %s", S_ISBLK(stbuf.st_mode) ? "true" : "false");
+    		LOGGER.trace("S_ISCHR(m) %s", S_ISCHR(stbuf.st_mode) ? "true" : "false");
+    		LOGGER.trace("S_ISDIR(m) %s", S_ISDIR(stbuf.st_mode) ? "true" : "false");
+    		LOGGER.trace("S_ISFIFO(m) %s", S_ISFIFO(stbuf.st_mode) ? "true" : "false");
+    		LOGGER.trace("S_ISREG(m) %s", S_ISREG(stbuf.st_mode) ? "true" : "false");
+    		LOGGER.trace("S_ISLNK(m) %s", S_ISLNK(stbuf.st_mode) ? "true" : "false");
+    		LOGGER.trace("S_ISSOCK(m) %s", S_ISSOCK(stbuf.st_mode) ? "true" : "false");
+        } else {
+        	isDir = (dp->d_type == DT_DIR);
+        }
+
 
 		if (isDir) {
 
