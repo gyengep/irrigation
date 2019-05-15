@@ -39,6 +39,9 @@ string Temperature::getTempSensorFileName() {
 
     while ((dp = readdir(dirp.get())) != NULL) {
     	if (S_ISDIR(dp->d_type)) {
+
+    		LOGGER.trace("Files found: %s/%s", basePath.c_str(), dp->d_name);
+
         	if (0 == strncmp(dp->d_name, "28-", 3)) {
         		const string result = basePath + '/' + dp->d_name + '/' + fileName;
         		LOGGER.debug("Temperature sensor file found: %s", result.c_str());
@@ -47,7 +50,7 @@ string Temperature::getTempSensorFileName() {
     	}
     }
 
-	LOGGER.warning("Temperature sensor file not found");
+	LOGGER.warning("Temperature sensor file not found in path: %s", basePath.c_str());
     return string();
 }
 
@@ -104,8 +107,9 @@ float Temperature::getCachedValue() const {
 }
 
 void Temperature::startPeriodicRefresh() {
-	timer.reset(new Timer(*this, chrono::seconds(10)));
+	timer.reset(new Timer(*this, chrono::seconds(600)));
 	timer->start();
+	refresh();
 }
 
 void Temperature::stopPeriodicRefresh() {
