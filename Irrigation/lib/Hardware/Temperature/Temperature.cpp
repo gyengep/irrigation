@@ -37,6 +37,16 @@ string Temperature::getTempSensorFileName() {
 
     struct dirent* dp;
 
+    LOGGER.trace("S_IFMT %d", S_IFMT);
+    LOGGER.trace("S_IFDIR %d", S_IFDIR);
+    LOGGER.trace("S_IFCHR %d", S_IFCHR);
+    LOGGER.trace("S_IFBLK %d", S_IFBLK);
+    LOGGER.trace("S_IFREG %d", S_IFREG);
+    LOGGER.trace("S_IFLNK %d", S_IFLNK);
+    LOGGER.trace("S_IFSOCK %d", S_IFSOCK);
+    LOGGER.trace("S_IFIFO %d", S_IFIFO);
+
+
     while ((dp = readdir(dirp.get())) != NULL) {
 		LOGGER.trace("Files found: %s/%s %d", basePath.c_str(), dp->d_name, (int)dp->d_type);
 
