@@ -60,13 +60,13 @@ string Temperature::getTempSensorFileName() {
 	    LOGGER.trace("DT_DIR %d", DT_DIR);
 	    LOGGER.trace("DT_BLK %d", DT_BLK);
 	    LOGGER.trace("DT_REG %d", DT_REG);
-	    LOGGER.trace("DT_REG %d", DT_REG);
+	    LOGGER.trace("DT_LNK %d", DT_LNK);
 	    LOGGER.trace("DT_SOCK %d", DT_SOCK);
 	    LOGGER.trace("DT_WHT %d", DT_WHT);
 
         if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
             struct stat stbuf;
-            stat(dp->d_name, &stbuf);
+            stat((basePath + dp->d_name).c_str(), &stbuf);
             isDir = S_ISDIR(stbuf.st_mode);
     		LOGGER.trace("stbuf.st_mode %u", (unsigned)stbuf.st_mode);
 
