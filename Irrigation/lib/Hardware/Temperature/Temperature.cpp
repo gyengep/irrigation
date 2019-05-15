@@ -45,50 +45,22 @@ string Temperature::getTempSensorFileName() {
 	}
 
     struct dirent* dp;
-
-
     while ((dp = readdir(dirp.get())) != NULL) {
+    	const string filePath = basePath + '/' + dp->d_name;
     	bool isDir;
-
-		LOGGER.trace("Files found: %s/%s", basePath.c_str(), dp->d_name);
-		LOGGER.trace("dp->d_type %u", (unsigned)dp->d_type);
-
-
-	    LOGGER.trace("DT_UNKNOWN %d", DT_UNKNOWN);
-	    LOGGER.trace("DT_FIFO %d", DT_FIFO);
-	    LOGGER.trace("DT_CHR %d", DT_CHR);
-	    LOGGER.trace("DT_DIR %d", DT_DIR);
-	    LOGGER.trace("DT_BLK %d", DT_BLK);
-	    LOGGER.trace("DT_REG %d", DT_REG);
-	    LOGGER.trace("DT_LNK %d", DT_LNK);
-	    LOGGER.trace("DT_SOCK %d", DT_SOCK);
-	    LOGGER.trace("DT_WHT %d", DT_WHT);
 
         if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
             struct stat stbuf;
-            stat((basePath + '/' + dp->d_name).c_str(), &stbuf);
+            stat(filePath.c_str(), &stbuf);
             isDir = S_ISDIR(stbuf.st_mode);
-    		LOGGER.trace("stbuf.st_mode %u", (unsigned)stbuf.st_mode);
-
-    		LOGGER.trace("S_ISBLK(m) %s", S_ISBLK(stbuf.st_mode) ? "true" : "false");
-    		LOGGER.trace("S_ISCHR(m) %s", S_ISCHR(stbuf.st_mode) ? "true" : "false");
-    		LOGGER.trace("S_ISDIR(m) %s", S_ISDIR(stbuf.st_mode) ? "true" : "false");
-    		LOGGER.trace("S_ISFIFO(m) %s", S_ISFIFO(stbuf.st_mode) ? "true" : "false");
-    		LOGGER.trace("S_ISREG(m) %s", S_ISREG(stbuf.st_mode) ? "true" : "false");
-    		LOGGER.trace("S_ISLNK(m) %s", S_ISLNK(stbuf.st_mode) ? "true" : "false");
-    		LOGGER.trace("S_ISSOCK(m) %s", S_ISSOCK(stbuf.st_mode) ? "true" : "false");
         } else {
         	isDir = (dp->d_type == DT_DIR);
         }
 
-
-		if (isDir) {
-
-        	if (0 == strncmp(dp->d_name, "28-", 3)) {
-        		const string result = basePath + '/' + dp->d_name + '/' + fileName;
-        		LOGGER.debug("Temperature sensor file found: %s", result.c_str());
-        		return result;
-        	}
+		if (true == isDir && 0 == strncmp(dp->d_name, "28-", 3)) {
+			const string result = filePath + '/' + fileName;
+			LOGGER.debug("Temperature sensor file found: %s", result.c_str());
+			return result;
     	}
     }
 
