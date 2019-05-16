@@ -24,12 +24,18 @@ shared_ptr<Temperature> Temperature::instance;
 
 
 void Temperature::init() {
-	instance.reset(new Temperature(
-			getTempSensorFileName(),
-			make_shared<FileReaderImpl>()
-			));
+	try {
+		instance = make_shared<Temperature>(
+				getTempSensorFileName(),
+				make_shared<FileReaderImpl>()
+				);
 
-	instance->startPeriodicRefresh();
+		instance->refresh();
+		instance->startPeriodicRefresh();
+	} catch (const exception& e) {
+		LOGGER.warning(e.what());
+		instance = make_shared<Temperature>("", shared_ptr<FileReaderImpl>());
+	}
 }
 
 shared_ptr<Temperature> Temperature::getInstancePtr() {
@@ -40,8 +46,7 @@ string Temperature::getTempSensorFileName() {
 	unique_ptr<DIR, int(*)(DIR*)> dirp(opendir(basePath.c_str()), closedir);
 
 	if (dirp == nullptr) {
-		LOGGER.warning("Temperature sensor file path does not exist: %s", basePath.c_str());
-	    return string();
+		throw runtime_error("Temperature sensor file path does not exist: " + basePath);
 	}
 
     struct dirent* dp;
@@ -64,8 +69,7 @@ string Temperature::getTempSensorFileName() {
     	}
     }
 
-	LOGGER.warning("Temperature sensor file not found in path: %s", basePath.c_str());
-    return string();
+    throw runtime_error("Temperature sensor file not found in path: " + basePath);
 }
 
 Temperature::Temperature(const std::string& fileName, const std::shared_ptr<FileReader>& fileReader) :
@@ -102,7 +106,6 @@ void Temperature::refresh() {
 	try {
 		value = readValueFromSensor();
 		valid = true;
-		LOGGER.debug("Temperature: %f", value);
 	} catch(const exception& e) {
 		valid = false;
 	}
@@ -121,9 +124,8 @@ float Temperature::getCachedValue() const {
 }
 
 void Temperature::startPeriodicRefresh() {
-	timer.reset(new Timer(*this, chrono::seconds(600)));
+	timer.reset(new Timer(*this, chrono::seconds(60)));
 	timer->start();
-	refresh();
 }
 
 void Temperature::stopPeriodicRefresh() {
