@@ -16,7 +16,6 @@ class Temperature : public TimerCallback {
 	static const std::string fileName;
 	static std::shared_ptr<Temperature> instance;
 
-	const std::string temperatureSensorFileName;
 	std::unique_ptr<Timer> timer;
 	std::mutex mtx;
 	std::shared_ptr<FileReader> fileReader;
@@ -26,7 +25,7 @@ class Temperature : public TimerCallback {
 	static std::string getTempSensorFileName();
 
 public:
-	Temperature(const std::string& fileName, const std::shared_ptr<FileReader>& fileReader);
+	Temperature(const std::shared_ptr<FileReader>& fileReader);
 	virtual ~Temperature();
 
 	void lock();

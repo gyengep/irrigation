@@ -26,15 +26,14 @@ shared_ptr<Temperature> Temperature::instance;
 void Temperature::init() {
 	try {
 		instance = make_shared<Temperature>(
-				getTempSensorFileName(),
-				make_shared<FileReaderImpl>()
+				make_shared<FileReaderImpl>(getTempSensorFileName())
 				);
 
 		instance->refresh();
 		instance->startPeriodicRefresh();
 	} catch (const exception& e) {
-		LOGGER.warning(e.what());
-		instance = make_shared<Temperature>("", shared_ptr<FileReaderImpl>());
+		LOGGER.warning("Can not initialize temperature sensor", e);
+		instance = make_shared<Temperature>(shared_ptr<FileReaderImpl>());
 	}
 }
 
@@ -72,8 +71,7 @@ string Temperature::getTempSensorFileName() {
     throw runtime_error("Temperature sensor file not found in path: " + basePath);
 }
 
-Temperature::Temperature(const std::string& fileName, const std::shared_ptr<FileReader>& fileReader) :
-	temperatureSensorFileName(fileName),
+Temperature::Temperature(const std::shared_ptr<FileReader>& fileReader) :
 	fileReader(fileReader),
 	valid(false),
 	value(0.0f)
@@ -92,7 +90,7 @@ void Temperature::unlock() {
 }
 
 float Temperature::readValueFromSensor() {
-	const string text = fileReader->read(temperatureSensorFileName);
+	const string text = fileReader->read();
 	const size_t pos1 = text.find("t=");
 
 	if (pos1 == string::npos) {
@@ -107,6 +105,7 @@ void Temperature::refresh() {
 		value = readValueFromSensor();
 		valid = true;
 	} catch(const exception& e) {
+		LOGGER.warning("Can not read temperature from the sensor", e);
 		valid = false;
 	}
 }

@@ -13,14 +13,13 @@ TEST(TemperatureTest, readValueFromSensor) {
 			"f2 00 4b 46 7f ff 0c 10 69 : crc=69 YES\n"
 			"f2 00 4b 46 7f ff 0c 10 69 t=15125\n";
 
-	const string fileName = tmpnam(nullptr);
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
-	EXPECT_CALL(*mockFileReader, read(fileName)).
+	EXPECT_CALL(*mockFileReader, read()).
 		Times(AnyNumber()).
 		WillRepeatedly(Return(content));
 
-	Temperature temp(fileName, mockFileReader);
+	Temperature temp(mockFileReader);
 
 	EXPECT_THAT(temp.readValueFromSensor(), Eq(15.125f));
 }
@@ -28,34 +27,32 @@ TEST(TemperatureTest, readValueFromSensor) {
 TEST(TemperatureTest, readValueFromSensor_invalidContent) {
 	const string content = "asdfghjkl";
 
-	const string fileName = tmpnam(nullptr);
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
-	EXPECT_CALL(*mockFileReader, read(fileName)).
+	EXPECT_CALL(*mockFileReader, read()).
 		Times(AnyNumber()).
 		WillRepeatedly(Return(content));
 
-	Temperature temp(fileName, mockFileReader);
+	Temperature temp(mockFileReader);
 
 	EXPECT_THROW(temp.readValueFromSensor(), TemperatureException);
 }
 
 TEST(TemperatureTest, readValueFromSensor_invalidFile) {
-	const string fileName = tmpnam(nullptr);
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
-	EXPECT_CALL(*mockFileReader, read(fileName)).
+	EXPECT_CALL(*mockFileReader, read()).
 		Times(AnyNumber()).
 		WillRepeatedly(Throw(FileNotFoundException()));
 
-	Temperature temp(fileName, mockFileReader);
+	Temperature temp(mockFileReader);
 
 	EXPECT_THROW(temp.readValueFromSensor(), FileNotFoundException);
 }
 
 
 TEST(TemperatureTest, isValid) {
-	Temperature temp("", make_shared<MockFileReader>());
+	Temperature temp(make_shared<MockFileReader>());
 	EXPECT_FALSE(temp.isValid());
 }
 
@@ -64,14 +61,13 @@ TEST(TemperatureTest, getCachedValue) {
 			"f2 00 4b 46 7f ff 0c 10 69 : crc=69 YES\n"
 			"f2 00 4b 46 7f ff 0c 10 69 t=15125\n";
 
-	const string fileName = tmpnam(nullptr);
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
-	EXPECT_CALL(*mockFileReader, read(fileName)).
+	EXPECT_CALL(*mockFileReader, read()).
 		Times(AnyNumber()).
 		WillRepeatedly(Return(content));
 
-	Temperature temp(fileName, mockFileReader);
+	Temperature temp(mockFileReader);
 
 	temp.refresh();
 
@@ -82,14 +78,13 @@ TEST(TemperatureTest, getCachedValue) {
 TEST(TemperatureTest, getCachedValue_invalidContent) {
 	const string content = "asdfghjkl";
 
-	const string fileName = tmpnam(nullptr);
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
-	EXPECT_CALL(*mockFileReader, read(fileName)).
+	EXPECT_CALL(*mockFileReader, read()).
 		Times(AnyNumber()).
 		WillRepeatedly(Return(content));
 
-	Temperature temp(fileName, mockFileReader);
+	Temperature temp(mockFileReader);
 
 	temp.refresh();
 
@@ -98,14 +93,13 @@ TEST(TemperatureTest, getCachedValue_invalidContent) {
 }
 
 TEST(TemperatureTest, getCachedValue_invalidFile) {
-	const string fileName = tmpnam(nullptr);
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
-	EXPECT_CALL(*mockFileReader, read(fileName)).
+	EXPECT_CALL(*mockFileReader, read()).
 		Times(AnyNumber()).
 		WillRepeatedly(Throw(FileNotFoundException()));
 
-	Temperature temp(fileName, mockFileReader);
+	Temperature temp(mockFileReader);
 
 	temp.refresh();
 
