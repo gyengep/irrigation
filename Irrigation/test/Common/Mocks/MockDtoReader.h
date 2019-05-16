@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 #include <memory>
 #include <DtoReaderWriter/DtoReaderWriter.h>
-
+#include "DTO/DocumentDTO.h"
 
 
 class MockDtoReader : public DtoReader {
@@ -20,12 +20,15 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class MockDtoReaderWriterFactory : public DtoReaderWriterFactory {
-	mutable std::unique_ptr<DtoReader> reader;
-
+class MockDtoWriter : public DtoWriter {
 public:
-	MockDtoReaderWriterFactory(std::unique_ptr<DtoReader>&& reader) : reader(move(reader)) {}
-	virtual std::unique_ptr<DtoReader> createDtoReader() const override { return move(reader); }
-	virtual std::unique_ptr<DtoWriter> createDtoWriter() const override { return std::unique_ptr<DtoWriter>(); }
+	MOCK_METHOD1(save, std::string(const DocumentDTO& document));
+	MOCK_METHOD2(save, std::string(const ProgramDTO& program, bool includeContainers));
+	MOCK_METHOD1(save, std::string(const RunTimeDTO& runTime));
+	MOCK_METHOD1(save, std::string(const StartTimeDTO& startTime));
+	MOCK_METHOD1(save, std::string(const PeriodicSchedulerDTO& scheduler));
+	MOCK_METHOD1(save, std::string(const WeeklySchedulerDTO& scheduler));
+	MOCK_METHOD2(save, std::string(const std::list<ProgramDTO>& programs, bool includeContainers));
+	MOCK_METHOD1(save, std::string(const std::list<RunTimeDTO>& runTimes));
+	MOCK_METHOD1(save, std::string(const std::list<StartTimeDTO>& startTimes));
 };
-

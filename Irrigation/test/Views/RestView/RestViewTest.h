@@ -22,7 +22,7 @@ private:
 
 protected:
 	static const uint16_t port = 8080;
-	std::shared_ptr<IrrigationDocument> document;
+	std::shared_ptr<IrrigationDocument> irrigationDocument;
 
     virtual void SetUp();
     virtual void TearDown();

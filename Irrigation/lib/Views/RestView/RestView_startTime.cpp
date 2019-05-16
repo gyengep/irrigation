@@ -56,6 +56,7 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.setModified();
 			irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(startTimeId, startTime);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
@@ -127,6 +128,8 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
 			shared_ptr<StartTime> startTime = irrigationDocument.getPrograms().at(programId)->getStartTimes().at(startTimeId);
+
+			irrigationDocument.setModified();
 			startTime->updateFromStartTimeDto(startTimeDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
@@ -165,6 +168,7 @@ unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request,
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
+			irrigationDocument.setModified();
 			irrigationDocument.getPrograms().at(programId)->getStartTimes().erase(startTimeId);
 		}
 

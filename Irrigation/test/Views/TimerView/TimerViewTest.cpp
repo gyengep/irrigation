@@ -30,12 +30,12 @@ void TimerViewTest::SetUp() {
 	program1->setAdjustment(adjustment1);
 	program2->setAdjustment(adjustment2);
 
-	document = IrrigationDocument::Builder().
+	irrigationDocument = IrrigationDocument::Builder().
 		setWateringController(wateringController).
 		setProgramContainer(shared_ptr<ProgramContainer>(new ProgramContainer({{ IdType(), program1 }, { IdType(), program2 }}))).
 		build();
 
-	view.reset(new TimerView(*document));
+	view.reset(new TimerView(*irrigationDocument));
 }
 
 void TimerViewTest::TearDown() {

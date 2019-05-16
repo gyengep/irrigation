@@ -28,14 +28,15 @@ TEST_F(RestViewTest, postProgram) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::testGetProgram(const ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers) {
-	document = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	for (const auto& programWithId : *programListSample.getContainer()) {
 		const Response response = executeRequest("GET", createProgramUrl(programWithId.first, requestParameters));
 		checkResponseWithBody(response, 200, "application/xml");
 
 		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programWithId.second->toProgramDto(), includeContainers)));
+		EXPECT_FALSE(irrigationDocument->isModified());
 	}
 }
 
@@ -94,7 +95,7 @@ TEST_F(RestViewTest, getProgramNotFound) {
 
 TEST_F(RestViewTest, getProgramAcceptable) {
 	const IdType programId;
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -102,7 +103,7 @@ TEST_F(RestViewTest, getProgramAcceptable) {
 
 TEST_F(RestViewTest, getProgramNotAcceptable) {
 	const IdType programId;
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -117,10 +118,11 @@ TEST_F(RestViewTest, patchProgram) {
 
 	EXPECT_CALL(*program, updateFromProgramDto(programSample.getDto()));
 
-	document->getPrograms().insert(programId, program);
+	irrigationDocument->getPrograms().insert(programId, program);
 
 	Response response = executeRequest("PATCH", createProgramUrl(programId), XmlWriter().save(programSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, patchProgramNotFound) {
@@ -131,7 +133,7 @@ TEST_F(RestViewTest, patchProgramNotFound) {
 TEST_F(RestViewTest, patchProgramInvalidXml) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -140,7 +142,7 @@ TEST_F(RestViewTest, patchProgramInvalidXml) {
 TEST_F(RestViewTest, patchProgramInvalidContentType) {
 	const IdType programId;
 
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -155,13 +157,14 @@ TEST_F(RestViewTest, deleteProgram) {
 	EXPECT_CALL(*programContainer, erase(programId));
 	EXPECT_CALL(*programContainer, insert(_, _)).Times(AnyNumber());
 
-	document = IrrigationDocument::Builder().setProgramContainer(programContainer).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
-	document->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programContainer).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("DELETE", createProgramUrl(programId));
 	checkResponseWithoutBody(response, 200);
 	EXPECT_THAT(response.writeCallbackData.text, IsEmpty());
+	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, deleteProgramNotFound) {

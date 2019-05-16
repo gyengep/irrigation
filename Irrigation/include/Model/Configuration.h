@@ -17,8 +17,8 @@ public:
 	Configuration() = default;
 	~Configuration() = default;
 
-	std::string getConfigFileName() const { return defaultConfigFileName; }
-	std::string getLogFileName() const { return defaultLogFileName; }
+	const std::string& getConfigFileName() const { return defaultConfigFileName; }
+	const std::string& getLogFileName() const { return defaultLogFileName; }
 	LogLevel getLogLevel() const { return defaultLogLevel; }
 	uint16_t getRestPort() const { return defaultRestPort; }
 

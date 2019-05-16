@@ -7,8 +7,8 @@ namespace Dto2ObjectTest {
 
 	template<class OBJECT, class DTO>
 	class ObjectSample {
-		std::shared_ptr<OBJECT> object;
-		DTO dto;
+		const std::shared_ptr<OBJECT> object;
+		const DTO dto;
 
 	public:
 		ObjectSample(const OBJECT& object, const DTO& dto) : object(new OBJECT(object)), dto(dto) {}
@@ -19,14 +19,14 @@ namespace Dto2ObjectTest {
 		const std::shared_ptr<OBJECT> getObject() const { return object; }
 		const DTO& getDto() const { return dto; }
 
-		DTO& getDto() { return dto; }
+		DTO getDto() { return dto; }
 };
 
 
 	template <class CONTAINER, class DTO>
 	class ContainerSample {
-		std::shared_ptr<CONTAINER> container;
-		std::list<DTO> dtoList;
+		const std::shared_ptr<CONTAINER> container;
+		const std::list<DTO> dtoList;
 
 	public:
 		ContainerSample(const CONTAINER& container, const std::list<DTO>& dtoList) :

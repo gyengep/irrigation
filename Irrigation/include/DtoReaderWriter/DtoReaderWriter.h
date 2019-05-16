@@ -39,11 +39,3 @@ public:
 	virtual std::string save(const std::list<RunTimeDTO>& runTimes) = 0;
 	virtual std::string save(const std::list<StartTimeDTO>& startTimes) = 0;
 };
-
-
-class DtoReaderWriterFactory {
-public:
-	virtual ~DtoReaderWriterFactory() = default;
-	virtual std::unique_ptr<DtoReader> createDtoReader() const = 0;
-	virtual std::unique_ptr<DtoWriter> createDtoWriter() const = 0;
-};

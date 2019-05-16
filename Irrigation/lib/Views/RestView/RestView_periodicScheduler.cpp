@@ -48,6 +48,8 @@ unique_ptr<HttpResponse> RestView::onPatchPeriodicScheduler(const HttpRequest& r
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
 			PeriodicScheduler& periodicScheduler = irrigationDocument.getPrograms().at(programId)->getPeriodicScheduler();
+
+			irrigationDocument.setModified();
 			periodicScheduler.updateFromPeriodicSchedulerDto(periodicSchedulerDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {

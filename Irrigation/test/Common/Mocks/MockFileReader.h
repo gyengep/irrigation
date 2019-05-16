@@ -7,17 +7,12 @@
 
 class MockFileReader : public FileReader {
 public:
-	MOCK_CONST_METHOD1(read, std::string(const std::string& fileName));
+	MOCK_CONST_METHOD0(read, std::string());
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class MockFileReaderWriterFactory : public FileReaderWriterFactory {
-	mutable std::unique_ptr<FileReader> reader;
-
+class MockFileWriter : public FileWriter {
 public:
-	MockFileReaderWriterFactory(std::unique_ptr<FileReader>&& reader) : reader(move(reader)) {}
-	virtual std::unique_ptr<FileReader> createFileReader() const override { return move(reader); }
-	virtual std::unique_ptr<FileWriter> createFileWriter() const override { return std::unique_ptr<FileWriter>(); }
+	MOCK_CONST_METHOD1(write, void(const std::string& text));
 };
-

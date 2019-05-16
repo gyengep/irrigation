@@ -44,8 +44,8 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 
 	EXPECT_CALL(*mockWateringController, start(_, expectedRunTimeContainer, expectedAdjustment));
 
-	document = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -79,8 +79,8 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 
 	EXPECT_CALL(*mockWateringController, start(_, expectedRunTimeContainer, expectedAdjustment));
 
-	document = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -112,8 +112,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 
 	EXPECT_CALL(*mockWateringController, start(_, expectedRunTimeContainer, 100));
 
-	document = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -134,12 +134,12 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 
 	EXPECT_CALL(*mockWateringController, start(_, programListSample.getContainer()->begin()->second->getRunTimes(), expectedAdjustment));
 
-	document = IrrigationDocument::Builder().
+	irrigationDocument = IrrigationDocument::Builder().
 			setProgramContainer(programListSample.getContainer()).
 			setWateringController(mockWateringController).
 			build();
 
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -160,12 +160,12 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 			programListSample.getContainer()->begin()->second->getAdjustment()
 		));
 
-	document = IrrigationDocument::Builder().
+	irrigationDocument = IrrigationDocument::Builder().
 			setProgramContainer(programListSample.getContainer()).
 			setWateringController(mockWateringController).
 			build();
 
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -183,8 +183,8 @@ TEST_F(RestViewTest, patchIrrigationActionStop) {
 
 	EXPECT_CALL(*mockWateringController, stop());
 
-	document = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	document->addView(unique_ptr<View>(new RestView(*document, port)));
+	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
