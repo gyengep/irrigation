@@ -1,78 +1,36 @@
 #include "Temperature.h"
-#include "Utils/FileReaderWriterImpl.h"
+#include "TemperatureSensor.h"
+#include "TemperatureSensorDS18B20.h"
+#include "TemperatureSensorFake.h"
 #include "Logger/Logger.h"
-#include <cstring>
-#include <dirent.h>
-#include <sys/stat.h>
 
-
-
-#include <dirent.h>
-#include <stdint.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <stdlib.h>
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
 
-const string Temperature::basePath = "/sys/bus/w1/devices";
-//const string Temperature::basePath = "/home/gyenge/sys/bus/w1/devices";
-const string Temperature::fileName = "w1_slave";
 shared_ptr<Temperature> Temperature::instance;
 
-
 void Temperature::init() {
-	try {
-		instance = make_shared<Temperature>(
-				make_shared<FileReaderImpl>(getTempSensorFileName())
-				);
+	shared_ptr<TemperatureSensor> sensor;
 
-		instance->refresh();
-		instance->startPeriodicRefresh();
-	} catch (const exception& e) {
-		LOGGER.warning("Can not initialize temperature sensor", e);
-		instance = make_shared<Temperature>(shared_ptr<FileReaderImpl>());
+	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
+		sensor = make_shared<TemperatureSensor_Fake>();
 	}
+
+	instance = make_shared<Temperature>(sensor);
+	instance->refresh();
+	instance->startPeriodicRefresh();
 }
 
 shared_ptr<Temperature> Temperature::getInstancePtr() {
 	return instance;
 }
 
-string Temperature::getTempSensorFileName() {
-	unique_ptr<DIR, int(*)(DIR*)> dirp(opendir(basePath.c_str()), closedir);
+///////////////////////////////////////////////////////////////////////////////
 
-	if (dirp == nullptr) {
-		throw runtime_error("Temperature sensor file path does not exist: " + basePath);
-	}
-
-    struct dirent* dp;
-    while ((dp = readdir(dirp.get())) != NULL) {
-    	const string filePath = basePath + '/' + dp->d_name;
-    	bool isDir;
-
-        if (dp->d_type == DT_UNKNOWN || dp->d_type == DT_LNK) {
-            struct stat stbuf;
-            stat(filePath.c_str(), &stbuf);
-            isDir = S_ISDIR(stbuf.st_mode);
-        } else {
-        	isDir = (dp->d_type == DT_DIR);
-        }
-
-		if (true == isDir && 0 == strncmp(dp->d_name, "28-", 3)) {
-			const string result = filePath + '/' + fileName;
-			LOGGER.debug("Temperature sensor file found: %s", result.c_str());
-			return result;
-    	}
-    }
-
-    throw runtime_error("Temperature sensor file not found in path: " + basePath);
-}
-
-Temperature::Temperature(const std::shared_ptr<FileReader>& fileReader) :
-	fileReader(fileReader),
+Temperature::Temperature(const shared_ptr<TemperatureSensor>& sensor) :
+	sensor(sensor),
+	timer(*this, chrono::seconds(10)),
 	valid(false),
 	value(0.0f)
 {
@@ -89,23 +47,11 @@ void Temperature::unlock() {
 	mtx.unlock();
 }
 
-float Temperature::readValueFromSensor() {
-	const string text = fileReader->read();
-	const size_t pos1 = text.find("t=");
-
-	if (pos1 == string::npos) {
-		throw TemperatureException("Invalid temperature file content: " + text);
-	}
-
-	return stof(text.substr(pos1 + 2)) / 1000.0f;
-}
-
 void Temperature::refresh() {
 	try {
-		value = readValueFromSensor();
+		value = sensor->readValueFromSensor();
 		valid = true;
 	} catch(const exception& e) {
-		LOGGER.warning("Can not read temperature from the sensor", e);
 		valid = false;
 	}
 }
@@ -123,12 +69,11 @@ float Temperature::getCachedValue() const {
 }
 
 void Temperature::startPeriodicRefresh() {
-	timer.reset(new Timer(*this, chrono::seconds(60)));
-	timer->start();
+	timer.start();
 }
 
 void Temperature::stopPeriodicRefresh() {
-	timer.reset();
+	timer.stop();
 }
 
 void Temperature::onTimer() {

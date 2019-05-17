@@ -4,11 +4,14 @@
 
 class IrrigationDocument;
 class DocumentSaver;
+class TemperatureStatistics;
 
 
 class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::unique_ptr<DocumentSaver> documentSaver;
+
+	std::unique_ptr<TemperatureStatistics> temperatureStatistics;
 
 	void initGpio();
 	void initTemperatureSensor();

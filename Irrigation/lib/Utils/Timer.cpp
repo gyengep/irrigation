@@ -3,23 +3,18 @@
 using namespace std;
 
 
-Timer::Timer(TimerCallback& callback, const std::chrono::seconds& seconds) :
+Timer::Timer(TimerCallback& callback, const std::chrono::seconds& seconds, bool startAutomatically) :
 	waitTime(seconds),
 	callback(callback),
 	terminated(false)
 {
+	if (startAutomatically) {
+		start();
+	}
 }
 
 Timer::~Timer() {
-	unique_lock<mutex> lock(mtx);
-	terminated = true;
-	lock.unlock();
-
-	condition.notify_all();
-
-	if (workerThread.joinable()) {
-		workerThread.join();
-	}
+	stop();
 }
 
 void Timer::start() {
@@ -28,11 +23,16 @@ void Timer::start() {
 }
 
 void Timer::stop() {
-	unique_lock<mutex> lock(mtx);
-	terminated = true;
-	lock.unlock();
+	{
+		unique_lock<mutex> lock(mtx);
+		terminated = true;
+	}
+
 	condition.notify_all();
-	workerThread.join();
+
+	if (workerThread.joinable()) {
+		workerThread.join();
+	}
 }
 
 bool Timer::waitForTerminateOrTimeout() {

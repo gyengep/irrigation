@@ -57,6 +57,28 @@ TEST_F(TimerTest, onTimerTiming) {
 	waitAndCallTerminateThread.join();
 }
 
+TEST_F(TimerTest, onTimerAutoStart) {
+	timer.reset(new Timer(mockTimerCallback, chrono::seconds(1), true));
+
+	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
+
+    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
+    		timer.get(), &mockTimerCallback, 1500);
+
+	waitAndCallTerminateThread.join();
+}
+
+TEST_F(TimerTest, onTimerNotAutoStart) {
+	timer.reset(new Timer(mockTimerCallback, chrono::seconds(1)));
+
+	EXPECT_CALL(mockTimerCallback, onTimer()).Times(0);
+
+    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
+    		timer.get(), &mockTimerCallback, 1500);
+
+	waitAndCallTerminateThread.join();
+}
+
 TEST_F(TimerTest, onTimerAfterTerminate) {
 	ON_CALL(mockTimerCallback, onTimer()).WillByDefault(Invoke(this, &TimerTest::checkIfTerminateCalled));
 	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
