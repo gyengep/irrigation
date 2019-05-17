@@ -66,9 +66,6 @@ TemperatureSensor_DS18B20::~TemperatureSensor_DS18B20() {
 }
 
 float TemperatureSensor_DS18B20::readValueFromSensor() {
-
-	LOGGER.debug("TemperatureSensor_DS18B20::readValueFromSensor()");
-
 	try {
 		const string text = fileReader->read();
 		const size_t pos1 = text.find("t=");
