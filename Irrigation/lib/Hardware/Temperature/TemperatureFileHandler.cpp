@@ -7,7 +7,7 @@ using namespace std;
 
 TemperatureFileHandler::TemperatureFileHandler(const string& filePath) :
 	fileName(createFileName(filePath)),
-	timer(*this, chrono::seconds(60))
+	timer(*this, chrono::seconds(60) * 60)
 {
 	LOGGER.debug("Temperature file: %s", fileName.c_str());
 
@@ -38,7 +38,6 @@ void TemperatureFileHandler::appendInvalid(time_t currentTime) {
 }
 
 void TemperatureFileHandler::onTimer() {
-	LOGGER.debug("TemperatureFileHandler::onTimer()");
 	saveToFile();
 }
 
@@ -50,8 +49,10 @@ void TemperatureFileHandler::saveToFile() {
 		valuesCopy.swap(values);
 	}
 
-	auto ofs = make_shared<ofstream>(fileName, ofstream::out | ofstream::app);
-	saveValues(make_shared<CsvWriterImpl>(ofs, ','), valuesCopy);
+	if (!valuesCopy.empty()) {
+		auto ofs = make_shared<ofstream>(fileName, ofstream::out | ofstream::app);
+		saveValues(make_shared<CsvWriterImpl>(ofs, ','), valuesCopy);
+	}
 }
 
 void TemperatureFileHandler::saveValues(const shared_ptr<CsvWriter>& csvWriter, deque<vector<string>> values) {

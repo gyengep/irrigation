@@ -9,19 +9,20 @@ using namespace std;
 TemperatureStatistics::TemperatureStatistics(const shared_ptr<Temperature>& temperature, const shared_ptr<TemperatureFileHandler>& temperatureFileHandler) :
 	temperature(temperature),
 	temperatureFileHandler(temperatureFileHandler),
-	timer(*this, chrono::seconds(10))
+	timer(*this, chrono::seconds(60) * 10)
 {
 }
 
 TemperatureStatistics::~TemperatureStatistics() {
-	timer.stop();
 }
 
 void TemperatureStatistics::start() {
 	timer.start();
+	temperatureFileHandler->start();
 }
 
 void TemperatureStatistics::stop() {
+	temperatureFileHandler->stop();
 	timer.stop();
 }
 
@@ -37,6 +38,5 @@ void TemperatureStatistics::requestTemperature() {
 }
 
 void TemperatureStatistics::onTimer() {
-	LOGGER.debug("TemperatureStatistics::onTimer()");
 	requestTemperature();
 }

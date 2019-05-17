@@ -30,7 +30,7 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 
 Temperature::Temperature(const shared_ptr<TemperatureSensor>& sensor) :
 	sensor(sensor),
-	timer(*this, chrono::seconds(10)),
+	timer(*this, chrono::seconds(60)),
 	valid(false),
 	value(0.0f)
 {

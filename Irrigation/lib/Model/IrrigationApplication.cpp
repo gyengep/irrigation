@@ -71,6 +71,7 @@ void IrrigationApplication::initTemperatureSensor() {
 				Temperature::getInstancePtr(),
 				make_shared<TemperatureFileHandler>("/tmp")
 				));
+		temperatureStatistics->start();
 
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize temperature sensor"));
@@ -123,6 +124,7 @@ void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
 	documentSaver->stop();
+	temperatureStatistics->stop();
 
 	try {
 		documentSaver->saveIfModified();
