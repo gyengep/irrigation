@@ -1,12 +1,10 @@
 #include "Logger.h"
-#include <ctime>
+#include "Exceptions/Exceptions.h"
 #include <iomanip>
-#include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stdarg.h>
 #include <thread>
-#include <vector>
-#include "Exceptions/Exceptions.h"
 
 using namespace std;
 
@@ -72,6 +70,7 @@ Logger& Logger::getInstance() {
 Logger::Logger() :
 	mtx(),
 	logLevel(LogLevel::OFF),
+	output_ptr(nullptr),
 	output(nullptr)
 {
 }
@@ -81,11 +80,18 @@ Logger::~Logger() {
 
 void Logger::setOutputStream(shared_ptr<ostream> o) {
 	lock_guard<mutex> lock(mtx);
-	output = o;
+	output_ptr = o;
+	output = output_ptr.get();
+}
+
+void Logger::setOutputStream(ostream& o) {
+	lock_guard<mutex> lock(mtx);
+	output_ptr.reset();
+	output = &o;
 }
 
 void Logger::setFileName(string fileName) {
-	shared_ptr<ofstream> ofs(new ofstream());
+	auto ofs = make_shared<ofstream>();
 	ofs->open(fileName, ofstream::out | ofstream::app);
 
 	if (ofs->fail()) {
@@ -123,7 +129,7 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 
 	lock_guard<mutex> lock(mtx);
 
-	if (output.get() != nullptr) {
+	if (output != nullptr) {
 		logEntries.emplace_back(getTime(), getThread(), to_string(logLevel), message);
 
 		if (logEntries.size() > 100) {

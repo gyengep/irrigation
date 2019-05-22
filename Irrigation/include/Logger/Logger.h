@@ -1,11 +1,9 @@
 #pragma once
-#include <array>
 #include <atomic>
 #include <deque>
 #include <memory>
 #include <mutex>
 #include <ostream>
-#include <stdarg.h>
 #include <stdexcept>
 #include <string>
 
@@ -43,7 +41,8 @@ public:
 private:
 	mutable std::mutex mtx;
 	std::atomic<LogLevel> logLevel;
-	std::shared_ptr<std::ostream> output;
+	std::shared_ptr<std::ostream> output_ptr;
+	std::ostream* output;
 	std::deque<Entry> logEntries;
 
 	Logger();
@@ -61,6 +60,7 @@ public:
 	LogLevel getLevel() const { return logLevel; }
 	void setLevel(LogLevel logLevel);
 	void setOutputStream(std::shared_ptr<std::ostream> output);
+	void setOutputStream(std::ostream& output);
 	void setFileName(std::string fileName);
 	bool isLoggable(LogLevel logLevel) const;
 

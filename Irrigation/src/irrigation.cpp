@@ -14,10 +14,14 @@ void signal_handler(int signo) {
 	IrrigationApplication::getInstance().exit();
 }
 
-bool initLogger() {
+bool initLogger(bool logToCout) {
 	try {
 		LOGGER.setLevel(Configuration::getInstance().getLogLevel());
-		LOGGER.setFileName(Configuration::getInstance().getLogFileName());
+		if (logToCout) {
+			LOGGER.setOutputStream(cout);
+		} else {
+			LOGGER.setFileName(Configuration::getInstance().getLogFileName());
+		}
 	} catch (const exception& e) {
 		return false;
 	}
@@ -69,19 +73,21 @@ bool initLogger() {
 
 int main(int argc, char* argv[]) {
 
-	if (argc > 1) {
-		if (argc == 2) {
-			if (string("--version") == argv[1]) {
-				cout << "Irrigation System " << IrrigationApplication::getInstance().getVersion() << endl;
-				return EXIT_SUCCESS;
-			}
-		}
+	bool logToCout = false;
 
-		cerr << "Usage: " << argv[0] << " [--version]" << endl;
-		exit(EXIT_FAILURE);
+	if (argc > 1) {
+		if ((2 == argc) && (string("--version") == argv[1])) {
+			cout << "Irrigation System " << IrrigationApplication::getInstance().getVersion() << endl;
+			return EXIT_SUCCESS;
+		} else if ((2 == argc) && (string("--stdout") == argv[1])) {
+			logToCout = true;
+		} else {
+			cerr << "Usage: " << argv[0] << " [--version] [--stdout]" << endl;
+			exit(EXIT_FAILURE);
+		}
 	}
 
-	if (!initLogger()) {
+	if (!initLogger(logToCout)) {
 		exit(EXIT_FAILURE);
 	}
 
