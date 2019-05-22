@@ -6,8 +6,6 @@
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Temperature/Temperature.h"
-#include "Hardware/Temperature/TemperatureFileHandler.h"
-#include "Hardware/Temperature/TemperatureStatistics.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Model/IrrigationDocument.h"
@@ -65,14 +63,7 @@ void IrrigationApplication::initGpio() {
 
 void IrrigationApplication::initTemperatureSensor() {
 	try {
-		Temperature::init();
-
-		temperatureStatistics.reset(new TemperatureStatistics(
-				Temperature::getInstancePtr(),
-				make_shared<TemperatureFileHandler>("/tmp")
-				));
-		temperatureStatistics->start();
-
+		Temperature::init(Configuration::getInstance().getTemperatureFileName());
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize temperature sensor"));
 	}
@@ -124,7 +115,6 @@ void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
 	documentSaver->stop();
-	temperatureStatistics->stop();
 
 	try {
 		documentSaver->saveIfModified();
@@ -134,7 +124,6 @@ void IrrigationApplication::onTerminate() {
 		throw_with_nested(runtime_error("Can't save configuration"));
 	}
 
-	temperatureStatistics.reset();
 	documentSaver.reset();
 	irrigationDocument.reset();
 

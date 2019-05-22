@@ -6,11 +6,6 @@ using namespace std;
 using namespace testing;
 
 
-TimerTest::TimerTest() :
-	isTerminateCalled(false)
-{
-}
-
 void TimerTest::checkTimeDiff() {
 	const chrono::steady_clock::time_point currentTime = chrono::steady_clock::now();
 
@@ -20,72 +15,50 @@ void TimerTest::checkTimeDiff() {
 	}
 
 	const chrono::milliseconds::rep diffInMs = chrono::duration_cast<chrono::milliseconds>(currentTime - lastCalled).count();
-	const chrono::milliseconds::rep maxDiffInMs = 20;
-	EXPECT_THAT(diffInMs, AllOf(Ge(1000 - maxDiffInMs), Le(1000 + maxDiffInMs)));
+	const chrono::milliseconds::rep maxDiffInMs = 10;
+	EXPECT_THAT(diffInMs, AllOf(Ge(100 - maxDiffInMs), Le(100 + maxDiffInMs)));
 
 	lastCalled = currentTime;
-}
-
-void TimerTest::checkIfTerminateCalled() {
-	EXPECT_FALSE(isTerminateCalled);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 void TimerTest::SetUp() {
-	timer.reset(new Timer(mockTimerCallback, chrono::seconds(1)));
+	timer.reset(new Timer(mockTimerCallback, chrono::milliseconds(100)));
 }
 
 void TimerTest::TearDown() {
 }
+TEST_F(TimerTest, onTimerCalled) {
+	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
 
-void TimerTest::waitAndCallStop(Timer* timer, MockTimerCallback* mockTimerCallback, unsigned waitMs) {
-	this_thread::sleep_for(chrono::milliseconds(waitMs));
-	timer->stop();
-	isTerminateCalled = true;
+	timer->start();
+	this_thread::sleep_for(chrono::milliseconds(150));
+    timer->stop();
 }
+
+TEST_F(TimerTest, onTimerAfterTerminate) {
+	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
+
+	timer->start();
+	this_thread::sleep_for(chrono::milliseconds(150));
+    timer->stop();
+	this_thread::sleep_for(chrono::milliseconds(150));
+}
+
 
 TEST_F(TimerTest, onTimerTiming) {
 	ON_CALL(mockTimerCallback, onTimer()).WillByDefault(Invoke(this, &TimerTest::checkTimeDiff));
 	EXPECT_CALL(mockTimerCallback, onTimer()).Times(3);
 
-    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
-    		timer.get(), &mockTimerCallback, 3500);
-
-    timer->start();
-	waitAndCallTerminateThread.join();
+	timer->start();
+	this_thread::sleep_for(chrono::milliseconds(350));
+    timer->stop();
 }
 
-TEST_F(TimerTest, onTimerAutoStart) {
-	timer.reset(new Timer(mockTimerCallback, chrono::seconds(1), true));
-
-	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
-
-    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
-    		timer.get(), &mockTimerCallback, 1500);
-
-	waitAndCallTerminateThread.join();
-}
-
-TEST_F(TimerTest, onTimerNotAutoStart) {
-	timer.reset(new Timer(mockTimerCallback, chrono::seconds(1)));
-
+TEST_F(TimerTest, onTimerNotStart) {
 	EXPECT_CALL(mockTimerCallback, onTimer()).Times(0);
 
-    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
-    		timer.get(), &mockTimerCallback, 1500);
-
-	waitAndCallTerminateThread.join();
-}
-
-TEST_F(TimerTest, onTimerAfterTerminate) {
-	ON_CALL(mockTimerCallback, onTimer()).WillByDefault(Invoke(this, &TimerTest::checkIfTerminateCalled));
-	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
-
-    thread waitAndCallTerminateThread(&TimerTest::waitAndCallStop, this,
-    		timer.get(), &mockTimerCallback, 1500);
-
-    timer->start();
-	waitAndCallTerminateThread.join();
+	this_thread::sleep_for(chrono::milliseconds(150));
 }

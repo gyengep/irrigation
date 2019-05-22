@@ -1,40 +1,42 @@
 #include "TemperatureStatistics.h"
-#include "TemperatureFileHandler.h"
-#include "Temperature.h"
+#include "TemperatureException.h"
+#include "TemperaturePersister.h"
+#include "TemperatureSensor.h"
 #include "Logger/Logger.h"
 
 using namespace std;
 
 
-TemperatureStatistics::TemperatureStatistics(const shared_ptr<Temperature>& temperature, const shared_ptr<TemperatureFileHandler>& temperatureFileHandler) :
-	temperature(temperature),
-	temperatureFileHandler(temperatureFileHandler),
+TemperatureStatistics::TemperatureStatistics(const shared_ptr<TemperatureSensor>& temperatureSensor, const shared_ptr<TemperaturePersister>& temperaturePersister) :
+	temperatureSensor(temperatureSensor),
+	temperaturePersister(temperaturePersister),
 	timer(*this, chrono::seconds(60) * 10)
 {
+	temperaturePersister->startTimer();
 }
 
 TemperatureStatistics::~TemperatureStatistics() {
-}
-
-void TemperatureStatistics::start() {
-	timer.start();
-	temperatureFileHandler->start();
-}
-
-void TemperatureStatistics::stop() {
-	temperatureFileHandler->stop();
-	timer.stop();
+	temperaturePersister->stopTimer();
 }
 
 void TemperatureStatistics::requestTemperature() {
-	unique_lock<Temperature> lock(*temperature);
-
 	const time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-	if (temperature->isValid()) {
-		temperatureFileHandler->append(currentTime, temperature->getCachedValue());
-	} else {
-		temperatureFileHandler->appendInvalid(currentTime);
+
+	try {
+		temperaturePersister->append(currentTime, temperatureSensor->getCachedValue());
+	} catch (const TemperatureException& e) {
+		temperaturePersister->appendInvalid(currentTime);
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void TemperatureStatistics::startTimer() {
+	timer.start();
+}
+
+void TemperatureStatistics::stopTimer() {
+	timer.stop();
 }
 
 void TemperatureStatistics::onTimer() {

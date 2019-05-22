@@ -25,7 +25,6 @@ TEST(TemperatureSensorDS18B20Test, readValueFromSensor) {
 
 TEST(TemperatureSensorDS18B20Test, readValueFromSensor_invalidContent) {
 	const string content = "asdfghjkl";
-
 	const shared_ptr<MockFileReader> mockFileReader(new MockFileReader());
 
 	EXPECT_CALL(*mockFileReader, read()).

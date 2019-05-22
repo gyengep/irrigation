@@ -1,24 +1,24 @@
 #include "Timer.h"
+#include "Logger/Logger.h"
 
 using namespace std;
 
 
-Timer::Timer(TimerCallback& callback, const std::chrono::seconds& seconds, bool startAutomatically) :
-	waitTime(seconds),
+Timer::Timer(TimerCallback& callback, const std::chrono::milliseconds& milliseconds) :
+	waitTime(milliseconds),
 	callback(callback),
 	terminated(false)
 {
-	if (startAutomatically) {
-		start();
-	}
 }
 
+Timer::Timer(TimerCallback& callback, const chrono::seconds& seconds) :
+	Timer(callback, chrono::duration_cast<chrono::milliseconds>(seconds))
+{}
+
 Timer::~Timer() {
-	stop();
 }
 
 void Timer::start() {
-	unique_lock<mutex> lock(mtx);
 	workerThread = thread(&Timer::workerFunc, this);
 }
 
@@ -29,10 +29,7 @@ void Timer::stop() {
 	}
 
 	condition.notify_all();
-
-	if (workerThread.joinable()) {
-		workerThread.join();
-	}
+	workerThread.join();
 }
 
 bool Timer::waitForTerminateOrTimeout() {
@@ -41,7 +38,11 @@ bool Timer::waitForTerminateOrTimeout() {
 }
 
 void Timer::workerFunc() {
-	while (!waitForTerminateOrTimeout()) {
-		callback.onTimer();
+	try {
+		while (!waitForTerminateOrTimeout()) {
+			callback.onTimer();
+		}
+	} catch (const exception& e) {
+		LOGGER.warning("Unhandled exception is caught in timer thread", e);
 	}
 }

@@ -2,22 +2,22 @@
 #include <memory>
 #include "Utils/Timer.h"
 
-class Temperature;
-class TemperatureFileHandler;
+class TemperatureSensor;
+class TemperaturePersister;
 
 
 class TemperatureStatistics : public TimerCallback {
-	const std::shared_ptr<Temperature> temperature;
-	const std::shared_ptr<TemperatureFileHandler> temperatureFileHandler;
+	const std::shared_ptr<TemperatureSensor> temperatureSensor;
+	const std::shared_ptr<TemperaturePersister> temperaturePersister;
 	Timer timer;
 
 public:
-	TemperatureStatistics(const std::shared_ptr<Temperature>& temperature, const std::shared_ptr<TemperatureFileHandler>& temperatureFileHandler);
+	TemperatureStatistics(const std::shared_ptr<TemperatureSensor>& temperatureSensor, const std::shared_ptr<TemperaturePersister>& temperaturePersister);
 	virtual ~TemperatureStatistics();
 
-	void start();
-	void stop();
 	void requestTemperature();
 
+	void startTimer();
+	void stopTimer();
 	virtual void onTimer() override;
 };

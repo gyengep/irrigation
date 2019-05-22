@@ -1,8 +1,10 @@
 #include "Temperature.h"
-#include "TemperatureSensor.h"
 #include "TemperatureSensorDS18B20.h"
 #include "TemperatureSensorFake.h"
+#include "TemperaturePersister.h"
+#include "TemperatureStatistics.h"
 #include "Logger/Logger.h"
+#include "Utils/CsvWriterImpl.h"
 
 using namespace std;
 
@@ -10,16 +12,8 @@ using namespace std;
 
 shared_ptr<Temperature> Temperature::instance;
 
-void Temperature::init() {
-	shared_ptr<TemperatureSensor> sensor;
-
-	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
-		sensor = make_shared<TemperatureSensor_Fake>();
-	}
-
-	instance = make_shared<Temperature>(sensor);
-	instance->refresh();
-	instance->startPeriodicRefresh();
+void Temperature::init(const string& temperatureFileName) {
+	instance = make_shared<Temperature>(temperatureFileName);
 }
 
 shared_ptr<Temperature> Temperature::getInstancePtr() {
@@ -28,55 +22,23 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Temperature::Temperature(const shared_ptr<TemperatureSensor>& sensor) :
-	sensor(sensor),
-	timer(*this, chrono::seconds(60)),
-	valid(false),
-	value(0.0f)
-{
+Temperature::Temperature(const string& temperatureFileName) {
+	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
+		sensor = make_shared<TemperatureSensor_Fake>();
+	}
+
+	auto temperaturePersister = TemperaturePersister::create(temperatureFileName);
+	statistics = make_shared<TemperatureStatistics>(sensor, temperaturePersister);
+
+	sensor->startTimer();
+	statistics->startTimer();
 }
 
 Temperature::~Temperature() {
+	sensor->stopTimer();
+	statistics->stopTimer();
 }
 
-void Temperature::lock() {
-	mtx.lock();
-}
-
-void Temperature::unlock() {
-	mtx.unlock();
-}
-
-void Temperature::refresh() {
-	try {
-		value = sensor->readValueFromSensor();
-		valid = true;
-	} catch(const exception& e) {
-		valid = false;
-	}
-}
-
-bool Temperature::isValid() const {
-	return valid;
-}
-
-float Temperature::getCachedValue() const {
-	if (!valid) {
-		throw logic_error("Temperature::getCachedValue() !valid");
-	}
-
-	return value;
-}
-
-void Temperature::startPeriodicRefresh() {
-	timer.start();
-}
-
-void Temperature::stopPeriodicRefresh() {
-	timer.stop();
-}
-
-void Temperature::onTimer() {
-	lock_guard<mutex> lock(mtx);
-	refresh();
+float Temperature::getTemperature() {
+	return sensor->getCachedValue();
 }

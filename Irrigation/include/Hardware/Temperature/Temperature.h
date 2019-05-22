@@ -1,37 +1,24 @@
 #pragma once
 #include <memory>
 #include <mutex>
-#include "Utils/Timer.h"
 #include "TemperatureException.h"
 
 class TemperatureSensor;
+class TemperatureStatistics;
 
 
-class Temperature : public TimerCallback {
+class Temperature {
 	static std::shared_ptr<Temperature> instance;
 
-	const std::shared_ptr<TemperatureSensor> sensor;
-	std::mutex mtx;
-	Timer timer;
-	bool valid;
-	float value;
+	std::shared_ptr<TemperatureSensor> sensor;
+	std::shared_ptr<TemperatureStatistics> statistics;
 
 public:
-	Temperature(const std::shared_ptr<TemperatureSensor>& sensor);
+	Temperature(const std::string& temperatureFileName);
 	virtual ~Temperature();
 
-	void lock();
-	void unlock();
+	float getTemperature();
 
-	bool isValid() const;
-	float getCachedValue() const;
-
-	void startPeriodicRefresh();
-	void stopPeriodicRefresh();
-	void refresh();
-
-	virtual void onTimer() override;
-
-	static void init();
+	static void init(const std::string& temperatureFileName);
 	static std::shared_ptr<Temperature> getInstancePtr();
 };

@@ -4,9 +4,8 @@
 using namespace std;
 
 
-CsvWriterImpl::CsvWriterImpl(const std::shared_ptr<std::ofstream>& ofs, char separator) :
-	CsvWriter(separator),
-	ofs(ofs)
+CsvWriterImpl::CsvWriterImpl(const std::shared_ptr<std::ostream>& output) :
+	output(output)
 {
 }
 
@@ -16,11 +15,11 @@ CsvWriterImpl::~CsvWriterImpl() {
 void CsvWriterImpl::append(const vector<string>& values) {
 	for (auto it = values.begin(); values.end() != it; ++it) {
 		if (values.begin() != it) {
-			*ofs << separator;
+			*output << separator;
 		}
 
-		*ofs << *it;
+		*output << *it;
 	}
 
-	*ofs << endl;
+	*output << endl;
 }

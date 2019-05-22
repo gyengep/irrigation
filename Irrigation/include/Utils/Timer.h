@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <thread>
 
@@ -12,7 +13,7 @@ public:
 };
 
 class Timer {
-	const std::chrono::seconds waitTime;
+	const std::chrono::milliseconds waitTime;
 	TimerCallback& callback;
 
 	mutable std::mutex mtx;
@@ -25,7 +26,8 @@ class Timer {
 	void workerFunc();
 
 public:
-	Timer(TimerCallback& callback, const std::chrono::seconds& seconds, bool startAutomatically = false);
+	Timer(TimerCallback& callback, const std::chrono::seconds& seconds);
+	Timer(TimerCallback& callback, const std::chrono::milliseconds& milliseconds);
 	virtual ~Timer();
 
 	void start();

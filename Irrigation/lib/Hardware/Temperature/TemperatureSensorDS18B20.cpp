@@ -10,7 +10,6 @@ using namespace std;
 
 
 const string TemperatureSensor_DS18B20::basePath = "/sys/bus/w1/devices";
-//const string Temperature::basePath = "/home/gyenge/sys/bus/w1/devices";
 const string TemperatureSensor_DS18B20::fileName = "w1_slave";
 
 
@@ -18,7 +17,7 @@ string TemperatureSensor_DS18B20::getTempSensorFileName() {
 	unique_ptr<DIR, int(*)(DIR*)> dirp(opendir(basePath.c_str()), closedir);
 
 	if (dirp == nullptr) {
-		throw runtime_error("Temperature sensor file path does not exist: " + basePath);
+		throw runtime_error("DS18B20 temperature sensor file path does not exist: " + basePath);
 	}
 
     struct dirent* dp;
@@ -36,12 +35,12 @@ string TemperatureSensor_DS18B20::getTempSensorFileName() {
 
 		if (true == isDir && 0 == strncmp(dp->d_name, "28-", 3)) {
 			const string result = filePath + '/' + fileName;
-			LOGGER.debug("Temperature sensor file found: %s", result.c_str());
+			LOGGER.debug("DS18B20 temperature sensor file found: %s", result.c_str());
 			return result;
     	}
     }
 
-    throw runtime_error("Temperature sensor file not found in path: " + basePath);
+    throw runtime_error("DS18B20 temperature sensor file not found in path: " + basePath);
 }
 
 shared_ptr<TemperatureSensor_DS18B20> TemperatureSensor_DS18B20::create() {
@@ -76,7 +75,7 @@ float TemperatureSensor_DS18B20::readValueFromSensor() {
 
 		return stof(text.substr(pos1 + 2)) / 1000.0f;
 	} catch (const exception& e) {
-		LOGGER.warning("Can not read temperature from the sensor", e);
+		LOGGER.warning("Can not read temperature from DS18B20 sensor", e);
 		throw;
 	}
 }

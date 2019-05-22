@@ -1,15 +1,18 @@
 #pragma once
-#include <fstream>
+#include <ostream>
 #include <memory>
+#include <string>
+#include <vector>
 #include "CsvWriter.h"
 
 
+class CsvWriterImpl : public CsvWriter {
+	static const char separator = ',';
 
-class CsvWriterImpl: public CsvWriter {
-	std::shared_ptr<std::ofstream> ofs;
+	std::shared_ptr<std::ostream> output;
 
 public:
-	CsvWriterImpl(const std::shared_ptr<std::ofstream>& ofs, char separator);
+	CsvWriterImpl(const std::shared_ptr<std::ostream>& output);
 	virtual ~CsvWriterImpl();
 
 	virtual void append(const std::vector<std::string>& values) override;
