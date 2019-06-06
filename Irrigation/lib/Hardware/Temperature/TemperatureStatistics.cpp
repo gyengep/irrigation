@@ -65,6 +65,7 @@ TemperatureStatistics::TemperatureStatistics(const chrono::duration<int64_t>& st
 	csvWriterFactory(csvWriterFactory),
 	storedSeconds(chrono::duration_cast<chrono::seconds>(storePeriod).count())
 {
+	LOGGER.trace("TemperatureStatistics length: %lld seconds", storedSeconds);
 	load();
 }
 

@@ -55,7 +55,8 @@ private:
 
 public:
 	TemperatureStatistics(const std::chrono::duration<int64_t>& storePeriod);
-	TemperatureStatistics(const std::chrono::duration<int64_t>& storePeriod,
+	TemperatureStatistics(
+			const std::chrono::duration<int64_t>& storePeriod,
 			const std::string& fileName,
 			const std::shared_ptr<CsvReaderFactory>& csvReaderFactory,
 			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory

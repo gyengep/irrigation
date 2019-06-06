@@ -14,8 +14,21 @@ using namespace std;
 
 shared_ptr<Temperature> Temperature::instance;
 
-void Temperature::init(const string& temperatureCacheFileName, const std::string& temperatureHistoryFileName) {
-	instance = make_shared<Temperature>(temperatureCacheFileName, temperatureHistoryFileName);
+void Temperature::init(
+		const std::chrono::duration<int64_t>& sensorUpdatePeriod,
+		const std::string& temperatureCacheFileName,
+		const std::chrono::duration<int64_t>& temperatureCacheLength,
+		const std::string& temperatureHistoryFileName,
+		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+	)
+{
+	instance = shared_ptr<Temperature>(new Temperature(
+			sensorUpdatePeriod,
+			temperatureCacheFileName,
+			temperatureCacheLength,
+			temperatureHistoryFileName,
+			temperatureHistoryPeriod
+		));
 }
 
 shared_ptr<Temperature> Temperature::getInstancePtr() {
@@ -24,21 +37,29 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Temperature::Temperature(const string& temperatureCacheFileName, const std::string& temperatureHistoryFileName) :
-	timer(*this, chrono::seconds(60))
+Temperature::Temperature(
+		const std::chrono::duration<int64_t>& sensorUpdatePeriod,
+		const std::string& temperatureCacheFileName,
+		const std::chrono::duration<int64_t>& temperatureCacheLength,
+		const std::string& temperatureHistoryFileName,
+		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+	) :
+	timer(*this, sensorUpdatePeriod)
 {
+	LOGGER.trace("Temperature update period: %lld seconds", sensorUpdatePeriod.count());
 	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
 		sensor = make_shared<TemperatureSensor_Fake>();
 	}
 
 	statistics = make_shared<TemperatureStatistics>(
-			chrono::hours(24),
+			temperatureCacheLength,
 			temperatureCacheFileName,
 			make_shared<CsvReaderImplFactory>(),
 			make_shared<CsvWriterImplFactory>()
 		);
 
 	persister = make_shared<TemperaturePersister>(
+			temperatureHistoryPeriod,
 			statistics,
 			temperatureHistoryFileName,
 			make_shared<CsvWriterImplFactory>()

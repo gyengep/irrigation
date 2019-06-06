@@ -1,27 +1,23 @@
 #pragma once
-#include <ctime>
-#include <deque>
-#include <mutex>
+#include <chrono>
+#include <memory>
 #include <string>
 #include <ostream>
-#include <vector>
-#include "Utils/Timer.h"
 
 class CsvWriter;
 class CsvWriterFactory;
 class TemperatureStatistics;
 
 
-class TemperaturePersister : public TimerCallback {
+class TemperaturePersister {
+	const time_t periodInSeconds;
 	const std::shared_ptr<TemperatureStatistics> temperatureStatistics;
 	const std::shared_ptr<std::ostream> output;
 	const std::shared_ptr<CsvWriter> csvWriter;
 
 	time_t lastUpdate;
 
-	std::mutex mtx;
-	Timer timer;
-	std::deque<std::vector<std::string>> values;
+	void persistData();
 
 	static std::string timeToString(std::time_t time);
 	static std::string temperatureToString(float value);
@@ -29,6 +25,7 @@ class TemperaturePersister : public TimerCallback {
 
 public:
 	TemperaturePersister(
+			const std::chrono::duration<int64_t>& period,
 			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
 			const std::string& fileName,
 			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
@@ -37,9 +34,4 @@ public:
 	virtual ~TemperaturePersister();
 
 	void periodicUpdate();
-	void persistData();
-
-	void startTimer();
-	void stopTimer();
-	virtual void onTimer() override;
 };

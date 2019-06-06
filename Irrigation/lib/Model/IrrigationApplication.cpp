@@ -64,8 +64,11 @@ void IrrigationApplication::initGpio() {
 void IrrigationApplication::initTemperatureSensor() {
 	try {
 		Temperature::init(
+			Configuration::getInstance().getTemperatureSensorUpdatePeriod(),
 			Configuration::getInstance().getTemperatureCacheFileName(),
-			Configuration::getInstance().getTemperatureHistoryFileName()
+			Configuration::getInstance().getTemperatureCacheLength(),
+			Configuration::getInstance().getTemperatureHistoryFileName(),
+			Configuration::getInstance().getTemperatureHistoryPeriod()
 		);
 
 	} catch (const exception& e) {

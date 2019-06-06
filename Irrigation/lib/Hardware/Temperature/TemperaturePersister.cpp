@@ -9,16 +9,19 @@ using namespace std;
 
 
 TemperaturePersister::TemperaturePersister(
+		const chrono::duration<int64_t>& period,
 		const shared_ptr<TemperatureStatistics>& temperatureStatistics,
 		const string& fileName,
 		const shared_ptr<CsvWriterFactory>& csvWriterFactory
 	) :
+	periodInSeconds(chrono::duration_cast<chrono::seconds>(period).count()),
 	temperatureStatistics(temperatureStatistics),
 	output(openFile(fileName)),
 	csvWriter(csvWriterFactory->create(output)),
-	lastUpdate(chrono::system_clock::to_time_t(chrono::system_clock::now())),
-	timer(*this, chrono::hours(1))
+	lastUpdate(chrono::system_clock::to_time_t(chrono::system_clock::now()))
 {
+	LOGGER.trace("TemperatureHistory period: %lld seconds", periodInSeconds);
+
 	if (output->tellp() == 0) {
 		csvWriter->append(vector<string>{"Date", "MinTemperature", "MaxTemperature", "AvgTemperature"});
 	}
@@ -27,76 +30,40 @@ TemperaturePersister::TemperaturePersister(
 }
 
 TemperaturePersister::~TemperaturePersister() {
-	persistData();
 }
 
 void TemperaturePersister::periodicUpdate() {
-	unique_lock<mutex> lock(mtx);
+	const time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
 
-	time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-	if (lastUpdate / 6000 != currentTime / 6000) {
+	if (lastUpdate / periodInSeconds != currentTime / periodInSeconds) {
 
-		time_t periodStart = ((currentTime / 6000) - 1) * 6000;
-		time_t periodEnd = (currentTime / 6000) * 6000 - 1;
+		const time_t periodStart = ((currentTime / periodInSeconds) - 1) * periodInSeconds;
+		const time_t periodEnd = (currentTime / periodInSeconds) * periodInSeconds - 1;
 
 		if (LOGGER.isLoggable(LogLevel::TRACE)) {
-			struct tm * timeinfo;
-
 			LOGGER.trace("TemperaturePersister::periodic()");
-
-			timeinfo = localtime(&periodStart);
-			LOGGER.trace("\tfrom: %s", asctime(timeinfo));
-
-			timeinfo = localtime(&periodEnd);
-			LOGGER.trace("\tto: %s", asctime(timeinfo));
+			LOGGER.trace("\tfrom: %s", timeToString(periodStart).c_str());
+			LOGGER.trace("\tto: %s", timeToString(periodEnd).c_str());
 		}
 
 		try {
-			auto statisticsValues = temperatureStatistics->getStatistics(periodStart, periodEnd);
-
-			values.push_back(vector<string>{
+			const auto statisticsValues = temperatureStatistics->getStatistics(periodStart, periodEnd);
+			const vector<string> statisticsTexts {
 				timeToString(periodStart),
 				temperatureToString(statisticsValues.minTemperature),
 				temperatureToString(statisticsValues.maxTemperature),
 				temperatureToString(statisticsValues.avgTemperature),
-			});
+			};
+
+			csvWriter->append(statisticsTexts);
+			output->flush();
+
 		} catch (const exception& e) {
-			LOGGER.trace("An error occured", e);
+			LOGGER.trace("An error occured during write the temperature history file", e);
 		}
 
 		lastUpdate = currentTime;
-		persistData();
 	}
-}
-
-void TemperaturePersister::persistData() {
-	unique_lock<mutex> lock(mtx);
-	if (!values.empty()) {
-		deque<vector<string>> valuesCopy;
-		valuesCopy.swap(values);
-		lock.unlock();
-
-		for (const auto& dateAndValue : valuesCopy) {
-			csvWriter->append(dateAndValue);
-		}
-
-		output->flush();
-		LOGGER.trace("TemperaturePersister::persistData()");
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void TemperaturePersister::startTimer() {
-	timer.start();
-}
-
-void TemperaturePersister::stopTimer() {
-	timer.stop();
-}
-
-void TemperaturePersister::onTimer() {
-	persistData();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
