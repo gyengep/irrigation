@@ -34,7 +34,7 @@ void TemperaturePersister::periodicUpdate() {
 	unique_lock<mutex> lock(mtx);
 
 	time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-	if (lastUpdate / 600 == currentTime / 600) {
+	if (lastUpdate / 600 != currentTime / 600) {
 
 		time_t periodStart = ((currentTime / 600) - 1) * 600;
 		time_t periodEnd = (currentTime / 600) * 600 - 1;
@@ -60,8 +60,8 @@ void TemperaturePersister::periodicUpdate() {
 				temperatureToString(statisticsValues.maxTemperature),
 				temperatureToString(statisticsValues.avgTemperature),
 			});
-		} catch (const exception&) {
-			LOGGER.trace("An error occured");
+		} catch (const exception& e) {
+			LOGGER.trace("An error occured", e);
 		}
 
 		lastUpdate = currentTime;
