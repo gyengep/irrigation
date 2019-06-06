@@ -5,7 +5,6 @@ using namespace std;
 
 
 TemperatureSensor::TemperatureSensor() :
-	timer(*this, chrono::seconds(60)),
 	valid(false),
 	value(0.0f)
 {
@@ -40,18 +39,4 @@ void TemperatureSensor::updateCache() {
 	lock_guard<mutex> lock(mtx);
 	this->value = value;
 	this->valid = valid;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void TemperatureSensor::startTimer() {
-	timer.start();
-}
-
-void TemperatureSensor::stopTimer() {
-	timer.stop();
-}
-
-void TemperatureSensor::onTimer() {
-	updateCache();
 }

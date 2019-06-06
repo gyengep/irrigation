@@ -7,8 +7,8 @@
 using namespace std;
 
 
-TemperaturePersister::TemperaturePersister(const shared_ptr<ostream>& output, const shared_ptr<CsvWriterFactory>& csvWriterFactory) :
-	output(output),
+TemperaturePersister::TemperaturePersister(const std::string& fileName, const shared_ptr<CsvWriterFactory>& csvWriterFactory) :
+	output(openFile(fileName)),
 	csvWriter(csvWriterFactory->create(output)),
 	timer(*this, chrono::seconds(60) * 60)
 {
@@ -77,7 +77,7 @@ string TemperaturePersister::temperatureToString(float value) {
 	return string(buffer);
 }
 
-shared_ptr<TemperaturePersister> TemperaturePersister::create(const string& fileName) {
+shared_ptr<ostream> TemperaturePersister::openFile(const string& fileName) {
 	auto output = make_shared<ofstream>(fileName, ofstream::out | ofstream::app);
 
 	if (output->fail()) {
@@ -85,11 +85,5 @@ shared_ptr<TemperaturePersister> TemperaturePersister::create(const string& file
 	}
 
 	LOGGER.debug("Temperature file: %s", fileName.c_str());
-	return make_shared<TemperaturePersister>(output, make_shared<CsvWriterFactory>());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-shared_ptr<CsvWriter> TemperaturePersister::CsvWriterFactory::create(shared_ptr<ostream> output) {
-	return make_shared<CsvWriterImpl>(output);
+	return output;
 }

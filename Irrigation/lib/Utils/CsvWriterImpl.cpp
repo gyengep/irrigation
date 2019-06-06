@@ -23,3 +23,12 @@ void CsvWriterImpl::append(const vector<string>& values) {
 
 	*output << endl;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+CsvWriterImplFactory::~CsvWriterImplFactory() {
+}
+
+std::shared_ptr<CsvWriter> CsvWriterImplFactory::create(const std::shared_ptr<std::ostream>& output) {
+	return make_shared<CsvWriterImpl>(output);
+}

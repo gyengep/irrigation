@@ -1,8 +1,10 @@
 #include <gmock/gmock.h>
+#include <fstream>
 #include <list>
 #include <sstream>
 #include "Mocks/MockCsvWriter.h"
 #include "Hardware/Temperature/TemperaturePersister.h"
+#include "Utils/CsvWriterImpl.h"
 #include "Utils/TimeConversion.h"
 
 using namespace std;
@@ -12,12 +14,12 @@ using ::testing::Sequence;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class MockCsvWriterFactory : public TemperaturePersister::CsvWriterFactory {
+class MockCsvWriterFactory : public CsvWriterFactory {
 	const shared_ptr<CsvWriter> csvWriter;
 
 public:
 	MockCsvWriterFactory(const shared_ptr<CsvWriter>& csvWriter) : csvWriter(csvWriter) {}
-	virtual shared_ptr<CsvWriter> create(shared_ptr<ostream> output) override {
+	virtual shared_ptr<CsvWriter> create(const shared_ptr<ostream>& output) override {
 		return csvWriter;
 	}
 };
@@ -43,7 +45,7 @@ TEST(TemperaturePersisterTest, header) {
 
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "Date", "Temperature" })).Times(1);
 
-	TemperaturePersister temperaturePersister(make_shared<ostringstream>(), make_shared<MockCsvWriterFactory>(mockCsvWriter));
+	TemperaturePersister temperaturePersister(tmpnam(nullptr), make_shared<MockCsvWriterFactory>(mockCsvWriter));
 }
 
 TEST(TemperaturePersisterTest, append) {
@@ -59,7 +61,7 @@ TEST(TemperaturePersisterTest, append) {
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ toTimeStr(2019, 2, 15, 5, 22), "55.0" })).Times(1).InSequence(seq);
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ toTimeStr(2019, 3, 16, 6, 22), "56.0" })).Times(1).InSequence(seq);
 
-	TemperaturePersister temperaturePersister(make_shared<ostringstream>(), make_shared<MockCsvWriterFactory>(mockCsvWriter));
+	TemperaturePersister temperaturePersister(tmpnam(nullptr), make_shared<MockCsvWriterFactory>(mockCsvWriter));
 	temperaturePersister.append(toTime(2019, 2, 12, 2, 22), 52);
 	temperaturePersister.append(toTime(2019, 2, 13, 3, 23), 53);
 	temperaturePersister.append(toTime(2019, 2, 14, 4, 22), 54);
@@ -79,7 +81,7 @@ TEST(TemperaturePersisterTest, saveFromDestructor) {
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ toTimeStr(2019, 2, 15, 5, 22), "55.0" })).Times(1).InSequence(seq);
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ toTimeStr(2019, 3, 16, 6, 22), "56.0" })).Times(1).InSequence(seq);
 
-	TemperaturePersister temperaturePersister(make_shared<ostringstream>(), make_shared<MockCsvWriterFactory>(mockCsvWriter));
+	TemperaturePersister temperaturePersister(tmpnam(nullptr), make_shared<MockCsvWriterFactory>(mockCsvWriter));
 	temperaturePersister.append(toTime(2019, 2, 12, 2, 22), 52);
 	temperaturePersister.append(toTime(2019, 2, 13, 3, 23), 53);
 	temperaturePersister.append(toTime(2019, 2, 14, 4, 22), 54);
@@ -99,7 +101,7 @@ TEST(TemperaturePersisterTest, saveAndAppend) {
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ toTimeStr(2019, 2, 15, 5, 22), "55.0" })).Times(1).InSequence(seq);
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ toTimeStr(2019, 3, 16, 6, 22), "56.0" })).Times(1).InSequence(seq);
 
-	TemperaturePersister temperaturePersister(make_shared<ostringstream>(), make_shared<MockCsvWriterFactory>(mockCsvWriter));
+	TemperaturePersister temperaturePersister(tmpnam(nullptr), make_shared<MockCsvWriterFactory>(mockCsvWriter));
 	temperaturePersister.append(toTime(2019, 2, 12, 2, 22), 52);
 	temperaturePersister.append(toTime(2019, 2, 13, 3, 23), 53);
 	temperaturePersister.append(toTime(2019, 2, 14, 4, 22), 54);
@@ -110,19 +112,31 @@ TEST(TemperaturePersisterTest, saveAndAppend) {
 }
 
 TEST(TemperaturePersisterTest, createFile) {
-	auto output = make_shared<ostringstream>();
+	const char* fileName = tmpnam(nullptr);
 
 	{
-		TemperaturePersister temperaturePersister(output, make_shared<TemperaturePersister::CsvWriterFactory>());
+		TemperaturePersister temperaturePersister(fileName, make_shared<CsvWriterImplFactory>());
 		temperaturePersister.append(toTime(2019, 2, 12, 2, 22), 52);
 		temperaturePersister.persistData();
-		EXPECT_THAT(output->str(), "Date,Temperature\n2019.02.12 02:22,52.0\n");
+
+		ifstream input(fileName, ios::binary);
+		vector<char> inputData(
+		         (istreambuf_iterator<char>(input)),
+		         (istreambuf_iterator<char>()));
+
+		EXPECT_THAT(string(inputData.data(), inputData.size()), "Date,Temperature\n2019.02.12 02:22,52.0\n");
 	}
 
 	{
-		TemperaturePersister temperaturePersister(output, make_shared<TemperaturePersister::CsvWriterFactory>());
+		TemperaturePersister temperaturePersister(fileName, make_shared<CsvWriterImplFactory>());
 		temperaturePersister.append(toTime(2020, 3, 13, 4, 33), 26);
 		temperaturePersister.persistData();
-		EXPECT_THAT(output->str(), "Date,Temperature\n2019.02.12 02:22,52.0\n2020.03.13 04:33,26.0\n");
+
+		ifstream input(fileName, ios::binary);
+		vector<char> inputData(
+		         (istreambuf_iterator<char>(input)),
+		         (istreambuf_iterator<char>()));
+
+		EXPECT_THAT(string(inputData.data(), inputData.size()), "Date,Temperature\n2019.02.12 02:22,52.0\n2020.03.13 04:33,26.0\n");
 	}
 }
