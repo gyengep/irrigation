@@ -34,10 +34,10 @@ void TemperaturePersister::periodicUpdate() {
 	unique_lock<mutex> lock(mtx);
 
 	time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-	if (lastUpdate / 600 != currentTime / 600) {
+	if (lastUpdate / 6000 != currentTime / 6000) {
 
-		time_t periodStart = ((currentTime / 600) - 1) * 600;
-		time_t periodEnd = (currentTime / 600) * 600 - 1;
+		time_t periodStart = ((currentTime / 6000) - 1) * 6000;
+		time_t periodEnd = (currentTime / 6000) * 6000 - 1;
 
 		if (LOGGER.isLoggable(LogLevel::TRACE)) {
 			struct tm * timeinfo;
