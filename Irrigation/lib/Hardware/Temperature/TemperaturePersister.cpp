@@ -65,6 +65,7 @@ void TemperaturePersister::periodicUpdate() {
 		}
 
 		lastUpdate = currentTime;
+		persistData();
 	}
 }
 
