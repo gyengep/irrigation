@@ -26,8 +26,7 @@ class Timer {
 	void workerFunc();
 
 public:
-	Timer(TimerCallback& callback, const std::chrono::seconds& seconds);
-	Timer(TimerCallback& callback, const std::chrono::milliseconds& milliseconds);
+	Timer(TimerCallback& callback, const std::chrono::milliseconds& period);
 	virtual ~Timer();
 
 	void start();

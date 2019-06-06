@@ -130,6 +130,11 @@ void TemperatureStatistics::addTemperature(time_t rawTime, float temperature) {
 	removeOlder(rawTime - storedSeconds);
 	removeNewer(rawTime);
 	samples.push_back(TemperatureSample(rawTime, temperature));
+
+	if (LOGGER.isLoggable(LogLevel::TRACE)) {
+		struct tm * timeinfo = localtime(&rawTime);
+		LOGGER.trace("TemperatureStatistics::addTemperature(%s, %.1f)", asctime(timeinfo), temperature);
+	}
 }
 
 void TemperatureStatistics::removeNewer(time_t rawTime) {

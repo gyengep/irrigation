@@ -1,4 +1,5 @@
 #include "TemperaturePersister.h"
+#include "TemperatureStatistics.h"
 #include "Utils/CsvWriterImpl.h"
 #include "Logger/Logger.h"
 #include "Exceptions/Exceptions.h"
@@ -7,13 +8,19 @@
 using namespace std;
 
 
-TemperaturePersister::TemperaturePersister(const std::string& fileName, const shared_ptr<CsvWriterFactory>& csvWriterFactory) :
+TemperaturePersister::TemperaturePersister(
+		const shared_ptr<TemperatureStatistics>& temperatureStatistics,
+		const string& fileName,
+		const shared_ptr<CsvWriterFactory>& csvWriterFactory
+	) :
+	temperatureStatistics(temperatureStatistics),
 	output(openFile(fileName)),
 	csvWriter(csvWriterFactory->create(output)),
-	timer(*this, chrono::seconds(60) * 60)
+	lastUpdate(chrono::system_clock::to_time_t(chrono::system_clock::now())),
+	timer(*this, chrono::hours(1))
 {
 	if (output->tellp() == 0) {
-		csvWriter->append(vector<string>{"Date", "Temperature"});
+		csvWriter->append(vector<string>{"Date", "MinTemperature", "MaxTemperature", "AvgTemperature"});
 	}
 
 	output->flush();
@@ -23,14 +30,42 @@ TemperaturePersister::~TemperaturePersister() {
 	persistData();
 }
 
-void TemperaturePersister::append(time_t currentTime, float temperature) {
+void TemperaturePersister::periodicUpdate() {
 	unique_lock<mutex> lock(mtx);
-	values.push_back(vector<string>{ timeToString(currentTime), temperatureToString(temperature) });
-}
 
-void TemperaturePersister::appendInvalid(time_t currentTime) {
-	unique_lock<mutex> lock(mtx);
-	values.push_back(vector<string>{ timeToString(currentTime), "N/A" });
+	time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+	if (lastUpdate / 600 == currentTime / 600) {
+
+		time_t periodStart = ((currentTime / 600) - 1) * 600;
+		time_t periodEnd = (currentTime / 600) * 600 - 1;
+
+		if (LOGGER.isLoggable(LogLevel::TRACE)) {
+			struct tm * timeinfo;
+
+			LOGGER.trace("TemperaturePersister::periodic()");
+
+			timeinfo = localtime(&periodStart);
+			LOGGER.trace("\tfrom: %s", asctime(timeinfo));
+
+			timeinfo = localtime(&periodEnd);
+			LOGGER.trace("\tto: %s", asctime(timeinfo));
+		}
+
+		try {
+			auto statisticsValues = temperatureStatistics->getStatistics(periodStart, periodEnd);
+
+			values.push_back(vector<string>{
+				timeToString(periodStart),
+				temperatureToString(statisticsValues.minTemperature),
+				temperatureToString(statisticsValues.maxTemperature),
+				temperatureToString(statisticsValues.avgTemperature),
+			});
+		} catch (const exception&) {
+			LOGGER.trace("An error occured");
+		}
+
+		lastUpdate = currentTime;
+	}
 }
 
 void TemperaturePersister::persistData() {
@@ -45,6 +80,7 @@ void TemperaturePersister::persistData() {
 		}
 
 		output->flush();
+		LOGGER.trace("TemperaturePersister::persistData()");
 	}
 }
 

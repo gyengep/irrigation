@@ -14,8 +14,8 @@ using namespace std;
 
 shared_ptr<Temperature> Temperature::instance;
 
-void Temperature::init(const string& temperatureFileName) {
-	instance = make_shared<Temperature>(temperatureFileName);
+void Temperature::init(const string& temperatureCacheFileName, const std::string& temperatureHistoryFileName) {
+	instance = make_shared<Temperature>(temperatureCacheFileName, temperatureHistoryFileName);
 }
 
 shared_ptr<Temperature> Temperature::getInstancePtr() {
@@ -24,7 +24,7 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Temperature::Temperature(const string& temperatureFileName) :
+Temperature::Temperature(const string& temperatureCacheFileName, const std::string& temperatureHistoryFileName) :
 	timer(*this, chrono::seconds(60))
 {
 	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
@@ -33,12 +33,16 @@ Temperature::Temperature(const string& temperatureFileName) :
 
 	statistics = make_shared<TemperatureStatistics>(
 			chrono::hours(24),
-			temperatureFileName,
+			temperatureCacheFileName,
 			make_shared<CsvReaderImplFactory>(),
 			make_shared<CsvWriterImplFactory>()
 		);
-	//persister;
-	//temperaturePersister = TemperaturePersister::create(temperatureFileName);
+
+	persister = make_shared<TemperaturePersister>(
+			statistics,
+			temperatureHistoryFileName,
+			make_shared<CsvWriterImplFactory>()
+		);
 
 	timer.start();
 }
@@ -64,7 +68,7 @@ void Temperature::onTimer() {
 	try {
 		const float temperature = sensor->getCachedValue();
 		statistics->addTemperature(currentTime, temperature);
-		//persister->append(currentTime, temperature);
+		persister->periodicUpdate();
 	} catch (...) {
 		//persister->appendInvalid(currentTime);
 	}

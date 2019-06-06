@@ -3,17 +3,12 @@
 
 using namespace std;
 
-
-Timer::Timer(TimerCallback& callback, const std::chrono::milliseconds& milliseconds) :
-	waitTime(milliseconds),
+Timer::Timer(TimerCallback& callback, const chrono::milliseconds& period) :
+	waitTime(period),
 	callback(callback),
 	terminated(false)
 {
 }
-
-Timer::Timer(TimerCallback& callback, const chrono::seconds& seconds) :
-	Timer(callback, chrono::duration_cast<chrono::milliseconds>(seconds))
-{}
 
 Timer::~Timer() {
 }

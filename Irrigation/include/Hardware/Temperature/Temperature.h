@@ -16,10 +16,10 @@ class Temperature : public TimerCallback {
 
 	std::shared_ptr<TemperatureSensor> sensor;
 	std::shared_ptr<TemperatureStatistics> statistics;
-	//std::shared_ptr<TemperaturePersister> persister;
+	std::shared_ptr<TemperaturePersister> persister;
 
 public:
-	Temperature(const std::string& temperatureFileName);
+	Temperature(const std::string& temperatureCacheFileName, const std::string& temperatureHistoryFileName);
 	virtual ~Temperature();
 
 	float getTemperature();
@@ -27,6 +27,6 @@ public:
 
 	virtual void onTimer() override;
 
-	static void init(const std::string& temperatureFileName);
+	static void init(const std::string& temperatureCacheFileName, const std::string& temperatureHistoryFileName);
 	static std::shared_ptr<Temperature> getInstancePtr();
 };

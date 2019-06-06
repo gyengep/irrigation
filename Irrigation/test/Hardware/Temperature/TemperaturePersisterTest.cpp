@@ -39,7 +39,7 @@ time_t toTime(int year, int month, int day, int hour, int min) {
 	return mktime(&timeinfo);
 
 }
-
+/*
 TEST(TemperaturePersisterTest, header) {
 	auto mockCsvWriter = make_shared<MockCsvWriter>();
 
@@ -140,3 +140,4 @@ TEST(TemperaturePersisterTest, createFile) {
 		EXPECT_THAT(string(inputData.data(), inputData.size()), "Date,Temperature\n2019.02.12 02:22,52.0\n2020.03.13 04:33,26.0\n");
 	}
 }
+*/

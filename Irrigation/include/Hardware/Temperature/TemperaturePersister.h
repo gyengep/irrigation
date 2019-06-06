@@ -9,11 +9,15 @@
 
 class CsvWriter;
 class CsvWriterFactory;
+class TemperatureStatistics;
 
 
 class TemperaturePersister : public TimerCallback {
+	const std::shared_ptr<TemperatureStatistics> temperatureStatistics;
 	const std::shared_ptr<std::ostream> output;
 	const std::shared_ptr<CsvWriter> csvWriter;
+
+	time_t lastUpdate;
 
 	std::mutex mtx;
 	Timer timer;
@@ -24,17 +28,18 @@ class TemperaturePersister : public TimerCallback {
 	static std::shared_ptr<std::ostream> openFile(const std::string& fileName);
 
 public:
-	TemperaturePersister(const std::string& fileName, const std::shared_ptr<CsvWriterFactory>& csvWriterFactory);
+	TemperaturePersister(
+			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
+			const std::string& fileName,
+			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
+		);
+
 	virtual ~TemperaturePersister();
 
-	void append(std::time_t currentTime, float temperature);
-	void appendInvalid(std::time_t currentTime);
-
+	void periodicUpdate();
 	void persistData();
 
 	void startTimer();
 	void stopTimer();
 	virtual void onTimer() override;
-
-	static std::shared_ptr<TemperaturePersister> create(const std::string& fileName);
 };

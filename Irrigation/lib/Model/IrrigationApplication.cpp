@@ -63,7 +63,11 @@ void IrrigationApplication::initGpio() {
 
 void IrrigationApplication::initTemperatureSensor() {
 	try {
-		Temperature::init(Configuration::getInstance().getTemperatureFileName());
+		Temperature::init(
+			Configuration::getInstance().getTemperatureCacheFileName(),
+			Configuration::getInstance().getTemperatureHistoryFileName()
+		);
+
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize temperature sensor"));
 	}
