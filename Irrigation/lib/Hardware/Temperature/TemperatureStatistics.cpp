@@ -61,6 +61,7 @@ TemperatureStatistics::TemperatureStatistics(const chrono::duration<int64_t>& st
 		const shared_ptr<CsvWriterFactory>& csvWriterFactory) :
 
 	fileName(fileName),
+	csvReaderFactory(csvReaderFactory),
 	csvWriterFactory(csvWriterFactory),
 	storedSeconds(chrono::duration_cast<chrono::seconds>(storePeriod).count())
 {
@@ -93,6 +94,8 @@ void TemperatureStatistics::load() {
 				LOGGER.warning("Invalid temperature sample file");
 				samples.clear();
 			}
+		} else {
+			LOGGER.debug("Temperature sample file not found");
 		}
 	}
 }
