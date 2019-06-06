@@ -119,7 +119,7 @@ TEST(TemperaturePersisterTest, createFile) {
 		temperaturePersister.append(toTime(2019, 2, 12, 2, 22), 52);
 		temperaturePersister.persistData();
 
-		ifstream input(fileName, ios::binary);
+		ifstream input(fileName);
 		vector<char> inputData(
 		         (istreambuf_iterator<char>(input)),
 		         (istreambuf_iterator<char>()));
@@ -132,7 +132,7 @@ TEST(TemperaturePersisterTest, createFile) {
 		temperaturePersister.append(toTime(2020, 3, 13, 4, 33), 26);
 		temperaturePersister.persistData();
 
-		ifstream input(fileName, ios::binary);
+		ifstream input(fileName);
 		vector<char> inputData(
 		         (istreambuf_iterator<char>(input)),
 		         (istreambuf_iterator<char>()));
