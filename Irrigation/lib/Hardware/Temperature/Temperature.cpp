@@ -1,6 +1,5 @@
 #include "Temperature.h"
 #include "TemperatureSensorDS18B20.h"
-#include "TemperatureSensorFake.h"
 #include "TemperatureHistory.h"
 #include "TemperatureStatisticsImpl.h"
 #include "Logger/Logger.h"
@@ -43,41 +42,36 @@ Temperature::Temperature(
 		const std::chrono::duration<int64_t>& temperatureCacheLength,
 		const std::string& temperatureHistoryFileName,
 		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
-	) :
-	timer(*this, sensorUpdatePeriod)
+	)
 {
-	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
-		sensor = make_shared<TemperatureSensor_Fake>();
+	if ((sensor = TemperatureSensor_DS18B20::create()) != nullptr) {
+		statistics = make_shared<TemperatureStatisticsImpl>(
+				temperatureCacheLength,
+				temperatureCacheFileName,
+				make_shared<CsvReaderImplFactory>(),
+				make_shared<CsvWriterImplFactory>()
+			);
+
+		history = make_shared<TemperatureHistory>(
+				temperatureHistoryPeriod,
+				statistics,
+				temperatureHistoryFileName,
+				make_shared<CsvWriterImplFactory>()
+			);
+
+		timer.reset(new Timer(*this, sensorUpdatePeriod));
+		timer->start();
 	}
-
-	statistics = make_shared<TemperatureStatisticsImpl>(
-			temperatureCacheLength,
-			temperatureCacheFileName,
-			make_shared<CsvReaderImplFactory>(),
-			make_shared<CsvWriterImplFactory>()
-		);
-
-	history = make_shared<TemperatureHistory>(
-			temperatureHistoryPeriod,
-			statistics,
-			temperatureHistoryFileName,
-			make_shared<CsvWriterImplFactory>()
-		);
-
-	timer.start();
 }
 
 Temperature::~Temperature() {
-	timer.stop();
+	if (timer != nullptr) {
+		timer->stop();
+	}
 }
 
 float Temperature::getTemperature() {
 	return sensor->getCachedValue();
-}
-
-StatisticsValues Temperature::getStatistics(const std::chrono::duration<int64_t>& period) {
-	time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
-	return statistics->getStatistics(currentTime - chrono::duration_cast<chrono::seconds>(period).count(), currentTime);
 }
 
 void Temperature::onTimer() {

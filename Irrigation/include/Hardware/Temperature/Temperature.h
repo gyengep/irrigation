@@ -13,7 +13,7 @@ class TemperatureSensor;
 class Temperature : public TimerCallback {
 	static std::shared_ptr<Temperature> instance;
 
-	Timer timer;
+	std::unique_ptr<Timer> timer;
 
 	std::shared_ptr<TemperatureSensor> sensor;
 	std::shared_ptr<TemperatureStatistics> statistics;
@@ -32,7 +32,6 @@ public:
 	virtual ~Temperature();
 
 	float getTemperature();
-	StatisticsValues getStatistics(const std::chrono::duration<int64_t>& period);
 
 	virtual void onTimer() override;
 

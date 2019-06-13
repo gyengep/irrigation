@@ -1,7 +1,6 @@
 #include <gmock/gmock.h>
 #include <fstream>
 #include "Hardware/Temperature/TemperatureStatisticsImpl.h"
-#include "Hardware/Temperature/TemperatureSensorFake.h"
 #include "Exceptions/Exceptions.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
