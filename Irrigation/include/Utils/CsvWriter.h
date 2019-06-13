@@ -9,6 +9,7 @@ class CsvWriter {
 public:
 	virtual ~CsvWriter() = default;
 	virtual void append(const std::vector<std::string>& values) = 0;
+	virtual const std::shared_ptr<std::ostream>& stream() const = 0;
 };
 
 

@@ -6,7 +6,7 @@
 #include "TemperatureStatistics.h"
 #include "Utils/Timer.h"
 
-class TemperaturePersister;
+class TemperatureHistory;
 class TemperatureSensor;
 
 
@@ -17,7 +17,7 @@ class Temperature : public TimerCallback {
 
 	std::shared_ptr<TemperatureSensor> sensor;
 	std::shared_ptr<TemperatureStatistics> statistics;
-	std::shared_ptr<TemperaturePersister> persister;
+	std::shared_ptr<TemperatureHistory> history;
 
 	Temperature(
 			const std::chrono::duration<int64_t>& sensorUpdatePeriod,

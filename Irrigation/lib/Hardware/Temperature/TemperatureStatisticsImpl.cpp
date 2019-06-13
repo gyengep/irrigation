@@ -1,4 +1,4 @@
-#include "TemperatureStatistics.h"
+#include "TemperatureStatisticsImpl.h"
 #include "TemperatureException.h"
 #include "TemperatureSensor.h"
 #include "Exceptions/Exceptions.h"
@@ -12,50 +12,41 @@
 using namespace std;
 
 
-TemperatureStatistics::TemperatureSample::TemperatureSample(time_t sampleTime) :
+TemperatureStatisticsImpl::TemperatureSample::TemperatureSample(time_t sampleTime, float value) :
 	sampleTime(sampleTime),
-	value(0.0f),
-	valid(false)
+	value(value)
 {
 }
 
-TemperatureStatistics::TemperatureSample::TemperatureSample(time_t sampleTime, float value) :
-	sampleTime(sampleTime),
-	value(value),
-	valid(true)
-{
+bool TemperatureStatisticsImpl::TemperatureSample::operator== (const TemperatureStatisticsImpl::TemperatureSample& other) const {
+	return (sampleTime == other.sampleTime && value == other.value);
 }
 
-bool TemperatureStatistics::TemperatureSample::operator== (const TemperatureStatistics::TemperatureSample& other) const {
-	return (sampleTime == other.sampleTime && value == other.value && valid == other.valid);
-}
-
-ostream& operator<<(ostream& os, const TemperatureStatistics::TemperatureSample& temperatureSample) {
+ostream& operator<<(ostream& os, const TemperatureStatisticsImpl::TemperatureSample& temperatureSample) {
 	os << "TemperatureSample{";
 	os << "time: " << temperatureSample.sampleTime << ", ";
 	os << "value: " << temperatureSample.value << ", ";
-	os << "valid: " << temperatureSample.valid;
 	os << "}";
 	return os;
 }
 
-TemperatureStatistics::GreaterThan::GreaterThan(time_t rawTime) :
+TemperatureStatisticsImpl::GreaterThan::GreaterThan(time_t rawTime) :
 	rawTime(rawTime)
 {
 }
 
-bool TemperatureStatistics::GreaterThan::operator() (const TemperatureSample& sample) {
+bool TemperatureStatisticsImpl::GreaterThan::operator() (const TemperatureSample& sample) {
 	return sample.sampleTime > rawTime;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureStatistics::TemperatureStatistics(const chrono::duration<int64_t>& storePeriod) :
-	TemperatureStatistics(storePeriod, string(), shared_ptr<CsvReaderFactory>(), shared_ptr<CsvWriterFactory>())
+TemperatureStatisticsImpl::TemperatureStatisticsImpl(const chrono::duration<int64_t>& storePeriod) :
+	TemperatureStatisticsImpl(storePeriod, string(), shared_ptr<CsvReaderFactory>(), shared_ptr<CsvWriterFactory>())
 {
 }
 
-TemperatureStatistics::TemperatureStatistics(const chrono::duration<int64_t>& storePeriod,
+TemperatureStatisticsImpl::TemperatureStatisticsImpl(const chrono::duration<int64_t>& storePeriod,
 		const string& fileName,
 		const shared_ptr<CsvReaderFactory>& csvReaderFactory,
 		const shared_ptr<CsvWriterFactory>& csvWriterFactory) :
@@ -65,15 +56,14 @@ TemperatureStatistics::TemperatureStatistics(const chrono::duration<int64_t>& st
 	csvWriterFactory(csvWriterFactory),
 	storedSeconds(chrono::duration_cast<chrono::seconds>(storePeriod).count())
 {
-	LOGGER.trace("TemperatureStatistics length: %lld seconds", storedSeconds);
 	load();
 }
 
-TemperatureStatistics::~TemperatureStatistics() {
+TemperatureStatisticsImpl::~TemperatureStatisticsImpl() {
 	save();
 }
 
-void TemperatureStatistics::load() {
+void TemperatureStatisticsImpl::load() {
 	if (!fileName.empty()) {
 		auto ifs = make_shared<ifstream>(fileName);
 		if (ifs->is_open()) {
@@ -101,13 +91,13 @@ void TemperatureStatistics::load() {
 	}
 }
 
-string TemperatureStatistics::temperatureToString(float value) {
+string TemperatureStatisticsImpl::temperatureToString(float value) {
 	char buffer[32];
 	sprintf(buffer, "%.1f", value);
 	return string(buffer);
 }
 
-void TemperatureStatistics::save() {
+void TemperatureStatisticsImpl::save() {
 	if (!fileName.empty()) {
 		auto ofs = make_shared<ofstream>(fileName);
 
@@ -126,30 +116,30 @@ void TemperatureStatistics::save() {
 	}
 }
 
-void TemperatureStatistics::addTemperature(time_t rawTime, float temperature) {
+void TemperatureStatisticsImpl::addTemperature(time_t rawTime, float temperature) {
 	lock_guard<mutex> lock(mtx);
 	removeOlder(rawTime - storedSeconds);
 	removeNewer(rawTime);
 	samples.push_back(TemperatureSample(rawTime, temperature));
 }
 
-void TemperatureStatistics::removeNewer(time_t rawTime) {
+void TemperatureStatisticsImpl::removeNewer(time_t rawTime) {
 	while(!samples.empty() && samples.back().sampleTime >= rawTime) {
 		samples.pop_back();
 	}
 }
 
-void TemperatureStatistics::removeOlder(time_t rawTime) {
+void TemperatureStatisticsImpl::removeOlder(time_t rawTime) {
 	auto it = find_if(samples.begin(), samples.end(), GreaterThan(rawTime));
 	samples.erase(samples.begin(), it);
 }
 
-const deque<TemperatureStatistics::TemperatureSample> TemperatureStatistics::getSamples() const {
+const deque<TemperatureStatisticsImpl::TemperatureSample> TemperatureStatisticsImpl::getSamples() const {
 	lock_guard<mutex> lock(mtx);
 	return samples;
 }
 
-StatisticsValues TemperatureStatistics::getStatistics(time_t from, time_t to) {
+StatisticsValues TemperatureStatisticsImpl::getStatistics(time_t from, time_t to) {
 	lock_guard<mutex> lock(mtx);
 
 	float min = numeric_limits<float>::max();
@@ -158,7 +148,7 @@ StatisticsValues TemperatureStatistics::getStatistics(time_t from, time_t to) {
 	size_t count = 0;
 
 	for (const auto& sample : samples) {
-		if (sample.valid && from <= sample.sampleTime && sample.sampleTime <= to) {
+		if (from <= sample.sampleTime && sample.sampleTime <= to) {
 			min = std::min(min, sample.value);
 			max = std::max(max, sample.value);
 			sum += sample.value;

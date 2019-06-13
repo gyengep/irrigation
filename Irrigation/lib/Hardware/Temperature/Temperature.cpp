@@ -1,8 +1,8 @@
 #include "Temperature.h"
 #include "TemperatureSensorDS18B20.h"
 #include "TemperatureSensorFake.h"
-#include "TemperaturePersister.h"
-#include "TemperatureStatistics.h"
+#include "TemperatureHistory.h"
+#include "TemperatureStatisticsImpl.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
@@ -46,19 +46,18 @@ Temperature::Temperature(
 	) :
 	timer(*this, sensorUpdatePeriod)
 {
-	LOGGER.trace("Temperature update period: %lld seconds", sensorUpdatePeriod.count());
 	if ((sensor = TemperatureSensor_DS18B20::create()) == nullptr) {
 		sensor = make_shared<TemperatureSensor_Fake>();
 	}
 
-	statistics = make_shared<TemperatureStatistics>(
+	statistics = make_shared<TemperatureStatisticsImpl>(
 			temperatureCacheLength,
 			temperatureCacheFileName,
 			make_shared<CsvReaderImplFactory>(),
 			make_shared<CsvWriterImplFactory>()
 		);
 
-	persister = make_shared<TemperaturePersister>(
+	history = make_shared<TemperatureHistory>(
 			temperatureHistoryPeriod,
 			statistics,
 			temperatureHistoryFileName,
@@ -89,7 +88,7 @@ void Temperature::onTimer() {
 	try {
 		const float temperature = sensor->getCachedValue();
 		statistics->addTemperature(currentTime, temperature);
-		persister->periodicUpdate();
+		history->periodicUpdate();
 	} catch (...) {
 		//persister->appendInvalid(currentTime);
 	}

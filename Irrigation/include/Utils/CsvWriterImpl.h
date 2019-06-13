@@ -12,6 +12,7 @@ public:
 	virtual ~CsvWriterImpl();
 
 	virtual void append(const std::vector<std::string>& values) override;
+	virtual const std::shared_ptr<std::ostream>& stream() const override;
 };
 
 
