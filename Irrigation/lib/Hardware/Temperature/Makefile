@@ -1,18 +1,17 @@
 
-TARGET_NAME     = irrigation
+TARGET_NAME     = $(shell basename $(CURDIR))
 
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ..
+PROJECT_ROOT    = ../../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/src
-OBJECT_DIR      = $(PROJECT_ROOT)/build/src
+SOURCE_DIR      = $(PROJECT_ROOT)/lib/Hardware/$(TARGET_NAME)
+OBJECT_DIR      = $(PROJECT_ROOT)/build/lib/Hardware/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
-TARGET_DIR      = $(PROJECT_ROOT)/bin
-LIBRARY_DIR     = $(PROJECT_ROOT)/build
+TARGET_DIR      = $(PROJECT_ROOT)/build
 
-TARGET          = $(TARGET_DIR)/$(TARGET_NAME)
+TARGET          = $(TARGET_DIR)/lib$(TARGET_NAME).a
 SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
 OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.o))
 DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.d))
@@ -20,18 +19,11 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -lLogger -lModel -lDocumentView -lLogic -lSchedulers -lDTO -lDtoReaderWriter -lTimerView -lValves -lRestView -lWebServer -lTemperature -lUtils
-INCLUDE_PATH    = -I$(INCLUDE_DIR)
-LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -pthread -lpugixml -lmicrohttpd 
+INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Hardware/$(TARGET_NAME) -I$(INCLUDE_DIR)/Utils
 
-# Detect the Raspberry Pi from cpuinfo
-ifneq "$(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)" "0"
-LIBS          += -lwiringPi
-endif
-
-CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP  
+CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = $(INCLUDE_PATH) 
+ARFLAGS         = r 
 
 # DEBUG flags
 #CXXFLAGS        += -O0 -g3
@@ -44,7 +36,7 @@ CXXFLAGS        += -O3
 all: $(TARGET)
 
 .PHONY: clean
-clean: 
+clean:
 	rm -f $(OBJECTS)
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
@@ -59,14 +51,14 @@ print:
 	@echo OBJECTS: $(OBJECTS)
 	@echo DEPENDS: $(DEPENDS)
 	@echo TARGET: $(TARGET)
-	@echo LIBS: $(LIBS)
 
 -include $(DEPENDS)
-	
-$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
+
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 	
-$(TARGET):	$(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS)) $(OBJECTS)
+$(TARGET):	$(OBJECTS)
 	@mkdir -p $(TARGET_DIR)
-	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)
+	$(AR) $(ARFLAGS) $@ $(OBJECTS)
+	

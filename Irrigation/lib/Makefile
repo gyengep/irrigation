@@ -9,6 +9,7 @@ all: \
 	Model-all \
 	RestView-all \
 	Schedulers-all \
+	Temperature-all \
 	TimerView-all \
 	Utils-all \
 	Valves-all \
@@ -24,6 +25,7 @@ clean: \
 	Model-clean \
 	RestView-clean \
 	Schedulers-clean \
+	Temperature-clean \
 	TimerView-clean \
 	Utils-clean \
 	Valves-clean \
@@ -92,6 +94,14 @@ Schedulers-all:
 .PHONY: Schedulers-clean
 Schedulers-clean:
 	@$(MAKE) -C Schedulers clean
+
+.PHONY: Temperature-all
+Temperature-all:
+	@$(MAKE) -C Hardware/Temperature all
+
+.PHONY: Temperature-clean
+Temperature-clean:
+	@$(MAKE) -C Hardware/Temperature clean
 
 .PHONY: TimerView-all
 TimerView-all:
