@@ -1,6 +1,4 @@
 #include <gmock/gmock.h>
-#include <fstream>
-#include <list>
 #include <sstream>
 #include "Mocks/MockCsvWriter.h"
 #include "Mocks/MockTemperatureStatistics.h"
@@ -91,10 +89,7 @@ TEST(TemperatureHistoryTest, createNewFileAndAppend) {
 
 	const time_t currentTime = toTime(2019, 6, 12, 22, 0, true);
 
-	StatisticsValues result;
-	result.minTemperature = 10;
-	result.maxTemperature = 20;
-	result.avgTemperature = 15;
+	StatisticsValues result(10, 20, 15);
 
 	EXPECT_CALL(*mockTemperatureStatistics, getStatistics(currentTime, currentTime + 3599)).Times(1).WillOnce(Return(result));
 	EXPECT_CALL(*mockCsvWriter, append(csvHeader)).Times(1);
@@ -121,10 +116,7 @@ TEST(TemperatureHistoryTest, appendFile) {
 
 	const time_t currentTime = toTime(2019, 6, 12, 22, 0, true);
 
-	StatisticsValues result;
-	result.minTemperature = 10;
-	result.maxTemperature = 20;
-	result.avgTemperature = 15;
+	StatisticsValues result(10, 20, 15);
 
 	EXPECT_CALL(*mockTemperatureStatistics, getStatistics(currentTime, currentTime + 3599)).Times(1).WillOnce(Return(result));
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "2019.06.12 22:00", "10.0", "20.0", "15.0"})).Times(1);

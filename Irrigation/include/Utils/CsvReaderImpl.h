@@ -10,7 +10,6 @@ class CsvReaderImpl : public CsvReader {
 public:
 	CsvReaderImpl(const std::shared_ptr<std::istream>& input);
 	virtual ~CsvReaderImpl();
-
 	virtual std::unique_ptr<std::vector<std::string>> read() override;
 };
 

@@ -22,7 +22,6 @@ void TimerTest::checkTimeDiff() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 void TimerTest::SetUp() {
 	timer.reset(new Timer(mockTimerCallback, chrono::milliseconds(100)));
@@ -30,6 +29,9 @@ void TimerTest::SetUp() {
 
 void TimerTest::TearDown() {
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
 TEST_F(TimerTest, onTimerCalled) {
 	EXPECT_CALL(mockTimerCallback, onTimer()).Times(1);
 
@@ -46,7 +48,6 @@ TEST_F(TimerTest, onTimerAfterTerminate) {
     timer->stop();
 	this_thread::sleep_for(chrono::milliseconds(150));
 }
-
 
 TEST_F(TimerTest, onTimerTiming) {
 	ON_CALL(mockTimerCallback, onTimer()).WillByDefault(Invoke(this, &TimerTest::checkTimeDiff));

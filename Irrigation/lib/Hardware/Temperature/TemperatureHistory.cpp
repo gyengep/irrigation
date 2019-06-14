@@ -1,8 +1,8 @@
 #include "TemperatureHistory.h"
 #include "TemperatureStatistics.h"
-#include "Utils/CsvWriterImpl.h"
-#include "Logger/Logger.h"
 #include "Exceptions/Exceptions.h"
+#include "Logger/Logger.h"
+#include "Utils/CsvWriterImpl.h"
 #include <fstream>
 
 using namespace std;

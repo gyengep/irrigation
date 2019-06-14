@@ -1,8 +1,6 @@
 #include <gmock/gmock.h>
-#include "Mocks/MockFileReader.h"
-#include "Mocks/MockTemperatureSensor.h"
 #include "Hardware/Temperature/Temperature.h"
-#include "Exceptions/Exceptions.h"
+#include "Mocks/MockTemperatureSensor.h"
 
 using namespace std;
 using namespace testing;

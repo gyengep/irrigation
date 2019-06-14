@@ -16,11 +16,9 @@ class TemperatureHistory {
 
 	time_t lastUpdate;
 
-	void persistData();
-
 	static std::string temperatureToString(float value);
-	static std::shared_ptr<std::ostream> openFile(const std::string& fileName);
 	static std::string timeToString(std::time_t time);
+	static std::shared_ptr<std::ostream> openFile(const std::string& fileName);
 
 public:
 	TemperatureHistory(

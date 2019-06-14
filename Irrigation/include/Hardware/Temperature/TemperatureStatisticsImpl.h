@@ -1,8 +1,8 @@
 #pragma once
 #include <chrono>
+#include <deque>
 #include <memory>
 #include <mutex>
-#include <queue>
 #include "TemperatureStatistics.h"
 
 class CsvReaderFactory;
@@ -54,11 +54,11 @@ public:
 			const std::string& fileName,
 			const std::shared_ptr<CsvReaderFactory>& csvReaderFactory,
 			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
-			);
+		);
 
 	virtual ~TemperatureStatisticsImpl();
 
-	void addTemperature(std::time_t rawTime, float temperature) override;
+	virtual void addTemperature(std::time_t rawTime, float temperature) override;
 	virtual StatisticsValues getStatistics(std::time_t from, std::time_t to) override;
 
 	// only for testing

@@ -1,7 +1,6 @@
 #pragma once
 #include <chrono>
 #include <memory>
-#include <mutex>
 #include "TemperatureException.h"
 #include "TemperatureStatistics.h"
 #include "Utils/Timer.h"

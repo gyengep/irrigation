@@ -1,6 +1,6 @@
 #include "Temperature.h"
-#include "TemperatureSensorDS18B20.h"
 #include "TemperatureHistory.h"
+#include "TemperatureSensorDS18B20.h"
 #include "TemperatureStatisticsImpl.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
@@ -44,7 +44,8 @@ Temperature::Temperature(
 		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
 	)
 {
-	if ((sensor = TemperatureSensor_DS18B20::create()) != nullptr) {
+	try {
+		sensor = make_shared<TemperatureSensor_DS18B20>();
 		statistics = make_shared<TemperatureStatisticsImpl>(
 				temperatureCacheLength,
 				temperatureCacheFileName,
@@ -61,6 +62,8 @@ Temperature::Temperature(
 
 		timer.reset(new Timer(*this, sensorUpdatePeriod));
 		timer->start();
+	} catch (const exception& e) {
+		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
 }
 

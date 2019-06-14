@@ -6,6 +6,13 @@ struct StatisticsValues {
 	float minTemperature;
 	float maxTemperature;
 	float avgTemperature;
+
+	StatisticsValues(float minTemperature, float maxTemperature, float avgTemperature) :
+		minTemperature(minTemperature),
+		maxTemperature(maxTemperature),
+		avgTemperature(avgTemperature)
+	{
+	}
 };
 
 class TemperatureStatistics {

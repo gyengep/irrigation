@@ -1,6 +1,4 @@
 #include "TemperatureStatisticsImpl.h"
-#include "TemperatureException.h"
-#include "TemperatureSensor.h"
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReader.h"
@@ -160,9 +158,5 @@ StatisticsValues TemperatureStatisticsImpl::getStatistics(time_t from, time_t to
 		throw NoSuchElementException("Temperature sample not found found with specified criteria");
 	}
 
-	StatisticsValues statisticsValues;
-	statisticsValues.minTemperature = min;
-	statisticsValues.maxTemperature = max;
-	statisticsValues.avgTemperature = sum / count;
-	return statisticsValues;
+	return StatisticsValues(min, max, sum / count);
 }

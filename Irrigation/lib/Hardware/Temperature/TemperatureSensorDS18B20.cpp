@@ -43,17 +43,9 @@ string TemperatureSensor_DS18B20::getTempSensorFileName() {
     throw runtime_error("DS18B20 temperature sensor file not found in path: " + basePath);
 }
 
-shared_ptr<TemperatureSensor_DS18B20> TemperatureSensor_DS18B20::create() {
-	shared_ptr<TemperatureSensor_DS18B20> result;
-
-	try {
-		auto fileReader = make_shared<FileReaderImpl>(getTempSensorFileName());
-		result = make_shared<TemperatureSensor_DS18B20>(fileReader);
-	} catch (const exception& e) {
-		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
-	}
-
-	return result;
+TemperatureSensor_DS18B20::TemperatureSensor_DS18B20() :
+	TemperatureSensor_DS18B20(make_shared<FileReaderImpl>(getTempSensorFileName()))
+{
 }
 
 TemperatureSensor_DS18B20::TemperatureSensor_DS18B20(const std::shared_ptr<FileReader>& fileReader) :
@@ -65,17 +57,12 @@ TemperatureSensor_DS18B20::~TemperatureSensor_DS18B20() {
 }
 
 float TemperatureSensor_DS18B20::readValueFromSensor() {
-	try {
-		const string text = fileReader->read();
-		const size_t pos1 = text.find("t=");
+	const string text = fileReader->read();
+	const size_t pos1 = text.find("t=");
 
-		if (pos1 == string::npos) {
-			throw TemperatureException("Invalid temperature file content: " + text);
-		}
-
-		return stof(text.substr(pos1 + 2)) / 1000.0f;
-	} catch (const exception& e) {
-		LOGGER.warning("Can not read temperature from DS18B20 sensor", e);
-		throw;
+	if (pos1 == string::npos) {
+		throw TemperatureException("Invalid temperature file content: " + text);
 	}
+
+	return stof(text.substr(pos1 + 2)) / 1000.0f;
 }

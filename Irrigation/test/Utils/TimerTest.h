@@ -1,6 +1,5 @@
 #pragma once
 #include <gmock/gmock.h>
-#include <atomic>
 #include <chrono>
 #include "Mocks/MockTimerCallback.h"
 #include "Utils/Timer.h"

@@ -1,5 +1,6 @@
 #include "TemperatureSensor.h"
 #include "TemperatureException.h"
+#include "Logger/Logger.h"
 
 using namespace std;
 
@@ -11,7 +12,6 @@ TemperatureSensor::TemperatureSensor() :
 }
 
 TemperatureSensor::~TemperatureSensor() {
-
 }
 
 float TemperatureSensor::getCachedValue() const {
@@ -32,8 +32,8 @@ void TemperatureSensor::updateCache() {
 		value = readValueFromSensor();
 		valid = true;
 
-	} catch(const TemperatureException& e) {
-		valid = false;
+	} catch(const exception& e) {
+		LOGGER.warning("Can not read temperature from DS18B20 sensor", e);
 	}
 
 	lock_guard<mutex> lock(mtx);
