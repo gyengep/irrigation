@@ -19,14 +19,14 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Hardware/$(TARGET_NAME) -I$(INCLUDE_DIR)/Utils
+INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Hardware/$(TARGET_NAME) -I$(INCLUDE_DIR)/Utils -I$(PROJECT_ROOT)/3p/pugixml
 
 CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
 CPPFLAGS        = $(INCLUDE_PATH) 
 ARFLAGS         = r 
 
 # DEBUG flags
-#CXXFLAGS        += -O0 -g3
+# CXXFLAGS        += -O0 -g3
 
 # RELEASE flags
 CXXFLAGS        += -O3

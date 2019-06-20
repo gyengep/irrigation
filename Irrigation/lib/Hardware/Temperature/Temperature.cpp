@@ -1,4 +1,5 @@
 #include "Temperature.h"
+#include "TemperatureForecast.h"
 #include "TemperatureHistory.h"
 #include "TemperatureSensorDS18B20.h"
 #include "TemperatureStatisticsImpl.h"
@@ -14,11 +15,12 @@ using namespace std;
 shared_ptr<Temperature> Temperature::instance;
 
 void Temperature::init(
-		const std::chrono::duration<int64_t>& sensorUpdatePeriod,
-		const std::string& temperatureCacheFileName,
-		const std::chrono::duration<int64_t>& temperatureCacheLength,
-		const std::string& temperatureHistoryFileName,
-		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+		const chrono::duration<int64_t>& sensorUpdatePeriod,
+		const string& temperatureCacheFileName,
+		const chrono::duration<int64_t>& temperatureCacheLength,
+		const string& temperatureHistoryFileName,
+		const chrono::duration<int64_t>& temperatureHistoryPeriod,
+		const chrono::duration<int64_t>& forecastUpdatePeriod
 	)
 {
 	instance = shared_ptr<Temperature>(new Temperature(
@@ -26,7 +28,8 @@ void Temperature::init(
 			temperatureCacheFileName,
 			temperatureCacheLength,
 			temperatureHistoryFileName,
-			temperatureHistoryPeriod
+			temperatureHistoryPeriod,
+			forecastUpdatePeriod
 		));
 }
 
@@ -37,12 +40,14 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 ///////////////////////////////////////////////////////////////////////////////
 
 Temperature::Temperature(
-		const std::chrono::duration<int64_t>& sensorUpdatePeriod,
-		const std::string& temperatureCacheFileName,
-		const std::chrono::duration<int64_t>& temperatureCacheLength,
-		const std::string& temperatureHistoryFileName,
-		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
-	)
+		const chrono::duration<int64_t>& sensorUpdatePeriod,
+		const string& temperatureCacheFileName,
+		const chrono::duration<int64_t>& temperatureCacheLength,
+		const string& temperatureHistoryFileName,
+		const chrono::duration<int64_t>& temperatureHistoryPeriod,
+		const chrono::duration<int64_t>& forecastUpdatePeriod
+	) :
+	timer(*this, sensorUpdatePeriod)
 {
 	try {
 		sensor = make_shared<TemperatureSensor_DS18B20>();
@@ -60,17 +65,26 @@ Temperature::Temperature(
 				make_shared<CsvWriterImplFactory>()
 			);
 
-		timer.reset(new Timer(*this, sensorUpdatePeriod));
-		timer->start();
+		sensor->updateCache();
 	} catch (const exception& e) {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
+
+	try {
+		forecast = make_shared<TemperatureForecast>(forecastUpdatePeriod);
+		forecast->onTimer();
+		forecast->startTimer();
+	} catch (const exception& e) {
+		LOGGER.warning("Can not initialize weather forecast module", e);
+	}
+
+	timer.start();
 }
 
 Temperature::~Temperature() {
-	if (timer != nullptr) {
-		timer->stop();
-	}
+	forecast->stopTimer();
+
+	timer.stop();
 }
 
 float Temperature::getTemperature() {
@@ -80,7 +94,7 @@ float Temperature::getTemperature() {
 void Temperature::onTimer() {
 	sensor->updateCache();
 
-	const time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+	const time_t currentTime = time(nullptr);
 
 	try {
 		const float temperature = sensor->getCachedValue();

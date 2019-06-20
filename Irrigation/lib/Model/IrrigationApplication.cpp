@@ -68,7 +68,8 @@ void IrrigationApplication::initTemperatureSensor() {
 			Configuration::getInstance().getTemperatureCacheFileName(),
 			Configuration::getInstance().getTemperatureCacheLength(),
 			Configuration::getInstance().getTemperatureHistoryFileName(),
-			Configuration::getInstance().getTemperatureHistoryPeriod()
+			Configuration::getInstance().getTemperatureHistoryPeriod(),
+			Configuration::getInstance().getTemperatureForecastUpdatePeriod()
 		);
 
 	} catch (const exception& e) {

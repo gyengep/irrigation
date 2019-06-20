@@ -33,6 +33,7 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 	timeinfo.tm_hour = hour;
 	timeinfo.tm_min = min;
 	timeinfo.tm_sec = sec;
+	timeinfo.tm_isdst = -1;
 
 	return timeinfo;
 }

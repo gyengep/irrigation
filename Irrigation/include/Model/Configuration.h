@@ -14,6 +14,7 @@ class Configuration {
 	static const std::string defaultTemperatureCacheFileName;
 	static const std::string defaultTemperatureHistoryFileName;
 	static const std::chrono::duration<int64_t> defaultTemperatureSensorUpdatePeriod;
+	static const std::chrono::duration<int64_t> defaultTemperatureForecastUpdatePeriod;
 	static const std::chrono::duration<int64_t> defaultTemperatureCacheLength;
 	static const std::chrono::duration<int64_t> defaultTemperatureHistoryPeriod;
 	static const LogLevel defaultLogLevel;
@@ -28,6 +29,7 @@ public:
 	const std::string& getTemperatureCacheFileName() const { return defaultTemperatureCacheFileName; }
 	const std::string& getTemperatureHistoryFileName() const { return defaultTemperatureHistoryFileName; }
 	const std::chrono::duration<int64_t>& getTemperatureSensorUpdatePeriod() const { return defaultTemperatureSensorUpdatePeriod; }
+	const std::chrono::duration<int64_t>& getTemperatureForecastUpdatePeriod() const { return defaultTemperatureForecastUpdatePeriod; }
 	const std::chrono::duration<int64_t>& getTemperatureCacheLength() const { return defaultTemperatureCacheLength; }
 	const std::chrono::duration<int64_t>& getTemperatureHistoryPeriod() const { return defaultTemperatureHistoryPeriod; }
 	LogLevel getLogLevel() const { return defaultLogLevel; }
