@@ -16,7 +16,7 @@ TEST(TemperatureStatisticsImplTest, addTempearture) {
 	temperatureStatistics.addTemperature(2, 20.0f);
 	temperatureStatistics.addTemperature(5, 50.0f);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(),
+	EXPECT_THAT(temperatureStatistics.getContainer(),
 		ContainerEq(deque<TemperatureStatisticsImpl::TemperatureSample>{
 			TemperatureStatisticsImpl::TemperatureSample(2, 20.0f),
 			TemperatureStatisticsImpl::TemperatureSample(5, 50.0f)
@@ -33,7 +33,7 @@ TEST(TemperatureStatisticsImplTest, removeNewer) {
 	temperatureStatistics.addTemperature(5, 50.0f);
 	temperatureStatistics.addTemperature(3, 130.0f);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(),
+	EXPECT_THAT(temperatureStatistics.getContainer(),
 		ContainerEq(deque<TemperatureStatisticsImpl::TemperatureSample>{
 			TemperatureStatisticsImpl::TemperatureSample(2, 20.0f),
 			TemperatureStatisticsImpl::TemperatureSample(3, 130.0f)
@@ -42,7 +42,7 @@ TEST(TemperatureStatisticsImplTest, removeNewer) {
 
 	temperatureStatistics.addTemperature(1, 10.0f);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(),
+	EXPECT_THAT(temperatureStatistics.getContainer(),
 		ContainerEq(deque<TemperatureStatisticsImpl::TemperatureSample>{
 			TemperatureStatisticsImpl::TemperatureSample(1, 10.0f),
 		})
@@ -61,7 +61,7 @@ TEST(TemperatureStatisticsImplTest, removeOlder) {
 	temperatureStatistics.addTemperature(105, 25.0f);
 	temperatureStatistics.addTemperature(125, 5.0f);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(),
+	EXPECT_THAT(temperatureStatistics.getContainer(),
 		ContainerEq(deque<TemperatureStatisticsImpl::TemperatureSample>{
 			TemperatureStatisticsImpl::TemperatureSample(6, 124.0f),
 			TemperatureStatisticsImpl::TemperatureSample(25, 105.0f),
@@ -87,14 +87,14 @@ TEST(TemperatureStatisticsImplTest, getStatisticsMin) {
 	temperatureStatistics.addTemperature(14, 140.0f);
 	temperatureStatistics.addTemperature(15, 150.0f);
 
-	EXPECT_THAT(temperatureStatistics.getStatistics(2, 11).minTemperature, Eq(20));
-	EXPECT_THAT(temperatureStatistics.getStatistics(3, 11).minTemperature, Eq(30));
-	EXPECT_THAT(temperatureStatistics.getStatistics(4, 11).minTemperature, Eq(70));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).minTemperature, Eq(70));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 8).minTemperature, Eq(70));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 9).minTemperature, Eq(70));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 10).minTemperature, Eq(70));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).minTemperature, Eq(70));
+	EXPECT_THAT(temperatureStatistics.getStatistics(2, 11).min, Eq(20));
+	EXPECT_THAT(temperatureStatistics.getStatistics(3, 11).min, Eq(30));
+	EXPECT_THAT(temperatureStatistics.getStatistics(4, 11).min, Eq(70));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).min, Eq(70));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 8).min, Eq(70));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 9).min, Eq(70));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 10).min, Eq(70));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).min, Eq(70));
 }
 
 TEST(TemperatureStatisticsImplTest, getStatisticsMax) {
@@ -110,14 +110,14 @@ TEST(TemperatureStatisticsImplTest, getStatisticsMax) {
 	temperatureStatistics.addTemperature(14, 140.0f);
 	temperatureStatistics.addTemperature(15, 150.0f);
 
-	EXPECT_THAT(temperatureStatistics.getStatistics(2, 11).maxTemperature, Eq(90));
-	EXPECT_THAT(temperatureStatistics.getStatistics(3, 11).maxTemperature, Eq(90));
-	EXPECT_THAT(temperatureStatistics.getStatistics(4, 11).maxTemperature, Eq(90));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).maxTemperature, Eq(90));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 8).maxTemperature, Eq(80));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 9).maxTemperature, Eq(90));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 10).maxTemperature, Eq(90));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).maxTemperature, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(2, 11).max, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(3, 11).max, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(4, 11).max, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).max, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 8).max, Eq(80));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 9).max, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 10).max, Eq(90));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).max, Eq(90));
 }
 
 TEST(TemperatureStatisticsImplTest, getStatisticsAvg) {
@@ -133,14 +133,14 @@ TEST(TemperatureStatisticsImplTest, getStatisticsAvg) {
 	temperatureStatistics.addTemperature(14, 140.0f);
 	temperatureStatistics.addTemperature(15, 150.0f);
 
-	EXPECT_THAT(temperatureStatistics.getStatistics(2, 11).avgTemperature, Eq(58));
-	EXPECT_THAT(temperatureStatistics.getStatistics(3, 11).avgTemperature, Eq(67.5));
-	EXPECT_THAT(temperatureStatistics.getStatistics(4, 11).avgTemperature, Eq(80));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).avgTemperature, Eq(80));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 8).avgTemperature, Eq(75));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 9).avgTemperature, Eq(80));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 10).avgTemperature, Eq(80));
-	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).avgTemperature, Eq(80));
+	EXPECT_THAT(temperatureStatistics.getStatistics(2, 11).avg, Eq(58));
+	EXPECT_THAT(temperatureStatistics.getStatistics(3, 11).avg, Eq(67.5));
+	EXPECT_THAT(temperatureStatistics.getStatistics(4, 11).avg, Eq(80));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).avg, Eq(80));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 8).avg, Eq(75));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 9).avg, Eq(80));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 10).avg, Eq(80));
+	EXPECT_THAT(temperatureStatistics.getStatistics(5, 11).avg, Eq(80));
 }
 
 TEST(TemperatureStatisticsImplTest, getStatisticsNotFound) {
@@ -195,7 +195,7 @@ TEST(TemperatureStatisticsImplTest, load) {
 		make_shared<CsvWriterImplFactory>()
 	);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(),
+	EXPECT_THAT(temperatureStatistics.getContainer(),
 		ContainerEq(deque<TemperatureStatisticsImpl::TemperatureSample>{
 			TemperatureStatisticsImpl::TemperatureSample(1, 15.1f),
 			TemperatureStatisticsImpl::TemperatureSample(5, 35.6f)
@@ -220,7 +220,7 @@ TEST(TemperatureStatisticsImplTest, loadInvalidFile) {
 		make_shared<CsvWriterImplFactory>()
 	);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(), IsEmpty());
+	EXPECT_THAT(temperatureStatistics.getContainer(), IsEmpty());
 }
 
 TEST(TemperatureStatisticsImplTest, loadNotExistingFile) {
@@ -233,6 +233,6 @@ TEST(TemperatureStatisticsImplTest, loadNotExistingFile) {
 		make_shared<CsvWriterImplFactory>()
 	);
 
-	EXPECT_THAT(temperatureStatistics.getSamples(), IsEmpty());
+	EXPECT_THAT(temperatureStatistics.getContainer(), IsEmpty());
 }
 

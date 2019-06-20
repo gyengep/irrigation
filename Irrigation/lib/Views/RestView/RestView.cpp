@@ -145,7 +145,7 @@ void RestView::onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigati
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
 
 	irrigationDocument.getWateringController().start(
-		system_clock::to_time_t(system_clock::now()),
+		time(nullptr),
 		RunTimeContainer(*irrigationActionDTO.runTimeDtoList),
 		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : 100
 	);
@@ -164,7 +164,7 @@ void RestView::onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigat
 	const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 
 	irrigationDocument.getWateringController().start(
-		system_clock::to_time_t(system_clock::now()),
+		time(nullptr),
 		program->getRunTimes(),
 		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : program->getAdjustment()
 	);

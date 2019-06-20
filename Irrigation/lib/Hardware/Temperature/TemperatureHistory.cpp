@@ -17,7 +17,7 @@ TemperatureHistory::TemperatureHistory(
 			period,
 			temperatureStatistics,
 			csvWriterFactory->create(openFile(fileName)),
-			chrono::system_clock::to_time_t(chrono::system_clock::now())
+			time(nullptr)
 		)
 {
 }
@@ -44,7 +44,7 @@ TemperatureHistory::~TemperatureHistory() {
 }
 
 void TemperatureHistory::periodicUpdate() {
-	const time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+	const time_t currentTime = time(nullptr);
 	periodicUpdate(currentTime);
 }
 
@@ -58,9 +58,9 @@ void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
 			const auto statisticsValues = temperatureStatistics->getStatistics(periodStart, periodEnd);
 			const vector<string> statisticsTexts {
 				timeToString(periodStart),
-				temperatureToString(statisticsValues.minTemperature),
-				temperatureToString(statisticsValues.maxTemperature),
-				temperatureToString(statisticsValues.avgTemperature),
+				temperatureToString(statisticsValues.min),
+				temperatureToString(statisticsValues.max),
+				temperatureToString(statisticsValues.avg),
 			};
 
 			csvWriter->append(statisticsTexts);

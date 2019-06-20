@@ -59,8 +59,8 @@ public:
 	virtual ~TemperatureStatisticsImpl();
 
 	virtual void addTemperature(std::time_t rawTime, float temperature) override;
-	virtual StatisticsValues getStatistics(std::time_t from, std::time_t to) override;
+	virtual TemperatureValues getStatistics(std::time_t from, std::time_t to) override;
 
 	// only for testing
-	const std::deque<TemperatureSample> getSamples() const;
+	const std::deque<TemperatureSample> getContainer() const;
 };

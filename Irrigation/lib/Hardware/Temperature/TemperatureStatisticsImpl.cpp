@@ -23,7 +23,7 @@ bool TemperatureStatisticsImpl::TemperatureSample::operator== (const Temperature
 ostream& operator<<(ostream& os, const TemperatureStatisticsImpl::TemperatureSample& temperatureSample) {
 	os << "TemperatureSample{";
 	os << "time: " << temperatureSample.sampleTime << ", ";
-	os << "value: " << temperatureSample.value << ", ";
+	os << "value: " << temperatureSample.value;
 	os << "}";
 	return os;
 }
@@ -132,12 +132,12 @@ void TemperatureStatisticsImpl::removeOlder(time_t rawTime) {
 	samples.erase(samples.begin(), it);
 }
 
-const deque<TemperatureStatisticsImpl::TemperatureSample> TemperatureStatisticsImpl::getSamples() const {
+const deque<TemperatureStatisticsImpl::TemperatureSample> TemperatureStatisticsImpl::getContainer() const {
 	lock_guard<mutex> lock(mtx);
 	return samples;
 }
 
-StatisticsValues TemperatureStatisticsImpl::getStatistics(time_t from, time_t to) {
+TemperatureValues TemperatureStatisticsImpl::getStatistics(time_t from, time_t to) {
 	lock_guard<mutex> lock(mtx);
 
 	float min = numeric_limits<float>::max();
@@ -155,8 +155,8 @@ StatisticsValues TemperatureStatisticsImpl::getStatistics(time_t from, time_t to
 	}
 
 	if (0 == count) {
-		throw NoSuchElementException("Temperature sample not found found with specified criteria");
+		throw NoSuchElementException("Temperature sample not found with specified criteria");
 	}
 
-	return StatisticsValues(min, max, sum / count);
+	return TemperatureValues(min, max, sum / count);
 }

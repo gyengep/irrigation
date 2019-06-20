@@ -7,16 +7,18 @@
 
 class TemperatureHistory;
 class TemperatureSensor;
+class TemperatureForecast;
 
 
 class Temperature : public TimerCallback {
 	static std::shared_ptr<Temperature> instance;
 
-	std::unique_ptr<Timer> timer;
+	Timer timer;
 
 	std::shared_ptr<TemperatureSensor> sensor;
 	std::shared_ptr<TemperatureStatistics> statistics;
 	std::shared_ptr<TemperatureHistory> history;
+	std::shared_ptr<TemperatureForecast> forecast;
 
 	Temperature(
 			const std::chrono::duration<int64_t>& sensorUpdatePeriod,

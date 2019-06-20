@@ -6,7 +6,7 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const time_t TimerViewTest::rawtime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+const time_t TimerViewTest::rawtime = time(nullptr);
 const tm TimerViewTest::timeinfo = *localtime(&TimerViewTest::rawtime);
 const RunTimeContainer TimerViewTest::runTimes1 { 110, 120, 130, 140, 150, 160 };
 const RunTimeContainer TimerViewTest::runTimes2 { 210, 220, 230, 240, 250, 260 };
