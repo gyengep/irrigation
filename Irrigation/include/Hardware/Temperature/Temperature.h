@@ -25,7 +25,8 @@ class Temperature : public TimerCallback {
 			const std::string& temperatureCacheFileName,
 			const std::chrono::duration<int64_t>& temperatureCacheLength,
 			const std::string& temperatureHistoryFileName,
-			const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+			const std::chrono::duration<int64_t>& temperatureHistoryPeriod,
+			const std::chrono::duration<int64_t>& forecastUpdatePeriod
 		);
 
 public:
@@ -41,7 +42,8 @@ public:
 			const std::string& temperatureCacheFileName,
 			const std::chrono::duration<int64_t>& temperatureCacheLength,
 			const std::string& temperatureHistoryFileName,
-			const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+			const std::chrono::duration<int64_t>& temperatureHistoryPeriod,
+			const std::chrono::duration<int64_t>& forecastUpdatePeriod
 		);
 	static std::shared_ptr<Temperature> getInstancePtr();
 };

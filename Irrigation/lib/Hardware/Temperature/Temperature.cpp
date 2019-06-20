@@ -15,11 +15,12 @@ using namespace std;
 shared_ptr<Temperature> Temperature::instance;
 
 void Temperature::init(
-		const std::chrono::duration<int64_t>& sensorUpdatePeriod,
-		const std::string& temperatureCacheFileName,
-		const std::chrono::duration<int64_t>& temperatureCacheLength,
-		const std::string& temperatureHistoryFileName,
-		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+		const chrono::duration<int64_t>& sensorUpdatePeriod,
+		const string& temperatureCacheFileName,
+		const chrono::duration<int64_t>& temperatureCacheLength,
+		const string& temperatureHistoryFileName,
+		const chrono::duration<int64_t>& temperatureHistoryPeriod,
+		const chrono::duration<int64_t>& forecastUpdatePeriod
 	)
 {
 	instance = shared_ptr<Temperature>(new Temperature(
@@ -27,7 +28,8 @@ void Temperature::init(
 			temperatureCacheFileName,
 			temperatureCacheLength,
 			temperatureHistoryFileName,
-			temperatureHistoryPeriod
+			temperatureHistoryPeriod,
+			forecastUpdatePeriod
 		));
 }
 
@@ -38,11 +40,12 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 ///////////////////////////////////////////////////////////////////////////////
 
 Temperature::Temperature(
-		const std::chrono::duration<int64_t>& sensorUpdatePeriod,
-		const std::string& temperatureCacheFileName,
-		const std::chrono::duration<int64_t>& temperatureCacheLength,
-		const std::string& temperatureHistoryFileName,
-		const std::chrono::duration<int64_t>& temperatureHistoryPeriod
+		const chrono::duration<int64_t>& sensorUpdatePeriod,
+		const string& temperatureCacheFileName,
+		const chrono::duration<int64_t>& temperatureCacheLength,
+		const string& temperatureHistoryFileName,
+		const chrono::duration<int64_t>& temperatureHistoryPeriod,
+		const chrono::duration<int64_t>& forecastUpdatePeriod
 	) :
 	timer(*this, sensorUpdatePeriod)
 {
@@ -68,7 +71,7 @@ Temperature::Temperature(
 	}
 
 	try {
-		forecast = make_shared<TemperatureForecast>();
+		forecast = make_shared<TemperatureForecast>(forecastUpdatePeriod);
 		forecast->onTimer();
 		forecast->startTimer();
 	} catch (const exception& e) {

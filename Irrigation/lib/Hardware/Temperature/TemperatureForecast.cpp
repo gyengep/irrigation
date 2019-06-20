@@ -4,7 +4,6 @@
 #include "Utils/TimeConversion.h"
 #include "pugixml.hpp"
 #include <curl/curl.h>
-#include <memory>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -12,19 +11,23 @@
 using namespace std;
 using namespace pugi;
 
+const string TemperatureForecast::url("api.openweathermap.org/data/2.5/forecast");
+const string TemperatureForecast::location("Dunakeszi,hu");
+const string TemperatureForecast::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
+
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::Values::Values(float min, float max) :
+TemperatureForecast::MinMaxValues::MinMaxValues(float min, float max) :
 	min(min),
 	max(max)
 {
 }
 
-bool TemperatureForecast::Values::operator== (const Values& other) const {
+bool TemperatureForecast::MinMaxValues::operator== (const MinMaxValues& other) const {
 	return ((min == other.min) && (max == other.max));
 }
 
-ostream& operator<<(ostream& os, const TemperatureForecast::Values& values) {
+ostream& operator<<(ostream& os, const TemperatureForecast::MinMaxValues& values) {
 	os << "Values{";
 	os << "min: " << values.min << ", ";
 	os << "max: " << values.max;
@@ -34,29 +37,29 @@ ostream& operator<<(ostream& os, const TemperatureForecast::Values& values) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::ValuesWithTimes::ValuesWithTimes(time_t from, time_t to, const Values& values) :
+TemperatureForecast::MinMaxValuesWithTimes::MinMaxValuesWithTimes(time_t from, time_t to, const MinMaxValues& values) :
 	from(from),
 	to(to),
-	values(values)
+	minMaxValues(values)
 {
 }
 
-bool TemperatureForecast::ValuesWithTimes::operator== (const ValuesWithTimes& other) const {
-	return ((from == other.from) && (to == other.to) && (values == other.values));
+bool TemperatureForecast::MinMaxValuesWithTimes::operator== (const MinMaxValuesWithTimes& other) const {
+	return ((from == other.from) && (to == other.to) && (minMaxValues == other.minMaxValues));
 }
 
-ostream& operator<<(ostream& os, const TemperatureForecast::ValuesWithTimes& valuesWithTimes) {
+ostream& operator<<(ostream& os, const TemperatureForecast::MinMaxValuesWithTimes& valuesWithTimes) {
 	os << "ValuesWithTimes{";
 	os << "from: " << valuesWithTimes.from << ", ";
 	os << "to: " << valuesWithTimes.to << ", ";
-	os << "values: " << valuesWithTimes.values;
+	os << "values: " << valuesWithTimes.minMaxValues;
 	os << "}";
 	return os;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-string TemperatureForecast::NetworkReader::read(const string url, const string location, const string appid) const {
+string TemperatureForecast::NetworkReader::read(const string& url, const string& location, const string& appid) const {
 	unique_ptr<CURL, void(*)(CURL*)> curl(curl_easy_init(), curl_easy_cleanup);
 
 	if (curl.get() == nullptr) {
@@ -93,17 +96,14 @@ string TemperatureForecast::NetworkReader::read(const string url, const string l
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::TemperatureForecast() :
-	TemperatureForecast(make_shared<NetworkReader>())
+TemperatureForecast::TemperatureForecast(const chrono::duration<int64_t>& updatePeriod) :
+	TemperatureForecast(updatePeriod, make_shared<NetworkReader>())
 {
 }
 
-TemperatureForecast::TemperatureForecast(const shared_ptr<NetworkReader>& networkReader) :
-	url("api.openweathermap.org/data/2.5/forecast"),
-	location("Dunakeszi,hu"),
-	appid("4560b35d4d7cfa41e7cdf944ddf59a58"),
+TemperatureForecast::TemperatureForecast(const chrono::duration<int64_t>& updatePeriod, const shared_ptr<NetworkReader>& networkReader) :
 	networkReader(networkReader),
-	timer(*this, chrono::minutes(60))
+	timer(*this, updatePeriod)
 {
 }
 
@@ -111,55 +111,73 @@ TemperatureForecast::~TemperatureForecast() {
 }
 
 void TemperatureForecast::updateCache() {
-	std::list<ValuesWithTimes> temporaryTemperatures;
+	list<MinMaxValuesWithTimes> temporaryTemperatures;
 
 	try {
-		const string responseXml = networkReader->read(url, location, appid);
-
-		xml_document doc;
-		xml_parse_result result = doc.load_string(responseXml.c_str());
-
-		if (status_ok != result.status) {
-			throw runtime_error(result.description());
-		}
-
-		static const pugi::xpath_query queryTemperature("/weatherdata/forecast/time/temperature");
-		pugi::xpath_node_set temperatureNodeSet = queryTemperature.evaluate_node_set(doc);
-
-		for (const auto& temperatureNode : temperatureNodeSet) {
-			const string unit = temperatureNode.node().attribute("unit").value();
-			const string from = temperatureNode.parent().attribute("from").value();
-			const string to = temperatureNode.parent().attribute("to").value();
-			const float value = temperatureNode.node().attribute("value").as_float();
-			const float min = temperatureNode.node().attribute("min").as_float();
-			const float max = temperatureNode.node().attribute("max").as_float();
-
-			addTemperature(temporaryTemperatures, parseTimeString(from), parseTimeString(to), Values(min, max));
-
-			if (false && LOGGER.isLoggable(LogLevel::TRACE)) {
-				LOGGER.trace("unit:  %s", unit.c_str());
-				LOGGER.trace("value: %f", value);
-				LOGGER.trace("from:  %s %lld", from.c_str(), (int64_t)parseTimeString(from));
-				LOGGER.trace("to:    %s %lld", to.c_str(), (int64_t)parseTimeString(to));
-				LOGGER.trace("*********************");
-			}
-		}
-
+		temporaryTemperatures = parseXml(networkReader->read(url, location, appid));
 	} catch (const exception& e) {
 		LOGGER.warning("Can not query the weather forecast", e);
-		temporaryTemperatures.clear();
 	}
 
 	lock_guard<mutex> lock(mtx);
 	temperatures.swap(temporaryTemperatures);
 }
 
-void TemperatureForecast::addTemperature(time_t from, time_t to, const Values& values) {
-	lock_guard<mutex> lock(mtx);
-	addTemperature(temperatures, from, to, values);
+list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::parseXml(const string& text) {
+	static const pugi::xpath_query queryTemperature("/weatherdata/forecast/time/temperature");
+
+	xml_document doc;
+	const xml_parse_result parseResult = doc.load_string(text.c_str());
+
+	if (status_ok != parseResult.status) {
+		throw runtime_error(parseResult.description());
+	}
+
+	pugi::xpath_node_set temperatureNodeSet = queryTemperature.evaluate_node_set(doc);
+	list<MinMaxValuesWithTimes> result;
+
+	for (const auto& temperatureNode : temperatureNodeSet) {
+		const string unit = temperatureNode.node().attribute("unit").value();
+		const string from = temperatureNode.parent().attribute("from").value();
+		const string to = temperatureNode.parent().attribute("to").value();
+		const float value = temperatureNode.node().attribute("value").as_float();
+		const float min = temperatureNode.node().attribute("min").as_float();
+		const float max = temperatureNode.node().attribute("max").as_float();
+
+		addTemperatureTo(result, parseTimeString(from), parseTimeString(to), MinMaxValues(min, max));
+
+		if (false && LOGGER.isLoggable(LogLevel::TRACE)) {
+			LOGGER.trace("unit:  %s", unit.c_str());
+			LOGGER.trace("value: %f", value);
+			LOGGER.trace("from:  %s %lld", from.c_str(), (int64_t)parseTimeString(from));
+			LOGGER.trace("to:    %s %lld", to.c_str(), (int64_t)parseTimeString(to));
+			LOGGER.trace("*********************");
+		}
+	}
+
+	return result;
 }
 
-TemperatureForecast::Values TemperatureForecast::getForecast(time_t from, time_t to) const {
+void TemperatureForecast::addTemperature(time_t from, time_t to, const MinMaxValues& values) {
+	lock_guard<mutex> lock(mtx);
+	addTemperatureTo(temperatures, from, to, values);
+}
+
+void TemperatureForecast::addTemperatureTo(list<MinMaxValuesWithTimes>& temperatures, time_t from, time_t to, const MinMaxValues& values) {
+	if (from >= to) {
+		throw runtime_error("Temperature forecast period from/to mismatch");
+	}
+
+	if (!temperatures.empty()) {
+		if (temperatures.back().to != from) {
+			throw runtime_error("Temperature forecast period from/to mismatch");
+		}
+	}
+
+	temperatures.emplace_back(from, to, values);
+}
+
+TemperatureForecast::MinMaxValues TemperatureForecast::getForecast(time_t from, time_t to) const {
 	lock_guard<mutex> lock(mtx);
 
 	float min = numeric_limits<float>::max();
@@ -168,8 +186,8 @@ TemperatureForecast::Values TemperatureForecast::getForecast(time_t from, time_t
 
 	for (const auto& valuesWithTimes : temperatures) {
 		if ((from < valuesWithTimes.to) && (valuesWithTimes.from < to)) {
-			min = std::min(min, valuesWithTimes.values.min);
-			max = std::max(max, valuesWithTimes.values.max);
+			min = std::min(min, valuesWithTimes.minMaxValues.min);
+			max = std::max(max, valuesWithTimes.minMaxValues.max);
 			found = true;
 		}
 	}
@@ -178,10 +196,10 @@ TemperatureForecast::Values TemperatureForecast::getForecast(time_t from, time_t
 		throw NoSuchElementException("Temperature forecast not available with specified criteria");
 	}
 
-	return Values(min, max);
+	return MinMaxValues(min, max);
 }
 
-const list<TemperatureForecast::ValuesWithTimes> TemperatureForecast::getContainer() const {
+const list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::getContainer() const {
 	lock_guard<mutex> lock(mtx);
 	return temperatures;
 }
@@ -234,18 +252,4 @@ time_t TemperatureForecast::parseTimeString(const string& text) {
 		);
 
 	return timegm(&calendarTime);
-}
-
-void TemperatureForecast::addTemperature(list<ValuesWithTimes>& temperatures, std::time_t from, std::time_t to, const Values& values) {
-	if (from >= to) {
-		throw runtime_error("Temperature forecast period from/to mismatch");
-	}
-
-	if (!temperatures.empty()) {
-		if (temperatures.back().to != from) {
-			throw runtime_error("Temperature forecast period from/to mismatch");
-		}
-	}
-
-	temperatures.emplace_back(from, to, values);
 }
