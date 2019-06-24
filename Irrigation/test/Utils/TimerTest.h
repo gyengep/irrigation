@@ -12,7 +12,7 @@ protected:
 	std::chrono::steady_clock::time_point lastCalled;
 
 	MockTimerCallback mockTimerCallback;
-	std::unique_ptr<Timer> timer;
+	Timer timer;
 
     virtual void SetUp();
     virtual void TearDown();
