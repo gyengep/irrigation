@@ -30,7 +30,7 @@ void DocumentSaver::stopTimer() {
 }
 
 void DocumentSaver::onTimer() {
-	LOGGER.trace("DocumentSaver::onTimer()");
+	//LOGGER.trace("DocumentSaver::onTimer()");
 	saveIfModified();
 }
 

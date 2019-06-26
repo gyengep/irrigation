@@ -135,8 +135,8 @@ void Temperature::onTimer() {
 		}
 
 		try {
-			periodStart = ((currentTime / periodInSeconds) - 1 ) * periodInSeconds;
-			periodEnd = currentTime / periodInSeconds * periodInSeconds;
+			periodStart = currentTime / periodInSeconds * periodInSeconds;
+			periodEnd = ((currentTime / periodInSeconds ) + 1 ) * periodInSeconds;
 			forecastValues.reset(new TemperatureForecast::Values(forecast->getForecastValues(periodStart, periodEnd)));
 
 			const string start = toTimeStr(periodStart);

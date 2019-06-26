@@ -41,6 +41,6 @@ void TemperatureSensor::updateCache() {
 }
 
 void TemperatureSensor::onTimer() {
-	LOGGER.trace("TemperatureSensor::onTimer()");
+	//LOGGER.trace("TemperatureSensor::onTimer()");
 	updateCache();
 }
