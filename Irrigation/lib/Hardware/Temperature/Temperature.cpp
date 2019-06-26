@@ -98,7 +98,7 @@ string toTimeStr(time_t rawTime) {
 }
 
 void Temperature::onTimer() {
-	const chrono::seconds::rep periodInSeconds = 60;
+	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
 	const auto currentTime = time(nullptr);
 
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
