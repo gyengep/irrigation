@@ -9,13 +9,13 @@ using namespace std;
 
 
 TemperatureHistory::TemperatureHistory(
-		const chrono::duration<int64_t>& period,
 		const shared_ptr<TemperatureStatistics>& temperatureStatistics,
+		const chrono::seconds& period,
 		const string& fileName,
 		const shared_ptr<CsvWriterFactory>& csvWriterFactory
 	) : TemperatureHistory(
-			period,
 			temperatureStatistics,
+			period,
 			csvWriterFactory->create(openFile(fileName)),
 			time(nullptr)
 		)
@@ -23,8 +23,8 @@ TemperatureHistory::TemperatureHistory(
 }
 
 TemperatureHistory::TemperatureHistory(
-		const chrono::duration<int64_t>& period,
 		const shared_ptr<TemperatureStatistics>& temperatureStatistics,
+		const chrono::seconds& period,
 		const std::shared_ptr<CsvWriter>& csvWriter,
 		const std::time_t currentTime
 	) :
@@ -43,19 +43,16 @@ TemperatureHistory::TemperatureHistory(
 TemperatureHistory::~TemperatureHistory() {
 }
 
-void TemperatureHistory::periodicUpdate() {
-	const time_t currentTime = time(nullptr);
-	periodicUpdate(currentTime);
-}
-
 void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
+
+		LOGGER.trace("TemperatureHistory::onTimer()");
 
 		const time_t periodStart = ((currentTime / periodInSeconds) - 1) * periodInSeconds;
 		const time_t periodEnd = (currentTime / periodInSeconds) * periodInSeconds - 1;
 
 		try {
-			const auto statisticsValues = temperatureStatistics->getStatistics(periodStart, periodEnd);
+			const auto statisticsValues = temperatureStatistics->getStatisticsValues(periodStart, periodEnd);
 			const vector<string> statisticsTexts {
 				timeToString(periodStart),
 				temperatureToString(statisticsValues.min),
@@ -72,6 +69,10 @@ void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
 
 		lastUpdate = currentTime;
 	}
+}
+
+void TemperatureHistory::onTimer() {
+	periodicUpdate();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -17,17 +17,17 @@ const string TemperatureForecast::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::MinMaxValues::MinMaxValues(float min, float max) :
+TemperatureForecast::Values::Values(float min, float max) :
 	min(min),
 	max(max)
 {
 }
 
-bool TemperatureForecast::MinMaxValues::operator== (const MinMaxValues& other) const {
+bool TemperatureForecast::Values::operator== (const Values& other) const {
 	return ((min == other.min) && (max == other.max));
 }
 
-ostream& operator<<(ostream& os, const TemperatureForecast::MinMaxValues& values) {
+ostream& operator<<(ostream& os, const TemperatureForecast::Values& values) {
 	os << "Values{";
 	os << "min: " << values.min << ", ";
 	os << "max: " << values.max;
@@ -37,18 +37,18 @@ ostream& operator<<(ostream& os, const TemperatureForecast::MinMaxValues& values
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::MinMaxValuesWithTimes::MinMaxValuesWithTimes(time_t from, time_t to, const MinMaxValues& values) :
+TemperatureForecast::ValuesWithTimes::ValuesWithTimes(time_t from, time_t to, const Values& values) :
 	from(from),
 	to(to),
 	minMaxValues(values)
 {
 }
 
-bool TemperatureForecast::MinMaxValuesWithTimes::operator== (const MinMaxValuesWithTimes& other) const {
+bool TemperatureForecast::ValuesWithTimes::operator== (const ValuesWithTimes& other) const {
 	return ((from == other.from) && (to == other.to) && (minMaxValues == other.minMaxValues));
 }
 
-ostream& operator<<(ostream& os, const TemperatureForecast::MinMaxValuesWithTimes& valuesWithTimes) {
+ostream& operator<<(ostream& os, const TemperatureForecast::ValuesWithTimes& valuesWithTimes) {
 	os << "ValuesWithTimes{";
 	os << "from: " << valuesWithTimes.from << ", ";
 	os << "to: " << valuesWithTimes.to << ", ";
@@ -96,14 +96,8 @@ string TemperatureForecast::NetworkReader::read(const string& url, const string&
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::TemperatureForecast(const chrono::duration<int64_t>& updatePeriod) :
-	TemperatureForecast(updatePeriod, make_shared<NetworkReader>())
-{
-}
-
-TemperatureForecast::TemperatureForecast(const chrono::duration<int64_t>& updatePeriod, const shared_ptr<NetworkReader>& networkReader) :
-	networkReader(networkReader),
-	timer(*this, updatePeriod)
+TemperatureForecast::TemperatureForecast(const shared_ptr<NetworkReader>& networkReader) :
+	networkReader(networkReader)
 {
 }
 
@@ -111,7 +105,7 @@ TemperatureForecast::~TemperatureForecast() {
 }
 
 void TemperatureForecast::updateCache() {
-	list<MinMaxValuesWithTimes> temporaryTemperatures;
+	list<ValuesWithTimes> temporaryTemperatures;
 
 	try {
 		temporaryTemperatures = parseXml(networkReader->read(url, location, appid));
@@ -123,7 +117,7 @@ void TemperatureForecast::updateCache() {
 	temperatures.swap(temporaryTemperatures);
 }
 
-list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::parseXml(const string& text) {
+list<TemperatureForecast::ValuesWithTimes> TemperatureForecast::parseXml(const string& text) {
 	static const pugi::xpath_query queryTemperature("/weatherdata/forecast/time/temperature");
 
 	xml_document doc;
@@ -134,7 +128,7 @@ list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::parseXml(c
 	}
 
 	pugi::xpath_node_set temperatureNodeSet = queryTemperature.evaluate_node_set(doc);
-	list<MinMaxValuesWithTimes> result;
+	list<ValuesWithTimes> result;
 
 	for (const auto& temperatureNode : temperatureNodeSet) {
 		const string unit = temperatureNode.node().attribute("unit").value();
@@ -144,7 +138,7 @@ list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::parseXml(c
 		const float min = temperatureNode.node().attribute("min").as_float();
 		const float max = temperatureNode.node().attribute("max").as_float();
 
-		addTemperatureTo(result, parseTimeString(from), parseTimeString(to), MinMaxValues(min, max));
+		addTemperatureTo(result, parseTimeString(from), parseTimeString(to), Values(min, max));
 
 		if (false && LOGGER.isLoggable(LogLevel::TRACE)) {
 			LOGGER.trace("unit:  %s", unit.c_str());
@@ -158,12 +152,12 @@ list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::parseXml(c
 	return result;
 }
 
-void TemperatureForecast::addTemperature(time_t from, time_t to, const MinMaxValues& values) {
+void TemperatureForecast::addTemperature(time_t from, time_t to, const Values& values) {
 	lock_guard<mutex> lock(mtx);
 	addTemperatureTo(temperatures, from, to, values);
 }
 
-void TemperatureForecast::addTemperatureTo(list<MinMaxValuesWithTimes>& temperatures, time_t from, time_t to, const MinMaxValues& values) {
+void TemperatureForecast::addTemperatureTo(list<ValuesWithTimes>& temperatures, time_t from, time_t to, const Values& values) {
 	if (from >= to) {
 		throw runtime_error("Temperature forecast period from/to mismatch");
 	}
@@ -177,7 +171,7 @@ void TemperatureForecast::addTemperatureTo(list<MinMaxValuesWithTimes>& temperat
 	temperatures.emplace_back(from, to, values);
 }
 
-TemperatureForecast::MinMaxValues TemperatureForecast::getForecast(time_t from, time_t to) const {
+TemperatureForecast::Values TemperatureForecast::getForecastValues(time_t from, time_t to) const {
 	lock_guard<mutex> lock(mtx);
 
 	float min = numeric_limits<float>::max();
@@ -196,30 +190,17 @@ TemperatureForecast::MinMaxValues TemperatureForecast::getForecast(time_t from, 
 		throw NoSuchElementException("Temperature forecast not available with specified criteria");
 	}
 
-	return MinMaxValues(min, max);
+	return Values(min, max);
 }
 
-const list<TemperatureForecast::MinMaxValuesWithTimes> TemperatureForecast::getContainer() const {
+const list<TemperatureForecast::ValuesWithTimes> TemperatureForecast::getContainer() const {
 	lock_guard<mutex> lock(mtx);
 	return temperatures;
 }
 
-void TemperatureForecast::startTimer() {
-	timer.start();
-}
-
-void TemperatureForecast::stopTimer() {
-	timer.stop();
-}
-
 void TemperatureForecast::onTimer() {
+	LOGGER.trace("TemperatureForecast::onTimer()");
 	updateCache();
-
-	if (LOGGER.isLoggable(LogLevel::TRACE)) {
-		const auto currentTime = time(nullptr);
-		const auto values = getForecast(currentTime, currentTime + 60 * 60 *24);
-		LOGGER.trace("Temperature forecast for the next 24 hours: min: %f max: %f", values.min, values.max);
-	}
 }
 
 size_t TemperatureForecast::writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {

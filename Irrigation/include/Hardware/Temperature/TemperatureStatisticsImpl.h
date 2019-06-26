@@ -3,7 +3,9 @@
 #include <deque>
 #include <memory>
 #include <mutex>
+#include "TemperatureSensor.h"
 #include "TemperatureStatistics.h"
+#include "Utils/Timer.h"
 
 class CsvReaderFactory;
 class CsvWriterFactory;
@@ -25,20 +27,13 @@ public:
 
 private:
 
-	struct GreaterThan {
-		const time_t rawTime;
-
-		GreaterThan(time_t rawTime);
-		bool operator() (const TemperatureSample& sample);
-	};
-
+	mutable std::mutex mtx;
 	const std::string fileName;
 	const std::shared_ptr<CsvReaderFactory> csvReaderFactory;
 	const std::shared_ptr<CsvWriterFactory> csvWriterFactory;
-
-	const int64_t storedSeconds;
+	const std::chrono::seconds::rep storedSeconds;
+	const std::shared_ptr<TemperatureSensor> sensor;
 	std::deque<TemperatureSample> samples;
-	mutable std::mutex mtx;
 
 	void load();
 	void save();
@@ -48,18 +43,19 @@ private:
 	static std::string temperatureToString(float value);
 
 public:
-	TemperatureStatisticsImpl(const std::chrono::duration<int64_t>& storePeriod);
 	TemperatureStatisticsImpl(
-			const std::chrono::duration<int64_t>& storePeriod,
-			const std::string& fileName,
-			const std::shared_ptr<CsvReaderFactory>& csvReaderFactory,
-			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
+			const std::chrono::seconds& storePeriod,
+			const std::string& fileName = "",
+			const std::shared_ptr<CsvReaderFactory>& csvReaderFactory = std::shared_ptr<CsvReaderFactory>(),
+			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory = std::shared_ptr<CsvWriterFactory>(),
+			const std::shared_ptr<TemperatureSensor>& sensor = std::shared_ptr<TemperatureSensor>()
 		);
 
 	virtual ~TemperatureStatisticsImpl();
 
-	virtual void addTemperature(std::time_t rawTime, float temperature) override;
-	virtual TemperatureValues getStatistics(std::time_t from, std::time_t to) override;
+	void addTemperature(std::time_t rawTime, float temperature);
+	virtual Values getStatisticsValues(std::time_t from, std::time_t to) const override;
+	virtual void onTimer() override;
 
 	// only for testing
 	const std::deque<TemperatureSample> getContainer() const;

@@ -49,4 +49,5 @@ public:
 	void scheduleFixedRate(TimerCallback* callback, const std::chrono::milliseconds& waitTime);
 	void scheduleFixedDelay(TimerCallback* callback, const std::chrono::milliseconds& waitTime);
 	void remove(TimerCallback* const callback);
+	void cancel();
 };

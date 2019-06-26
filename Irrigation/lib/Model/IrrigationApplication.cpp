@@ -115,14 +115,14 @@ void IrrigationApplication::onInitialize() {
 	initTemperatureSensor();
 	initDocument();
 
-	documentSaver->start();
+	documentSaver->startTimer();
 	LOGGER.info("Irrigation System started");
 }
 
 void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
-	documentSaver->stop();
+	documentSaver->stopTimer();
 
 	try {
 		documentSaver->saveIfModified();

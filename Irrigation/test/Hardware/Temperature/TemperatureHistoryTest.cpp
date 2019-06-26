@@ -46,13 +46,13 @@ TEST(TemperatureHistoryTest, init) {
 	auto mockTemperatureStatistics = make_shared<MockTemperatureStatistics>();
 	shared_ptr<ostream> output = make_shared<ostringstream>();
 
-	EXPECT_CALL(*mockTemperatureStatistics, getStatistics(_, _)).Times(0);
+	EXPECT_CALL(*mockTemperatureStatistics, getStatisticsValues(_, _)).Times(0);
 	EXPECT_CALL(*mockCsvWriter, append(csvHeader)).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
 
 	TemperatureHistory temperatureHistory(
-			chrono::hours(1),
 			mockTemperatureStatistics,
+			chrono::hours(1),
 			mockCsvWriter,
 			time(nullptr)
 		);
@@ -65,13 +65,13 @@ TEST(TemperatureHistoryTest, createNewFile) {
 
 	const time_t currentTime = toTime(2019, 6, 12, 22, 0);
 
-	EXPECT_CALL(*mockTemperatureStatistics, getStatistics(_, _)).Times(0);
+	EXPECT_CALL(*mockTemperatureStatistics, getStatisticsValues(_, _)).Times(0);
 	EXPECT_CALL(*mockCsvWriter, append(csvHeader)).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
 
 	TemperatureHistory temperatureHistory(
-			chrono::hours(1),
 			mockTemperatureStatistics,
+			chrono::hours(1),
 			mockCsvWriter,
 			currentTime
 		);
@@ -88,16 +88,16 @@ TEST(TemperatureHistoryTest, createNewFileAndAppend) {
 
 	const time_t currentTime = toTime(2019, 6, 12, 22, 0);
 
-	TemperatureValues result(10, 20, 15);
+	TemperatureStatistics::Values result(10, 20, 15);
 
-	EXPECT_CALL(*mockTemperatureStatistics, getStatistics(currentTime, currentTime + 3599)).Times(1).WillOnce(Return(result));
+	EXPECT_CALL(*mockTemperatureStatistics, getStatisticsValues(currentTime, currentTime + 3599)).Times(1).WillOnce(Return(result));
 	EXPECT_CALL(*mockCsvWriter, append(csvHeader)).Times(1);
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "2019.06.12 22:00", "10.0", "20.0", "15.0"})).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
 
 	TemperatureHistory temperatureHistory(
-			chrono::hours(1),
 			mockTemperatureStatistics,
+			chrono::hours(1),
 			mockCsvWriter,
 			currentTime
 		);
@@ -115,15 +115,15 @@ TEST(TemperatureHistoryTest, appendFile) {
 
 	const time_t currentTime = toTime(2019, 6, 12, 22, 0);
 
-	TemperatureValues result(10, 20, 15);
+	TemperatureStatistics::Values result(10, 20, 15);
 
-	EXPECT_CALL(*mockTemperatureStatistics, getStatistics(currentTime, currentTime + 3599)).Times(1).WillOnce(Return(result));
+	EXPECT_CALL(*mockTemperatureStatistics, getStatisticsValues(currentTime, currentTime + 3599)).Times(1).WillOnce(Return(result));
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "2019.06.12 22:00", "10.0", "20.0", "15.0"})).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
 
 	TemperatureHistory temperatureHistory(
-			chrono::hours(1),
 			mockTemperatureStatistics,
+			chrono::hours(1),
 			mockCsvWriter,
 			currentTime
 		);
@@ -132,3 +132,4 @@ TEST(TemperatureHistoryTest, appendFile) {
 		temperatureHistory.periodicUpdate(currentTime + sec);
 	}
 }
+

@@ -61,7 +61,7 @@ float TemperatureSensor_DS18B20::readValueFromSensor() {
 	const size_t pos1 = text.find("t=");
 
 	if (pos1 == string::npos) {
-		throw TemperatureException("Invalid temperature file content: " + text);
+		throw TemperatureException("DS18B20 sensor file is invalid: " + text);
 	}
 
 	return stof(text.substr(pos1 + 2)) / 1000.0f;

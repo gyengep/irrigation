@@ -31,12 +31,16 @@ void TemperatureSensor::updateCache() {
 	try {
 		value = readValueFromSensor();
 		valid = true;
-
-	} catch(const exception& e) {
-		LOGGER.warning("Can not read temperature from DS18B20 sensor", e);
+	} catch(const TemperatureException& e) {
+		LOGGER.warning("Can not read temperature sensor", e);
 	}
 
 	lock_guard<mutex> lock(mtx);
 	this->value = value;
 	this->valid = valid;
+}
+
+void TemperatureSensor::onTimer() {
+	LOGGER.trace("TemperatureSensor::onTimer()");
+	updateCache();
 }

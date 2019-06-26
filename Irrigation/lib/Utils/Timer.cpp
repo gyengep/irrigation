@@ -91,6 +91,14 @@ void Timer::remove(TimerCallback* const callback) {
 	condition.notify_all();
 }
 
+void Timer::cancel() {
+	unique_lock<mutex> lock(mtx);
+
+	callbacks.clear();
+	changed = true;
+	condition.notify_all();
+}
+
 void Timer::workerFunc() {
 
 	auto terminatedOrChanged = [this]() {

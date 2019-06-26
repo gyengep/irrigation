@@ -1,8 +1,9 @@
 #pragma once
 #include <mutex>
+#include "Utils/Timer.h"
 
 
-class TemperatureSensor {
+class TemperatureSensor : public TimerCallback {
 	mutable std::mutex mtx;
 	bool valid;
 	float value;
@@ -15,4 +16,5 @@ public:
 	void updateCache();
 
 	virtual float readValueFromSensor() = 0;
+	virtual void onTimer() override;
 };

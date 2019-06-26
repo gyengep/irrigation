@@ -3,14 +3,15 @@
 #include <memory>
 #include <string>
 #include <ostream>
+#include "Utils/Timer.h"
 
 class CsvWriter;
 class CsvWriterFactory;
 class TemperatureStatistics;
 
 
-class TemperatureHistory {
-	const time_t periodInSeconds;
+class TemperatureHistory : public TimerCallback {
+	const std::chrono::seconds::rep periodInSeconds;
 	const std::shared_ptr<TemperatureStatistics> temperatureStatistics;
 	const std::shared_ptr<CsvWriter> csvWriter;
 
@@ -22,21 +23,22 @@ class TemperatureHistory {
 
 public:
 	TemperatureHistory(
-			const std::chrono::duration<int64_t>& period,
 			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
+			const std::chrono::seconds& period,
 			const std::string& fileName,
 			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
 		);
 
 	TemperatureHistory(
-			const std::chrono::duration<int64_t>& period,
 			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
+			const std::chrono::seconds& period,
 			const std::shared_ptr<CsvWriter>& csvWriter,
 			const std::time_t currentTime
 		);
 
 	virtual ~TemperatureHistory();
 
-	void periodicUpdate();
-	void periodicUpdate(std::time_t time);
+	void periodicUpdate(std::time_t time = std::time(nullptr));
+
+	virtual void onTimer() override;
 };

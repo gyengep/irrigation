@@ -1,8 +1,6 @@
 #pragma once
-#include <condition_variable>
 #include <memory>
-#include <mutex>
-#include <thread>
+#include "Utils/Timer.h"
 
 class DocumentDTO;
 class DtoReader;
@@ -12,22 +10,17 @@ class FileWriter;
 class IrrigationDocument;
 
 
-class DocumentSaver {
+class DocumentSaver : public TimerCallback {
 public:
 	class DtoWriterFactory;
 	class FileWriterFactory;
 
 private:
-	std::condition_variable condition;
-	std::mutex mtx;
-	std::thread workerThread;
+	Timer timer;
 
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<DtoWriterFactory> dtoWriterFactory;
 	std::shared_ptr<FileWriterFactory> fileWriterFactory;
-	bool terminated;
-
-	void workerFunc();
 
 public:
 	DocumentSaver(
@@ -40,8 +33,9 @@ public:
 	void saveIfModified();
 	void load(std::shared_ptr<DtoReader> dtoReader, std::shared_ptr<FileReader> fileReader);
 
-	void start();
-	void stop();
+	void startTimer();
+	void stopTimer();
+	virtual void onTimer() override;
 };
 
 class DocumentSaver::DtoWriterFactory {

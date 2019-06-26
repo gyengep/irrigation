@@ -2,6 +2,7 @@
 #include "TemperatureForecast.h"
 #include "TemperatureHistory.h"
 #include "TemperatureSensorDS18B20.h"
+#include "TemperatureSensorFake.h"
 #include "TemperatureStatisticsImpl.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
@@ -47,60 +48,117 @@ Temperature::Temperature(
 		const chrono::duration<int64_t>& temperatureHistoryPeriod,
 		const chrono::duration<int64_t>& forecastUpdatePeriod
 	) :
-	timer(*this, sensorUpdatePeriod)
+
+	lastUpdate(time(nullptr)),
+	periodStart(0),
+	periodEnd(0)
 {
-	try {
-		sensor = make_shared<TemperatureSensor_DS18B20>();
-		statistics = make_shared<TemperatureStatisticsImpl>(
-				temperatureCacheLength,
-				temperatureCacheFileName,
-				make_shared<CsvReaderImplFactory>(),
-				make_shared<CsvWriterImplFactory>()
-			);
+	sensor = createSensor();
 
-		history = make_shared<TemperatureHistory>(
-				temperatureHistoryPeriod,
-				statistics,
-				temperatureHistoryFileName,
-				make_shared<CsvWriterImplFactory>()
-			);
+	statistics = make_shared<TemperatureStatisticsImpl>(
+			temperatureCacheLength,
+			temperatureCacheFileName,
+			make_shared<CsvReaderImplFactory>(),
+			make_shared<CsvWriterImplFactory>(),
+			sensor
+		);
 
-		sensor->updateCache();
-	} catch (const exception& e) {
-		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
-	}
+	history = make_shared<TemperatureHistory>(
+			statistics,
+			temperatureHistoryPeriod,
+			temperatureHistoryFileName,
+			make_shared<CsvWriterImplFactory>()
+		);
 
-	try {
-		forecast = make_shared<TemperatureForecast>(forecastUpdatePeriod);
-		forecast->onTimer();
-		forecast->startTimer();
-	} catch (const exception& e) {
-		LOGGER.warning("Can not initialize weather forecast module", e);
-	}
+	forecast = make_shared<TemperatureForecast>();
 
-	timer.start();
+	sensor->onTimer();
+	statistics->onTimer();
+	history->onTimer();
+	forecast->onTimer();
+
+	timer.scheduleFixedRate(sensor.get(), sensorUpdatePeriod);
+	timer.scheduleFixedRate(statistics.get(), sensorUpdatePeriod);
+	timer.scheduleFixedRate(history.get(), temperatureHistoryPeriod);
+	timer.scheduleFixedRate(forecast.get(), forecastUpdatePeriod);
+	timer.scheduleFixedRate(this, chrono::minutes(1));
 }
 
 Temperature::~Temperature() {
-	forecast->stopTimer();
-
-	timer.stop();
 }
 
-float Temperature::getTemperature() {
-	return sensor->getCachedValue();
+string toTimeStr(time_t rawTime) {
+	struct tm * timeinfo;
+	char buffer [80];
+
+	timeinfo = localtime(&rawTime);
+
+	strftime(buffer, 80, "%F %T",timeinfo);
+	return buffer;
 }
 
 void Temperature::onTimer() {
-	sensor->updateCache();
+	const chrono::seconds::rep periodInSeconds = 60;
+	const auto currentTime = time(nullptr);
 
-	const time_t currentTime = time(nullptr);
+	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
 
+		if (nullptr != forecastValues.get() && 0 != periodStart && 0 != periodEnd) {
+			const string start = toTimeStr(periodStart);
+			const string end = toTimeStr(periodEnd);
+
+			LOGGER.trace("Temperature forecast for previous day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
+					start.c_str(),
+					end.c_str(),
+					forecastValues->min,
+					forecastValues->max
+				);
+		}
+
+		if (0 != periodStart && 0 != periodEnd) {
+			try {
+				const string start = toTimeStr(periodStart);
+				const string end = toTimeStr(periodEnd);
+				const auto temperatureValues = statistics->getStatisticsValues(periodStart, periodEnd);
+
+				LOGGER.trace("Measured temperature for previous day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1",
+						start.c_str(),
+						end.c_str(),
+						temperatureValues.min,
+						temperatureValues.max,
+						temperatureValues.avg
+					);
+
+			} catch (const TemperatureException& e) {
+				LOGGER.trace("Can not read temperature");
+			}
+		}
+
+		try {
+			periodStart = ((currentTime / periodInSeconds) - 1 ) * periodInSeconds;
+			periodEnd = currentTime / periodInSeconds * periodInSeconds;
+			forecastValues.reset(new TemperatureForecast::Values(forecast->getForecastValues(periodStart, periodEnd)));
+
+			const string start = toTimeStr(periodStart);
+			const string end = toTimeStr(periodEnd);
+
+			LOGGER.trace("Temperature forecast for next day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
+					start.c_str(),
+					end.c_str(),
+					forecastValues->min,
+					forecastValues->max
+				);
+		} catch (const TemperatureException& e) {
+			LOGGER.trace("Temperature forecast for next day: not available", e);
+		}
+	}
+}
+
+shared_ptr<TemperatureSensor> Temperature::createSensor() {
 	try {
-		const float temperature = sensor->getCachedValue();
-		statistics->addTemperature(currentTime, temperature);
-		history->periodicUpdate();
-	} catch (...) {
-		//persister->appendInvalid(currentTime);
+		return make_shared<TemperatureSensor_DS18B20>();
+	} catch (const exception& e) {
+		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
+		return make_shared<TemperatureSensorFake>();
 	}
 }

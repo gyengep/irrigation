@@ -1,5 +1,4 @@
 #include "DocumentSaver.h"
-#include "Configuration.h"
 #include "IrrigationDocument.h"
 #include "DtoReaderWriter/DtoReaderWriter.h"
 #include "Logger/Logger.h"
@@ -15,27 +14,24 @@ DocumentSaver::DocumentSaver(
 	) :
 	irrigationDocument(irrigationDocument),
 	dtoWriterFactory(dtoWriterFactory),
-	fileWriterFactory(fileWriterFactory),
-	terminated(false)
+	fileWriterFactory(fileWriterFactory)
 {
 }
 
 DocumentSaver::~DocumentSaver() {
 }
 
-void DocumentSaver::start() {
-	unique_lock<mutex> lock(mtx);
-	workerThread = thread(&DocumentSaver::workerFunc, this);
+void DocumentSaver::startTimer() {
+	timer.scheduleFixedDelay(this, chrono::minutes(1));
 }
 
-void DocumentSaver::stop() {
-	{
-		unique_lock<mutex> lock(mtx);
-		terminated = true;
-	}
+void DocumentSaver::stopTimer() {
+	timer.remove(this);
+}
 
-	condition.notify_all();
-	workerThread.join();
+void DocumentSaver::onTimer() {
+	LOGGER.trace("DocumentSaver::onTimer()");
+	saveIfModified();
 }
 
 void DocumentSaver::saveIfModified() {
@@ -63,13 +59,4 @@ void DocumentSaver::load(std::shared_ptr<DtoReader> dtoReader, std::shared_ptr<F
 	unique_lock<IrrigationDocument> lock(*irrigationDocument);
 	irrigationDocument->updateFromDocumentDto(documentDto);
 	irrigationDocument->setModified(false);
-}
-
-void DocumentSaver::workerFunc() {
-	unique_lock<mutex> lock(mtx);
-	while (!terminated) {
-		if (condition.wait_for(lock, chrono::seconds(1)) == cv_status::timeout) {
-			saveIfModified();
-		}
-	}
 }
