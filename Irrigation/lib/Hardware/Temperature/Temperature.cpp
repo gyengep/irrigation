@@ -121,7 +121,7 @@ void Temperature::onTimer() {
 				const string end = toTimeStr(periodEnd);
 				const auto temperatureValues = statistics->getStatisticsValues(periodStart, periodEnd);
 
-				LOGGER.trace("Measured temperature for previous day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1",
+				LOGGER.trace("Measured temperature for previous day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
 						start.c_str(),
 						end.c_str(),
 						temperatureValues.min,
