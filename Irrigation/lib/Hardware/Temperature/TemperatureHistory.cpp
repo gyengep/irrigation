@@ -45,6 +45,7 @@ TemperatureHistory::~TemperatureHistory() {
 
 void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
+		lastUpdate = currentTime;
 
 		LOGGER.trace("TemperatureHistory::onTimer()");
 
@@ -66,8 +67,6 @@ void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
 		} catch (const exception& e) {
 			LOGGER.debug("An error occured during write the temperature history file", e);
 		}
-
-		lastUpdate = currentTime;
 	}
 }
 

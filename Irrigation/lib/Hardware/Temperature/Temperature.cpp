@@ -102,6 +102,7 @@ void Temperature::onTimer() {
 	const auto currentTime = time(nullptr);
 
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
+		lastUpdate = currentTime;
 
 		if (nullptr != forecastValues.get() && 0 != periodStart && 0 != periodEnd) {
 			const string start = toTimeStr(periodStart);
