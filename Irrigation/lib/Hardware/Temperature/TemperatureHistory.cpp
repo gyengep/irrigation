@@ -70,6 +70,15 @@ void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
 	}
 }
 
+void TemperatureHistory::startTimer() {
+	timer.reset(new Timer());
+	timer->scheduleFixedDelay(this, chrono::minutes(1));
+}
+
+void TemperatureHistory::stopTimer() {
+	timer->remove(this);
+}
+
 void TemperatureHistory::onTimer() {
 	periodicUpdate();
 }

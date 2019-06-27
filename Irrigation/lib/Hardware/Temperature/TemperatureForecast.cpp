@@ -198,6 +198,15 @@ const list<TemperatureForecast::ValuesWithTimes> TemperatureForecast::getContain
 	return temperatures;
 }
 
+void TemperatureForecast::startTimer(const std::chrono::duration<int64_t>& period) {
+	timer.reset(new Timer());
+	timer->scheduleFixedDelay(this, period);
+}
+
+void TemperatureForecast::stopTimer() {
+	timer->remove(this);
+}
+
 void TemperatureForecast::onTimer() {
 	LOGGER.trace("TemperatureForecast::onTimer()");
 	updateCache();

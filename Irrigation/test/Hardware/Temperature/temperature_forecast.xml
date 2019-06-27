@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weatherdata>
+    <location>
+        <name>Dunakeszi</name>
+        <type></type>
+        <country>HU</country>
+        <timezone></timezone>
+        <location altitude="0" latitude="47.6317" longitude="19.1294" geobase="geonames" geobaseid="3053476"></location>
+    </location>
+    <credit></credit>
+    <meta>
+        <lastupdate></lastupdate>
+        <calctime>0.0063</calctime>
+        <nextupdate></nextupdate>
+    </meta>
+    <sun rise="2019-06-27T02:47:18" set="2019-06-27T18:45:24"></sun>
+    <forecast>
+        <time from="2019-06-27T18:00:00" to="2019-06-27T21:00:00">
+            <symbol number="800" name="clear sky" var="01n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="331.36" code="NNW" name="North-northwest"></windDirection>
+            <windSpeed mps="2.64" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="19.85" min="18.25" max="19.85"></temperature>
+            <pressure unit="hPa" value="1017.43"></pressure>
+            <humidity value="61" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-27T21:00:00" to="2019-06-28T00:00:00">
+            <symbol number="800" name="clear sky" var="01n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="313.59" code="NW" name="Northwest"></windDirection>
+            <windSpeed mps="2.5" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="16.74" min="15.54" max="16.74"></temperature>
+            <pressure unit="hPa" value="1018.92"></pressure>
+            <humidity value="67" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T00:00:00" to="2019-06-28T03:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="319.914" code="NW" name="Northwest"></windDirection>
+            <windSpeed mps="1.99" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="14.27" min="13.47" max="14.27"></temperature>
+            <pressure unit="hPa" value="1019.23"></pressure>
+            <humidity value="71" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T03:00:00" to="2019-06-28T06:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="342.794" code="NNW" name="North-northwest"></windDirection>
+            <windSpeed mps="1.92" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="17.85" min="17.45" max="17.85"></temperature>
+            <pressure unit="hPa" value="1019.51"></pressure>
+            <humidity value="71" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T06:00:00" to="2019-06-28T09:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="17.475" code="NNE" name="North-northeast"></windDirection>
+            <windSpeed mps="1.81" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="20.95" min="20.95" max="20.95"></temperature>
+            <pressure unit="hPa" value="1020.32"></pressure>
+            <humidity value="57" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T09:00:00" to="2019-06-28T12:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="263.952" code="W" name="West"></windDirection>
+            <windSpeed mps="1.71" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="23.35" min="23.35" max="23.35"></temperature>
+            <pressure unit="hPa" value="1019.86"></pressure>
+            <humidity value="52" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T12:00:00" to="2019-06-28T15:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="267.194" code="W" name="West"></windDirection>
+            <windSpeed mps="4.15" name="Gentle Breeze"></windSpeed>
+            <temperature unit="celsius" value="22.67" min="22.67" max="22.67"></temperature>
+            <pressure unit="hPa" value="1019.33"></pressure>
+            <humidity value="61" unit="%"></humidity>
+            <clouds value="clear sky" all="2" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T15:00:00" to="2019-06-28T18:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="294.898" code="WNW" name="West-northwest"></windDirection>
+            <windSpeed mps="2.32" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="19" min="19" max="19"></temperature>
+            <pressure unit="hPa" value="1019.71"></pressure>
+            <humidity value="78" unit="%"></humidity>
+            <clouds value="clear sky" all="1" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T18:00:00" to="2019-06-28T21:00:00">
+            <symbol number="801" name="few clouds" var="02n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="351.236" code="" name=""></windDirection>
+            <windSpeed mps="0.98" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="15.04" min="15.04" max="15.04"></temperature>
+            <pressure unit="hPa" value="1020.93"></pressure>
+            <humidity value="81" unit="%"></humidity>
+            <clouds value="few clouds" all="21" unit="%"></clouds>
+        </time>
+        <time from="2019-06-28T21:00:00" to="2019-06-29T00:00:00">
+            <symbol number="801" name="few clouds" var="02n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="74.978" code="ENE" name="East-northeast"></windDirection>
+            <windSpeed mps="1.34" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="13.87" min="13.87" max="13.87"></temperature>
+            <pressure unit="hPa" value="1021.13"></pressure>
+            <humidity value="89" unit="%"></humidity>
+            <clouds value="few clouds" all="11" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T00:00:00" to="2019-06-29T03:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="91.244" code="E" name="East"></windDirection>
+            <windSpeed mps="0.78" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="13.06" min="13.06" max="13.06"></temperature>
+            <pressure unit="hPa" value="1020.91"></pressure>
+            <humidity value="89" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T03:00:00" to="2019-06-29T06:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="16.751" code="NNE" name="North-northeast"></windDirection>
+            <windSpeed mps="0.64" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="17.98" min="17.98" max="17.98"></temperature>
+            <pressure unit="hPa" value="1021.31"></pressure>
+            <humidity value="76" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T06:00:00" to="2019-06-29T09:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="18.353" code="NNE" name="North-northeast"></windDirection>
+            <windSpeed mps="1.76" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="21.75" min="21.75" max="21.75"></temperature>
+            <pressure unit="hPa" value="1021.42"></pressure>
+            <humidity value="64" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T09:00:00" to="2019-06-29T12:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="99.541" code="E" name="East"></windDirection>
+            <windSpeed mps="1.2" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="23.83" min="23.83" max="23.83"></temperature>
+            <pressure unit="hPa" value="1020.71"></pressure>
+            <humidity value="57" unit="%"></humidity>
+            <clouds value="clear sky" all="4" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T12:00:00" to="2019-06-29T15:00:00">
+            <symbol number="802" name="scattered clouds" var="03d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="257.814" code="WSW" name="West-southwest"></windDirection>
+            <windSpeed mps="0.53" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="24.16" min="24.16" max="24.16"></temperature>
+            <pressure unit="hPa" value="1020.05"></pressure>
+            <humidity value="56" unit="%"></humidity>
+            <clouds value="scattered clouds" all="32" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T15:00:00" to="2019-06-29T18:00:00">
+            <symbol number="801" name="few clouds" var="02d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="183.861" code="S" name="South"></windDirection>
+            <windSpeed mps="1.05" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="20.83" min="20.83" max="20.83"></temperature>
+            <pressure unit="hPa" value="1020.21"></pressure>
+            <humidity value="71" unit="%"></humidity>
+            <clouds value="few clouds" all="17" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T18:00:00" to="2019-06-29T21:00:00">
+            <symbol number="800" name="clear sky" var="01n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="138.028" code="SE" name="SouthEast"></windDirection>
+            <windSpeed mps="2.28" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="16.51" min="16.51" max="16.51"></temperature>
+            <pressure unit="hPa" value="1021.7"></pressure>
+            <humidity value="78" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-29T21:00:00" to="2019-06-30T00:00:00">
+            <symbol number="800" name="clear sky" var="01n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="137.224" code="SE" name="SouthEast"></windDirection>
+            <windSpeed mps="1.9" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="14.57" min="14.57" max="14.57"></temperature>
+            <pressure unit="hPa" value="1021.39"></pressure>
+            <humidity value="78" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T00:00:00" to="2019-06-30T03:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="101.987" code="ESE" name="East-southeast"></windDirection>
+            <windSpeed mps="0.93" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="13.25" min="13.25" max="13.25"></temperature>
+            <pressure unit="hPa" value="1021.26"></pressure>
+            <humidity value="79" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T03:00:00" to="2019-06-30T06:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="107.861" code="ESE" name="East-southeast"></windDirection>
+            <windSpeed mps="1.36" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="18.15" min="18.15" max="18.15"></temperature>
+            <pressure unit="hPa" value="1021.31"></pressure>
+            <humidity value="70" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T06:00:00" to="2019-06-30T09:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="192.624" code="SSW" name="South-southwest"></windDirection>
+            <windSpeed mps="1.11" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="23.65" min="23.65" max="23.65"></temperature>
+            <pressure unit="hPa" value="1021.22"></pressure>
+            <humidity value="61" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T09:00:00" to="2019-06-30T12:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="229.829" code="SW" name="Southwest"></windDirection>
+            <windSpeed mps="2.83" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="26.35" min="26.35" max="26.35"></temperature>
+            <pressure unit="hPa" value="1019.79"></pressure>
+            <humidity value="56" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T12:00:00" to="2019-06-30T15:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="203.066" code="SSW" name="South-southwest"></windDirection>
+            <windSpeed mps="2.84" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="26.35" min="26.35" max="26.35"></temperature>
+            <pressure unit="hPa" value="1018.8"></pressure>
+            <humidity value="61" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T15:00:00" to="2019-06-30T18:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="192.413" code="SSW" name="South-southwest"></windDirection>
+            <windSpeed mps="1.99" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="22.18" min="22.18" max="22.18"></temperature>
+            <pressure unit="hPa" value="1018.36"></pressure>
+            <humidity value="79" unit="%"></humidity>
+            <clouds value="clear sky" all="1" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T18:00:00" to="2019-06-30T21:00:00">
+            <symbol number="800" name="clear sky" var="01n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="185.064" code="S" name="South"></windDirection>
+            <windSpeed mps="1.59" name=""></windSpeed>
+            <temperature unit="celsius" value="18.75" min="18.75" max="18.75"></temperature>
+            <pressure unit="hPa" value="1018.89"></pressure>
+            <humidity value="88" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-06-30T21:00:00" to="2019-07-01T00:00:00">
+            <symbol number="800" name="clear sky" var="01n"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="187.644" code="S" name="South"></windDirection>
+            <windSpeed mps="0.38" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="17.25" min="17.25" max="17.25"></temperature>
+            <pressure unit="hPa" value="1018.51"></pressure>
+            <humidity value="90" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T00:00:00" to="2019-07-01T03:00:00">
+            <symbol number="800" name="clear sky" var="01d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="146.14" code="SE" name="SouthEast"></windDirection>
+            <windSpeed mps="1.49" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="16.67" min="16.67" max="16.67"></temperature>
+            <pressure unit="hPa" value="1017.73"></pressure>
+            <humidity value="91" unit="%"></humidity>
+            <clouds value="clear sky" all="0" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T03:00:00" to="2019-07-01T06:00:00">
+            <symbol number="801" name="few clouds" var="02d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="132.329" code="SE" name="SouthEast"></windDirection>
+            <windSpeed mps="0.97" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="20.75" min="20.75" max="20.75"></temperature>
+            <pressure unit="hPa" value="1017.32"></pressure>
+            <humidity value="76" unit="%"></humidity>
+            <clouds value="few clouds" all="17" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T06:00:00" to="2019-07-01T09:00:00">
+            <symbol number="803" name="broken clouds" var="04d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="191.537" code="SSW" name="South-southwest"></windDirection>
+            <windSpeed mps="2.68" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="25.44" min="25.44" max="25.44"></temperature>
+            <pressure unit="hPa" value="1017.16"></pressure>
+            <humidity value="56" unit="%"></humidity>
+            <clouds value="broken clouds" all="68" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T09:00:00" to="2019-07-01T12:00:00">
+            <symbol number="802" name="scattered clouds" var="03d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="220.883" code="SW" name="Southwest"></windDirection>
+            <windSpeed mps="3" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="28.15" min="28.15" max="28.15"></temperature>
+            <pressure unit="hPa" value="1015.47"></pressure>
+            <humidity value="50" unit="%"></humidity>
+            <clouds value="scattered clouds" all="45" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T12:00:00" to="2019-07-01T15:00:00">
+            <symbol number="802" name="scattered clouds" var="03d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="195.846" code="SSW" name="South-southwest"></windDirection>
+            <windSpeed mps="2.7" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="27.86" min="27.86" max="27.86"></temperature>
+            <pressure unit="hPa" value="1014.07"></pressure>
+            <humidity value="56" unit="%"></humidity>
+            <clouds value="scattered clouds" all="37" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T15:00:00" to="2019-07-01T18:00:00">
+            <symbol number="801" name="few clouds" var="02d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="185.644" code="S" name="South"></windDirection>
+            <windSpeed mps="1.12" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="23.24" min="23.24" max="23.24"></temperature>
+            <pressure unit="hPa" value="1013.86"></pressure>
+            <humidity value="74" unit="%"></humidity>
+            <clouds value="few clouds" all="21" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T18:00:00" to="2019-07-01T21:00:00">
+            <symbol number="500" name="light rain" var="10n"></symbol>
+            <precipitation unit="3h" value="0.062" type="rain"></precipitation>
+            <windDirection deg="137.798" code="SE" name="SouthEast"></windDirection>
+            <windSpeed mps="0.97" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="20.45" min="20.45" max="20.45"></temperature>
+            <pressure unit="hPa" value="1014.28"></pressure>
+            <humidity value="80" unit="%"></humidity>
+            <clouds value="broken clouds" all="69" unit="%"></clouds>
+        </time>
+        <time from="2019-07-01T21:00:00" to="2019-07-02T00:00:00">
+            <symbol number="500" name="light rain" var="10n"></symbol>
+            <precipitation unit="3h" value="0.126" type="rain"></precipitation>
+            <windDirection deg="305.398" code="NW" name="Northwest"></windDirection>
+            <windSpeed mps="0.9" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="19.05" min="19.05" max="19.05"></temperature>
+            <pressure unit="hPa" value="1014.38"></pressure>
+            <humidity value="88" unit="%"></humidity>
+            <clouds value="broken clouds" all="84" unit="%"></clouds>
+        </time>
+        <time from="2019-07-02T00:00:00" to="2019-07-02T03:00:00">
+            <symbol number="804" name="overcast clouds" var="04d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="299.369" code="WNW" name="West-northwest"></windDirection>
+            <windSpeed mps="1.38" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="17.85" min="17.85" max="17.85"></temperature>
+            <pressure unit="hPa" value="1014"></pressure>
+            <humidity value="93" unit="%"></humidity>
+            <clouds value="overcast clouds" all="99" unit="%"></clouds>
+        </time>
+        <time from="2019-07-02T03:00:00" to="2019-07-02T06:00:00">
+            <symbol number="804" name="overcast clouds" var="04d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="233.874" code="SW" name="Southwest"></windDirection>
+            <windSpeed mps="1.49" name="Calm"></windSpeed>
+            <temperature unit="celsius" value="22.14" min="22.14" max="22.14"></temperature>
+            <pressure unit="hPa" value="1014.15"></pressure>
+            <humidity value="82" unit="%"></humidity>
+            <clouds value="overcast clouds" all="96" unit="%"></clouds>
+        </time>
+        <time from="2019-07-02T06:00:00" to="2019-07-02T09:00:00">
+            <symbol number="801" name="few clouds" var="02d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="294.055" code="WNW" name="West-northwest"></windDirection>
+            <windSpeed mps="3.67" name="Gentle Breeze"></windSpeed>
+            <temperature unit="celsius" value="25.35" min="25.35" max="25.35"></temperature>
+            <pressure unit="hPa" value="1014.93"></pressure>
+            <humidity value="68" unit="%"></humidity>
+            <clouds value="few clouds" all="20" unit="%"></clouds>
+        </time>
+        <time from="2019-07-02T09:00:00" to="2019-07-02T12:00:00">
+            <symbol number="802" name="scattered clouds" var="03d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="298.829" code="WNW" name="West-northwest"></windDirection>
+            <windSpeed mps="4.69" name="Gentle Breeze"></windSpeed>
+            <temperature unit="celsius" value="26.24" min="26.24" max="26.24"></temperature>
+            <pressure unit="hPa" value="1013.93"></pressure>
+            <humidity value="56" unit="%"></humidity>
+            <clouds value="scattered clouds" all="29" unit="%"></clouds>
+        </time>
+        <time from="2019-07-02T12:00:00" to="2019-07-02T15:00:00">
+            <symbol number="804" name="overcast clouds" var="04d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="288.086" code="WNW" name="West-northwest"></windDirection>
+            <windSpeed mps="4.98" name="Gentle Breeze"></windSpeed>
+            <temperature unit="celsius" value="24.93" min="24.93" max="24.93"></temperature>
+            <pressure unit="hPa" value="1013.34"></pressure>
+            <humidity value="65" unit="%"></humidity>
+            <clouds value="overcast clouds" all="100" unit="%"></clouds>
+        </time>
+        <time from="2019-07-02T15:00:00" to="2019-07-02T18:00:00">
+            <symbol number="804" name="overcast clouds" var="04d"></symbol>
+            <precipitation></precipitation>
+            <windDirection deg="297.851" code="WNW" name="West-northwest"></windDirection>
+            <windSpeed mps="3.29" name="Light breeze"></windSpeed>
+            <temperature unit="celsius" value="20.75" min="20.75" max="20.75"></temperature>
+            <pressure unit="hPa" value="1013.23"></pressure>
+            <humidity value="77" unit="%"></humidity>
+            <clouds value="overcast clouds" all="100" unit="%"></clouds>
+        </time>
+    </forecast>
+</weatherdata>

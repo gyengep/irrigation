@@ -32,6 +32,7 @@ private:
 	mutable std::mutex mtx;
 	std::list<ValuesWithTimes> temperatures;
 	std::shared_ptr<NetworkReader> networkReader;
+	std::unique_ptr<Timer> timer;
 
 	void addTemperature(std::time_t from, std::time_t to, const Values& values);
 
@@ -46,6 +47,8 @@ public:
 
 	Values getForecastValues(std::time_t from, std::time_t to) const;
 
+	void startTimer(const std::chrono::duration<int64_t>& period);
+	void stopTimer();
 	virtual void onTimer() override;
 
 	// only for testing

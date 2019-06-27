@@ -16,6 +16,7 @@ class TemperatureHistory : public TimerCallback {
 	const std::shared_ptr<CsvWriter> csvWriter;
 
 	time_t lastUpdate;
+	std::unique_ptr<Timer> timer;
 
 	static std::string temperatureToString(float value);
 	static std::string timeToString(std::time_t time);
@@ -40,5 +41,7 @@ public:
 
 	void periodicUpdate(std::time_t time = std::time(nullptr));
 
+	void startTimer();
+	void stopTimer();
 	virtual void onTimer() override;
 };

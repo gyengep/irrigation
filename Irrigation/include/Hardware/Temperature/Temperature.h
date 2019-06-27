@@ -34,6 +34,8 @@ class Temperature : public TimerCallback {
 		);
 
 	std::shared_ptr<TemperatureSensor> createSensor();
+	void logForecast();
+	void logMeasured();
 
 public:
 

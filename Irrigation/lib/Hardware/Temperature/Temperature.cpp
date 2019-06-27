@@ -79,8 +79,8 @@ Temperature::Temperature(
 
 	timer.scheduleFixedRate(sensor.get(), sensorUpdatePeriod);
 	timer.scheduleFixedRate(statistics.get(), sensorUpdatePeriod);
-	timer.scheduleFixedRate(history.get(), temperatureHistoryPeriod);
-	timer.scheduleFixedRate(forecast.get(), forecastUpdatePeriod);
+	history->startTimer();
+	forecast->startTimer(forecastUpdatePeriod);
 	timer.scheduleFixedRate(this, chrono::minutes(1));
 }
 
@@ -104,53 +104,53 @@ void Temperature::onTimer() {
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
 		lastUpdate = currentTime;
 
-		if (nullptr != forecastValues.get() && 0 != periodStart && 0 != periodEnd) {
-			const string start = toTimeStr(periodStart);
-			const string end = toTimeStr(periodEnd);
-
-			LOGGER.trace("Temperature forecast for previous day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
-					start.c_str(),
-					end.c_str(),
-					forecastValues->min,
-					forecastValues->max
-				);
-		}
-
-		if (0 != periodStart && 0 != periodEnd) {
-			try {
-				const string start = toTimeStr(periodStart);
-				const string end = toTimeStr(periodEnd);
-				const auto temperatureValues = statistics->getStatisticsValues(periodStart, periodEnd);
-
-				LOGGER.trace("Measured temperature for previous day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
-						start.c_str(),
-						end.c_str(),
-						temperatureValues.min,
-						temperatureValues.max,
-						temperatureValues.avg
-					);
-
-			} catch (const TemperatureException& e) {
-				LOGGER.trace("Can not read temperature");
-			}
-		}
+		logForecast();
+		logMeasured();
 
 		try {
 			periodStart = currentTime / periodInSeconds * periodInSeconds;
 			periodEnd = ((currentTime / periodInSeconds ) + 1 ) * periodInSeconds;
 			forecastValues.reset(new TemperatureForecast::Values(forecast->getForecastValues(periodStart, periodEnd)));
-
-			const string start = toTimeStr(periodStart);
-			const string end = toTimeStr(periodEnd);
-
-			LOGGER.trace("Temperature forecast for next day\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
-					start.c_str(),
-					end.c_str(),
-					forecastValues->min,
-					forecastValues->max
-				);
 		} catch (const TemperatureException& e) {
 			LOGGER.trace("Temperature forecast for next day: not available", e);
+		}
+
+		logForecast();
+	}
+}
+
+void Temperature::logForecast() {
+	if (nullptr != forecastValues.get() && 0 != periodStart && 0 != periodEnd) {
+
+		const string start = toTimeStr(periodStart);
+		const string end = toTimeStr(periodEnd);
+
+		LOGGER.trace("Temperature forecast\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
+				start.c_str(),
+				end.c_str(),
+				forecastValues->min,
+				forecastValues->max
+			);
+	}
+}
+
+void Temperature::logMeasured() {
+	if (0 != periodStart && 0 != periodEnd) {
+		try {
+			const string start = toTimeStr(periodStart);
+			const string end = toTimeStr(periodEnd);
+			const auto temperatureValues = statistics->getStatisticsValues(periodStart, periodEnd);
+
+			LOGGER.trace("Measured temperature\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
+					start.c_str(),
+					end.c_str(),
+					temperatureValues.min,
+					temperatureValues.max,
+					temperatureValues.avg
+				);
+
+		} catch (const TemperatureException& e) {
+			LOGGER.trace("Measured temperature\n\tCan not read temperature", e);
 		}
 	}
 }
