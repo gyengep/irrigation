@@ -1,12 +1,12 @@
 #include "TimerView.h"
-#include "ChronoTools.h"
-#include <iomanip>
-#include <sstream>
 #include "Logger/Logger.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/Program.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
+#include "Utils/ChronoTools.h"
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 using namespace std::chrono;

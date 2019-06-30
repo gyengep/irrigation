@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <chrono>
-#include "Views/TimerView/ChronoTools.h"
+#include "Utils/ChronoTools.h"
 
 using namespace std;
 using namespace std::chrono;
