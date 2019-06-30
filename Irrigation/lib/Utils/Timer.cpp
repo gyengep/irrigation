@@ -19,7 +19,7 @@ Timer::Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType)
 {
 }
 
-Timer::Timer(TimerCallback* const callback, const std::chrono::milliseconds& period, ScheduleType scheduleType) :
+Timer::Timer(TimerCallback* callback, const std::chrono::milliseconds& period, ScheduleType scheduleType) :
 	Timer(period, scheduleType)
 {
 	add(callback);
@@ -57,7 +57,7 @@ void Timer::stop() {
 	workerThread.join();
 }
 
-void Timer::add(TimerCallback* const callback) {
+void Timer::add(TimerCallback* callback) {
 	unique_lock<mutex> lock(mtx);
 
 	if (callbacks.end() != find(callbacks.begin(), callbacks.end(), callback)) {
@@ -70,7 +70,7 @@ void Timer::add(TimerCallback* const callback) {
 	condition.notify_all();
 }
 
-void Timer::remove(TimerCallback* const callback) {
+void Timer::remove(TimerCallback* callback) {
 	unique_lock<mutex> lock(mtx);
 
 	const auto it = find(callbacks.begin(), callbacks.end(), callback);

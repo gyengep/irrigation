@@ -37,18 +37,18 @@ private:
 	bool terminated;
 	bool changed;
 
-	std::list<TimerCallback* const> callbacks;
+	std::list<TimerCallback*> callbacks;
 
 	void workerFunc();
 	bool checkPeriod(const std::chrono::steady_clock::time_point& nextScheduleTime);
 
 public:
 	Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType);
-	Timer(TimerCallback* const callback, const std::chrono::milliseconds& period, ScheduleType scheduleType);
+	Timer(TimerCallback* callback, const std::chrono::milliseconds& period, ScheduleType scheduleType);
 	virtual ~Timer();
 
-	void add(TimerCallback* const callback);
-	void remove(TimerCallback* const callback);
+	void add(TimerCallback* callback);
+	void remove(TimerCallback* callback);
 	void removeAll();
 
 	void start(Priority priority = Priority::NORMAL);
