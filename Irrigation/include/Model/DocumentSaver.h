@@ -16,7 +16,7 @@ public:
 	class FileWriterFactory;
 
 private:
-	Timer timer;
+	std::unique_ptr<Timer> timer;
 
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<DtoWriterFactory> dtoWriterFactory;

@@ -1,8 +1,8 @@
 #pragma once
 #include <chrono>
 #include <condition_variable>
+#include <list>
 #include <mutex>
-#include <set>
 #include <thread>
 
 
@@ -12,42 +12,45 @@ public:
 	virtual void onTimer() = 0;
 };
 
+
 class Timer {
+public:
 	enum class ScheduleType {
 		FIXED_RATE,
 		FIXED_DELAY
 	};
 
-	struct CallbackProperties {
-		TimerCallback* const callback;
-		const ScheduleType scheduleType;
-		const std::chrono::milliseconds waitTime;
-		std::chrono::steady_clock::time_point nextScheduleTime;
-
-		CallbackProperties(TimerCallback* const callback, const ScheduleType scheduleType, const std::chrono::milliseconds waitTime);
-		bool operator<(const CallbackProperties& other) const;
+	enum class Priority {
+		NORMAL,
+		HIGH
 	};
+
+private:
+	const ScheduleType scheduleType;
+	const std::chrono::milliseconds period;
+	const std::chrono::milliseconds maxTardiness;
 
 	mutable std::mutex mtx;
 	std::condition_variable condition;
 	std::thread workerThread;
+	std::chrono::steady_clock::time_point nextScheduleTime;
 	bool terminated;
 	bool changed;
 
-	std::multiset<CallbackProperties> callbacks;
+	std::list<TimerCallback* const> callbacks;
 
-	std::multiset<CallbackProperties>::const_iterator find(TimerCallback* const callback) const;
-
-	void start();
-	void stop();
 	void workerFunc();
+	bool checkPeriod(const std::chrono::steady_clock::time_point& nextScheduleTime);
 
 public:
-	Timer();
+	Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType);
+	Timer(TimerCallback* const callback, const std::chrono::milliseconds& period, ScheduleType scheduleType);
 	virtual ~Timer();
 
-	void scheduleFixedRate(TimerCallback* callback, const std::chrono::milliseconds& waitTime);
-	void scheduleFixedDelay(TimerCallback* callback, const std::chrono::milliseconds& waitTime);
+	void add(TimerCallback* const callback);
 	void remove(TimerCallback* const callback);
-	void cancel();
+	void removeAll();
+
+	void start(Priority priority = Priority::NORMAL);
+	void stop();
 };

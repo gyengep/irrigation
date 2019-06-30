@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
-#include "PrecisionTimer.h"
 #include "DocumentView/View.h"
+#include "Utils/Timer.h"
 
 #ifndef FRIEND_TEST
 #define FRIEND_TEST(a, b)
@@ -11,7 +11,7 @@ class IrrigationDocument;
 class TimerViewTest;
 
 
-class TimerView : public View, public PrecisionTimerCallback {
+class TimerView : public View, public TimerCallback {
 	FRIEND_TEST(TimerViewTest, notActiveNotScheduled);
 	FRIEND_TEST(TimerViewTest, notActiveScheduledFirst);
 	FRIEND_TEST(TimerViewTest, notActiveScheduledSecond);
@@ -22,7 +22,7 @@ class TimerView : public View, public PrecisionTimerCallback {
 	std::chrono::system_clock::time_point expectedSystemTime;
 
 	IrrigationDocument& irrigationDocument;
-	PrecisionTimer timer;
+	Timer timer;
 
 	void onTimer(const time_t rawTime);
 

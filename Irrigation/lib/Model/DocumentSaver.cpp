@@ -22,11 +22,13 @@ DocumentSaver::~DocumentSaver() {
 }
 
 void DocumentSaver::startTimer() {
-	timer.scheduleFixedDelay(this, chrono::minutes(1));
+	timer.reset(new Timer(this, chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY));
+	timer->start();
 }
 
 void DocumentSaver::stopTimer() {
-	timer.remove(this);
+	timer->stop();
+	timer.reset();
 }
 
 void DocumentSaver::onTimer() {

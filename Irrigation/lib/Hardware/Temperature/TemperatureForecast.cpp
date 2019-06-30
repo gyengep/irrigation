@@ -199,12 +199,13 @@ const list<TemperatureForecast::ValuesWithTimes> TemperatureForecast::getContain
 }
 
 void TemperatureForecast::startTimer(const std::chrono::duration<int64_t>& period) {
-	timer.reset(new Timer());
-	timer->scheduleFixedDelay(this, period);
+	timer.reset(new Timer(this, period, Timer::ScheduleType::FIXED_DELAY));
+	timer->start();
 }
 
 void TemperatureForecast::stopTimer() {
-	timer->remove(this);
+	timer->stop();
+	timer.reset();
 }
 
 void TemperatureForecast::onTimer() {

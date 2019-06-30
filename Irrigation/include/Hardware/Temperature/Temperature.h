@@ -13,7 +13,8 @@ class TemperatureSensor;
 class Temperature : public TimerCallback {
 	static std::shared_ptr<Temperature> instance;
 
-	Timer timer;
+	std::unique_ptr<Timer> timer;
+	std::unique_ptr<Timer> sensorTimer;
 	std::time_t lastUpdate;
 	std::unique_ptr<TemperatureForecast::Values> forecastValues;
 	std::time_t periodStart;

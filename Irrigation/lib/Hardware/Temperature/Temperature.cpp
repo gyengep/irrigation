@@ -48,7 +48,6 @@ Temperature::Temperature(
 		const chrono::duration<int64_t>& temperatureHistoryPeriod,
 		const chrono::duration<int64_t>& forecastUpdatePeriod
 	) :
-
 	lastUpdate(time(nullptr)),
 	periodStart(0),
 	periodEnd(0)
@@ -77,14 +76,27 @@ Temperature::Temperature(
 	history->onTimer();
 	forecast->onTimer();
 
-	timer.scheduleFixedRate(sensor.get(), sensorUpdatePeriod);
-	timer.scheduleFixedRate(statistics.get(), sensorUpdatePeriod);
 	history->startTimer();
 	forecast->startTimer(forecastUpdatePeriod);
-	timer.scheduleFixedRate(this, chrono::minutes(1));
+
+	sensorTimer.reset(new Timer(sensorUpdatePeriod, Timer::ScheduleType::FIXED_DELAY));
+	sensorTimer->add(sensor.get());
+	sensorTimer->add(statistics.get());
+	sensorTimer->start();
+
+	timer.reset(new Timer(this, chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY));
+	timer->start();
 }
 
 Temperature::~Temperature() {
+	timer->stop();
+	timer.reset();
+
+	sensorTimer->stop();
+	sensorTimer.reset();
+
+	history->stopTimer();
+	forecast->stopTimer();
 }
 
 string toTimeStr(time_t rawTime) {

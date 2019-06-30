@@ -1,40 +1,51 @@
 #include "Timer.h"
+#include "ChronoTools.h"
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include <algorithm>
-//#include <pthread.h>
+#include <iomanip>
+#include <sstream>
+#include <pthread.h>
 
 using namespace std;
 
 
-Timer::CallbackProperties::CallbackProperties(TimerCallback* const callback, const ScheduleType scheduleType, const std::chrono::milliseconds waitTime) :
-	callback(callback),
+Timer::Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType) :
 	scheduleType(scheduleType),
-	waitTime(waitTime),
-	nextScheduleTime(chrono::steady_clock::now() + waitTime)
-{
-}
-
-bool Timer::CallbackProperties::operator<(const CallbackProperties& other) const {
-	return (nextScheduleTime < other.nextScheduleTime);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Timer::Timer() :
+	period(period),
+	maxTardiness(period),
 	terminated(false),
 	changed(false)
 {
-	start();
-	//pthread_setschedparam(workerThread.native_handle(), policy, {priority});
+}
+
+Timer::Timer(TimerCallback* const callback, const std::chrono::milliseconds& period, ScheduleType scheduleType) :
+	Timer(period, scheduleType)
+{
+	add(callback);
 }
 
 Timer::~Timer() {
-	stop();
+	if (workerThread.joinable()) {
+		LOGGER.error("Timer thread is not stopped");
+	}
 }
 
-void Timer::start() {
+void Timer::start(Timer::Priority priority) {
+	unique_lock<mutex> lock(mtx);
+	nextScheduleTime = chrono::steady_clock::now() + period;
 	workerThread = thread(&Timer::workerFunc, this);
+
+	if (Priority::HIGH == priority) {
+		struct sched_param param;
+		memset(&param, 0, sizeof(param));
+
+		param.sched_priority = 1;
+		int result;
+		if (0 != (result = pthread_setschedparam(workerThread.native_handle(), SCHED_RR, &param))) {
+			LOGGER.warning("Can not change thread priority: %d", result);
+		}
+	}
 }
 
 void Timer::stop() {
@@ -46,56 +57,39 @@ void Timer::stop() {
 	workerThread.join();
 }
 
-std::multiset<Timer::CallbackProperties>::const_iterator Timer::find(TimerCallback* const callback) const {
-	auto predicate = [callback](const CallbackProperties& properties) {
-		return properties.callback == callback;
-	};
-
-	return find_if(callbacks.begin(), callbacks.end(), predicate);
-}
-
-void Timer::scheduleFixedRate(TimerCallback* callback, const std::chrono::milliseconds& waitTime) {
+void Timer::add(TimerCallback* const callback) {
 	unique_lock<mutex> lock(mtx);
 
-	if (callbacks.end() != find(callback)) {
+	if (callbacks.end() != find(callbacks.begin(), callbacks.end(), callback)) {
 		throw logic_error("Timer::scheduleFixedRate() callbacks.end() != find(callback)");
 	}
 
-	callbacks.insert(CallbackProperties(callback, ScheduleType::FIXED_RATE, waitTime));
+	callbacks.push_back(callback);
 	changed = true;
-	condition.notify_all();
-}
-
-void Timer::scheduleFixedDelay(TimerCallback* callback, const std::chrono::milliseconds& waitTime) {
-	unique_lock<mutex> lock(mtx);
-
-	if (callbacks.end() != find(callback)) {
-		throw logic_error("Timer::scheduleFixedDelay() callbacks.end() != find(callback)");
-	}
-
-	callbacks.insert(CallbackProperties(callback, ScheduleType::FIXED_DELAY, waitTime));
-	changed = true;
+	lock.unlock();
 	condition.notify_all();
 }
 
 void Timer::remove(TimerCallback* const callback) {
 	unique_lock<mutex> lock(mtx);
 
-	const auto it = find(callback);
+	const auto it = find(callbacks.begin(), callbacks.end(), callback);
 	if (callbacks.end() == it) {
 		throw logic_error("Timer::remove() callbacks.end() == it");
 	}
 
 	callbacks.erase(it);
 	changed = true;
+	lock.unlock();
 	condition.notify_all();
 }
 
-void Timer::cancel() {
+void Timer::removeAll() {
 	unique_lock<mutex> lock(mtx);
 
 	callbacks.clear();
 	changed = true;
+	lock.unlock();
 	condition.notify_all();
 }
 
@@ -114,28 +108,51 @@ void Timer::workerFunc() {
 			if (callbacks.empty()) {
 				condition.wait(lock, terminatedOrChanged);
 			} else {
-				condition.wait_until(lock, callbacks.begin()->nextScheduleTime, terminatedOrChanged);
+				condition.wait_until(lock, nextScheduleTime, terminatedOrChanged);
 			}
 
 			if (!terminated && !changed) {
-				CallbackProperties callbackProperties = *callbacks.begin();
-				callbackProperties.callback->onTimer();
-
-				callbacks.erase(callbacks.begin());
-
-				switch (callbackProperties.scheduleType) {
+				switch (scheduleType) {
 				case ScheduleType::FIXED_RATE:
-					callbackProperties.nextScheduleTime += callbackProperties.waitTime;
+
+					if (!checkPeriod(nextScheduleTime)) {
+						nextScheduleTime = chrono::steady_clock::now();
+					}
+
+					nextScheduleTime += period;
 					break;
 				case ScheduleType::FIXED_DELAY:
-					callbackProperties.nextScheduleTime = chrono::steady_clock::now() + callbackProperties.waitTime;
+					nextScheduleTime = chrono::steady_clock::now() + period;
 					break;
 				}
 
-				callbacks.insert(callbackProperties);
+				for (const auto& callback : callbacks) {
+					callback->onTimer();
+				}
 			}
 		}
 	} catch (const exception& e) {
 		LOGGER.warning("Unhandled exception is caught in timer thread", e);
 	}
+}
+
+bool Timer::checkPeriod(const chrono::steady_clock::time_point& nextScheduleTime) {
+	const chrono::milliseconds actualDiff = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - nextScheduleTime);
+
+	if (abs(actualDiff) > maxTardiness) {
+		TimeConverter timeConverter(actualDiff);
+		ostringstream o;
+
+		o << "Update period failure! ";
+		o << timeConverter.getDays() << " days ";
+		o << setw(2) << setfill('0') << timeConverter.getHours() << ":";
+		o << setw(2) << setfill('0') << timeConverter.getMinutes() << ":";
+		o << setw(2) << setfill('0') << timeConverter.getSeconds() << ".";
+		o << setw(3) << setfill('0') << timeConverter.getMillis();
+
+		LOGGER.warning(o.str().c_str());
+		return false;
+	}
+
+	return true;
 }

@@ -79,6 +79,7 @@ void IrrigationApplication::initTemperatureSensor() {
 
 void IrrigationApplication::initDocument() {
 	irrigationDocument = IrrigationDocument::Builder().build();
+
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,
 		make_shared<XmlWriterFactory>(),
@@ -92,6 +93,8 @@ void IrrigationApplication::initDocument() {
 			make_shared<XmlReader>(),
 			make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
 		);
+
+		documentSaver->startTimer();
 
 	} catch (const FileNotFoundException& e) {
 		LOGGER.debug("Configuration file not found. Default configuration is loaded.");
@@ -115,7 +118,6 @@ void IrrigationApplication::onInitialize() {
 	initTemperatureSensor();
 	initDocument();
 
-	documentSaver->startTimer();
 	LOGGER.info("Irrigation System started");
 }
 
