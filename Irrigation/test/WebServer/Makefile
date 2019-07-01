@@ -22,7 +22,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 
 LOCAL_LIBS      = -l$(TARGET_NAME) -lLogger
-INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(COMMON_DIR)
+INCLUDES	    = -isystem $(PROJECT_ROOT)/3p/gmock_gtest -I$(INCLUDE_DIR) -I$(COMMON_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib 
 LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml -lcurl -lmicrohttpd
 
@@ -34,15 +34,7 @@ ifeq "$(RPI)" "1"
 LIBS          += -lwiringPi
 endif
 
-CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
-CPPFLAGS        = -isystem $(PROJECT_ROOT)/3p/gmock_gtest $(INCLUDE_PATH) 
-
-# DEBUG flags
-#CXXFLAGS        += -O0 -g3
-
-# RELEASE flags
-CXXFLAGS        += -O3
-
+include ../../common.mk
 
 .PHONY: all
 all: $(TARGET)
@@ -93,7 +85,7 @@ print:
 	
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 $(TARGET):	$(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS)) $(OBJECTS)
 	@mkdir -p $(TARGET_DIR)

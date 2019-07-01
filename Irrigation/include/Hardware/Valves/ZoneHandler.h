@@ -1,5 +1,4 @@
 #pragma once
-#include <limits>
 #include <memory>
 #include <vector>
 #include "Valve.h"
@@ -9,7 +8,7 @@ class ZoneHandler {
 public:
 	class Builder;
 
-	static const size_t invalidZoneId = std::numeric_limits<size_t>::max();
+	static const size_t invalidZoneId;
 
 private:
 	std::unique_ptr<Valve> masterValve;

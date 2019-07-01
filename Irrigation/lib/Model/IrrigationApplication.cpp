@@ -136,6 +136,7 @@ void IrrigationApplication::onTerminate() {
 
 	documentSaver.reset();
 	irrigationDocument.reset();
+	Temperature::uninit();
 
 	LOGGER.info("Irrigation System stopped");
 }

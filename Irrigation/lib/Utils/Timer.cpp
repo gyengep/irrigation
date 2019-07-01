@@ -43,7 +43,7 @@ void Timer::start(Timer::Priority priority) {
 		param.sched_priority = 1;
 		int result;
 		if (0 != (result = pthread_setschedparam(workerThread.native_handle(), SCHED_RR, &param))) {
-			LOGGER.warning("Can not change thread priority: %d", result);
+			LOGGER.warning("Can not change thread priority. (error code: %d)", result);
 		}
 	}
 }

@@ -32,10 +32,10 @@ public:
 		const std::string level;
 		const std::string text;
 
-		Entry(const std::string time,
-				const std::string thread,
-				const std::string level,
-				const std::string text);
+		Entry(const std::string& time,
+				const std::string& thread,
+				const std::string& level,
+				const std::string& text);
 	};
 
 private:

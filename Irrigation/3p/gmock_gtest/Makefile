@@ -18,12 +18,9 @@ OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDE_PATH    = -I$(INCLUDE_DIR)
-
+INCLUDES	    = -I$(INCLUDE_DIR)
 ARFLAGS         = -r
 CXXFLAGS        = -O3 -Wall -fmessage-length=0
-CPPFLAGS        =  $(INCLUDE_PATH) 
-
 
 .PHONY:  all
 all: $(TARGET)
@@ -47,7 +44,7 @@ $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
 	@mkdir -p $(OBJECT_DIR)
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cygwin C++ Compiler'
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 	@echo 'Finished building: $<'
 	@echo ' '
 

@@ -52,5 +52,6 @@ public:
 			const std::chrono::duration<int64_t>& forecastUpdatePeriod
 		);
 
+	static void uninit();
 	static std::shared_ptr<Temperature> getInstancePtr();
 };

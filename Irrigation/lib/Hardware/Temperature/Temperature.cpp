@@ -34,6 +34,10 @@ void Temperature::init(
 		));
 }
 
+void Temperature::uninit() {
+	instance.reset();
+}
+
 shared_ptr<Temperature> Temperature::getInstancePtr() {
 	return instance;
 }
@@ -53,6 +57,7 @@ Temperature::Temperature(
 	periodEnd(0)
 {
 	sensor = createSensor();
+	sensor->onTimer();
 
 	statistics = make_shared<TemperatureStatisticsImpl>(
 			temperatureCacheLength,
@@ -61,6 +66,7 @@ Temperature::Temperature(
 			make_shared<CsvWriterImplFactory>(),
 			sensor
 		);
+	statistics->onTimer();
 
 	history = make_shared<TemperatureHistory>(
 			statistics,
@@ -68,15 +74,11 @@ Temperature::Temperature(
 			temperatureHistoryFileName,
 			make_shared<CsvWriterImplFactory>()
 		);
+	history->onTimer();
+	history->startTimer();
 
 	forecast = make_shared<TemperatureForecast>();
-
-	sensor->onTimer();
-	statistics->onTimer();
-	history->onTimer();
 	forecast->onTimer();
-
-	history->startTimer();
 	forecast->startTimer(forecastUpdatePeriod);
 
 	sensorTimer.reset(new Timer(sensorUpdatePeriod, Timer::ScheduleType::FIXED_DELAY));
