@@ -12,6 +12,7 @@ class TemperatureSensor;
 
 class Temperature : public TimerCallback {
 	static std::shared_ptr<Temperature> instance;
+	static const std::chrono::seconds::rep periodInSeconds;
 
 	std::unique_ptr<Timer> timer;
 	std::unique_ptr<Timer> sensorTimer;
@@ -36,7 +37,7 @@ class Temperature : public TimerCallback {
 
 	std::shared_ptr<TemperatureSensor> createSensor();
 	void logStoredForecast();
-	void logPreviousDayMeasured(std::time_t currentTime);
+	void logPreviousPeriodMeasured(std::time_t currentTime);
 
 	static std::string toTimeStr(time_t rawTime);
 
@@ -56,6 +57,6 @@ public:
 
 	static void uninit();
 	static std::shared_ptr<Temperature> getInstancePtr();
-	static std::pair<std::time_t, std::time_t> getPreviousDay(std::time_t currentTime);
-	static std::pair<std::time_t, std::time_t> getCurrentDay(std::time_t currentTime);
+	static std::pair<std::time_t, std::time_t> getPreviousPeriod(std::time_t currentTime);
+	static std::pair<std::time_t, std::time_t> getCurrentPeriod(std::time_t currentTime);
 };

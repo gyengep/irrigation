@@ -16,8 +16,7 @@ TemperatureHistory::TemperatureHistory(
 	) : TemperatureHistory(
 			temperatureStatistics,
 			period,
-			csvWriterFactory->create(openFile(fileName)),
-			time(nullptr)
+			csvWriterFactory->create(openFile(fileName))
 		)
 {
 }
@@ -25,13 +24,12 @@ TemperatureHistory::TemperatureHistory(
 TemperatureHistory::TemperatureHistory(
 		const shared_ptr<TemperatureStatistics>& temperatureStatistics,
 		const chrono::seconds& period,
-		const std::shared_ptr<CsvWriter>& csvWriter,
-		const std::time_t currentTime
+		const std::shared_ptr<CsvWriter>& csvWriter
 	) :
 	periodInSeconds(chrono::duration_cast<chrono::seconds>(period).count()),
 	temperatureStatistics(temperatureStatistics),
 	csvWriter(csvWriter),
-	lastUpdate(currentTime)
+	lastUpdate(time(nullptr))
 {
 	if (csvWriter->stream()->tellp() == 0) {
 		csvWriter->append(vector<string>{"Date", "MinTemperature", "MaxTemperature", "AvgTemperature"});
@@ -43,30 +41,21 @@ TemperatureHistory::TemperatureHistory(
 TemperatureHistory::~TemperatureHistory() {
 }
 
-void TemperatureHistory::periodicUpdate(std::time_t currentTime) {
-	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
-		lastUpdate = currentTime;
+void TemperatureHistory::saveHistory(const time_t from, const time_t to) {
+	try {
+		const auto statisticsValues = temperatureStatistics->getStatisticsValues(from, to);
+		const vector<string> statisticsTexts {
+			timeToString(from),
+			temperatureToString(statisticsValues.min),
+			temperatureToString(statisticsValues.max),
+			temperatureToString(statisticsValues.avg),
+		};
 
-		LOGGER.trace("TemperatureHistory::onTimer()");
+		csvWriter->append(statisticsTexts);
+		csvWriter->stream()->flush();
 
-		const time_t periodStart = ((currentTime / periodInSeconds) - 1) * periodInSeconds;
-		const time_t periodEnd = (currentTime / periodInSeconds) * periodInSeconds - 1;
-
-		try {
-			const auto statisticsValues = temperatureStatistics->getStatisticsValues(periodStart, periodEnd);
-			const vector<string> statisticsTexts {
-				timeToString(periodStart),
-				temperatureToString(statisticsValues.min),
-				temperatureToString(statisticsValues.max),
-				temperatureToString(statisticsValues.avg),
-			};
-
-			csvWriter->append(statisticsTexts);
-			csvWriter->stream()->flush();
-
-		} catch (const exception& e) {
-			LOGGER.debug("An error occured during write the temperature history file", e);
-		}
+	} catch (const exception& e) {
+		LOGGER.debug("An error occured during write the temperature history file", e);
 	}
 }
 
@@ -81,7 +70,19 @@ void TemperatureHistory::stopTimer() {
 }
 
 void TemperatureHistory::onTimer() {
-	periodicUpdate();
+	const auto currentTime = time(nullptr);
+
+	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
+		lastUpdate = currentTime;
+
+		LOGGER.trace("TemperatureHistory::onTimer()");
+
+		const time_t from = ((currentTime / periodInSeconds) - 1) * periodInSeconds;
+		const time_t to = (currentTime / periodInSeconds) * periodInSeconds - 1;
+		saveHistory(from, to);
+	} else {
+		LOGGER.trace("TemperatureHistory::onTimer() SKIPPED");
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -64,6 +64,7 @@ void TimerView::onTimer(const time_t rawTime) {
 }
 
 void TimerView::onTimer() {
+	LOGGER.trace("TimerView::onTimer()");
 	if (!checkSystemTime(expectedSystemTime)) {
 		expectedSystemTime = system_clock::now();
 	}

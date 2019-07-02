@@ -5,7 +5,6 @@
 #include <mutex>
 #include "TemperatureSensor.h"
 #include "TemperatureStatistics.h"
-#include "Utils/Timer.h"
 
 class CsvReaderFactory;
 class CsvWriterFactory;

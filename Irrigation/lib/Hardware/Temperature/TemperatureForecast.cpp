@@ -114,7 +114,7 @@ void TemperatureForecast::updateCache() {
 	}
 
 	lock_guard<mutex> lock(mtx);
-	temperatures.swap(temporaryTemperatures);
+	temperatures = move(temporaryTemperatures);
 }
 
 list<TemperatureForecast::ValuesWithTimes> TemperatureForecast::parseXml(const string& text) {

@@ -33,13 +33,12 @@ public:
 	TemperatureHistory(
 			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
 			const std::chrono::seconds& period,
-			const std::shared_ptr<CsvWriter>& csvWriter,
-			const std::time_t currentTime
+			const std::shared_ptr<CsvWriter>& csvWriter
 		);
 
 	virtual ~TemperatureHistory();
 
-	void periodicUpdate(std::time_t time = std::time(nullptr));
+	void saveHistory(const time_t from, const time_t to);
 
 	void startTimer();
 	void stopTimer();

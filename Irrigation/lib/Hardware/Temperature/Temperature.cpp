@@ -14,6 +14,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 shared_ptr<Temperature> Temperature::instance;
+const chrono::seconds::rep Temperature::periodInSeconds(chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count());
 
 
 void Temperature::init(
@@ -103,17 +104,18 @@ Temperature::~Temperature() {
 }
 
 void Temperature::onTimer() {
-	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
 	const auto currentTime = time(nullptr);
 
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
 		lastUpdate = currentTime;
 
+		LOGGER.trace("Temperature::onTimer()");
+
 		logStoredForecast();
-		logPreviousDayMeasured(currentTime);
+		logPreviousPeriodMeasured(currentTime);
 
 		try {
-			const auto currentDayStartEnd = getCurrentDay(currentTime);
+			const auto currentDayStartEnd = getCurrentPeriod(currentTime);
 			periodStart = currentDayStartEnd.first;
 			periodEnd = currentDayStartEnd.second;
 			forecastValues.reset(new TemperatureForecast::Values(forecast->getForecastValues(periodStart, periodEnd)));
@@ -122,6 +124,8 @@ void Temperature::onTimer() {
 		}
 
 		logStoredForecast();
+	} else {
+		LOGGER.trace("Temperature::onTimer() SKIPPED");
 	}
 }
 
@@ -140,9 +144,9 @@ void Temperature::logStoredForecast() {
 	}
 }
 
-void Temperature::logPreviousDayMeasured(time_t currentTime) {
+void Temperature::logPreviousPeriodMeasured(time_t currentTime) {
 	try {
-		const auto previousDayStartEnd = getPreviousDay(currentTime);
+		const auto previousDayStartEnd = getPreviousPeriod(currentTime);
 
 		const string start = toTimeStr(previousDayStartEnd.first);
 		const string end = toTimeStr(previousDayStartEnd.second);
@@ -161,18 +165,14 @@ void Temperature::logPreviousDayMeasured(time_t currentTime) {
 	}
 }
 
-pair<time_t, time_t> Temperature::getPreviousDay(time_t currentTime) {
-	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
-
+pair<time_t, time_t> Temperature::getPreviousPeriod(time_t currentTime) {
 	return make_pair<time_t, time_t>(
 			((currentTime / periodInSeconds) - 1 ) * periodInSeconds,
 			(currentTime / periodInSeconds ) * periodInSeconds
 		);
 }
 
-pair<time_t, time_t> Temperature::getCurrentDay(time_t currentTime) {
-	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
-
+pair<time_t, time_t> Temperature::getCurrentPeriod(time_t currentTime) {
 	return make_pair<time_t, time_t>(
 			currentTime / periodInSeconds * periodInSeconds,
 			((currentTime / periodInSeconds ) + 1 ) * periodInSeconds

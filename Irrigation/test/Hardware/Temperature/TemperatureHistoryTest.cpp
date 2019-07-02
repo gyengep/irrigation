@@ -53,8 +53,7 @@ TEST(TemperatureHistoryTest, init) {
 	TemperatureHistory temperatureHistory(
 			mockTemperatureStatistics,
 			chrono::hours(1),
-			mockCsvWriter,
-			time(nullptr)
+			mockCsvWriter
 		);
 }
 
@@ -63,8 +62,6 @@ TEST(TemperatureHistoryTest, createNewFile) {
 	auto mockTemperatureStatistics = make_shared<MockTemperatureStatistics>();
 	shared_ptr<ostream> output = make_shared<ostringstream>();
 
-	const time_t currentTime = toTime(2019, 6, 12, 22, 0);
-
 	EXPECT_CALL(*mockTemperatureStatistics, getStatisticsValues(_, _)).Times(0);
 	EXPECT_CALL(*mockCsvWriter, append(csvHeader)).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
@@ -72,13 +69,8 @@ TEST(TemperatureHistoryTest, createNewFile) {
 	TemperatureHistory temperatureHistory(
 			mockTemperatureStatistics,
 			chrono::hours(1),
-			mockCsvWriter,
-			currentTime
+			mockCsvWriter
 		);
-
-	for (unsigned sec = 0; sec < 3600; sec++) {
-		temperatureHistory.periodicUpdate(currentTime + sec);
-	}
 }
 
 TEST(TemperatureHistoryTest, createNewFileAndAppend) {
@@ -98,13 +90,10 @@ TEST(TemperatureHistoryTest, createNewFileAndAppend) {
 	TemperatureHistory temperatureHistory(
 			mockTemperatureStatistics,
 			chrono::hours(1),
-			mockCsvWriter,
-			currentTime
+			mockCsvWriter
 		);
 
-	for (unsigned sec = 0; sec <= 3600; sec++) {
-		temperatureHistory.periodicUpdate(currentTime + sec);
-	}
+	temperatureHistory.saveHistory(currentTime, currentTime + 3599);
 }
 
 TEST(TemperatureHistoryTest, appendFile) {
@@ -124,12 +113,9 @@ TEST(TemperatureHistoryTest, appendFile) {
 	TemperatureHistory temperatureHistory(
 			mockTemperatureStatistics,
 			chrono::hours(1),
-			mockCsvWriter,
-			currentTime
+			mockCsvWriter
 		);
 
-	for (unsigned sec = 0; sec <= 3600; sec++) {
-		temperatureHistory.periodicUpdate(currentTime + sec);
-	}
+	temperatureHistory.saveHistory(currentTime, currentTime + 3599);
 }
 

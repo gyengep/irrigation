@@ -150,7 +150,7 @@ TemperatureStatisticsImpl::Values TemperatureStatisticsImpl::getStatisticsValues
 }
 
 void TemperatureStatisticsImpl::onTimer() {
-	//LOGGER.trace("TemperatureStatisticsImpl::onTimer()");
+	LOGGER.trace("TemperatureStatisticsImpl::onTimer()");
 
 	if (nullptr == sensor) {
 		throw logic_error("TemperatureStatisticsImpl::onTimer() nullptr == sensor");
