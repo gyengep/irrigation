@@ -125,7 +125,7 @@ void Temperature::onTimer() {
 
 		logStoredForecast();
 	} else {
-		LOGGER.trace("Temperature::onTimer() SKIPPED");
+		//LOGGER.trace("Temperature::onTimer() SKIPPED");
 	}
 }
 

@@ -81,7 +81,7 @@ void TemperatureHistory::onTimer() {
 		const time_t to = (currentTime / periodInSeconds) * periodInSeconds - 1;
 		saveHistory(from, to);
 	} else {
-		LOGGER.trace("TemperatureHistory::onTimer() SKIPPED");
+		//LOGGER.trace("TemperatureHistory::onTimer() SKIPPED");
 	}
 }
 
