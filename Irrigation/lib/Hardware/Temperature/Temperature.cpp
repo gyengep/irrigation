@@ -15,6 +15,7 @@ using namespace std;
 
 shared_ptr<Temperature> Temperature::instance;
 
+
 void Temperature::init(
 		const chrono::duration<int64_t>& sensorUpdatePeriod,
 		const string& temperatureCacheFileName,
@@ -101,16 +102,6 @@ Temperature::~Temperature() {
 	forecast->stopTimer();
 }
 
-string toTimeStr(time_t rawTime) {
-	struct tm * timeinfo;
-	char buffer [80];
-
-	timeinfo = localtime(&rawTime);
-
-	strftime(buffer, 80, "%F %T",timeinfo);
-	return buffer;
-}
-
 void Temperature::onTimer() {
 	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
 	const auto currentTime = time(nullptr);
@@ -118,22 +109,23 @@ void Temperature::onTimer() {
 	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
 		lastUpdate = currentTime;
 
-		logForecast();
-		logMeasured();
+		logStoredForecast();
+		logPreviousDayMeasured(currentTime);
 
 		try {
-			periodStart = currentTime / periodInSeconds * periodInSeconds;
-			periodEnd = ((currentTime / periodInSeconds ) + 1 ) * periodInSeconds;
+			const auto currentDayStartEnd = getCurrentDay(currentTime);
+			periodStart = currentDayStartEnd.first;
+			periodEnd = currentDayStartEnd.second;
 			forecastValues.reset(new TemperatureForecast::Values(forecast->getForecastValues(periodStart, periodEnd)));
 		} catch (const TemperatureException& e) {
 			LOGGER.trace("Temperature forecast for next day: not available", e);
 		}
 
-		logForecast();
+		logStoredForecast();
 	}
 }
 
-void Temperature::logForecast() {
+void Temperature::logStoredForecast() {
 	if (nullptr != forecastValues.get() && 0 != periodStart && 0 != periodEnd) {
 
 		const string start = toTimeStr(periodStart);
@@ -148,25 +140,43 @@ void Temperature::logForecast() {
 	}
 }
 
-void Temperature::logMeasured() {
-	if (0 != periodStart && 0 != periodEnd) {
-		try {
-			const string start = toTimeStr(periodStart);
-			const string end = toTimeStr(periodEnd);
-			const auto temperatureValues = statistics->getStatisticsValues(periodStart, periodEnd);
+void Temperature::logPreviousDayMeasured(time_t currentTime) {
+	try {
+		const auto previousDayStartEnd = getPreviousDay(currentTime);
 
-			LOGGER.trace("Measured temperature\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
-					start.c_str(),
-					end.c_str(),
-					temperatureValues.min,
-					temperatureValues.max,
-					temperatureValues.avg
-				);
+		const string start = toTimeStr(previousDayStartEnd.first);
+		const string end = toTimeStr(previousDayStartEnd.second);
+		const auto temperatureValues = statistics->getStatisticsValues(periodStart, periodEnd);
 
-		} catch (const TemperatureException& e) {
-			LOGGER.trace("Measured temperature\n\tCan not read temperature", e);
-		}
+		LOGGER.trace("Measured temperature\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
+				start.c_str(),
+				end.c_str(),
+				temperatureValues.min,
+				temperatureValues.max,
+				temperatureValues.avg
+			);
+
+	} catch (const TemperatureException& e) {
+		LOGGER.trace("Measured temperature\n\tCan not read temperature", e);
 	}
+}
+
+pair<time_t, time_t> Temperature::getPreviousDay(time_t currentTime) {
+	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
+
+	return make_pair<time_t, time_t>(
+			((currentTime / periodInSeconds) - 1 ) * periodInSeconds,
+			(currentTime / periodInSeconds ) * periodInSeconds
+		);
+}
+
+pair<time_t, time_t> Temperature::getCurrentDay(time_t currentTime) {
+	const chrono::seconds::rep periodInSeconds = 24 * 60 * 60;
+
+	return make_pair<time_t, time_t>(
+			currentTime / periodInSeconds * periodInSeconds,
+			((currentTime / periodInSeconds ) + 1 ) * periodInSeconds
+		);
 }
 
 shared_ptr<TemperatureSensor> Temperature::createSensor() {
@@ -176,4 +186,14 @@ shared_ptr<TemperatureSensor> Temperature::createSensor() {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 		return make_shared<TemperatureSensorFake>();
 	}
+}
+
+string Temperature::toTimeStr(time_t rawTime) {
+	struct tm * timeinfo;
+	char buffer [80];
+
+	timeinfo = localtime(&rawTime);
+
+	strftime(buffer, 80, "%F %T",timeinfo);
+	return buffer;
 }

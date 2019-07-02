@@ -27,6 +27,7 @@ TimerView::~TimerView() {
 void TimerView::initialize() {
 	LOGGER.debug("TimerView initializing...");
 	expectedSystemTime = system_clock::now();
+	timer.add(this);
 	timer.start(Timer::Priority::HIGH);
 	LOGGER.debug("TimerView initialized");
 }

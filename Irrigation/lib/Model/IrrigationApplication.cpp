@@ -77,6 +77,14 @@ void IrrigationApplication::initTemperatureSensor() {
 	}
 }
 
+void IrrigationApplication::uninitTemperatureSensor() {
+	try {
+		Temperature::uninit();
+	} catch (const exception& e) {
+		LOGGER.warning("An error during uninitialize temperature modul", e);
+	}
+}
+
 void IrrigationApplication::initDocument() {
 	irrigationDocument = IrrigationDocument::Builder().build();
 
@@ -110,6 +118,21 @@ void IrrigationApplication::initDocument() {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, Configuration::getInstance().getRestPort())));
 }
 
+void IrrigationApplication::uninitDocument() {
+	documentSaver->stopTimer();
+
+	try {
+		documentSaver->saveIfModified();
+		LOGGER.debug("Configuration successfully saved.");
+
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't save configuration"));
+	}
+
+	documentSaver.reset();
+	irrigationDocument.reset();
+}
+
 void IrrigationApplication::onInitialize() {
 	LOGGER.info("Irrigation System %s", getVersion().c_str());
 	LOGGER.debug("Irrigation System starting ...");
@@ -124,19 +147,8 @@ void IrrigationApplication::onInitialize() {
 void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
-	documentSaver->stopTimer();
-
-	try {
-		documentSaver->saveIfModified();
-		LOGGER.debug("Configuration successfully saved.");
-
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't save configuration"));
-	}
-
-	documentSaver.reset();
-	irrigationDocument.reset();
-	Temperature::uninit();
+	uninitDocument();
+	uninitTemperatureSensor();
 
 	LOGGER.info("Irrigation System stopped");
 }
