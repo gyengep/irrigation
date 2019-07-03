@@ -14,7 +14,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 shared_ptr<Temperature> Temperature::instance;
-const chrono::seconds::rep Temperature::periodInSeconds(chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count());
+const chrono::seconds::rep Temperature::periodInSeconds(chrono::duration_cast<chrono::seconds>(chrono::hours(1)).count());
 
 
 void Temperature::init(
