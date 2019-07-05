@@ -1,5 +1,6 @@
 #include "Temperature.h"
 #include "TemperatureForecast.h"
+#include "TemperatureForecastProviderOWM.h"
 #include "TemperatureHistory.h"
 #include "TemperatureSensorDS18B20.h"
 #include "TemperatureSensorFake.h"
@@ -14,7 +15,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 shared_ptr<Temperature> Temperature::instance;
-const chrono::seconds::rep Temperature::periodInSeconds(chrono::duration_cast<chrono::seconds>(chrono::hours(1)).count());
+const chrono::seconds::rep Temperature::periodInSeconds(chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count());
 
 
 void Temperature::init(
@@ -79,7 +80,7 @@ Temperature::Temperature(
 	history->onTimer();
 	history->startTimer();
 
-	forecast = make_shared<TemperatureForecast>();
+	forecast = make_shared<TemperatureForecast>(make_shared<TemperatureForecastProviderOWM>());
 	forecast->onTimer();
 	forecast->startTimer(forecastUpdatePeriod);
 
@@ -160,7 +161,7 @@ void Temperature::logPreviousPeriodMeasured(time_t currentTime) {
 				temperatureValues.avg
 			);
 
-	} catch (const TemperatureException& e) {
+	} catch (const exception& e) {
 		LOGGER.trace("Measured temperature\n\tCan not read temperature", e);
 	}
 }
