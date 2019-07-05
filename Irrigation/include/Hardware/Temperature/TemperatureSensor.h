@@ -1,20 +1,26 @@
 #pragma once
-#include <mutex>
+#include <memory>
 #include "Utils/Timer.h"
+
+class TemperatureSensorReader;
 
 
 class TemperatureSensor : public TimerCallback {
+	const std::shared_ptr<TemperatureSensorReader> sensorReader;
+
+	std::unique_ptr<Timer> timer;
 	mutable std::mutex mtx;
 	bool valid;
 	float value;
 
 public:
-	TemperatureSensor();
+	TemperatureSensor(const std::shared_ptr<TemperatureSensorReader>& sensorReader);
 	virtual ~TemperatureSensor();
 
 	float getCachedValue() const;
 	void updateCache();
 
-	virtual float readValueFromSensor() = 0;
+	void startTimer(const std::chrono::duration<int64_t>& period);
+	void stopTimer();
 	virtual void onTimer() override;
 };

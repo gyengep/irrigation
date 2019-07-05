@@ -28,7 +28,7 @@ ostream& operator<<(ostream& os, const TemperatureForecast::Values& values) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TemperatureForecast::TemperatureForecast(const std::shared_ptr<TemperatureForecastProvider>& provider) :
-		provider(provider)
+	provider(provider)
 {
 }
 

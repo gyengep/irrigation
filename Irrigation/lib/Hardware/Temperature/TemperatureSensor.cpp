@@ -1,11 +1,13 @@
 #include "TemperatureSensor.h"
+#include "TemperatureSensorReader.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
 
 using namespace std;
 
 
-TemperatureSensor::TemperatureSensor() :
+TemperatureSensor::TemperatureSensor(const std::shared_ptr<TemperatureSensorReader>& sensorReader) :
+	sensorReader(sensorReader),
 	valid(false),
 	value(0.0f)
 {
@@ -29,10 +31,10 @@ void TemperatureSensor::updateCache() {
 	bool valid = false;
 
 	try {
-		value = readValueFromSensor();
+		value = sensorReader->read();
 		valid = true;
 	} catch(const TemperatureException& e) {
-		LOGGER.warning("Can not read temperature sensor", e);
+		LOGGER.warning("Can not read temperature sensorReader", e);
 	}
 
 	lock_guard<mutex> lock(mtx);
@@ -40,7 +42,17 @@ void TemperatureSensor::updateCache() {
 	this->valid = valid;
 }
 
+void TemperatureSensor::startTimer(const std::chrono::duration<int64_t>& period) {
+	timer.reset(new Timer(this, period, Timer::ScheduleType::FIXED_DELAY));
+	timer->start();
+}
+
+void TemperatureSensor::stopTimer() {
+	timer->stop();
+	timer.reset();
+}
+
 void TemperatureSensor::onTimer() {
-	//LOGGER.trace("TemperatureSensor::onTimer()");
+	LOGGER.trace("TemperatureSensorReader::onTimer()");
 	updateCache();
 }

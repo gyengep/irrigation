@@ -15,7 +15,6 @@ class Temperature : public TimerCallback {
 	static const std::chrono::seconds::rep periodInSeconds;
 
 	std::unique_ptr<Timer> timer;
-	std::unique_ptr<Timer> sensorTimer;
 	std::time_t lastUpdate;
 	std::unique_ptr<TemperatureForecast::Values> forecastValues;
 	std::time_t periodStart;

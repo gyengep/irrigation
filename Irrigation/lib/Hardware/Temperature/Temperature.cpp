@@ -1,9 +1,10 @@
 #include "Temperature.h"
 #include "TemperatureForecast.h"
-#include "TemperatureForecastProviderOWM.h"
 #include "TemperatureHistory.h"
-#include "TemperatureSensorDS18B20.h"
-#include "TemperatureSensorFake.h"
+#include "TemperatureSensor.h"
+#include "TemperatureForecastProviderOWM.h"
+#include "TemperatureSensorReaderDS18B20.h"
+#include "TemperatureSensorReaderFake.h"
 #include "TemperatureStatisticsImpl.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
@@ -61,6 +62,7 @@ Temperature::Temperature(
 {
 	sensor = createSensor();
 	sensor->onTimer();
+	sensor->startTimer(sensorUpdatePeriod);
 
 	statistics = make_shared<TemperatureStatisticsImpl>(
 			temperatureCacheLength,
@@ -83,12 +85,12 @@ Temperature::Temperature(
 	forecast = make_shared<TemperatureForecast>(make_shared<TemperatureForecastProviderOWM>());
 	forecast->onTimer();
 	forecast->startTimer(forecastUpdatePeriod);
-
+/*
 	sensorTimer.reset(new Timer(sensorUpdatePeriod, Timer::ScheduleType::FIXED_DELAY));
 	sensorTimer->add(sensor.get());
 	sensorTimer->add(statistics.get());
 	sensorTimer->start();
-
+*/
 	timer.reset(new Timer(this, chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY));
 	timer->start();
 }
@@ -97,11 +99,9 @@ Temperature::~Temperature() {
 	timer->stop();
 	timer.reset();
 
-	sensorTimer->stop();
-	sensorTimer.reset();
-
-	history->stopTimer();
 	forecast->stopTimer();
+	history->stopTimer();
+	sensor->stopTimer();
 }
 
 void Temperature::onTimer() {
@@ -181,12 +181,16 @@ pair<time_t, time_t> Temperature::getCurrentPeriod(time_t currentTime) {
 }
 
 shared_ptr<TemperatureSensor> Temperature::createSensor() {
+	shared_ptr<TemperatureSensorReader> sensorReader;
+
 	try {
-		return make_shared<TemperatureSensor_DS18B20>();
+		sensorReader = make_shared<TemperatureSensorReader_DS18B20>();
 	} catch (const exception& e) {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
-		return make_shared<TemperatureSensorFake>();
+		sensorReader = make_shared<TemperatureSensorReaderFake>();
 	}
+
+	return make_shared<TemperatureSensor>(sensorReader);
 }
 
 string Temperature::toTimeStr(time_t rawTime) {
