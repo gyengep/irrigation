@@ -38,7 +38,6 @@ TemperatureForecast::~TemperatureForecast() {
 void TemperatureForecast::updateCache() {
 	try {
 		auto temporaryTemperatures = provider->getForecast();
-
 		checkValueList(temporaryTemperatures);
 
 		lock_guard<mutex> lock(mtx);

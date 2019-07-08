@@ -22,7 +22,7 @@ class TimerView : public View, public TimerCallback {
 	std::chrono::system_clock::time_point expectedSystemTime;
 
 	IrrigationDocument& irrigationDocument;
-	Timer timer;
+	std::unique_ptr<Timer> timer;
 
 	void onTimer(const time_t rawTime);
 

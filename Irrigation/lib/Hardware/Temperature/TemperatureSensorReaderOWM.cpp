@@ -9,7 +9,7 @@ using namespace pugi;
 
 
 const string TemperatureSensorReader_OWM::url("api.openweathermap.org/data/2.5/weather");
-const string TemperatureSensorReader_OWM::location("Dunakeszi,hu");
+const string TemperatureSensorReader_OWM::location("dunakeszi,hu");
 const string TemperatureSensorReader_OWM::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,9 +56,7 @@ TemperatureSensorReader_OWM::~TemperatureSensorReader_OWM() {
 }
 
 float TemperatureSensorReader_OWM::read() {
-	const string text = networkReader->read(url, location, appid);
-	//LOGGER.trace("TemperatureSensorReader_OWM::read(): %s", text.c_str());
-	return parseXml(text);
+	return parseXml(networkReader->read(url, location, appid));
 }
 
 float TemperatureSensorReader_OWM::parseXml(const string& text) {

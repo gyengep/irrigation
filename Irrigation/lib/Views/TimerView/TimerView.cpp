@@ -16,8 +16,7 @@ TimerView::TimerView(IrrigationDocument& irrigationDocument) :
 	View(irrigationDocument),
 	period(seconds(1)),
 	maxTardiness(seconds(1)),
-	irrigationDocument(irrigationDocument),
-	timer(period, Timer::ScheduleType::FIXED_RATE)
+	irrigationDocument(irrigationDocument)
 {
 }
 
@@ -26,15 +25,21 @@ TimerView::~TimerView() {
 
 void TimerView::initialize() {
 	LOGGER.debug("TimerView initializing...");
-	expectedSystemTime = system_clock::now();
-	timer.add(this);
-	timer.start(Timer::Priority::HIGH);
+
+	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_RATE));
+	timer->add(this);
+	expectedSystemTime = system_clock::now() + period;
+	timer->start(Timer::Priority::HIGH);
+
 	LOGGER.debug("TimerView initialized");
 }
 
 void TimerView::terminate() {
 	LOGGER.debug("TimerView terminating...");
-	timer.stop();
+
+	timer->stop();
+	timer.reset();
+
 	LOGGER.debug("TimerView terminated");
 }
 
@@ -70,7 +75,6 @@ void TimerView::onTimer() {
 	}
 
 	onTimer(system_clock::to_time_t(expectedSystemTime));
-
 	expectedSystemTime += period;
 }
 

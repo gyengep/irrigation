@@ -12,7 +12,7 @@ using namespace pugi;
 
 
 const string TemperatureForecastProviderOWM::url("api.openweathermap.org/data/2.5/forecast");
-const string TemperatureForecastProviderOWM::location("Dunakeszi,hu");
+const string TemperatureForecastProviderOWM::location("dunakeszi,hu");
 const string TemperatureForecastProviderOWM::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
