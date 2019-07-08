@@ -10,6 +10,7 @@
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
+#include "Utils/TimePeriod.h"
 #include <chrono>
 
 using namespace std;
@@ -56,7 +57,10 @@ Temperature::Temperature(
 		const string& temperatureHistoryPersisterFileName,
 		const chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
 		const chrono::duration<int64_t>& forecastUpdatePeriod
-	)
+	) :
+
+	lastUpdateTime(chrono::system_clock::now()),
+	period(chrono::hours(1))
 {
 	sensor = make_shared<TemperatureSensorImpl>(
 			createSensorReader()
@@ -104,62 +108,54 @@ Temperature::~Temperature() {
 }
 
 void Temperature::onTimer() {
-/*
-	const auto currentTime = time(nullptr);
+	const auto currentTime = chrono::system_clock::now();
+	const auto currentTimeInSeconds = chrono::system_clock::to_time_t(currentTime);
+	const auto lastUpdateTimeInSeconds = chrono::system_clock::to_time_t(lastUpdateTime);
+	const auto periodInSeconds = chrono::duration_cast<chrono::seconds>(period).count();
 
-	if ((lastUpdate / periodInSeconds) != (currentTime / periodInSeconds)) {
-		lastUpdate = currentTime;
-
+	if ((lastUpdateTimeInSeconds / periodInSeconds) != (currentTimeInSeconds / periodInSeconds)) {
+		lastUpdateTime = currentTime;
 		LOGGER.trace("Temperature::onTimer()");
 
-		logStoredForecast();
 		logPreviousPeriodMeasured(currentTime);
+		logCurrentPeriodForecast(currentTime);
 
-		try {
-			const auto currentDayStartEnd = getCurrentPeriod(currentTime);
-			periodStart = currentDayStartEnd.first;
-			periodEnd = currentDayStartEnd.second;
-			forecastValues.reset(new TemperatureForecast::Values(forecast->getForecastValues(periodStart, periodEnd)));
-		} catch (const TemperatureException& e) {
-			LOGGER.trace("Temperature forecast for next day: not available", e);
-		}
-
-		logStoredForecast();
 	} else {
-		//LOGGER.trace("Temperature::onTimer() SKIPPED");
+		LOGGER.trace("Temperature::onTimer() SKIPPED");
 	}
-*/
 }
 
-void Temperature::logStoredForecast() {
-/*
-	if (nullptr != forecastValues.get() && 0 != periodStart && 0 != periodEnd) {
-
-		const string start = toTimeStr(periodStart);
-		const string end = toTimeStr(periodEnd);
+void Temperature::logCurrentPeriodForecast(const chrono::system_clock::time_point& currentTime) {
+	try {
+		const auto currentPeriodFromTo = getCurrentPeriod(currentTime, period);
+		const string from = toTimeStr(currentPeriodFromTo.first);
+		const string to = toTimeStr(currentPeriodFromTo.second);
+		const auto forecastValues = forecast->getForecastValues(
+				chrono::system_clock::to_time_t(currentPeriodFromTo.first),
+				chrono::system_clock::to_time_t(currentPeriodFromTo.second)
+			);
 
 		LOGGER.trace("Temperature forecast\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
-				start.c_str(),
-				end.c_str(),
-				forecastValues->min,
-				forecastValues->max
+				from.c_str(),
+				to.c_str(),
+				forecastValues.min,
+				forecastValues.max
 			);
+	} catch (const exception& e) {
+		LOGGER.trace("Temperature forecast\n\tCan not read temperature forecast", e);
 	}
-*/
 }
 
-void Temperature::logPreviousPeriodMeasured(time_t currentTime) {
-/*
+void Temperature::logPreviousPeriodMeasured(const chrono::system_clock::time_point& currentTime) {
 	try {
-		const auto previousDayStartEnd = getPreviousPeriod(currentTime);
-
-		const string start = toTimeStr(previousDayStartEnd.first);
-		const string end = toTimeStr(previousDayStartEnd.second);
-		const auto temperatureValues = history->getStatisticsValues(previousDayStartEnd.first, previousDayStartEnd.second);
+		const auto previousPeriodFromTo = getPreviousPeriod(currentTime, period);
+		const string from = toTimeStr(previousPeriodFromTo.first);
+		const string to = toTimeStr(previousPeriodFromTo.second);
+		const auto temperatureValues = history->getHistoryValues(previousPeriodFromTo.first, previousPeriodFromTo.second);
 
 		LOGGER.trace("Measured temperature\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
-				start.c_str(),
-				end.c_str(),
+				from.c_str(),
+				to.c_str(),
 				temperatureValues.min,
 				temperatureValues.max,
 				temperatureValues.avg
@@ -168,7 +164,6 @@ void Temperature::logPreviousPeriodMeasured(time_t currentTime) {
 	} catch (const exception& e) {
 		LOGGER.trace("Measured temperature\n\tCan not read temperature", e);
 	}
-*/
 }
 
 shared_ptr<TemperatureSensorReader> Temperature::createSensorReader() {
@@ -186,7 +181,8 @@ shared_ptr<TemperatureSensorReader> Temperature::createSensorReader() {
 	return sensor;
 }
 
-string Temperature::toTimeStr(time_t rawTime) {
+string Temperature::toTimeStr(const chrono::system_clock::time_point& timePoint) {
+	const time_t rawTime = chrono::system_clock::to_time_t(timePoint);
 	struct tm * timeinfo;
 	char buffer [80];
 

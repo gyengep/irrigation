@@ -2,6 +2,7 @@
 #include <chrono>
 #include <memory>
 #include "TemperatureException.h"
+#include "TemperatureForecast.h"
 #include "Utils/Timer.h"
 
 class TemperatureSensorImpl;
@@ -15,6 +16,8 @@ class Temperature : public TimerCallback {
 	static std::shared_ptr<Temperature> instance;
 	static const std::chrono::seconds::rep periodInSeconds;
 
+	std::chrono::system_clock::time_point lastUpdateTime;
+	std::chrono::duration<int64_t> period;
 	std::unique_ptr<Timer> timer;
 
 	std::shared_ptr<TemperatureSensorImpl> sensor;
@@ -33,10 +36,16 @@ class Temperature : public TimerCallback {
 
 	std::shared_ptr<TemperatureSensorReader> createSensorReader();
 
-	void logStoredForecast();
-	void logPreviousPeriodMeasured(std::time_t currentTime);
+	static void logCurrentPeriodForecast(
+			const std::chrono::system_clock::time_point& from,
+			const std::chrono::system_clock::time_point& to,
+			const std::unique_ptr<TemperatureForecast::Values>& forecastValues
+		);
 
-	static std::string toTimeStr(time_t rawTime);
+	void logPreviousPeriodMeasured(const std::chrono::system_clock::time_point& timePoint);
+	void logCurrentPeriodForecast(const std::chrono::system_clock::time_point& timePoint);
+
+	static std::string toTimeStr(const std::chrono::system_clock::time_point& timePoint);
 
 public:
 
