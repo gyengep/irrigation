@@ -138,3 +138,14 @@ TEST(TemperatureForecastTest, getForecastOutOfBounds) {
 	EXPECT_ANY_THROW(temperatureForecast.getForecastValues(60, 70));
 	EXPECT_ANY_THROW(temperatureForecast.getForecastValues(5, 10));
 }
+
+TEST(TemperatureForecastTest, onTimer) {
+	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
+
+	EXPECT_CALL(*mockProvider, getForecast()).Times(1).
+			WillOnce(Return(valueList1));
+
+	TemperatureForecast temperatureForecast(mockProvider);
+
+	EXPECT_NO_THROW(temperatureForecast.onTimer());
+}

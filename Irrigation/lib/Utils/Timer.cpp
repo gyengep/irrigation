@@ -10,7 +10,7 @@
 using namespace std;
 
 
-Timer::Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType) :
+Timer::Timer(const chrono::milliseconds& period, ScheduleType scheduleType) :
 	scheduleType(scheduleType),
 	period(period),
 	maxTardiness(period),
@@ -19,7 +19,7 @@ Timer::Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType)
 {
 }
 
-Timer::Timer(TimerCallback* callback, const std::chrono::milliseconds& period, ScheduleType scheduleType) :
+Timer::Timer(TimerCallback* callback, const chrono::milliseconds& period, ScheduleType scheduleType) :
 	Timer(period, scheduleType)
 {
 	add(callback);
@@ -91,6 +91,10 @@ void Timer::removeAll() {
 	changed = true;
 	lock.unlock();
 	condition.notify_all();
+}
+
+const chrono::milliseconds& Timer::getPeriod() const {
+	return period;
 }
 
 void Timer::workerFunc() {

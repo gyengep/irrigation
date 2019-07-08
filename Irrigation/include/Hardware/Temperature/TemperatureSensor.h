@@ -1,26 +1,11 @@
 #pragma once
-#include <memory>
-#include "Utils/Timer.h"
-
-class TemperatureSensorReader;
+#include <chrono>
 
 
-class TemperatureSensor : public TimerCallback {
-	const std::shared_ptr<TemperatureSensorReader> sensorReader;
-
-	std::unique_ptr<Timer> timer;
-	mutable std::mutex mtx;
-	bool valid;
-	float value;
-
+class TemperatureSensor {
 public:
-	TemperatureSensor(const std::shared_ptr<TemperatureSensorReader>& sensorReader);
-	virtual ~TemperatureSensor();
-
-	float getCachedValue() const;
-	void updateCache();
-
-	void startTimer(const std::chrono::duration<int64_t>& period);
-	void stopTimer();
-	virtual void onTimer() override;
+	virtual ~TemperatureSensor() = default;
+	virtual float getCachedValue() const = 0;
+	virtual void addListener(TimerCallback* timerCallback) = 0;
+	virtual void removeListener(TimerCallback* timerCallback) = 0;
 };

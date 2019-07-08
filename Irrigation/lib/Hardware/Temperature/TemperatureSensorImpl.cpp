@@ -1,4 +1,4 @@
-#include "TemperatureSensor.h"
+#include "TemperatureSensorImpl.h"
 #include "TemperatureSensorReader.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
@@ -6,17 +6,17 @@
 using namespace std;
 
 
-TemperatureSensor::TemperatureSensor(const std::shared_ptr<TemperatureSensorReader>& sensorReader) :
+TemperatureSensorImpl::TemperatureSensorImpl(const std::shared_ptr<TemperatureSensorReader>& sensorReader) :
 	sensorReader(sensorReader),
 	valid(false),
 	value(0.0f)
 {
 }
 
-TemperatureSensor::~TemperatureSensor() {
+TemperatureSensorImpl::~TemperatureSensorImpl() {
 }
 
-float TemperatureSensor::getCachedValue() const {
+float TemperatureSensorImpl::getCachedValue() const {
 	lock_guard<mutex> lock(mtx);
 
 	if (!valid) {
@@ -26,7 +26,7 @@ float TemperatureSensor::getCachedValue() const {
 	return value;
 }
 
-void TemperatureSensor::updateCache() {
+void TemperatureSensorImpl::updateCache() {
 	float value = 0.0f;
 	bool valid = false;
 
@@ -42,17 +42,25 @@ void TemperatureSensor::updateCache() {
 	this->valid = valid;
 }
 
-void TemperatureSensor::startTimer(const std::chrono::duration<int64_t>& period) {
+void TemperatureSensorImpl::startTimer(const std::chrono::seconds& period) {
 	timer.reset(new Timer(this, period, Timer::ScheduleType::FIXED_DELAY));
 	timer->start();
 }
 
-void TemperatureSensor::stopTimer() {
+void TemperatureSensorImpl::stopTimer() {
 	timer->stop();
 	timer.reset();
 }
 
-void TemperatureSensor::onTimer() {
+void TemperatureSensorImpl::onTimer() {
 	LOGGER.trace("TemperatureSensorReader::onTimer()");
 	updateCache();
+}
+
+void TemperatureSensorImpl::addListener(TimerCallback* timerCallback) {
+	timer->add(timerCallback);
+}
+
+void TemperatureSensorImpl::removeListener(TimerCallback* timerCallback) {
+	timer->remove(timerCallback);
 }

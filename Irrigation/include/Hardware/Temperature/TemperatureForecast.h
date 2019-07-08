@@ -25,7 +25,7 @@ public:
 	Values getForecastValues(std::time_t from, std::time_t to) const;
 	void updateCache();
 
-	void startTimer(const std::chrono::duration<int64_t>& period);
+	void startTimer(const std::chrono::seconds& period);
 	void stopTimer();
 	virtual void onTimer() override;
 

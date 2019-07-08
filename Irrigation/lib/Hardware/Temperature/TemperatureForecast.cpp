@@ -76,7 +76,7 @@ const list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecast::ge
 	return temperatures;
 }
 
-void TemperatureForecast::startTimer(const std::chrono::duration<int64_t>& period) {
+void TemperatureForecast::startTimer(const std::chrono::seconds& period) {
 	timer.reset(new Timer(this, period, Timer::ScheduleType::FIXED_DELAY));
 	timer->start();
 }
