@@ -3,6 +3,7 @@
 #include "Hardware/Temperature/TemperatureForecast.h"
 
 using namespace std;
+using namespace chrono;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////

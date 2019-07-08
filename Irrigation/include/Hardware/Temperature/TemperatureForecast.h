@@ -22,7 +22,8 @@ public:
 	TemperatureForecast(const std::shared_ptr<TemperatureForecastProvider>& provider);
 	virtual ~TemperatureForecast();
 
-	Values getForecastValues(std::time_t from, std::time_t to) const;
+	Values getForecastValues(const std::chrono::system_clock::time_point& from, const std::chrono::system_clock::time_point& to) const;
+	Values getForecastValues(const std::time_t& from, const std::time_t& to) const;
 	void updateCache();
 
 	void startTimer(const std::chrono::seconds& period);

@@ -25,6 +25,9 @@ class Temperature : public TimerCallback {
 	std::shared_ptr<TemperatureHistoryPersister> historyPersister;
 	std::shared_ptr<TemperatureForecast> forecast;
 
+	std::string storedForecastFrom, storedForecastTo;
+	std::unique_ptr<TemperatureForecast::Values> storedForecastValues;
+
 	Temperature(
 			const std::chrono::duration<int64_t>& sensorUpdatePeriod,
 			const std::string& temperatureHistoryFileName,
@@ -43,6 +46,7 @@ class Temperature : public TimerCallback {
 		);
 
 	void logPreviousPeriodMeasured(const std::chrono::system_clock::time_point& timePoint);
+	void logStoredPeriodForecast();
 	void logCurrentPeriodForecast(const std::chrono::system_clock::time_point& timePoint);
 
 	static std::string toTimeStr(const std::chrono::system_clock::time_point& timePoint);

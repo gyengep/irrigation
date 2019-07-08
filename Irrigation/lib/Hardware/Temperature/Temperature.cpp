@@ -118,6 +118,7 @@ void Temperature::onTimer() {
 		LOGGER.trace("Temperature::onTimer()");
 
 		logPreviousPeriodMeasured(currentTime);
+		logStoredPeriodForecast();
 		logCurrentPeriodForecast(currentTime);
 
 	} else {
@@ -128,21 +129,27 @@ void Temperature::onTimer() {
 void Temperature::logCurrentPeriodForecast(const chrono::system_clock::time_point& currentTime) {
 	try {
 		const auto currentPeriodFromTo = getCurrentPeriod(currentTime, period);
-		const string from = toTimeStr(currentPeriodFromTo.first);
-		const string to = toTimeStr(currentPeriodFromTo.second);
-		const auto forecastValues = forecast->getForecastValues(
-				chrono::system_clock::to_time_t(currentPeriodFromTo.first),
-				chrono::system_clock::to_time_t(currentPeriodFromTo.second)
-			);
+		const auto forecastValues = forecast->getForecastValues(currentPeriodFromTo.first, currentPeriodFromTo.second);
 
-		LOGGER.trace("Temperature forecast\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
-				from.c_str(),
-				to.c_str(),
-				forecastValues.min,
-				forecastValues.max
-			);
+		storedForecastFrom = toTimeStr(currentPeriodFromTo.first);
+		storedForecastTo = toTimeStr(currentPeriodFromTo.second);
+		storedForecastValues = unique_ptr<TemperatureForecast::Values>(new TemperatureForecast::Values(forecastValues));
+
+		logStoredPeriodForecast();
 	} catch (const exception& e) {
 		LOGGER.trace("Temperature forecast\n\tCan not read temperature forecast", e);
+	}
+}
+
+void Temperature::logStoredPeriodForecast() {
+
+	if (!storedForecastFrom.empty() && !storedForecastTo.empty() && nullptr != storedForecastValues.get()) {
+		LOGGER.trace("Temperature forecast\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
+				storedForecastFrom.c_str(),
+				storedForecastTo.c_str(),
+				storedForecastValues->min,
+				storedForecastValues->max
+			);
 	}
 }
 

@@ -49,7 +49,14 @@ void TemperatureForecast::updateCache() {
 	}
 }
 
-TemperatureForecast::Values TemperatureForecast::getForecastValues(time_t from, time_t to) const {
+TemperatureForecast::Values TemperatureForecast::getForecastValues(const std::time_t& from, const std::time_t& to) const {
+	return getForecastValues(chrono::system_clock::from_time_t(from), chrono::system_clock::from_time_t(to));
+}
+
+TemperatureForecast::Values TemperatureForecast::getForecastValues(
+	const std::chrono::system_clock::time_point& from,
+	const std::chrono::system_clock::time_point&  to) const
+{
 	lock_guard<mutex> lock(mtx);
 
 	float min = numeric_limits<float>::max();
