@@ -33,7 +33,7 @@ void TemperatureSensorImpl::updateCache() {
 	try {
 		value = sensorReader->read();
 		valid = true;
-	} catch(const TemperatureException& e) {
+	} catch(const exception& e) {
 		LOGGER.warning("Can not read temperature sensorReader", e);
 	}
 
@@ -53,7 +53,10 @@ void TemperatureSensorImpl::stopTimer() {
 }
 
 void TemperatureSensorImpl::onTimer() {
+#ifdef ONTIMER_TRACE_LOG
 	LOGGER.trace("TemperatureSensorReader::onTimer()");
+#endif
+
 	updateCache();
 }
 

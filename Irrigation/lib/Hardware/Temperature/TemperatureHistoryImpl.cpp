@@ -151,7 +151,7 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getHistoryValues(const ch
 void TemperatureHistoryImpl::updateCache(const std::chrono::system_clock::time_point& timePoint) {
 	try {
 		addTemperature(timePoint, sensor->getCachedValue());
-	} catch (const TemperatureException& e) {
+	} catch (const exception& e) {
 		LOGGER.warning("Can not read temperature for history", e);
 	}
 }
@@ -169,7 +169,10 @@ void TemperatureHistoryImpl::stopTimer() {
 }
 
 void TemperatureHistoryImpl::onTimer() {
+#ifdef ONTIMER_TRACE_LOG
 	LOGGER.trace("TemperatureHistoryImpl::onTimer()");
+#endif
+
 	updateCache();
 }
 

@@ -32,8 +32,15 @@ void DocumentSaver::stopTimer() {
 }
 
 void DocumentSaver::onTimer() {
-	//LOGGER.trace("DocumentSaver::onTimer()");
-	saveIfModified();
+#ifdef ONTIMER_TRACE_LOG
+	LOGGER.trace("DocumentSaver::onTimer()");
+#endif
+
+	try {
+		saveIfModified();
+	} catch (const exception& e) {
+		LOGGER.warning("Can not save document", e);
+	}
 }
 
 void DocumentSaver::saveIfModified() {

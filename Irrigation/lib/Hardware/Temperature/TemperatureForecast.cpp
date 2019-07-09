@@ -93,7 +93,10 @@ void TemperatureForecast::stopTimer() {
 }
 
 void TemperatureForecast::onTimer() {
+#ifdef ONTIMER_TRACE_LOG
 	LOGGER.trace("TemperatureForecast::onTimer()");
+#endif
+
 	updateCache();
 }
 

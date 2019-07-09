@@ -77,12 +77,17 @@ void TemperatureHistoryPersister::onTimer() {
 
 	if ((lastUpdateTimeInSeconds / periodInSeconds) != (currentTimeInSeconds / periodInSeconds)) {
 		lastUpdateTime = currentTime;
+
+		#ifdef ONTIMER_TRACE_LOG
 		LOGGER.trace("TemperatureHistoryPersister::onTimer()");
+		#endif
 
 		const auto periodFromTo = getPreviousPeriod(chrono::system_clock::now(), period);
 		saveHistory(periodFromTo.first, periodFromTo.second);
 	} else {
+		#ifdef ONTIMER_TRACE_LOG
 		LOGGER.trace("TemperatureHistoryPersister::onTimer() SKIPPED");
+		#endif
 	}
 }
 

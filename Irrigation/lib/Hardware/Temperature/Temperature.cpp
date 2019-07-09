@@ -60,7 +60,7 @@ Temperature::Temperature(
 	) :
 
 	lastUpdateTime(chrono::system_clock::now()),
-	period(chrono::hours(6))
+	period(chrono::hours(3))
 {
 	sensor = make_shared<TemperatureSensorImpl>(
 			createSensorReader()
@@ -115,14 +115,18 @@ void Temperature::onTimer() {
 
 	if ((lastUpdateTimeInSeconds / periodInSeconds) != (currentTimeInSeconds / periodInSeconds)) {
 		lastUpdateTime = currentTime;
+		#ifdef ONTIMER_TRACE_LOG
 		LOGGER.trace("Temperature::onTimer()");
+		#endif
 
 		logPreviousPeriodMeasured(currentTime);
 		logStoredPeriodForecast();
 		logCurrentPeriodForecast(currentTime);
 
 	} else {
+		#ifdef ONTIMER_TRACE_LOG
 		LOGGER.trace("Temperature::onTimer() SKIPPED");
+		#endif
 	}
 }
 
