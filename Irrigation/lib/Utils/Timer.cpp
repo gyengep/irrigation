@@ -116,6 +116,10 @@ void Timer::workerFunc() {
 			}
 
 			if (!terminated && !changed) {
+				for (const auto& callback : callbacks) {
+					callback->onTimer();
+				}
+
 				switch (scheduleType) {
 				case ScheduleType::FIXED_RATE:
 
@@ -128,10 +132,6 @@ void Timer::workerFunc() {
 				case ScheduleType::FIXED_DELAY:
 					nextScheduleTime = chrono::steady_clock::now() + period;
 					break;
-				}
-
-				for (const auto& callback : callbacks) {
-					callback->onTimer();
 				}
 			}
 		}

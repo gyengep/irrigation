@@ -60,7 +60,7 @@ Temperature::Temperature(
 	) :
 
 	lastUpdateTime(chrono::system_clock::now()),
-	period(chrono::hours(3))
+	period(chrono::hours(24))
 {
 	sensor = make_shared<TemperatureSensorImpl>(
 			createSensorReader()
