@@ -178,16 +178,15 @@ void Temperature::logPreviousPeriodMeasured(const chrono::system_clock::time_poi
 }
 
 shared_ptr<TemperatureSensorReader> Temperature::createSensorReader() {
-	shared_ptr<TemperatureSensorReader> sensor;
-
 	try {
-		sensor = make_shared<TemperatureSensorReader_DS18B20>();
+		auto sensor = make_shared<TemperatureSensorReader_DS18B20>();
 		LOGGER.debug("DS18B20 temperature sensor is initialized");
+		return sensor;
 	} catch (const exception& e) {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
 
-	sensor = make_shared<TemperatureSensorReader_OWM>();
+	auto sensor = make_shared<TemperatureSensorReader_OWM>();
 	LOGGER.debug("OWM temperature sensor is initialized");
 	return sensor;
 }
