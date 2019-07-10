@@ -77,8 +77,17 @@ void IrrigationApplication::initTemperatureSensor() {
 	}
 }
 
+void IrrigationApplication::uninitTemperatureSensor() {
+	try {
+		Temperature::uninit();
+	} catch (const exception& e) {
+		LOGGER.warning("An error during uninitialize temperature modul", e);
+	}
+}
+
 void IrrigationApplication::initDocument() {
 	irrigationDocument = IrrigationDocument::Builder().build();
+
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,
 		make_shared<XmlWriterFactory>(),
@@ -92,6 +101,8 @@ void IrrigationApplication::initDocument() {
 			make_shared<XmlReader>(),
 			make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
 		);
+
+		documentSaver->startTimer();
 
 	} catch (const FileNotFoundException& e) {
 		LOGGER.debug("Configuration file not found. Default configuration is loaded.");
@@ -107,6 +118,19 @@ void IrrigationApplication::initDocument() {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, Configuration::getInstance().getRestPort())));
 }
 
+void IrrigationApplication::uninitDocument() {
+	documentSaver->stopTimer();
+
+	try {
+		documentSaver->saveIfModified();
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("Can't save configuration"));
+	}
+
+	documentSaver.reset();
+	irrigationDocument.reset();
+}
+
 void IrrigationApplication::onInitialize() {
 	LOGGER.info("Irrigation System %s", getVersion().c_str());
 	LOGGER.debug("Irrigation System starting ...");
@@ -115,25 +139,14 @@ void IrrigationApplication::onInitialize() {
 	initTemperatureSensor();
 	initDocument();
 
-	documentSaver->start();
 	LOGGER.info("Irrigation System started");
 }
 
 void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
-	documentSaver->stop();
-
-	try {
-		documentSaver->saveIfModified();
-		LOGGER.debug("Configuration successfully saved.");
-
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't save configuration"));
-	}
-
-	documentSaver.reset();
-	irrigationDocument.reset();
+	uninitDocument();
+	uninitTemperatureSensor();
 
 	LOGGER.info("Irrigation System stopped");
 }

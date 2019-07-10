@@ -19,20 +19,11 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDE_PATH    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
-
-CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP 
-CPPFLAGS        = $(INCLUDE_PATH) 
+INCLUDES	    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
 ARFLAGS         = r 
-
 VERSION         = $(shell $(PROJECT_ROOT)/scripts/build/get_version.sh)
 
-# DEBUG flags
-#CXXFLAGS        += -O0 -g3
-
-# RELEASE flags
-CXXFLAGS        += -O3
-
+include ../../common.mk
 
 .PHONY: all
 all: $(TARGET)
@@ -59,7 +50,7 @@ print:
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<  -Dversion_string=\"$(VERSION)\"
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<  -Dversion_string=\"$(VERSION)\"
 	
 $(TARGET):	$(OBJECTS)
 	@mkdir -p $(TARGET_DIR)

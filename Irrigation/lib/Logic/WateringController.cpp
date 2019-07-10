@@ -1,6 +1,5 @@
 #include "WateringController.h"
 #include <stdexcept>
-#include <thread>
 #include "Hardware/Valves/ZoneHandler.h"
 #include "Logger/Logger.h"
 #include "Utils/ToString.h"

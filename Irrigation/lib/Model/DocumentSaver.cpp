@@ -1,5 +1,4 @@
 #include "DocumentSaver.h"
-#include "Configuration.h"
 #include "IrrigationDocument.h"
 #include "DtoReaderWriter/DtoReaderWriter.h"
 #include "Logger/Logger.h"
@@ -15,27 +14,34 @@ DocumentSaver::DocumentSaver(
 	) :
 	irrigationDocument(irrigationDocument),
 	dtoWriterFactory(dtoWriterFactory),
-	fileWriterFactory(fileWriterFactory),
-	terminated(false)
+	fileWriterFactory(fileWriterFactory)
 {
 }
 
 DocumentSaver::~DocumentSaver() {
 }
 
-void DocumentSaver::start() {
-	unique_lock<mutex> lock(mtx);
-	workerThread = thread(&DocumentSaver::workerFunc, this);
+void DocumentSaver::startTimer() {
+	timer.reset(new Timer(chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY, "DocumentSaver"));
+	timer->add(this);
+	timer->start();
 }
 
-void DocumentSaver::stop() {
-	{
-		unique_lock<mutex> lock(mtx);
-		terminated = true;
-	}
+void DocumentSaver::stopTimer() {
+	timer->stop();
+	timer.reset();
+}
 
-	condition.notify_all();
-	workerThread.join();
+void DocumentSaver::onTimer() {
+#ifdef ONTIMER_TRACE_LOG
+	LOGGER.trace("DocumentSaver::onTimer()");
+#endif
+
+	try {
+		saveIfModified();
+	} catch (const exception& e) {
+		LOGGER.warning("Can't save configuration", e);
+	}
 }
 
 void DocumentSaver::saveIfModified() {
@@ -49,7 +55,8 @@ void DocumentSaver::saveIfModified() {
 		try {
 			const string documentDtoAsText = dtoWriterFactory->create()->save(documentDto);
 			fileWriterFactory->create()->write(documentDtoAsText);
-		} catch (...) {
+			LOGGER.debug("Configuration successfully saved");
+		} catch (const exception&) {
 			irrigationDocument->setModified(true);
 			throw;
 		}
@@ -63,13 +70,4 @@ void DocumentSaver::load(std::shared_ptr<DtoReader> dtoReader, std::shared_ptr<F
 	unique_lock<IrrigationDocument> lock(*irrigationDocument);
 	irrigationDocument->updateFromDocumentDto(documentDto);
 	irrigationDocument->setModified(false);
-}
-
-void DocumentSaver::workerFunc() {
-	unique_lock<mutex> lock(mtx);
-	while (!terminated) {
-		if (condition.wait_for(lock, chrono::seconds(1)) == cv_status::timeout) {
-			saveIfModified();
-		}
-	}
 }

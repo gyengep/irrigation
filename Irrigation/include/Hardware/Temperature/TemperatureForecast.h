@@ -3,90 +3,46 @@
 #include <list>
 #include <memory>
 #include <mutex>
-#include <string>
 #include "Utils/Timer.h"
-#include "TemperatureValues.h"
-
-#ifndef FRIEND_TEST
-#define FRIEND_TEST(a, b)
-#endif
+#include "TemperatureForecastProvider.h"
 
 
 class TemperatureForecast : public TimerCallback {
-	FRIEND_TEST(TemperatureForecastTest, addTemperature);
-	FRIEND_TEST(TemperatureForecastTest, addTemperatureInvalid);
-	FRIEND_TEST(TemperatureForecastTest, addTemperatureMismatch);
-	FRIEND_TEST(TemperatureForecastTest, getForecast);
-	FRIEND_TEST(TemperatureForecastTest, getForecastOutOfBounds);
-
 public:
-	class  NetworkReader;
-	struct MinMaxValues;
-	struct MinMaxValuesWithTimes;
+	struct Values;
 
 private:
-	static const std::string url;
-	static const std::string location;
-	static const std::string appid;
+	const std::shared_ptr<TemperatureForecastProvider> provider;
 
 	mutable std::mutex mtx;
-	std::list<MinMaxValuesWithTimes> temperatures;
-	std::shared_ptr<NetworkReader> networkReader;
-	Timer timer;
-
-	void addTemperature(std::time_t from, std::time_t to, const MinMaxValues& values);
-
-	static size_t writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
-	static void addTemperatureTo(std::list<MinMaxValuesWithTimes>& temperatures, std::time_t from, std::time_t to, const MinMaxValues& values);
+	std::list<TemperatureForecastProvider::ValuesWithTimes> temperatures;
+	std::unique_ptr<Timer> timer;
 
 public:
-	TemperatureForecast(const std::chrono::duration<int64_t>& updatePeriod);
-	TemperatureForecast(const std::chrono::duration<int64_t>& updatePeriod, const std::shared_ptr<NetworkReader>& networkReader);
+	TemperatureForecast(const std::shared_ptr<TemperatureForecastProvider>& provider);
 	virtual ~TemperatureForecast();
 
+	Values getForecastValues(const std::time_t& from, const std::time_t& to) const;
 	void updateCache();
 
-	MinMaxValues getForecast(std::time_t from, std::time_t to) const;
-
-	void startTimer();
+	void startTimer(const std::chrono::seconds& period);
 	void stopTimer();
 	virtual void onTimer() override;
 
+	static void checkValueList(const std::list<TemperatureForecastProvider::ValuesWithTimes>& temperatures);
+
 	// only for testing
-	const std::list<MinMaxValuesWithTimes> getContainer() const;
+	const std::list<TemperatureForecastProvider::ValuesWithTimes> getContainer() const;
 
-	static std::list<MinMaxValuesWithTimes> parseXml(const std::string& text);
-	static std::time_t parseTimeString(const std::string& text);
 };
 
-
-class TemperatureForecast::NetworkReader {
-public:
-	virtual ~NetworkReader() = default;
-	virtual std::string read(const std::string& url, const std::string& location, const std::string& appid) const;
-};
-
-
-struct TemperatureForecast::MinMaxValues {
+struct TemperatureForecast::Values {
 	const float min;
 	const float max;
 
-	MinMaxValues(float min, float max);
+	Values(float min, float max);
 
 	// for testing
-	bool operator== (const MinMaxValues& other) const;
-	friend std::ostream& operator<<(std::ostream& os, const MinMaxValues& values);
-};
-
-
-struct TemperatureForecast::MinMaxValuesWithTimes {
-	const std::time_t from;
-	const std::time_t to;
-	const MinMaxValues minMaxValues;
-
-	MinMaxValuesWithTimes(std::time_t from, std::time_t to, const MinMaxValues& values);
-
-	// for testing
-	bool operator== (const MinMaxValuesWithTimes& other) const;
-	friend std::ostream& operator<<(std::ostream& os, const MinMaxValuesWithTimes& valuesWithTimes);
+	bool operator== (const Values& other) const;
+	friend std::ostream& operator<<(std::ostream& os, const Values& values);
 };

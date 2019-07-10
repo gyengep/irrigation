@@ -2,10 +2,14 @@
 #include "GpioValve.h"
 #include "ValveConfig.h"
 #include "Valve.h"
-#include <vector>
 #include "Exceptions/Exceptions.h"
+#include <limits>
+#include <vector>
 
 using namespace std;
+
+
+const size_t ZoneHandler::invalidZoneId = std::numeric_limits<size_t>::max();
 
 
 const shared_ptr<ZoneHandler> ZoneHandler::getInstancePtr() {

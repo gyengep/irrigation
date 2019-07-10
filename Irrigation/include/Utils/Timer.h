@@ -1,8 +1,12 @@
 #pragma once
 #include <chrono>
 #include <condition_variable>
+#include <list>
 #include <mutex>
+#include <string>
 #include <thread>
+
+//#define ONTIMER_TRACE_LOG
 
 
 class TimerCallback {
@@ -11,23 +15,45 @@ public:
 	virtual void onTimer() = 0;
 };
 
+
 class Timer {
-	const std::chrono::milliseconds waitTime;
-	TimerCallback& callback;
+public:
+	enum class ScheduleType {
+		FIXED_RATE,
+		FIXED_DELAY
+	};
+
+	enum class Priority {
+		NORMAL,
+		HIGH
+	};
+
+private:
+	const ScheduleType scheduleType;
+	const std::chrono::milliseconds period;
+	const std::chrono::milliseconds maxTardiness;
+	const std::string name;
 
 	mutable std::mutex mtx;
 	std::condition_variable condition;
-	bool terminated;
-
 	std::thread workerThread;
+	std::chrono::steady_clock::time_point nextScheduleTime;
+	bool terminated;
+	bool changed;
 
-	bool waitForTerminateOrTimeout();
+	std::list<TimerCallback*> callbacks;
+
 	void workerFunc();
+	bool checkPeriod(const std::chrono::steady_clock::time_point& nextScheduleTime);
 
 public:
-	Timer(TimerCallback& callback, const std::chrono::milliseconds& period);
+	Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType, const std::string& name);
 	virtual ~Timer();
 
-	void start();
+	void add(TimerCallback* callback);
+	void remove(TimerCallback* callback);
+	void removeAll();
+
+	void start(Priority priority = Priority::NORMAL);
 	void stop();
 };

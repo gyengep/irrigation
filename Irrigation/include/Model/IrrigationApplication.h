@@ -12,7 +12,9 @@ class IrrigationApplication : public Application {
 
 	void initGpio();
 	void initTemperatureSensor();
+	void uninitTemperatureSensor();
 	void initDocument();
+	void uninitDocument();
 
 	virtual void onInitialize() override;
 	virtual void onTerminate() override;

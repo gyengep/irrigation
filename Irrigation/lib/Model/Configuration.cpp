@@ -11,7 +11,7 @@ const string Configuration::defaultTemperatureHistoryFileName = "/usr/share/irri
 const duration<int64_t> Configuration::defaultTemperatureSensorUpdatePeriod = minutes(1);
 const duration<int64_t> Configuration::defaultTemperatureForecastUpdatePeriod = minutes(60);
 const duration<int64_t> Configuration::defaultTemperatureCacheLength = hours(24);
-const duration<int64_t> Configuration::defaultTemperatureHistoryPeriod = hours(1);
+const duration<int64_t> Configuration::defaultTemperatureHistoryPeriod = minutes(60);
 
 const LogLevel Configuration::defaultLogLevel = LogLevel::TRACE;
 

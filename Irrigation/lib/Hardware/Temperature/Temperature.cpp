@@ -1,12 +1,16 @@
 #include "Temperature.h"
+#include "TemperatureSensorImpl.h"
+#include "TemperatureSensorReaderDS18B20.h"
+#include "TemperatureSensorReaderOWM.h"
+#include "TemperatureSensorReaderFake.h"
+#include "TemperatureHistoryImpl.h"
+#include "TemperatureHistoryPersister.h"
 #include "TemperatureForecast.h"
-#include "TemperatureHistory.h"
-#include "TemperatureSensorDS18B20.h"
-#include "TemperatureStatisticsImpl.h"
+#include "TemperatureForecastProviderOWM.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
-#include <chrono>
+#include "Utils/TimePeriod.h"
 
 using namespace std;
 
@@ -14,23 +18,28 @@ using namespace std;
 
 shared_ptr<Temperature> Temperature::instance;
 
+
 void Temperature::init(
 		const chrono::duration<int64_t>& sensorUpdatePeriod,
-		const string& temperatureCacheFileName,
-		const chrono::duration<int64_t>& temperatureCacheLength,
 		const string& temperatureHistoryFileName,
-		const chrono::duration<int64_t>& temperatureHistoryPeriod,
+		const chrono::duration<int64_t>& temperatureHistoryLength,
+		const string& temperatureHistoryPersisterFileName,
+		const chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
 		const chrono::duration<int64_t>& forecastUpdatePeriod
 	)
 {
 	instance = shared_ptr<Temperature>(new Temperature(
 			sensorUpdatePeriod,
-			temperatureCacheFileName,
-			temperatureCacheLength,
 			temperatureHistoryFileName,
-			temperatureHistoryPeriod,
+			temperatureHistoryLength,
+			temperatureHistoryPersisterFileName,
+			temperatureHistoryPersisterPeriod,
 			forecastUpdatePeriod
 		));
+}
+
+void Temperature::uninit() {
+	instance.reset();
 }
 
 shared_ptr<Temperature> Temperature::getInstancePtr() {
@@ -41,66 +50,152 @@ shared_ptr<Temperature> Temperature::getInstancePtr() {
 
 Temperature::Temperature(
 		const chrono::duration<int64_t>& sensorUpdatePeriod,
-		const string& temperatureCacheFileName,
-		const chrono::duration<int64_t>& temperatureCacheLength,
 		const string& temperatureHistoryFileName,
-		const chrono::duration<int64_t>& temperatureHistoryPeriod,
+		const chrono::duration<int64_t>& temperatureHistoryLength,
+		const string& temperatureHistoryPersisterFileName,
+		const chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
 		const chrono::duration<int64_t>& forecastUpdatePeriod
 	) :
-	timer(*this, sensorUpdatePeriod)
+
+	lastUpdateTime(time(nullptr)),
+	period(chrono::hours(24))
 {
+	sensor = make_shared<TemperatureSensorImpl>(
+			createSensorReader()
+		);
+
+	history = make_shared<TemperatureHistoryImpl>(
+			sensor,
+			temperatureHistoryLength,
+			temperatureHistoryFileName,
+			make_shared<CsvReaderImplFactory>(),
+			make_shared<CsvWriterImplFactory>()
+		);
+
+	historyPersister = make_shared<TemperatureHistoryPersister>(
+			history,
+			make_shared<CsvWriterImplFactory>(),
+			temperatureHistoryPersisterFileName
+		);
+
+	forecast = make_shared<TemperatureForecast>(
+			make_shared<TemperatureForecastProviderOWM>()
+		);
+
+	sensor->updateCache();
+	history->updateCache();
+	forecast->updateCache();
+
+	sensor->startTimer(sensorUpdatePeriod);
+	history->startTimer();
+	historyPersister->startTimer(temperatureHistoryPersisterPeriod);
+	forecast->startTimer(forecastUpdatePeriod);
+
+	timer.reset(new Timer(chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY, "Temperature"));
+	timer->add(this);
+	timer->start();
+}
+
+Temperature::~Temperature() {
+	timer->stop();
+	timer.reset();
+
+	forecast->stopTimer();
+	historyPersister->stopTimer();
+	history->stopTimer();
+	sensor->stopTimer();
+}
+
+void Temperature::onTimer() {
+	const auto currentTime = time(nullptr);
+	const auto periodInSeconds = chrono::duration_cast<chrono::seconds>(period).count();
+
+	if ((lastUpdateTime / periodInSeconds) != (currentTime / periodInSeconds)) {
+		lastUpdateTime = currentTime;
+		#ifdef ONTIMER_TRACE_LOG
+		LOGGER.trace("Temperature::onTimer()");
+		#endif
+
+		if (LOGGER.isLoggable(LogLevel::TRACE)) {
+			logPreviousPeriodMeasured(currentTime);
+			logStoredPeriodForecast();
+			logCurrentPeriodForecast(currentTime);
+		}
+
+	} else {
+		#ifdef ONTIMER_TRACE_LOG
+		LOGGER.trace("Temperature::onTimer() SKIPPED");
+		#endif
+	}
+}
+
+void Temperature::logCurrentPeriodForecast(const time_t& rawTime) {
 	try {
-		sensor = make_shared<TemperatureSensor_DS18B20>();
-		statistics = make_shared<TemperatureStatisticsImpl>(
-				temperatureCacheLength,
-				temperatureCacheFileName,
-				make_shared<CsvReaderImplFactory>(),
-				make_shared<CsvWriterImplFactory>()
+		const auto currentPeriodFromTo = getCurrentPeriod(rawTime, period);
+		const auto forecastValues = forecast->getForecastValues(currentPeriodFromTo.first, currentPeriodFromTo.second);
+
+		storedForecastFrom = toTimeStr(currentPeriodFromTo.first);
+		storedForecastTo = toTimeStr(currentPeriodFromTo.second);
+		storedForecastValues = unique_ptr<TemperatureForecast::Values>(new TemperatureForecast::Values(forecastValues));
+
+		logStoredPeriodForecast();
+	} catch (const exception& e) {
+		LOGGER.trace("Temperature forecast\n\tCan not read temperature forecast", e);
+	}
+}
+
+void Temperature::logStoredPeriodForecast() {
+
+	if (!storedForecastFrom.empty() && !storedForecastTo.empty() && nullptr != storedForecastValues.get()) {
+		LOGGER.trace("Temperature forecast\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f",
+				storedForecastFrom.c_str(),
+				storedForecastTo.c_str(),
+				storedForecastValues->min,
+				storedForecastValues->max
+			);
+	}
+}
+
+void Temperature::logPreviousPeriodMeasured(const std::time_t& rawTime) {
+	try {
+		const auto previousPeriodFromTo = getPreviousPeriod(rawTime, period);
+		const string from = toTimeStr(previousPeriodFromTo.first);
+		const string to = toTimeStr(previousPeriodFromTo.second);
+		const auto temperatureValues = history->getHistoryValues(previousPeriodFromTo.first, previousPeriodFromTo.second);
+
+		LOGGER.trace("Measured temperature\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
+				from.c_str(),
+				to.c_str(),
+				temperatureValues.min,
+				temperatureValues.max,
+				temperatureValues.avg
 			);
 
-		history = make_shared<TemperatureHistory>(
-				temperatureHistoryPeriod,
-				statistics,
-				temperatureHistoryFileName,
-				make_shared<CsvWriterImplFactory>()
-			);
+	} catch (const exception& e) {
+		LOGGER.trace("Measured temperature\n\tCan not read temperature", e);
+	}
+}
 
-		sensor->updateCache();
+shared_ptr<TemperatureSensorReader> Temperature::createSensorReader() {
+	try {
+		auto sensor = make_shared<TemperatureSensorReader_DS18B20>();
+		LOGGER.debug("DS18B20 temperature sensor is initialized");
+		return sensor;
 	} catch (const exception& e) {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
 
-	try {
-		forecast = make_shared<TemperatureForecast>(forecastUpdatePeriod);
-		forecast->onTimer();
-		forecast->startTimer();
-	} catch (const exception& e) {
-		LOGGER.warning("Can not initialize weather forecast module", e);
-	}
-
-	timer.start();
+	auto sensor = make_shared<TemperatureSensorReader_OWM>();
+	LOGGER.debug("OWM temperature sensor is initialized");
+	return sensor;
 }
 
-Temperature::~Temperature() {
-	forecast->stopTimer();
+string Temperature::toTimeStr(const time_t& rawTime) {
+	struct tm * timeinfo;
+	char buffer [80];
 
-	timer.stop();
-}
+	timeinfo = localtime(&rawTime);
 
-float Temperature::getTemperature() {
-	return sensor->getCachedValue();
-}
-
-void Temperature::onTimer() {
-	sensor->updateCache();
-
-	const time_t currentTime = time(nullptr);
-
-	try {
-		const float temperature = sensor->getCachedValue();
-		statistics->addTemperature(currentTime, temperature);
-		history->periodicUpdate();
-	} catch (...) {
-		//persister->appendInvalid(currentTime);
-	}
+	strftime(buffer, 80, "%F %T",timeinfo);
+	return buffer;
 }

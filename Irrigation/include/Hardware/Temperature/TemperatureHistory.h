@@ -1,42 +1,22 @@
 #pragma once
-#include <chrono>
-#include <memory>
-#include <string>
-#include <ostream>
-
-class CsvWriter;
-class CsvWriterFactory;
-class TemperatureStatistics;
+#include <ctime>
 
 
 class TemperatureHistory {
-	const time_t periodInSeconds;
-	const std::shared_ptr<TemperatureStatistics> temperatureStatistics;
-	const std::shared_ptr<CsvWriter> csvWriter;
+public:
 
-	time_t lastUpdate;
+	struct Values {
+		float min, max, avg;
 
-	static std::string temperatureToString(float value);
-	static std::string timeToString(std::time_t time);
-	static std::shared_ptr<std::ostream> openFile(const std::string& fileName);
+		Values(float min, float max, float avg) :
+			min(min),
+			max(max),
+			avg(avg)
+		{
+		}
+	};
 
 public:
-	TemperatureHistory(
-			const std::chrono::duration<int64_t>& period,
-			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
-			const std::string& fileName,
-			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
-		);
-
-	TemperatureHistory(
-			const std::chrono::duration<int64_t>& period,
-			const std::shared_ptr<TemperatureStatistics>& temperatureStatistics,
-			const std::shared_ptr<CsvWriter>& csvWriter,
-			const std::time_t currentTime
-		);
-
-	virtual ~TemperatureHistory();
-
-	void periodicUpdate();
-	void periodicUpdate(std::time_t time);
+	virtual ~TemperatureHistory() = default;
+	virtual Values getHistoryValues(const std::time_t& from, const std::time_t& to) const = 0;
 };

@@ -1,4 +1,4 @@
-#include "TemperatureSensorDS18B20.h"
+#include "TemperatureSensorReaderDS18B20.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
 #include "Utils/FileReaderWriterImpl.h"
@@ -9,11 +9,11 @@
 using namespace std;
 
 
-const string TemperatureSensor_DS18B20::basePath = "/sys/bus/w1/devices";
-const string TemperatureSensor_DS18B20::fileName = "w1_slave";
+const string TemperatureSensorReader_DS18B20::basePath = "/sys/bus/w1/devices";
+const string TemperatureSensorReader_DS18B20::fileName = "w1_slave";
 
 
-string TemperatureSensor_DS18B20::getTempSensorFileName() {
+string TemperatureSensorReader_DS18B20::getTempSensorFileName() {
 	unique_ptr<DIR, int(*)(DIR*)> dirp(opendir(basePath.c_str()), closedir);
 
 	if (dirp == nullptr) {
@@ -43,25 +43,25 @@ string TemperatureSensor_DS18B20::getTempSensorFileName() {
     throw runtime_error("DS18B20 temperature sensor file not found in path: " + basePath);
 }
 
-TemperatureSensor_DS18B20::TemperatureSensor_DS18B20() :
-	TemperatureSensor_DS18B20(make_shared<FileReaderImpl>(getTempSensorFileName()))
+TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20() :
+	TemperatureSensorReader_DS18B20(make_shared<FileReaderImpl>(getTempSensorFileName()))
 {
 }
 
-TemperatureSensor_DS18B20::TemperatureSensor_DS18B20(const std::shared_ptr<FileReader>& fileReader) :
+TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20(const std::shared_ptr<FileReader>& fileReader) :
 	fileReader(fileReader)
 {
 }
 
-TemperatureSensor_DS18B20::~TemperatureSensor_DS18B20() {
+TemperatureSensorReader_DS18B20::~TemperatureSensorReader_DS18B20() {
 }
 
-float TemperatureSensor_DS18B20::readValueFromSensor() {
+float TemperatureSensorReader_DS18B20::read() {
 	const string text = fileReader->read();
 	const size_t pos1 = text.find("t=");
 
 	if (pos1 == string::npos) {
-		throw TemperatureException("Invalid temperature file content: " + text);
+		throw TemperatureException("DS18B20 sensor file is invalid: " + text);
 	}
 
 	return stof(text.substr(pos1 + 2)) / 1000.0f;
