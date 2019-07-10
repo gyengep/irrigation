@@ -93,7 +93,8 @@ Temperature::Temperature(
 	historyPersister->startTimer(temperatureHistoryPersisterPeriod);
 	forecast->startTimer(forecastUpdatePeriod);
 
-	timer.reset(new Timer(this, chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY));
+	timer.reset(new Timer(chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY, "Temperature"));
+	timer->add(this);
 	timer->start();
 }
 

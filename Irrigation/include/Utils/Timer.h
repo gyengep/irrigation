@@ -3,6 +3,7 @@
 #include <condition_variable>
 #include <list>
 #include <mutex>
+#include <string>
 #include <thread>
 
 //#define ONTIMER_TRACE_LOG
@@ -31,6 +32,7 @@ private:
 	const ScheduleType scheduleType;
 	const std::chrono::milliseconds period;
 	const std::chrono::milliseconds maxTardiness;
+	const std::string name;
 
 	mutable std::mutex mtx;
 	std::condition_variable condition;
@@ -45,8 +47,7 @@ private:
 	bool checkPeriod(const std::chrono::steady_clock::time_point& nextScheduleTime);
 
 public:
-	Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType);
-	Timer(TimerCallback* callback, const std::chrono::milliseconds& period, ScheduleType scheduleType);
+	Timer(const std::chrono::milliseconds& period, ScheduleType scheduleType, const std::string& name);
 	virtual ~Timer();
 
 	void add(TimerCallback* callback);

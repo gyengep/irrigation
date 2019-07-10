@@ -10,24 +10,19 @@
 using namespace std;
 
 
-Timer::Timer(const chrono::milliseconds& period, ScheduleType scheduleType) :
+Timer::Timer(const chrono::milliseconds& period, ScheduleType scheduleType, const string& name) :
 	scheduleType(scheduleType),
 	period(period),
 	maxTardiness(period),
+	name(name),
 	terminated(false),
 	changed(false)
 {
 }
 
-Timer::Timer(TimerCallback* callback, const chrono::milliseconds& period, ScheduleType scheduleType) :
-	Timer(period, scheduleType)
-{
-	add(callback);
-}
-
 Timer::~Timer() {
 	if (workerThread.joinable()) {
-		LOGGER.error("Timer thread is not stopped");
+		LOGGER.error("Timer thread [%s] is not stopped", name.c_str());
 	}
 }
 
@@ -43,7 +38,7 @@ void Timer::start(Timer::Priority priority) {
 		param.sched_priority = 1;
 		int result;
 		if (0 != (result = pthread_setschedparam(workerThread.native_handle(), SCHED_RR, &param))) {
-			LOGGER.warning("Can not change thread priority. (error code: %d)", result);
+			LOGGER.warning("Can not change thread [%s] priority. (error code: %d)", name.c_str(), result);
 		}
 	}
 }
@@ -103,6 +98,19 @@ void Timer::workerFunc() {
 		return (terminated || changed);
 	};
 
+	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+		string periodText;
+		if (period < chrono::seconds(1)) {
+			periodText = to_string(chrono::duration_cast<chrono::duration<double>>(period).count()) + " seconds";
+		} else if (period < chrono::hours(1)) {
+				periodText = to_string(chrono::duration_cast<chrono::seconds>(period).count()) + " seconds";
+		} else {
+			periodText = to_string(chrono::duration_cast<chrono::hours>(period).count()) + " hours";
+		}
+
+		LOGGER.debug("Timer thread [%s] is started with period: %s", name.c_str(), periodText.c_str());
+	}
+
 	try {
 		unique_lock<mutex> lock(mtx);
 
@@ -136,25 +144,30 @@ void Timer::workerFunc() {
 			}
 		}
 	} catch (const exception& e) {
-		LOGGER.warning("Unhandled exception is caught in timer thread", e);
+		LOGGER.warning(string("Unhandled exception is caught in timer thread [" + name + "]").c_str(), e);
 	}
+
+	LOGGER.debug("Timer thread [%s] is stopped", name.c_str());
 }
 
 bool Timer::checkPeriod(const chrono::steady_clock::time_point& nextScheduleTime) {
 	const chrono::milliseconds actualDiff = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - nextScheduleTime);
 
 	if (abs(actualDiff) > maxTardiness) {
-		TimeConverter timeConverter(actualDiff);
-		ostringstream o;
 
-		o << "Update period failure! ";
-		o << timeConverter.getDays() << " days ";
-		o << setw(2) << setfill('0') << timeConverter.getHours() << ":";
-		o << setw(2) << setfill('0') << timeConverter.getMinutes() << ":";
-		o << setw(2) << setfill('0') << timeConverter.getSeconds() << ".";
-		o << setw(3) << setfill('0') << timeConverter.getMillis();
+		if (LOGGER.isLoggable(LogLevel::WARNING)) {
+			TimeConverter timeConverter(actualDiff);
+			ostringstream o;
 
-		LOGGER.warning(o.str().c_str());
+			o << "Update period failure in timer thread [" << name << "]! ";
+			o << timeConverter.getDays() << " days ";
+			o << setw(2) << setfill('0') << timeConverter.getHours() << ":";
+			o << setw(2) << setfill('0') << timeConverter.getMinutes() << ":";
+			o << setw(2) << setfill('0') << timeConverter.getSeconds() << ".";
+			o << setw(3) << setfill('0') << timeConverter.getMillis();
+
+			LOGGER.warning(o.str().c_str());
+		}
 		return false;
 	}
 

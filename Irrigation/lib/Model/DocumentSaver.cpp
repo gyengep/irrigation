@@ -22,7 +22,8 @@ DocumentSaver::~DocumentSaver() {
 }
 
 void DocumentSaver::startTimer() {
-	timer.reset(new Timer(this, chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY));
+	timer.reset(new Timer(chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY, "DocumentSaver"));
+	timer->add(this);
 	timer->start();
 }
 

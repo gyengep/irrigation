@@ -26,9 +26,10 @@ TimerView::~TimerView() {
 void TimerView::initialize() {
 	LOGGER.debug("TimerView initializing...");
 
-	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_RATE));
-	timer->add(this);
 	expectedSystemTime = system_clock::now() + period;
+
+	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_RATE, "TimerView"));
+	timer->add(this);
 	timer->start(Timer::Priority::HIGH);
 
 	LOGGER.debug("TimerView initialized");

@@ -43,7 +43,8 @@ void TemperatureSensorImpl::updateCache() {
 }
 
 void TemperatureSensorImpl::startTimer(const std::chrono::seconds& period) {
-	timer.reset(new Timer(this, period, Timer::ScheduleType::FIXED_DELAY));
+	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_DELAY, "TemperatureSensorImpl"));
+	timer->add(this);
 	timer->start();
 }
 
