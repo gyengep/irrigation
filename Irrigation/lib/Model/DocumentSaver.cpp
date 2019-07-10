@@ -8,9 +8,9 @@ using namespace std;
 
 
 DocumentSaver::DocumentSaver(
-		std::shared_ptr<IrrigationDocument> irrigationDocument,
-		std::shared_ptr<DtoWriterFactory> dtoWriterFactory,
-		std::shared_ptr<FileWriterFactory> fileWriterFactory
+		shared_ptr<IrrigationDocument> irrigationDocument,
+		shared_ptr<DtoWriterFactory> dtoWriterFactory,
+		shared_ptr<FileWriterFactory> fileWriterFactory
 	) :
 	irrigationDocument(irrigationDocument),
 	dtoWriterFactory(dtoWriterFactory),
@@ -63,7 +63,7 @@ void DocumentSaver::saveIfModified() {
 	}
 }
 
-void DocumentSaver::load(std::shared_ptr<DtoReader> dtoReader, std::shared_ptr<FileReader> fileReader) {
+void DocumentSaver::load(shared_ptr<DtoReader> dtoReader, shared_ptr<FileReader> fileReader) {
 	const string documentDtoAsText = fileReader->read();
 	const DocumentDTO documentDto = dtoReader->loadDocument(documentDtoAsText);
 

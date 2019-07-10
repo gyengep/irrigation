@@ -134,7 +134,7 @@ int WebServer::accessHandlerCallback(
 		response = webService->onRequest(request);
 
 		if (response.get() == nullptr) {
-			throw std::runtime_error("HTTP response is NULL");
+			throw runtime_error("HTTP response is NULL");
 		}
 
 	} catch (const WebServerException& e) {
@@ -151,7 +151,7 @@ int WebServer::accessHandlerCallback(
 	return sendResponse(connection, response);
 }
 
-int WebServer::sendResponse(struct MHD_Connection* connection, const std::unique_ptr<HttpResponse>& httpResponse) {
+int WebServer::sendResponse(struct MHD_Connection* connection, const unique_ptr<HttpResponse>& httpResponse) {
 //	if (LOGGER.isLoggable(LogLevel::TRACE)) {
 //		ostringstream oss;
 //		oss << "Sending HTTP response" << endl;

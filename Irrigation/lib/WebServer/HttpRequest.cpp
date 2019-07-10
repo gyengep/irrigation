@@ -6,7 +6,7 @@
 using namespace std;
 
 
-HttpRequest::HttpRequest(MHD_Connection* connection, const char* version, const char* method, const char* url, const std::shared_ptr<ByteBuffer>& uploadData) :
+HttpRequest::HttpRequest(MHD_Connection* connection, const char* version, const char* method, const char* url, const shared_ptr<ByteBuffer>& uploadData) :
 	connection(connection),
 	url(url),
 	method(method),
@@ -19,7 +19,7 @@ HttpRequest::HttpRequest(MHD_Connection* connection, const char* version, const 
 
 const KeyValue& HttpRequest::getParameters() const {
 	if (nullptr == parameters.get()) {
-		const_cast<std::unique_ptr<KeyValue>&>(parameters).reset(new KeyValue());
+		const_cast<unique_ptr<KeyValue>&>(parameters).reset(new KeyValue());
 
 		if (nullptr != connection) {
 			MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, iterateOnValues, parameters.get());
@@ -31,7 +31,7 @@ const KeyValue& HttpRequest::getParameters() const {
 
 const KeyValue& HttpRequest::getHeaders() const {
 	if (nullptr == headers.get()) {
-		const_cast<std::unique_ptr<KeyValue>&>(headers).reset(new KeyValue());
+		const_cast<unique_ptr<KeyValue>&>(headers).reset(new KeyValue());
 
 		if (nullptr != connection) {
 			MHD_get_connection_values(connection, MHD_HEADER_KIND, iterateOnValues, headers.get());
@@ -60,7 +60,7 @@ int HttpRequest::iterateOnValues(void *cls, enum MHD_ValueKind kind, const char 
 	}
 */
 	KeyValue* parameters = static_cast<KeyValue*>(cls);
-	parameters->insert(std::make_pair(std::string(key), std::string(value)));
+	parameters->insert(make_pair(string(key), string(value)));
 	return MHD_YES;
 }
 

@@ -3,7 +3,7 @@
 using namespace std;
 
 
-TemperatureForecastProvider::ValuesWithTimes::ValuesWithTimes(const std::time_t from, const std::time_t to, float min, float max) :
+TemperatureForecastProvider::ValuesWithTimes::ValuesWithTimes(const time_t from, const time_t to, float min, float max) :
 	from(from),
 	to(to),
 	min(min),

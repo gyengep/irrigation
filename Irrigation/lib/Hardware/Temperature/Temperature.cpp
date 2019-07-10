@@ -156,7 +156,7 @@ void Temperature::logStoredPeriodForecast() {
 	}
 }
 
-void Temperature::logPreviousPeriodMeasured(const std::time_t& rawTime) {
+void Temperature::logPreviousPeriodMeasured(const time_t& rawTime) {
 	try {
 		const auto previousPeriodFromTo = getPreviousPeriod(rawTime, period);
 		const string from = toTimeStr(previousPeriodFromTo.first);

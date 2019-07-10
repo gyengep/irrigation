@@ -9,7 +9,7 @@
 using namespace std;
 
 
-const size_t ZoneHandler::invalidZoneId = std::numeric_limits<size_t>::max();
+const size_t ZoneHandler::invalidZoneId = numeric_limits<size_t>::max();
 
 
 const shared_ptr<ZoneHandler> ZoneHandler::getInstancePtr() {

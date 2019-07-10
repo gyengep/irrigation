@@ -10,7 +10,7 @@ string XmlErrorWriter::contentType() const {
 	return "application/xml";
 }
 
-string XmlErrorWriter::toString(unsigned errorCode, const std::string& message, const std::string& details) const {
+string XmlErrorWriter::toString(unsigned errorCode, const string& message, const string& details) const {
 	xml_document doc;
 	xml_node errorNode = doc.append_child("error");
 

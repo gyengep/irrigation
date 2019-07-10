@@ -4,7 +4,7 @@
 using namespace std;
 
 
-CsvWriterImpl::CsvWriterImpl(const std::shared_ptr<std::ostream>& output) :
+CsvWriterImpl::CsvWriterImpl(const shared_ptr<ostream>& output) :
 	output(output)
 {
 }
@@ -24,7 +24,7 @@ void CsvWriterImpl::append(const vector<string>& values) {
 	*output << endl;
 }
 
-const std::shared_ptr<std::ostream>& CsvWriterImpl::stream() const {
+const shared_ptr<ostream>& CsvWriterImpl::stream() const {
 	return output;
 }
 
@@ -33,6 +33,6 @@ const std::shared_ptr<std::ostream>& CsvWriterImpl::stream() const {
 CsvWriterImplFactory::~CsvWriterImplFactory() {
 }
 
-std::shared_ptr<CsvWriter> CsvWriterImplFactory::create(const std::shared_ptr<std::ostream>& output) {
+shared_ptr<CsvWriter> CsvWriterImplFactory::create(const shared_ptr<ostream>& output) {
 	return make_shared<CsvWriterImpl>(output);
 }

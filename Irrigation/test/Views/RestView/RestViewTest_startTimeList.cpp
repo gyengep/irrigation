@@ -9,7 +9,7 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-std::string RestViewTest::createStartTimeListUrl(IdType programId) {
+string RestViewTest::createStartTimeListUrl(IdType programId) {
 	return createUrl("/programs/" + to_string(programId) + "/starttimes");
 }
 

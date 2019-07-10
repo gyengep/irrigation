@@ -44,7 +44,7 @@ ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 	}
 }
 
-ProgramDTO::ProgramDTO(bool disabled, const std::string& name,
+ProgramDTO::ProgramDTO(bool disabled, const string& name,
 		unsigned adjustment,
 		const string& schedulerType,
 		PeriodicSchedulerDTO&& periodicScheduler,

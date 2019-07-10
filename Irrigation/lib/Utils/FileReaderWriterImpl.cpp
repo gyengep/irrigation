@@ -5,7 +5,7 @@
 using namespace std;
 
 
-FileReaderImpl::FileReaderImpl(const std::string& fileName) : fileName(fileName) {
+FileReaderImpl::FileReaderImpl(const string& fileName) : fileName(fileName) {
 }
 
 string FileReaderImpl::read() const {
@@ -34,7 +34,7 @@ string FileReaderImpl::read() const {
 	return buffer;
 }
 
-FileWriterImpl::FileWriterImpl(const std::string& fileName) : fileName(fileName) {
+FileWriterImpl::FileWriterImpl(const string& fileName) : fileName(fileName) {
 }
 
 void FileWriterImpl::write(const string& text) const {

@@ -11,7 +11,7 @@ XmlIrrigationActionReader::XmlIrrigationActionReader() {
 XmlIrrigationActionReader::~XmlIrrigationActionReader() {
 }
 
-IrrigationActionDTO XmlIrrigationActionReader::load(const std::string& text) const {
+IrrigationActionDTO XmlIrrigationActionReader::load(const string& text) const {
 	const char* tagName = "irrigation";
 
 	unique_ptr<xml_document> doc(new xml_document());

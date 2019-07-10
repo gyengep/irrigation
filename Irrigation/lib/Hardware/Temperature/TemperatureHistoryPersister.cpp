@@ -57,7 +57,7 @@ void TemperatureHistoryPersister::saveHistory(const time_t& from, const time_t& 
 	}
 }
 
-void TemperatureHistoryPersister::startTimer(const std::chrono::duration<int64_t>& period) {
+void TemperatureHistoryPersister::startTimer(const chrono::duration<int64_t>& period) {
 	this->period = period;
 
 	timer.reset(new Timer(chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY, "TemperatureHistoryPersister"));

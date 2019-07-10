@@ -9,7 +9,7 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-std::string RestViewTest::createWeeklySchedulerUrl(IdType programId) {
+string RestViewTest::createWeeklySchedulerUrl(IdType programId) {
 	return createUrl("/programs/" + to_string(programId) + "/schedulers/weekly");
 }
 

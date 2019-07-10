@@ -48,7 +48,7 @@ TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20() :
 {
 }
 
-TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20(const std::shared_ptr<FileReader>& fileReader) :
+TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20(const shared_ptr<FileReader>& fileReader) :
 	fileReader(fileReader)
 {
 }

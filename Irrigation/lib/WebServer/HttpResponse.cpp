@@ -12,13 +12,13 @@ HttpResponse::Builder::Builder() :
 HttpResponse::Builder::~Builder() {
 }
 
-HttpResponse::Builder& HttpResponse::Builder::setStatus(unsigned statusCode, const std::string& statusMessage) {
+HttpResponse::Builder& HttpResponse::Builder::setStatus(unsigned statusCode, const string& statusMessage) {
 	this->statusCode = statusCode;
 	this->statusMessage = statusMessage;
 	return *this;
 }
 
-HttpResponse::Builder& HttpResponse::Builder::setBody(const std::string& body) {
+HttpResponse::Builder& HttpResponse::Builder::setBody(const string& body) {
 	this->body = body;
 	return *this;
 }
@@ -30,7 +30,7 @@ HttpResponse::Builder& HttpResponse::Builder::addHeaders(const KeyValue& headers
 	return *this;
 }
 
-HttpResponse::Builder& HttpResponse::Builder::addHeader(const std::string& key, const std::string& value) {
+HttpResponse::Builder& HttpResponse::Builder::addHeader(const string& key, const string& value) {
 	this->headers.insert(make_pair(key, value));
 	return *this;
 }

@@ -10,7 +10,7 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-std::string RestViewTest::createIrrigationActionUrl() {
+string RestViewTest::createIrrigationActionUrl() {
 	return createUrl("/irrigation");
 }
 

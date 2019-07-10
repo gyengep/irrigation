@@ -34,7 +34,7 @@ using namespace std;
 	}
 
 
-Logger::Entry::Entry(const std::string& time, const std::string& thread, const std::string& level, const std::string& text) :
+Logger::Entry::Entry(const string& time, const string& thread, const string& level, const string& text) :
 	time(time),
 	thread(thread),
 	level(level),

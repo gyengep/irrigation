@@ -6,7 +6,7 @@
 using namespace std;
 
 
-TemperatureSensorImpl::TemperatureSensorImpl(const std::shared_ptr<TemperatureSensorReader>& sensorReader) :
+TemperatureSensorImpl::TemperatureSensorImpl(const shared_ptr<TemperatureSensorReader>& sensorReader) :
 	sensorReader(sensorReader),
 	valid(false),
 	value(0.0f)
@@ -42,7 +42,7 @@ void TemperatureSensorImpl::updateCache() {
 	this->valid = valid;
 }
 
-void TemperatureSensorImpl::startTimer(const std::chrono::seconds& period) {
+void TemperatureSensorImpl::startTimer(const chrono::seconds& period) {
 	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_DELAY, "TemperatureSensorImpl"));
 	timer->add(this);
 	timer->start();

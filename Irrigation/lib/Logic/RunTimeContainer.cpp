@@ -50,7 +50,7 @@ RunTimeContainer::RunTimeContainer(initializer_list<RunTime> initializer) {
 	}
 }
 
-RunTimeContainer::RunTimeContainer(const std::list<RunTimeDTO>& runTimeDtoList) : RunTimeContainer() {
+RunTimeContainer::RunTimeContainer(const list<RunTimeDTO>& runTimeDtoList) : RunTimeContainer() {
 	updateFromRunTimeDtoList(runTimeDtoList);
 }
 

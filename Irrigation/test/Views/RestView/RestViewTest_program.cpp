@@ -10,7 +10,7 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-std::string RestViewTest::createProgramUrl(IdType programId, const std::string& requestParameters) {
+string RestViewTest::createProgramUrl(IdType programId, const string& requestParameters) {
 	if (requestParameters.empty()) {
 		return createUrl("/programs/" + to_string(programId));
 	} else {
@@ -27,7 +27,7 @@ TEST_F(RestViewTest, postProgram) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RestViewTest::testGetProgram(const ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers) {
+void RestViewTest::testGetProgram(const ProgramListSample& programListSample, const string& requestParameters, bool includeContainers) {
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
 

@@ -15,12 +15,12 @@ void RestViewTest::SetUp() {
 void RestViewTest::TearDown() {
 }
 
-std::string RestViewTest::createUrl(const std::string& path) {
+string RestViewTest::createUrl(const string& path) {
 	if ('/' != path[0]) {
-		throw std::logic_error("The path has to start with '/'");
+		throw logic_error("The path has to start with '/'");
 	}
 
-	std::ostringstream o;
+	ostringstream o;
 
 	o << "http://localhost:" << port;
 	o << path;
@@ -40,7 +40,7 @@ std::string RestViewTest::createUrl(const std::string& path) {
 	return o.str();
 }
 
-RestViewTest::Response RestViewTest::__executeRequest__(const std::string& method, const std::string&  url, const std::string& body, const std::string& headerField) {
+RestViewTest::Response RestViewTest::__executeRequest__(const string& method, const string&  url, const string& body, const string& headerField) {
 	Response response;
 
 	CURL *curl = curl_easy_init();
@@ -77,15 +77,15 @@ RestViewTest::Response RestViewTest::__executeRequest__(const std::string& metho
     return response;
 }
 
-RestViewTest::Response RestViewTest::executeRequest(const std::string& method, const std::string&  url) {
+RestViewTest::Response RestViewTest::executeRequest(const string& method, const string&  url) {
 	return __executeRequest__(method, url, "", "");
 }
 
-RestViewTest::Response RestViewTest::executeRequest(const std::string& method, const std::string&  url, const std::string& customHeader) {
+RestViewTest::Response RestViewTest::executeRequest(const string& method, const string&  url, const string& customHeader) {
 	return __executeRequest__(method, url, "", customHeader);
 }
 
-RestViewTest::Response RestViewTest::executeRequest(const std::string& method, const std::string&  url, const std::string& body, const std::string& contentType) {
+RestViewTest::Response RestViewTest::executeRequest(const string& method, const string&  url, const string& body, const string& contentType) {
 	return __executeRequest__(method, url, body, "Content-Type: " + contentType);
 }
 
@@ -95,12 +95,12 @@ void RestViewTest::checkResponseWithoutBody(const RestViewTest::Response& respon
 	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
 }
 
-void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response, long statusCode, const std::string& contentType) {
+void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response, long statusCode, const string& contentType) {
 	EXPECT_THAT(response.responseCode, Eq(statusCode));
 	EXPECT_THAT(response.writeCallbackData.text, Not(IsEmpty()));
 	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: " + contentType + "\r\n"));
 }
 
-void RestViewTest::checkErrorResponse(const RestViewTest::Response& response, long statusCode, const std::string& contentType) {
+void RestViewTest::checkErrorResponse(const RestViewTest::Response& response, long statusCode, const string& contentType) {
 	checkResponseWithBody(response, statusCode, contentType);
 }

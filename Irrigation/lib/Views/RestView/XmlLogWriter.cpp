@@ -11,7 +11,7 @@ string XmlLogWriter::contentType() const {
 	return "application/xml";
 }
 
-string XmlLogWriter::toString(const std::deque<Logger::Entry>& logEntries) const {
+string XmlLogWriter::toString(const deque<Logger::Entry>& logEntries) const {
 	xml_document doc;
 	xml_node logEntriesListNode = doc.append_child("log_entries");
 

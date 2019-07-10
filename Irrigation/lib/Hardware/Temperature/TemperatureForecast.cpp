@@ -27,7 +27,7 @@ ostream& operator<<(ostream& os, const TemperatureForecast::Values& values) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureForecast::TemperatureForecast(const std::shared_ptr<TemperatureForecastProvider>& provider) :
+TemperatureForecast::TemperatureForecast(const shared_ptr<TemperatureForecastProvider>& provider) :
 	provider(provider)
 {
 }
@@ -48,17 +48,17 @@ void TemperatureForecast::updateCache() {
 	}
 }
 
-TemperatureForecast::Values TemperatureForecast::getForecastValues(const std::time_t& from, const std::time_t& to) const {
+TemperatureForecast::Values TemperatureForecast::getForecastValues(const time_t& from, const time_t& to) const {
 	lock_guard<mutex> lock(mtx);
 
-	float min = numeric_limits<float>::max();
-	float max = numeric_limits<float>::min();
+	float minValue = numeric_limits<float>::max();
+	float maxValue = numeric_limits<float>::min();
 	bool found = false;
 
 	for (const auto& valuesWithTimes : temperatures) {
 		if ((from < valuesWithTimes.to) && (valuesWithTimes.from < to)) {
-			min = std::min(min, valuesWithTimes.min);
-			max = std::max(max, valuesWithTimes.max);
+			minValue = min(minValue, valuesWithTimes.min);
+			maxValue = max(maxValue, valuesWithTimes.max);
 			found = true;
 		}
 	}
@@ -67,7 +67,7 @@ TemperatureForecast::Values TemperatureForecast::getForecastValues(const std::ti
 		throw NoSuchElementException("Temperature forecast not available with specified criteria");
 	}
 
-	return Values(min, max);
+	return Values(minValue, maxValue);
 }
 
 const list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecast::getContainer() const {
@@ -75,7 +75,7 @@ const list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecast::ge
 	return temperatures;
 }
 
-void TemperatureForecast::startTimer(const std::chrono::seconds& period) {
+void TemperatureForecast::startTimer(const chrono::seconds& period) {
 	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_DELAY, "TemperatureForecast"));
 	timer->add(this);
 	timer->start();

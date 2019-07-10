@@ -20,18 +20,18 @@ using namespace std;
 class XmlWriterFactory : public DocumentSaver::DtoWriterFactory {
 public:
 	virtual ~XmlWriterFactory() = default;
-	virtual std::shared_ptr<DtoWriter> create() override {
+	virtual shared_ptr<DtoWriter> create() override {
 		return make_shared<XmlWriter>();
 	}
 };
 
 class FileWriterFactory : public DocumentSaver::FileWriterFactory {
-	const std::string fileName;
+	const string fileName;
 
 public:
-	FileWriterFactory(const std::string& fileName) : fileName(fileName) {}
+	FileWriterFactory(const string& fileName) : fileName(fileName) {}
 	virtual ~FileWriterFactory() = default;
-	virtual std::shared_ptr<FileWriter> create() override {
+	virtual shared_ptr<FileWriter> create() override {
 		return make_shared<FileWriterImpl>(fileName);
 	}
 };

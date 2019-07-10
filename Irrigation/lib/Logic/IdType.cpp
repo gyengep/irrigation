@@ -27,7 +27,7 @@ string to_string(const IdType& idType) {
 	return o.str();
 }
 
-IdType IdType::from_string(const std::string& id) {
+IdType IdType::from_string(const string& id) {
 
 	if (id.find_first_of("0123456789") != 0) {
 		throw IllegalArgumentException("Invalid id: \"" + id + "\"");
