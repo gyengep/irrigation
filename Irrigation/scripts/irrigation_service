@@ -36,7 +36,9 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   other if daemon could not be started or a failure occured
-	start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --exec $DAEMON --chuid $UID:$GID --background
+	#start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --exec $DAEMON --chuid $UID:$GID --background
+	# HACK the pi user has not rights to change the thread priority
+	start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --exec $DAEMON --background
 }
 
 do_stop()
