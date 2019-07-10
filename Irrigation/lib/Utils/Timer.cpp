@@ -88,10 +88,6 @@ void Timer::removeAll() {
 	condition.notify_all();
 }
 
-const chrono::milliseconds& Timer::getPeriod() const {
-	return period;
-}
-
 void Timer::workerFunc() {
 
 	auto terminatedOrChanged = [this]() {

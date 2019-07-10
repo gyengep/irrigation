@@ -1,4 +1,5 @@
 #pragma once
+#include <ctime>
 #include <chrono>
 #include <memory>
 #include <string>
@@ -14,12 +15,12 @@ class TemperatureHistoryPersister : public TimerCallback {
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 	const std::shared_ptr<CsvWriter> csvWriter;
 
-	std::chrono::system_clock::time_point lastUpdateTime;
+	std::time_t lastUpdateTime;
 	std::chrono::duration<int64_t> period;
 	std::unique_ptr<Timer> timer;
 
 	static std::string temperatureToString(float value);
-	static std::string timeToString(const std::chrono::system_clock::time_point& time);
+	static std::string timeToString(const std::time_t& time);
 	static std::shared_ptr<std::ostream> openFile(const std::string& fileName);
 
 public:
@@ -36,7 +37,7 @@ public:
 
 	virtual ~TemperatureHistoryPersister();
 
-	void saveHistory(const std::chrono::system_clock::time_point& from, const std::chrono::system_clock::time_point& to);
+	void saveHistory(const std::time_t& from, const std::time_t& to);
 
 	void startTimer(const std::chrono::duration<int64_t>& period);
 	void stopTimer();

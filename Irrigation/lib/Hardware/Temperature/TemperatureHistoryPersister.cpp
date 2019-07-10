@@ -26,7 +26,7 @@ TemperatureHistoryPersister::TemperatureHistoryPersister(
 	) :
 	temperatureHistory(temperatureHistory),
 	csvWriter(csvWriter),
-	lastUpdateTime(chrono::system_clock::now())
+	lastUpdateTime(time(nullptr))
 {
 	if (csvWriter->stream()->tellp() == 0) {
 		csvWriter->append(vector<string>{"Date", "MinTemperature", "MaxTemperature", "AvgTemperature"});
@@ -38,7 +38,7 @@ TemperatureHistoryPersister::TemperatureHistoryPersister(
 TemperatureHistoryPersister::~TemperatureHistoryPersister() {
 }
 
-void TemperatureHistoryPersister::saveHistory(const chrono::system_clock::time_point& from, const chrono::system_clock::time_point& to) {
+void TemperatureHistoryPersister::saveHistory(const time_t& from, const time_t& to) {
 	try {
 		const auto statisticsValues = temperatureHistory->getHistoryValues(from, to);
 
@@ -71,19 +71,17 @@ void TemperatureHistoryPersister::stopTimer() {
 }
 
 void TemperatureHistoryPersister::onTimer() {
-	const auto currentTime = chrono::system_clock::now();
-	const auto currentTimeInSeconds = chrono::system_clock::to_time_t(currentTime);
-	const auto lastUpdateTimeInSeconds = chrono::system_clock::to_time_t(lastUpdateTime);
+	const auto currentTime = time(nullptr);
 	const auto periodInSeconds = chrono::duration_cast<chrono::seconds>(period).count();
 
-	if ((lastUpdateTimeInSeconds / periodInSeconds) != (currentTimeInSeconds / periodInSeconds)) {
+	if ((lastUpdateTime / periodInSeconds) != (currentTime / periodInSeconds)) {
 		lastUpdateTime = currentTime;
 
 		#ifdef ONTIMER_TRACE_LOG
 		LOGGER.trace("TemperatureHistoryPersister::onTimer()");
 		#endif
 
-		const auto periodFromTo = getPreviousPeriod(chrono::system_clock::now(), period);
+		const auto periodFromTo = getPreviousPeriod(currentTime, period);
 		saveHistory(periodFromTo.first, periodFromTo.second);
 	} else {
 		#ifdef ONTIMER_TRACE_LOG
@@ -94,8 +92,7 @@ void TemperatureHistoryPersister::onTimer() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-string TemperatureHistoryPersister::timeToString(const std::chrono::system_clock::time_point& time) {
-	const time_t rawTime = chrono::system_clock::to_time_t(time);
+string TemperatureHistoryPersister::timeToString(const time_t& rawTime) {
 	const tm* ptm = localtime(&rawTime);
 	char buffer[32];
 

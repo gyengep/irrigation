@@ -1,5 +1,5 @@
 #pragma once
-#include <chrono>
+#include <ctime>
 
 
 class TemperatureHistory {
@@ -18,5 +18,5 @@ public:
 
 public:
 	virtual ~TemperatureHistory() = default;
-	virtual Values getHistoryValues(const std::chrono::system_clock::time_point& from, const std::chrono::system_clock::time_point& to) const = 0;
+	virtual Values getHistoryValues(const std::time_t& from, const std::time_t& to) const = 0;
 };

@@ -16,9 +16,9 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-chrono::system_clock::time_point toTime(int year, int month, int day, int hour, int min, int sec) {
-	auto timeinfo = toCalendarTime(year, month, day, hour, min, sec);
-	return chrono::system_clock::from_time_t(timegm(&timeinfo));
+time_t toTime(int year, int month, int day, int hour, int min, int sec) {
+	auto calendarTime = toCalendarTime(year, month, day, hour, min, sec);
+	return timegm(&calendarTime);
 }
 
 TEST(TemperatureForecastProviderOWMTest, validateTimeString) {
@@ -43,9 +43,9 @@ TEST(TemperatureForecastProviderOWMTest, parseXml) {
 	         (istreambuf_iterator<char>(input)),
 	         (istreambuf_iterator<char>()));
 
-	EXPECT_THAT(toTime(2019, 6, 27, 18, 0, 0), Eq(chrono::system_clock::from_time_t(1561658400)));
-	EXPECT_THAT(toTime(2019, 6, 27, 21, 0, 0), Eq(chrono::system_clock::from_time_t(1561669200)));
-	EXPECT_THAT(toTime(2019, 6, 28, 0, 0, 0), Eq(chrono::system_clock::from_time_t(1561680000)));
+	EXPECT_THAT(toTime(2019, 6, 27, 18, 0, 0), Eq(1561658400));
+	EXPECT_THAT(toTime(2019, 6, 27, 21, 0, 0), Eq(1561669200));
+	EXPECT_THAT(toTime(2019, 6, 28, 0, 0, 0), Eq(1561680000));
 
 	EXPECT_THAT(TemperatureForecastProviderOWM::parseXml(inputData.data()), ElementsAreArray({
 			TemperatureForecastProvider::ValuesWithTimes(toTime(2019, 6, 27, 18, 0, 0), toTime(2019, 6, 27, 21, 0, 0), 18.25, 19.85),

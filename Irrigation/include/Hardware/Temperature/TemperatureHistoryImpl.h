@@ -1,4 +1,5 @@
 #pragma once
+#include <ctime>
 #include <chrono>
 #include <deque>
 #include <memory>
@@ -28,10 +29,10 @@ class TemperatureHistoryImpl : public TemperatureHistory, public TimerCallback {
 public:
 
 	struct TemperatureSample {
-		std::chrono::system_clock::time_point sampleTime;
+		std::time_t sampleTime;
 		float value;
 
-		TemperatureSample(const std::chrono::system_clock::time_point& sampleTime, float value);
+		TemperatureSample(const std::time_t& sampleTime, float value);
 
 		// for testing
 		bool operator== (const TemperatureSample& other) const;
@@ -51,10 +52,10 @@ private:
 
 	void load();
 	void save();
-	void removeOlder(const std::chrono::system_clock::time_point& timePoint);
-	void removeNewer(const std::chrono::system_clock::time_point& timePoint);
-	void addTemperature(const std::chrono::system_clock::time_point& timePoint, float temperature);
-	void updateCache(const std::chrono::system_clock::time_point& timePoint);
+	void removeOlder(const std::time_t& rawTime);
+	void removeNewer(const std::time_t& rawTime);
+	void addTemperature(const std::time_t& rawTime, float temperature);
+	void updateCache(const std::time_t& rawTime);
 
 	static std::string temperatureToString(float value);
 
@@ -68,7 +69,7 @@ public:
 		);
 
 	virtual ~TemperatureHistoryImpl();
-	virtual Values getHistoryValues(const std::chrono::system_clock::time_point& from, const std::chrono::system_clock::time_point& to) const override;
+	virtual Values getHistoryValues(const std::time_t& from, const std::time_t& to) const override;
 
 	void updateCache();
 

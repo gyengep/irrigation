@@ -18,7 +18,6 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 shared_ptr<Temperature> Temperature::instance;
-const chrono::seconds::rep Temperature::periodInSeconds(chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count());
 
 
 void Temperature::init(
@@ -59,7 +58,7 @@ Temperature::Temperature(
 		const chrono::duration<int64_t>& forecastUpdatePeriod
 	) :
 
-	lastUpdateTime(chrono::system_clock::now()),
+	lastUpdateTime(time(nullptr)),
 	period(chrono::hours(24))
 {
 	sensor = make_shared<TemperatureSensorImpl>(
@@ -109,20 +108,20 @@ Temperature::~Temperature() {
 }
 
 void Temperature::onTimer() {
-	const auto currentTime = chrono::system_clock::now();
-	const auto currentTimeInSeconds = chrono::system_clock::to_time_t(currentTime);
-	const auto lastUpdateTimeInSeconds = chrono::system_clock::to_time_t(lastUpdateTime);
+	const auto currentTime = time(nullptr);
 	const auto periodInSeconds = chrono::duration_cast<chrono::seconds>(period).count();
 
-	if ((lastUpdateTimeInSeconds / periodInSeconds) != (currentTimeInSeconds / periodInSeconds)) {
+	if ((lastUpdateTime / periodInSeconds) != (currentTime / periodInSeconds)) {
 		lastUpdateTime = currentTime;
 		#ifdef ONTIMER_TRACE_LOG
 		LOGGER.trace("Temperature::onTimer()");
 		#endif
 
-		logPreviousPeriodMeasured(currentTime);
-		logStoredPeriodForecast();
-		logCurrentPeriodForecast(currentTime);
+		if (LOGGER.isLoggable(LogLevel::TRACE)) {
+			logPreviousPeriodMeasured(currentTime);
+			logStoredPeriodForecast();
+			logCurrentPeriodForecast(currentTime);
+		}
 
 	} else {
 		#ifdef ONTIMER_TRACE_LOG
@@ -131,9 +130,9 @@ void Temperature::onTimer() {
 	}
 }
 
-void Temperature::logCurrentPeriodForecast(const chrono::system_clock::time_point& currentTime) {
+void Temperature::logCurrentPeriodForecast(const time_t& rawTime) {
 	try {
-		const auto currentPeriodFromTo = getCurrentPeriod(currentTime, period);
+		const auto currentPeriodFromTo = getCurrentPeriod(rawTime, period);
 		const auto forecastValues = forecast->getForecastValues(currentPeriodFromTo.first, currentPeriodFromTo.second);
 
 		storedForecastFrom = toTimeStr(currentPeriodFromTo.first);
@@ -158,9 +157,9 @@ void Temperature::logStoredPeriodForecast() {
 	}
 }
 
-void Temperature::logPreviousPeriodMeasured(const chrono::system_clock::time_point& currentTime) {
+void Temperature::logPreviousPeriodMeasured(const std::time_t& rawTime) {
 	try {
-		const auto previousPeriodFromTo = getPreviousPeriod(currentTime, period);
+		const auto previousPeriodFromTo = getPreviousPeriod(rawTime, period);
 		const string from = toTimeStr(previousPeriodFromTo.first);
 		const string to = toTimeStr(previousPeriodFromTo.second);
 		const auto temperatureValues = history->getHistoryValues(previousPeriodFromTo.first, previousPeriodFromTo.second);
@@ -192,8 +191,7 @@ shared_ptr<TemperatureSensorReader> Temperature::createSensorReader() {
 	return sensor;
 }
 
-string Temperature::toTimeStr(const chrono::system_clock::time_point& timePoint) {
-	const time_t rawTime = chrono::system_clock::to_time_t(timePoint);
+string Temperature::toTimeStr(const time_t& rawTime) {
 	struct tm * timeinfo;
 	char buffer [80];
 

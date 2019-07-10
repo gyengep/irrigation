@@ -23,9 +23,9 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-chrono::system_clock::time_point toSystemTime(int year, int month, int day, int hour, int min) {
-	tm timeinfo = toCalendarTime(year, month, day, hour, min, 0);
-	return chrono::system_clock::from_time_t(mktime(&timeinfo));
+time_t toTime(int year, int month, int day, int hour, int min) {
+	tm calendarTime = toCalendarTime(year, month, day, hour, min, 0);
+	return mktime(&calendarTime);
 
 }
 
@@ -48,10 +48,10 @@ TEST(TemperatureHistoryPersisterTest, createNewFileAndAppend) {
 	auto mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	shared_ptr<ostream> output = make_shared<ostringstream>();
 
-	const auto currentTime = toSystemTime(2019, 6, 12, 22, 0);
+	const auto currentTime = toTime(2019, 6, 12, 22, 0);
 	const TemperatureHistory::Values result(10, 20, 15);
 
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(currentTime, currentTime + chrono::hours(1))).Times(1).WillOnce(Return(result));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(currentTime, currentTime + chrono::seconds(60).count())).Times(1).WillOnce(Return(result));
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "Date", "MinTemperature", "MaxTemperature", "AvgTemperature" })).Times(1);
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "2019.06.12 22:00", "10.0", "20.0", "15.0"})).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
@@ -61,7 +61,7 @@ TEST(TemperatureHistoryPersisterTest, createNewFileAndAppend) {
 			mockCsvWriter
 		);
 
-	temperatureHistoryPersister.saveHistory(currentTime, currentTime + chrono::hours(1));
+	temperatureHistoryPersister.saveHistory(currentTime, currentTime + chrono::seconds(60).count());
 }
 
 TEST(TemperatureHistoryPersisterTest, appendFile) {
@@ -70,10 +70,10 @@ TEST(TemperatureHistoryPersisterTest, appendFile) {
 	shared_ptr<ostream> output = make_shared<ostringstream>();
 	(*output) << "Date,MinTemperature,MaxTemperature,AvgTemperature" << endl;
 
-	const auto currentTime = toSystemTime(2019, 6, 12, 22, 0);
+	const auto currentTime = toTime(2019, 6, 12, 22, 0);
 	const TemperatureHistory::Values result(10, 20, 15);
 
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(currentTime, currentTime + chrono::hours(1))).Times(1).WillOnce(Return(result));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(currentTime, currentTime + chrono::seconds(60).count())).Times(1).WillOnce(Return(result));
 	EXPECT_CALL(*mockCsvWriter, append(vector<string>{ "2019.06.12 22:00", "10.0", "20.0", "15.0"})).Times(1);
 	EXPECT_CALL(*mockCsvWriter, stream()).Times(AnyNumber()).WillRepeatedly(ReturnRef(output));
 
@@ -82,7 +82,7 @@ TEST(TemperatureHistoryPersisterTest, appendFile) {
 			mockCsvWriter
 		);
 
-	temperatureHistoryPersister.saveHistory(currentTime, currentTime + chrono::hours(1));
+	temperatureHistoryPersister.saveHistory(currentTime, currentTime + chrono::seconds(60).count());
 }
 
 TEST(TemperatureHistoryPersisterTest, onTimer) {

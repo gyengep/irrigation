@@ -54,8 +54,6 @@ public:
 	void remove(TimerCallback* callback);
 	void removeAll();
 
-	const std::chrono::milliseconds& getPeriod() const;
-
 	void start(Priority priority = Priority::NORMAL);
 	void stop();
 };

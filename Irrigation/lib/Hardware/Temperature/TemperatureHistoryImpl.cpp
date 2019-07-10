@@ -11,7 +11,7 @@
 using namespace std;
 
 
-TemperatureHistoryImpl::TemperatureSample::TemperatureSample(const chrono::system_clock::time_point& sampleTime, float value) :
+TemperatureHistoryImpl::TemperatureSample::TemperatureSample(const time_t& sampleTime, float value) :
 	sampleTime(sampleTime),
 	value(value)
 {
@@ -23,7 +23,7 @@ bool TemperatureHistoryImpl::TemperatureSample::operator== (const TemperatureHis
 
 ostream& operator<<(ostream& os, const TemperatureHistoryImpl::TemperatureSample& temperatureSample) {
 	os << "TemperatureSample{";
-	os << "time: " << chrono::system_clock::to_time_t(temperatureSample.sampleTime) << ", ";
+	os << "time: " << temperatureSample.sampleTime << ", ";
 	os << "value: " << temperatureSample.value;
 	os << "}";
 	return os;
@@ -64,7 +64,7 @@ void TemperatureHistoryImpl::load() {
 						throw exception();
 					}
 
-					addTemperature(chrono::system_clock::from_time_t(stoul(result->at(0))), stof(result->at(1)));
+					addTemperature(stoul(result->at(0)), stof(result->at(1)));
 				}
 
 				LOGGER.debug("Temperature history cache file is successfully loaded. %zu items are added", samples.size());
@@ -87,7 +87,7 @@ void TemperatureHistoryImpl::save() {
 
 			for (const auto& sample : samples) {
 				csvWriter->append(vector<string>{
-					to_string(chrono::system_clock::to_time_t(sample.sampleTime)),
+					to_string(sample.sampleTime),
 					temperatureToString(sample.value)
 				});
 			}
@@ -97,22 +97,22 @@ void TemperatureHistoryImpl::save() {
 	}
 }
 
-void TemperatureHistoryImpl::addTemperature(const chrono::system_clock::time_point& timePoint, float temperature) {
+void TemperatureHistoryImpl::addTemperature(const time_t& rawTime, float temperature) {
 	lock_guard<mutex> lock(mtx);
-	removeOlder(timePoint - storedPeriod);
-	removeNewer(timePoint);
-	samples.push_back(TemperatureSample(timePoint, temperature));
+	removeOlder(rawTime - storedPeriod.count());
+	removeNewer(rawTime);
+	samples.push_back(TemperatureSample(rawTime, temperature));
 }
 
-void TemperatureHistoryImpl::removeNewer(const chrono::system_clock::time_point& timePoint) {
-	while(!samples.empty() && samples.back().sampleTime >= timePoint) {
+void TemperatureHistoryImpl::removeNewer(const time_t& rawTime) {
+	while(!samples.empty() && samples.back().sampleTime >= rawTime) {
 		samples.pop_back();
 	}
 }
 
-void TemperatureHistoryImpl::removeOlder(const chrono::system_clock::time_point& timePoint) {
-	auto predicate = [timePoint](const TemperatureSample& sample) {
-		return sample.sampleTime > timePoint;
+void TemperatureHistoryImpl::removeOlder(const time_t& rawTime) {
+	auto predicate = [rawTime](const TemperatureSample& sample) {
+		return sample.sampleTime > rawTime;
 	};
 
 	auto it = find_if(samples.begin(), samples.end(), predicate);
@@ -124,7 +124,7 @@ const deque<TemperatureHistoryImpl::TemperatureSample> TemperatureHistoryImpl::g
 	return samples;
 }
 
-TemperatureHistoryImpl::Values TemperatureHistoryImpl::getHistoryValues(const chrono::system_clock::time_point& from, const chrono::system_clock::time_point& to) const {
+TemperatureHistoryImpl::Values TemperatureHistoryImpl::getHistoryValues(const time_t& from, const time_t& to) const {
 	lock_guard<mutex> lock(mtx);
 
 	float minValue = numeric_limits<float>::max();
@@ -148,16 +148,16 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getHistoryValues(const ch
 	return Values(minValue, maxValue, sum / count);
 }
 
-void TemperatureHistoryImpl::updateCache(const std::chrono::system_clock::time_point& timePoint) {
+void TemperatureHistoryImpl::updateCache(const time_t& rawTime) {
 	try {
-		addTemperature(timePoint, sensor->getCachedValue());
+		addTemperature(rawTime, sensor->getCachedValue());
 	} catch (const exception& e) {
 		LOGGER.warning("Can not read temperature for history", e);
 	}
 }
 
 void TemperatureHistoryImpl::updateCache() {
-	updateCache(chrono::system_clock::now());
+	updateCache(time(nullptr));
 }
 
 void TemperatureHistoryImpl::startTimer() {

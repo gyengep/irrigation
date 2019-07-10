@@ -4,30 +4,20 @@ using namespace std;
 using namespace chrono;
 
 
-pair<system_clock::time_point, system_clock::time_point>
-getPreviousPeriod(const system_clock::time_point& currentTime, const seconds& periodLength) {
-	const time_t currentRawTime = system_clock::to_time_t(currentTime);
+pair<time_t, time_t> getPreviousPeriod(const time_t& rawTime, const seconds& periodLength) {
 	const time_t periodInSeconds = periodLength.count();
 
-	const time_t from = ((currentRawTime / periodInSeconds) - 1) * periodInSeconds;
-	const time_t to = (currentRawTime / periodInSeconds) * periodInSeconds - 1;
+	const time_t from = ((rawTime / periodInSeconds) - 1) * periodInSeconds;
+	const time_t to = (rawTime / periodInSeconds) * periodInSeconds - 1;
 
-	return make_pair(
-			system_clock::from_time_t(from),
-			system_clock::from_time_t(to)
-		);
+	return make_pair(from, to);
 }
 
-pair<system_clock::time_point, system_clock::time_point>
-getCurrentPeriod(const system_clock::time_point& currentTime, const seconds& periodLength) {
-	const time_t currentRawTime = system_clock::to_time_t(currentTime);
+pair<time_t, time_t> getCurrentPeriod(const time_t& rawTime, const seconds& periodLength) {
 	const time_t periodInSeconds = periodLength.count();
 
-	const time_t from = (currentRawTime / periodInSeconds) * periodInSeconds;
-	const time_t to = ((currentRawTime / periodInSeconds) + 1) * periodInSeconds - 1;
+	const time_t from = (rawTime / periodInSeconds) * periodInSeconds;
+	const time_t to = ((rawTime / periodInSeconds) + 1) * periodInSeconds - 1;
 
-	return make_pair<system_clock::time_point, system_clock::time_point>(
-			system_clock::from_time_t(from),
-			system_clock::from_time_t(to)
-		);
+	return make_pair(from, to);
 }

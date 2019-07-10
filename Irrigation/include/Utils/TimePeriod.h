@@ -3,8 +3,5 @@
 #include <utility>
 
 
-std::pair<std::chrono::system_clock::time_point, std::chrono::system_clock::time_point>
-getPreviousPeriod(const std::chrono::system_clock::time_point& currentTime, const std::chrono::seconds& periodLength);
-
-std::pair<std::chrono::system_clock::time_point, std::chrono::system_clock::time_point>
-getCurrentPeriod(const std::chrono::system_clock::time_point& currentTime, const std::chrono::seconds& periodLength);
+std::pair<std::time_t, std::time_t> getPreviousPeriod(const std::time_t& rawTime, const std::chrono::seconds& periodLength);
+std::pair<std::time_t, std::time_t> getCurrentPeriod(const std::time_t& rawTime, const std::chrono::seconds& periodLength);
