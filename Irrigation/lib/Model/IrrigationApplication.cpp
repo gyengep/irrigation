@@ -123,8 +123,6 @@ void IrrigationApplication::uninitDocument() {
 
 	try {
 		documentSaver->saveIfModified();
-		LOGGER.debug("Configuration successfully saved.");
-
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't save configuration"));
 	}

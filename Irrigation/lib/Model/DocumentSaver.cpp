@@ -40,7 +40,7 @@ void DocumentSaver::onTimer() {
 	try {
 		saveIfModified();
 	} catch (const exception& e) {
-		LOGGER.warning("Can not save document", e);
+		LOGGER.warning("Can't save configuration", e);
 	}
 }
 
@@ -55,6 +55,7 @@ void DocumentSaver::saveIfModified() {
 		try {
 			const string documentDtoAsText = dtoWriterFactory->create()->save(documentDto);
 			fileWriterFactory->create()->write(documentDtoAsText);
+			LOGGER.debug("Configuration successfully saved");
 		} catch (const exception&) {
 			irrigationDocument->setModified(true);
 			throw;
