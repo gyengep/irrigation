@@ -74,13 +74,13 @@ list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecastProviderOW
 size_t TemperatureForecastProviderOWM::writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
 	ostringstream* oss = static_cast<ostringstream*>(ctxt);
 
-    if (!oss) {
-    	throw logic_error("TemperatureForecastProviderOWM::writeCallback  nullptr == ctxt");
-    }
+	if (!oss) {
+		throw logic_error("TemperatureForecastProviderOWM::writeCallback  nullptr == ctxt");
+	}
 
-    const size_t length = size * nmemb;
-    (*oss) << string(&buffer[0], &buffer[length]);
-   	return length;
+	const size_t length = size * nmemb;
+	(*oss) << string(&buffer[0], &buffer[length]);
+	return length;
 }
 
 list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecastProviderOWM::parseXml(const string& text) {
