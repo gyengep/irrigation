@@ -4,12 +4,12 @@
 #include "TemperatureForecastProvider.h"
 #include "NetworkReader.h"
 
-namespace OpenWeatherMap {
+namespace DarkSky {
 
 class TemperatureForecastProvider : public ::TemperatureForecastProvider {
 	static const std::string url;
-	static const std::string location;
-	static const std::string appid;
+	static const std::string lat, lon;
+	static const std::string apikey;
 
 	std::shared_ptr<NetworkReader> networkReader;
 
@@ -20,8 +20,7 @@ public:
 
 	virtual std::list<ValuesWithTimes> getForecast() const override;
 
-	static std::list<ValuesWithTimes> parseXml(const std::string& text);
-	static std::time_t parseTimeString(const std::string& text);
+	static std::list<ValuesWithTimes> parseJson(const std::string& text);
 };
 
 }

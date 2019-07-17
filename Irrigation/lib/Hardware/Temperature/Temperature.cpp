@@ -1,11 +1,12 @@
 #include "Temperature.h"
 #include "TemperatureSensorImpl.h"
 #include "TemperatureSensorReaderDS18B20.h"
+#include "TemperatureSensorReaderDarkSky.h"
 #include "TemperatureSensorReaderOWM.h"
-#include "TemperatureSensorReaderFake.h"
 #include "TemperatureHistoryImpl.h"
 #include "TemperatureHistoryPersister.h"
 #include "TemperatureForecast.h"
+#include "TemperatureForecastProviderDarkSky.h"
 #include "TemperatureForecastProviderOWM.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
@@ -79,7 +80,7 @@ Temperature::Temperature(
 		);
 
 	forecast = make_shared<TemperatureForecast>(
-			make_shared<TemperatureForecastProviderOWM>()
+			createForecastProvider()
 		);
 
 	sensor->updateCache();
@@ -178,16 +179,24 @@ void Temperature::logPreviousPeriodMeasured(const time_t& rawTime) {
 
 shared_ptr<TemperatureSensorReader> Temperature::createSensorReader() {
 	try {
-		auto sensor = make_shared<TemperatureSensorReader_DS18B20>();
+		const auto sensor = make_shared<DS18B20::TemperatureSensorReader>();
 		LOGGER.debug("DS18B20 temperature sensor is initialized");
 		return sensor;
 	} catch (const exception& e) {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
 
-	auto sensor = make_shared<TemperatureSensorReader_OWM>();
-	LOGGER.debug("OWM temperature sensor is initialized");
+	//return make_shared<OpenWeatherMap::TemperatureSensorReader>();
+
+	const auto sensor = make_shared<DarkSky::TemperatureSensorReader>();
+	LOGGER.debug("DarkSky virtual temperature sensor is initialized");
 	return sensor;
+}
+
+std::shared_ptr<TemperatureForecastProvider> Temperature::createForecastProvider() {
+	const auto forecastProvider = make_shared<DarkSky::TemperatureForecastProvider>();
+	LOGGER.debug("DarkSky forecast provider is initialized");
+	return forecastProvider;
 }
 
 string Temperature::toTimeStr(const time_t& rawTime) {

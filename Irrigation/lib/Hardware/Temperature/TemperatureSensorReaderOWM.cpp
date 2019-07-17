@@ -1,26 +1,34 @@
 #include "TemperatureSensorReaderOWM.h"
+#include "TemperatureException.h"
 #include "Logger/Logger.h"
 #include "pugixml.hpp"
-#include <curl/curl.h>
 #include <sstream>
 
 using namespace std;
 using namespace pugi;
 
+///////////////////////////////////////////////////////////////////////////////
 
-const string TemperatureSensorReader_OWM::url("api.openweathermap.org/data/2.5/weather");
-const string TemperatureSensorReader_OWM::location("dunakeszi,hu");
-const string TemperatureSensorReader_OWM::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
+const string OpenWeatherMap::TemperatureSensorReader::url("http://api.openweathermap.org/data/2.5/weather");
+const string OpenWeatherMap::TemperatureSensorReader::location("dunakeszi,hu");
+const string OpenWeatherMap::TemperatureSensorReader::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-string TemperatureSensorReader_OWM::NetworkReader::read(const string& url, const string& location, const string& appid) const {
-	unique_ptr<CURL, void(*)(CURL*)> curl(curl_easy_init(), curl_easy_cleanup);
+OpenWeatherMap::TemperatureSensorReader::TemperatureSensorReader() :
+	TemperatureSensorReader(make_shared<NetworkReader>())
+{
+}
 
-	if (curl.get() == nullptr) {
-		throw logic_error("TemperatureForecast::read()  curl == nullptr");
-	}
+OpenWeatherMap::TemperatureSensorReader::TemperatureSensorReader(const shared_ptr<NetworkReader>& networkReader) :
+	networkReader(networkReader)
+{
+}
 
+OpenWeatherMap::TemperatureSensorReader::~TemperatureSensorReader() {
+}
+
+float OpenWeatherMap::TemperatureSensorReader::read() {
 	ostringstream oss;
 	oss << url << "?";
 	oss << "q=" << location << "&";
@@ -28,38 +36,14 @@ string TemperatureSensorReader_OWM::NetworkReader::read(const string& url, const
 	oss << "mode=xml" << "&";
 	oss << "units=metric";
 
-	ostringstream response;
-	long responseCode = 0;
-
-	curl_easy_setopt(curl.get(), CURLOPT_HTTPGET, 1L);
-	curl_easy_setopt(curl.get(), CURLOPT_URL, oss.str().c_str());
-	curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, &TemperatureSensorReader_OWM::writeCallback);
-	curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response);
-
-	const CURLcode curlCode = curl_easy_perform(curl.get());
-	if (CURLE_OK != curlCode) {
-		throw runtime_error("curl_easy_perform() failed. " + to_string(curlCode));
+	try {
+		return parseXml(networkReader->read(oss.str()));
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("OpenWeatherMap current temperature reading is failed"));
 	}
-
-	curl_easy_getinfo(curl.get(), CURLINFO_RESPONSE_CODE, &responseCode);
-	if (responseCode < 200 || 300 <= responseCode) {
-		throw runtime_error("http status code: " + to_string(responseCode));
-	}
-
-	return move(response.str());
 }
 
-TemperatureSensorReader_OWM::TemperatureSensorReader_OWM() : networkReader(make_shared<NetworkReader>()) {
-}
-
-TemperatureSensorReader_OWM::~TemperatureSensorReader_OWM() {
-}
-
-float TemperatureSensorReader_OWM::read() {
-	return parseXml(networkReader->read(url, location, appid));
-}
-
-float TemperatureSensorReader_OWM::parseXml(const string& text) {
+float OpenWeatherMap::TemperatureSensorReader::parseXml(const string& text) {
 	static const pugi::xpath_query queryTemperature("/current/temperature");
 
 	xml_document doc;
@@ -77,16 +61,3 @@ float TemperatureSensorReader_OWM::parseXml(const string& text) {
 
 	return temperatureNodeSet.first().node().attribute("max").as_float();
 }
-
-size_t TemperatureSensorReader_OWM::writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	ostringstream* oss = static_cast<ostringstream*>(ctxt);
-
-    if (!oss) {
-    	throw logic_error("TemperatureForecastProviderOWM::writeCallback  nullptr == ctxt");
-    }
-
-    const size_t length = size * nmemb;
-    (*oss) << string(&buffer[0], &buffer[length]);
-   	return length;
-}
-

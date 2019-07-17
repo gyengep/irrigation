@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <fstream>
 #include "Hardware/Temperature/TemperatureHistoryImpl.h"
-#include "Exceptions/Exceptions.h"
+#include "Hardware/Temperature/TemperatureException.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
 #include "Mocks/MockTemperatureSensor.h"
@@ -217,9 +217,9 @@ TEST(TemperatureHistoryTest, getHistoryNotFound) {
 	temperatureHistory.updateCache(4);
 	temperatureHistory.updateCache(8);
 
-	EXPECT_THROW(temperatureHistory.getHistoryValues(1, 3), NoSuchElementException);
-	EXPECT_THROW(temperatureHistory.getHistoryValues(5, 6), NoSuchElementException);
-	EXPECT_THROW(temperatureHistory.getHistoryValues(10, 15), NoSuchElementException);
+	EXPECT_THROW(temperatureHistory.getHistoryValues(1, 3), TemperatureException);
+	EXPECT_THROW(temperatureHistory.getHistoryValues(5, 6), TemperatureException);
+	EXPECT_THROW(temperatureHistory.getHistoryValues(10, 15), TemperatureException);
 }
 
 TEST(TemperatureHistoryTest, save) {

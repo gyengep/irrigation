@@ -1,6 +1,5 @@
 #include "TemperatureHistoryImpl.h"
 #include "TemperatureException.h"
-#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReader.h"
 #include "Utils/CsvWriter.h"
@@ -142,7 +141,7 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getHistoryValues(const ti
 	}
 
 	if (0 == count) {
-		throw NoSuchElementException("Temperature history not found with specified criteria");
+		throw TemperatureException("Temperature history not found with specified criteria");
 	}
 
 	return Values(minValue, maxValue, sum / count);

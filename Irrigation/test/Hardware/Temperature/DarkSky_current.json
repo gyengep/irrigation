@@ -1,0 +1,25 @@
+{
+    "latitude": 47.497912,
+    "longitude": 19.040235,
+    "timezone": "Europe/Budapest",
+    "currently": {
+        "time": 1563284521,
+        "summary": "Partly Cloudy",
+        "icon": "partly-cloudy-day",
+        "precipIntensity": 0,
+        "precipProbability": 0,
+        "temperature": 26.51,
+        "apparentTemperature": 26.51,
+        "dewPoint": 9.63,
+        "humidity": 0.35,
+        "pressure": 1011.81,
+        "windSpeed": 4.22,
+        "windGust": 5.43,
+        "windBearing": 318,
+        "cloudCover": 0.15,
+        "uvIndex": 4,
+        "visibility": 10.003,
+        "ozone": 354.4
+    },
+    "offset": 2
+}
