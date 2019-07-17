@@ -11,6 +11,13 @@ pugixml
     and build it with the project
  
 
+openssl
+-------
+ - ./config no-shared
+ - make
+ - make install
+
+
 curl
 -----
  - ./configure --disable-shared --disable-verbose --disable-manual --disable-ipv6 --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --with-ssl --without-zlib
@@ -20,7 +27,8 @@ curl
 
 json
 -------
-  - copy the json.hpp to the workspace and build it with the project
+  - the library is downloaded from https://github.com/nlohmann/json/releases/tag/v3.6.1
+  - the only one neccessary file is copied to Irrigation\3p\json\json.hpp 
 
 
 ONLY FOR TESTING
