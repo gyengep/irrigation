@@ -42,11 +42,8 @@ void TemperatureForecast::updateCache() {
 
 		lock_guard<mutex> lock(mtx);
 		temperatures = move(temporaryTemperatures);
-
-		LOGGER.debug("Temperature forecast is succesfully updated");
-
 	} catch (const exception& e) {
-		LOGGER.warning("Can not query the weather forecast", e);
+		LOGGER.warning("Weather forecast update failed", e);
 	}
 }
 
