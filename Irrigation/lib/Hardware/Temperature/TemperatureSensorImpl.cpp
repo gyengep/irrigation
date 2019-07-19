@@ -7,9 +7,7 @@ using namespace std;
 
 
 TemperatureSensorImpl::TemperatureSensorImpl(const shared_ptr<TemperatureSensorReader>& sensorReader) :
-	sensorReader(sensorReader),
-	valid(false),
-	value(0.0f)
+	sensorReader(sensorReader)
 {
 }
 
@@ -19,27 +17,26 @@ TemperatureSensorImpl::~TemperatureSensorImpl() {
 float TemperatureSensorImpl::getCachedValue() const {
 	lock_guard<mutex> lock(mtx);
 
-	if (!valid) {
+	if (value.get() == nullptr) {
 		throw TemperatureException("Temperature is not available");
 	}
 
-	return value;
+	return *value;
 }
 
 void TemperatureSensorImpl::updateCache() {
-	float value = 0.0f;
-	bool valid = false;
-
 	try {
-		value = sensorReader->read();
-		valid = true;
+		const float newValue = sensorReader->read();
+
+		lock_guard<mutex> lock(mtx);
+		value.reset(new float(newValue));
+
 	} catch(const exception& e) {
 		LOGGER.warning("Can not read temperature sensorReader", e);
-	}
 
-	lock_guard<mutex> lock(mtx);
-	this->value = value;
-	this->valid = valid;
+		lock_guard<mutex> lock(mtx);
+		value.reset();
+	}
 }
 
 void TemperatureSensorImpl::startTimer(const chrono::seconds& period) {

@@ -5,24 +5,33 @@ microhttpd
  - make install
  
  
-teng
-----
- - ./configure
- - change the following line in the makefile: 
-	CXXFLAGS =
-	to:
-	CXXFLAGS = -D_DEFAULT_SOURCE
- - make
- - make install
- 
- 
 pugixml
 -------
   - copy the pugiconfig.hpp, pugixml.cpp and pugixml.hpp to the workspace 
     and build it with the project
  
 
- 
+openssl
+-------
+ - ./config no-shared
+ - make
+ - make install
+
+
+curl
+-----
+ - LDFLAGS=-L/usr/local/lib \
+./configure --disable-shared --disable-verbose --disable-manual --disable-ipv6 --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --with-ssl --without-zlib
+ - make
+ - make install
+
+
+json
+-------
+  - the library is downloaded from https://github.com/nlohmann/json/releases/tag/v3.6.1
+  - the only one neccessary file is copied to Irrigation\3p\json\json.hpp 
+
+
 ONLY FOR TESTING
 ----------------
  
@@ -34,10 +43,3 @@ google test
   - gmock/gmock.h
   - gtest/gtest.h
   - gmock-gtest-all.cc
- 
-
-curl
------
- - ./configure --disable-shared --disable-verbose --disable-manual --disable-ipv6 --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --without-ssl --without-zlib
- - make
- - make install

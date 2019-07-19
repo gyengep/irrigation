@@ -38,6 +38,7 @@ class Temperature : public TimerCallback {
 		);
 
 	std::shared_ptr<TemperatureSensorReader> createSensorReader();
+	std::shared_ptr<TemperatureForecastProvider> createForecastProvider();
 
 	void logPreviousPeriodMeasured(const std::time_t& rawTime);
 	void logStoredPeriodForecast();

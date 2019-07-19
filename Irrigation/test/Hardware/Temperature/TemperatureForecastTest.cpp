@@ -136,8 +136,8 @@ TEST(TemperatureForecastTest, getForecastOutOfBounds) {
 	TemperatureForecast temperatureForecast(mockProvider);
 	temperatureForecast.updateCache();
 
-	EXPECT_ANY_THROW(temperatureForecast.getForecastValues(60, 70));
-	EXPECT_ANY_THROW(temperatureForecast.getForecastValues(5, 10));
+	EXPECT_THROW(temperatureForecast.getForecastValues(60, 70), TemperatureException);
+	EXPECT_THROW(temperatureForecast.getForecastValues(5, 10), TemperatureException);
 }
 
 TEST(TemperatureForecastTest, onTimer) {

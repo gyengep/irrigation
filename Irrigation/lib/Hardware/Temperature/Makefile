@@ -19,7 +19,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDES		= -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Hardware/$(TARGET_NAME) -I$(INCLUDE_DIR)/Utils -I$(PROJECT_ROOT)/3p/pugixml
+INCLUDES		= -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/Hardware/$(TARGET_NAME) -I$(INCLUDE_DIR)/Utils -I$(PROJECT_ROOT)/3p/pugixml -I$(PROJECT_ROOT)/3p/nlohmann
 ARFLAGS         = r 
 
 include ../../../common.mk

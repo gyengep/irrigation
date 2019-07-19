@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include <fstream>
 #include <stdexcept>
+#include "Mocks/MockNetworkReader.h"
 #include "Hardware/Temperature/TemperatureForecastProviderOWM.h"
 #include "Utils/TimeConversion.h"
 
@@ -9,36 +10,29 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class MockTemperatureForecastReader : public TemperatureForecastProviderOWM::NetworkReader {
-public:
-	MOCK_CONST_METHOD3(read, string(const string& url, const string& location, const string& appid));
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
 time_t toTime(int year, int month, int day, int hour, int min, int sec) {
 	auto calendarTime = toCalendarTime(year, month, day, hour, min, sec);
 	return timegm(&calendarTime);
 }
 
-TEST(TemperatureForecastProviderOWMTest, validateTimeString) {
-	EXPECT_NO_THROW(TemperatureForecastProviderOWM::parseTimeString("2019-06-18T15:53:00"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("2A19-06-17T18:00:00"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("219-06-17T18:00:00"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("A1c"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("1"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("456"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("ABC"));
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseTimeString("abcd"));
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, validateTimeString) {
+	EXPECT_NO_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("2019-06-18T15:53:00"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("2A19-06-17T18:00:00"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("219-06-17T18:00:00"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("A1c"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("1"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("456"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("ABC"));
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("abcd"));
 }
 
-TEST(TemperatureForecastProviderOWMTest, parseTimeString) {
-	EXPECT_THAT(TemperatureForecastProviderOWM::parseTimeString("2019-06-18T15:54:08"), Eq(1560873248));
-	EXPECT_THAT(TemperatureForecastProviderOWM::parseTimeString("2019-01-10T13:14:15"), Eq(1547126055));
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, parseTimeString) {
+	EXPECT_THAT(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("2019-06-18T15:54:08"), Eq(1560873248));
+	EXPECT_THAT(OpenWeatherMap::TemperatureForecastProvider::parseTimeString("2019-01-10T13:14:15"), Eq(1547126055));
 }
 
-TEST(TemperatureForecastProviderOWMTest, parseXml) {
-	ifstream input("temperature_forecast.xml");
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, parseXml) {
+	ifstream input("OpenWeatherMap_forecast.xml");
 	vector<char> inputData(
 	         (istreambuf_iterator<char>(input)),
 	         (istreambuf_iterator<char>()));
@@ -47,7 +41,7 @@ TEST(TemperatureForecastProviderOWMTest, parseXml) {
 	EXPECT_THAT(toTime(2019, 6, 27, 21, 0, 0), Eq(1561669200));
 	EXPECT_THAT(toTime(2019, 6, 28, 0, 0, 0), Eq(1561680000));
 
-	EXPECT_THAT(TemperatureForecastProviderOWM::parseXml(inputData.data()), ElementsAreArray({
+	EXPECT_THAT(OpenWeatherMap::TemperatureForecastProvider::parseXml(string(inputData.data(), inputData.size())), ElementsAreArray({
 			TemperatureForecastProvider::ValuesWithTimes(toTime(2019, 6, 27, 18, 0, 0), toTime(2019, 6, 27, 21, 0, 0), 18.25, 19.85),
 			TemperatureForecastProvider::ValuesWithTimes(toTime(2019, 6, 27, 21, 0, 0), toTime(2019, 6, 28, 0, 0, 0), 15.54, 16.74),
 			TemperatureForecastProvider::ValuesWithTimes(toTime(2019, 6, 28, 0, 0, 0), toTime(2019, 6, 28, 3, 0, 0), 13.47, 14.27),
@@ -91,15 +85,15 @@ TEST(TemperatureForecastProviderOWMTest, parseXml) {
 	}));
 }
 
-TEST(TemperatureForecastProviderOWMTest, parseXmlInvalid) {
-	EXPECT_ANY_THROW(TemperatureForecastProviderOWM::parseXml("abc"));
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, parseXmlInvalid) {
+	EXPECT_ANY_THROW(OpenWeatherMap::TemperatureForecastProvider::parseXml("abc"));
 }
 
-TEST(TemperatureForecastProviderOWMTest, parseXmlEmpty) {
-	EXPECT_THAT(TemperatureForecastProviderOWM::parseXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><weatherdata></weatherdata>"), IsEmpty());
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, parseXmlEmpty) {
+	EXPECT_THAT(OpenWeatherMap::TemperatureForecastProvider::parseXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><weatherdata></weatherdata>"), IsEmpty());
 }
 
-TEST(TemperatureForecastProviderOWMTest, getForecast) {
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, getForecast) {
 
 	const string xml =
 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -123,18 +117,18 @@ TEST(TemperatureForecastProviderOWMTest, getForecast) {
 		TemperatureForecastProvider::ValuesWithTimes(toTime(2019, 6, 28, 0, 0, 0), toTime(2019, 6, 28, 3, 0, 0), 13.47, 14.27)
 	};
 
-	auto mockTemperatureForecastReader = make_shared<MockTemperatureForecastReader>();
-	EXPECT_CALL(*mockTemperatureForecastReader, read(_, _, _)).Times(1).WillOnce(Return(xml));
+	auto mockTemperatureForecastReader = make_shared<MockNetworkReader>();
+	EXPECT_CALL(*mockTemperatureForecastReader, read(_)).Times(1).WillOnce(Return(xml));
 
-	TemperatureForecastProviderOWM temperatureForecast(mockTemperatureForecastReader);
+	OpenWeatherMap::TemperatureForecastProvider temperatureForecast(mockTemperatureForecastReader);
 	EXPECT_THAT(temperatureForecast.getForecast(), ContainerEq(expectedList));
 }
 
-TEST(TemperatureForecastProviderOWMTest, getForecastException) {
+TEST(OpenWeatherMap_TemperatureForecastProviderTest, getForecastException) {
 
-	auto mockTemperatureForecastReader = make_shared<MockTemperatureForecastReader>();
-	EXPECT_CALL(*mockTemperatureForecastReader, read(_, _, _)).Times(1).WillOnce(Throw(exception()));
+	auto mockTemperatureForecastReader = make_shared<MockNetworkReader>();
+	EXPECT_CALL(*mockTemperatureForecastReader, read(_)).Times(1).WillOnce(Throw(exception()));
 
-	TemperatureForecastProviderOWM temperatureForecast(mockTemperatureForecastReader);
+	OpenWeatherMap::TemperatureForecastProvider temperatureForecast(mockTemperatureForecastReader);
 	EXPECT_THROW(temperatureForecast.getForecast(), exception);
 }

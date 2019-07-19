@@ -29,7 +29,7 @@ TEST(TemperatureSensorImplTest, getCachedValue_invalid) {
 
 	EXPECT_CALL(*mockSensorReader, read()).
 		Times(AnyNumber()).
-		WillRepeatedly(Throw(TemperatureException("")));
+		WillRepeatedly(Throw(exception()));
 
 	temperatureSensor.updateCache();
 

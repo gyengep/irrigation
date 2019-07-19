@@ -42,9 +42,8 @@ void TemperatureForecast::updateCache() {
 
 		lock_guard<mutex> lock(mtx);
 		temperatures = move(temporaryTemperatures);
-
 	} catch (const exception& e) {
-		LOGGER.warning("Can not query the weather forecast", e);
+		LOGGER.warning("Weather forecast update failed", e);
 	}
 }
 
@@ -64,7 +63,7 @@ TemperatureForecast::Values TemperatureForecast::getForecastValues(const time_t&
 	}
 
 	if (false == found) {
-		throw NoSuchElementException("Temperature forecast not available with specified criteria");
+		throw TemperatureException("Temperature forecast not available with specified criteria");
 	}
 
 	return Values(minValue, maxValue);

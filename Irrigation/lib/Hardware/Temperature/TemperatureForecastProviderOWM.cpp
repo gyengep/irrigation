@@ -2,7 +2,6 @@
 #include "Logger/Logger.h"
 #include "Utils/TimeConversion.h"
 #include "pugixml.hpp"
-#include <curl/curl.h>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -10,20 +9,28 @@
 using namespace std;
 using namespace pugi;
 
+///////////////////////////////////////////////////////////////////////////////
 
-const string TemperatureForecastProviderOWM::url("api.openweathermap.org/data/2.5/forecast");
-const string TemperatureForecastProviderOWM::location("dunakeszi,hu");
-const string TemperatureForecastProviderOWM::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
+const string OpenWeatherMap::TemperatureForecastProvider::url("http://api.openweathermap.org/data/2.5/forecast");
+const string OpenWeatherMap::TemperatureForecastProvider::location("dunakeszi,hu");
+const string OpenWeatherMap::TemperatureForecastProvider::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-string TemperatureForecastProviderOWM::NetworkReader::read(const string& url, const string& location, const string& appid) const {
-	unique_ptr<CURL, void(*)(CURL*)> curl(curl_easy_init(), curl_easy_cleanup);
+OpenWeatherMap::TemperatureForecastProvider::TemperatureForecastProvider() :
+	TemperatureForecastProvider(make_shared<NetworkReader>())
+{
+}
 
-	if (curl.get() == nullptr) {
-		throw logic_error("TemperatureForecast::read()  curl == nullptr");
-	}
+OpenWeatherMap::TemperatureForecastProvider::TemperatureForecastProvider(const shared_ptr<NetworkReader>& networkReader) :
+	networkReader(networkReader)
+{
+}
 
+OpenWeatherMap::TemperatureForecastProvider::~TemperatureForecastProvider() {
+}
+
+list<TemperatureForecastProvider::ValuesWithTimes> OpenWeatherMap::TemperatureForecastProvider::getForecast() const {
 	ostringstream oss;
 	oss << url << "?";
 	oss << "q=" << location << "&";
@@ -31,59 +38,14 @@ string TemperatureForecastProviderOWM::NetworkReader::read(const string& url, co
 	oss << "mode=xml" << "&";
 	oss << "units=metric";
 
-	ostringstream response;
-	long responseCode = 0;
-
-	curl_easy_setopt(curl.get(), CURLOPT_HTTPGET, 1L);
-	curl_easy_setopt(curl.get(), CURLOPT_URL, oss.str().c_str());
-	curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, &TemperatureForecastProviderOWM::writeCallback);
-	curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response);
-
-	const CURLcode curlCode = curl_easy_perform(curl.get());
-	if (CURLE_OK != curlCode) {
-		throw runtime_error("curl_easy_perform() failed. " + to_string(curlCode));
+	try {
+		return parseXml(networkReader->read(oss.str()));
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("OpenWeatherMap forecast reading is failed"));
 	}
-
-	curl_easy_getinfo(curl.get(), CURLINFO_RESPONSE_CODE, &responseCode);
-	if (responseCode < 200 || 300 <= responseCode) {
-		throw runtime_error("http status code: " + to_string(responseCode));
-	}
-
-	return move(response.str());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TemperatureForecastProviderOWM::TemperatureForecastProviderOWM() :
-	TemperatureForecastProviderOWM(make_shared<NetworkReader>())
-{
-}
-
-TemperatureForecastProviderOWM::TemperatureForecastProviderOWM(const shared_ptr<NetworkReader>& networkReader) :
-	networkReader(networkReader)
-{
-}
-
-TemperatureForecastProviderOWM::~TemperatureForecastProviderOWM() {
-}
-
-list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecastProviderOWM::getForecast() const {
-	return parseXml(networkReader->read(url, location, appid));
-}
-
-size_t TemperatureForecastProviderOWM::writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt) {
-	ostringstream* oss = static_cast<ostringstream*>(ctxt);
-
-	if (!oss) {
-		throw logic_error("TemperatureForecastProviderOWM::writeCallback  nullptr == ctxt");
-	}
-
-	const size_t length = size * nmemb;
-	(*oss) << string(&buffer[0], &buffer[length]);
-	return length;
-}
-
-list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecastProviderOWM::parseXml(const string& text) {
+list<TemperatureForecastProvider::ValuesWithTimes> OpenWeatherMap::TemperatureForecastProvider::parseXml(const string& text) {
 	static const pugi::xpath_query queryTemperature("/weatherdata/forecast/time/temperature");
 
 	xml_document doc;
@@ -123,7 +85,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecastProviderOW
 	return result;
 }
 
-time_t TemperatureForecastProviderOWM::parseTimeString(const string& text) {
+time_t OpenWeatherMap::TemperatureForecastProvider::parseTimeString(const string& text) {
 	const static regex dateRegex("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
 	smatch dateMatch;
 

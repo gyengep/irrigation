@@ -1,19 +1,19 @@
 #include "TemperatureSensorReaderDS18B20.h"
-#include "TemperatureException.h"
 #include "Logger/Logger.h"
-#include "Utils/FileReaderWriterImpl.h"
 #include <cstring>
 #include <dirent.h>
 #include <sys/stat.h>
 
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
 
-const string TemperatureSensorReader_DS18B20::basePath = "/sys/bus/w1/devices";
-const string TemperatureSensorReader_DS18B20::fileName = "w1_slave";
+const string DS18B20::TemperatureSensorReader::basePath = "/sys/bus/w1/devices";
+const string DS18B20::TemperatureSensorReader::fileName = "w1_slave";
 
+///////////////////////////////////////////////////////////////////////////////
 
-string TemperatureSensorReader_DS18B20::getTempSensorFileName() {
+string DS18B20::TemperatureSensorReader::getTempSensorFileName() {
 	unique_ptr<DIR, int(*)(DIR*)> dirp(opendir(basePath.c_str()), closedir);
 
 	if (dirp == nullptr) {
@@ -43,25 +43,32 @@ string TemperatureSensorReader_DS18B20::getTempSensorFileName() {
     throw runtime_error("DS18B20 temperature sensor file not found in path: " + basePath);
 }
 
-TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20() :
-	TemperatureSensorReader_DS18B20(make_shared<FileReaderImpl>(getTempSensorFileName()))
+DS18B20::TemperatureSensorReader::TemperatureSensorReader() :
+	TemperatureSensorReader(make_shared<FileReaderImpl>(getTempSensorFileName()))
 {
 }
 
-TemperatureSensorReader_DS18B20::TemperatureSensorReader_DS18B20(const shared_ptr<FileReader>& fileReader) :
+DS18B20::TemperatureSensorReader::TemperatureSensorReader(const shared_ptr<FileReader>& fileReader) :
 	fileReader(fileReader)
 {
 }
 
-TemperatureSensorReader_DS18B20::~TemperatureSensorReader_DS18B20() {
+DS18B20::TemperatureSensorReader::~TemperatureSensorReader() {
 }
 
-float TemperatureSensorReader_DS18B20::read() {
-	const string text = fileReader->read();
+float DS18B20::TemperatureSensorReader::read() {
+	try {
+		return parseText(fileReader->read());
+	} catch (const exception& e) {
+		throw_with_nested(runtime_error("DS18B20 current temperature reading is failed"));
+	}
+}
+
+float DS18B20::TemperatureSensorReader::parseText(const std::string& text) {
 	const size_t pos1 = text.find("t=");
 
 	if (pos1 == string::npos) {
-		throw TemperatureException("DS18B20 sensor file is invalid: " + text);
+		throw runtime_error("DS18B20 sensor file is invalid: " + text);
 	}
 
 	return stof(text.substr(pos1 + 2)) / 1000.0f;

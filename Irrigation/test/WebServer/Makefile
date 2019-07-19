@@ -24,7 +24,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 LOCAL_LIBS      = -l$(TARGET_NAME) -lLogger
 INCLUDES	    = -isystem $(PROJECT_ROOT)/3p/gmock_gtest -I$(INCLUDE_DIR) -I$(COMMON_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib 
-LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml -lcurl -lmicrohttpd
+LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml -lcurl -lssl -lcrypto -lmicrohttpd -ldl
 
 # Detect the Raspberry Pi from cpuinfo
 # Count the matches for BCMxxxx in cpuinfo

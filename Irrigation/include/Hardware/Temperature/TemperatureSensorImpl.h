@@ -11,8 +11,7 @@ class TemperatureSensorImpl : public TemperatureSensor, public TimerCallback {
 
 	std::unique_ptr<Timer> timer;
 	mutable std::mutex mtx;
-	bool valid;
-	float value;
+	std::unique_ptr<float> value;
 
 public:
 	TemperatureSensorImpl(const std::shared_ptr<TemperatureSensorReader>& sensorReader);

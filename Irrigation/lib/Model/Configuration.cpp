@@ -8,10 +8,10 @@ const string Configuration::defaultConfigFileName = "/usr/share/irrigation/irrig
 const string Configuration::defaultLogFileName = "/var/log/irrigation/irrigation.log";
 const string Configuration::defaultTemperatureCacheFileName = "/usr/share/irrigation/temperature_cache.csv";
 const string Configuration::defaultTemperatureHistoryFileName = "/usr/share/irrigation/temperature.csv";
-const duration<int64_t> Configuration::defaultTemperatureSensorUpdatePeriod = minutes(1);
-const duration<int64_t> Configuration::defaultTemperatureForecastUpdatePeriod = minutes(60);
+const duration<int64_t> Configuration::defaultTemperatureSensorUpdatePeriod = minutes(5);
+const duration<int64_t> Configuration::defaultTemperatureForecastUpdatePeriod = hours(1);
 const duration<int64_t> Configuration::defaultTemperatureCacheLength = hours(24);
-const duration<int64_t> Configuration::defaultTemperatureHistoryPeriod = minutes(60);
+const duration<int64_t> Configuration::defaultTemperatureHistoryPeriod = hours(1);
 
 const LogLevel Configuration::defaultLogLevel = LogLevel::TRACE;
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<current>
+    <city id="3053476" name="Dunakeszi">
+        <coord lon="19.13" lat="47.63"></coord>
+        <country>HU</country>
+        <sun rise="2019-07-16T03:01:30" set="2019-07-16T18:37:04"></sun>
+    </city>
+    <temperature value="19.77" min="17.78" max="22.22" unit="celsius"></temperature>
+    <humidity value="68" unit="%"></humidity>
+    <pressure value="1012" unit="hPa"></pressure>
+    <wind>
+        <speed value="0.5" name="Calm"></speed>
+        <gusts></gusts>
+        <direction></direction>
+    </wind>
+    <clouds value="0" name="clear sky"></clouds>
+    <visibility value="10000"></visibility>
+    <precipitation mode="no"></precipitation>
+    <weather number="800" value="clear sky" icon="01n"></weather>
+    <lastupdate value="2019-07-16T20:52:50"></lastupdate>
+</current>
