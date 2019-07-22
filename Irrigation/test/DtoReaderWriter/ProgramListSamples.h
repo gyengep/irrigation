@@ -28,6 +28,7 @@ const ProgramListSample programListSample_more(
 			PROGRAM_SAMPLE_9.first +
 			PROGRAM_SAMPLE_10.first +
 			PROGRAM_SAMPLE_11.first +
+			PROGRAM_SAMPLE_12.first +
 		"</programs>",
 		std::list<ProgramDTO>({
 			ProgramDTO(PROGRAM_SAMPLE_1.second),
@@ -41,6 +42,7 @@ const ProgramListSample programListSample_more(
 			ProgramDTO(PROGRAM_SAMPLE_9.second),
 			ProgramDTO(PROGRAM_SAMPLE_10.second),
 			ProgramDTO(PROGRAM_SAMPLE_11.second),
+			ProgramDTO(PROGRAM_SAMPLE_12.second),
 			})
 		);
 

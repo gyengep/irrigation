@@ -21,6 +21,7 @@ protected:
 	StartTimeDTO loadStartTime(const pugi::xml_node& node) const;
 	PeriodicSchedulerDTO loadPeriodicScheduler(const pugi::xml_node& node) const;
 	WeeklySchedulerDTO loadWeeklyScheduler(const pugi::xml_node& node) const;
+	EveryDaySchedulerDTO loadEveryDayScheduler(const pugi::xml_node& node) const;
 	std::list<ProgramDTO> loadProgramList(const pugi::xml_node& node) const;
 	std::list<RunTimeDTO> loadRunTimeList(const pugi::xml_node& node) const;
 	std::list<StartTimeDTO> loadStartTimeList(const pugi::xml_node& node) const;
@@ -32,6 +33,7 @@ public:
 	virtual StartTimeDTO loadStartTime(const std::string& text) const override;
 	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const override;
 	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const override;
+	virtual EveryDaySchedulerDTO loadEveryDayScheduler(const std::string& text) const override;
 	virtual std::list<ProgramDTO> loadProgramList(const std::string& text) const override;
 	virtual std::list<RunTimeDTO> loadRunTimeList(const std::string& text) const override;
 	virtual std::list<StartTimeDTO> loadStartTimeList(const std::string& text) const override;

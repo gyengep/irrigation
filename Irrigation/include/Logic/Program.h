@@ -8,6 +8,7 @@
 
 class PeriodicScheduler;
 class WeeklyScheduler;
+class EveryDayScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
 
@@ -23,6 +24,7 @@ protected:
 	SchedulerType schedulerType;
 	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
+	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
 
@@ -35,6 +37,7 @@ public:
 		SchedulerType schedulerType,
 		std::shared_ptr<PeriodicScheduler> periodicScheduler,
 		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
+		std::shared_ptr<EveryDayScheduler> everyDayScheduler,
 		std::shared_ptr<RunTimeContainer> runTimes,
 		std::shared_ptr<StartTimeContainer> startTimes);
 	Program(const ProgramDTO& programDTO);
@@ -62,11 +65,13 @@ public:
 
 	const PeriodicScheduler& getPeriodicScheduler() const { return *periodicScheduler; }
 	const WeeklyScheduler& getWeeklyScheduler() const { return *weeklyScheduler; }
+	const EveryDayScheduler& getEveryDayScheduler() const { return *everyDayScheduler; }
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
 
 	PeriodicScheduler& getPeriodicScheduler() { return *periodicScheduler; }
 	WeeklyScheduler& getWeeklyScheduler() { return *weeklyScheduler; }
+	EveryDayScheduler& getEveryDayScheduler() { return *everyDayScheduler; }
 	RunTimeContainer& getRunTimes() { return *runTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
@@ -84,6 +89,7 @@ class Program::Builder {
 	SchedulerType schedulerType;
 	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
+	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
 
@@ -97,6 +103,7 @@ public:
 	Builder& setSchedulerType(SchedulerType schedulerType);
 	Builder& setPeriodicScheduler(std::shared_ptr<PeriodicScheduler> periodicScheduler);
 	Builder& setWeeklyScheduler(std::shared_ptr<WeeklyScheduler> weeklyScheduler);
+	Builder& setEveryDayScheduler(std::shared_ptr<EveryDayScheduler> everyDayScheduler);
 	Builder& setRunTimeContainer(std::shared_ptr<RunTimeContainer> runTimes);
 	Builder& setStartTimeContainer(std::shared_ptr<StartTimeContainer> startTimes);
 

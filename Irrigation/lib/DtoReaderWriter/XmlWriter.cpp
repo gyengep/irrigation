@@ -6,6 +6,7 @@
 #include "DTO/RunTimeDTO.h"
 #include "DTO/StartTimeDTO.h"
 #include "DTO/WeeklySchedulerDTO.h"
+#include "DTO/EveryDaySchedulerDTO.h"
 
 using namespace std;
 using namespace pugi;
@@ -67,7 +68,7 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 	}
 
 	if (includeContainers) {
-		if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler()) {
+		if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler() || program.hasEveryDayScheduler()) {
 			xml_node schedulersListNode = node.append_child("schedulers");
 
 			if (program.hasPeriodicScheduler()) {
@@ -78,6 +79,11 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 			if (program.hasWeeklyScheduler()) {
 				const WeeklySchedulerDTO& weeklyScheduler = program.getWeeklyScheduler();
 				saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
+			}
+
+			if (program.hasEveryDayScheduler()) {
+				const EveryDaySchedulerDTO& everyDayScheduler = program.getEveryDayScheduler();
+				saveEveryDayScheduler(&schedulersListNode, everyDayScheduler);
 			}
 		}
 
@@ -183,6 +189,11 @@ void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& 
 	}
 }
 
+void XmlWriter::saveEveryDayScheduler(xml_node* parent, const EveryDaySchedulerDTO& scheduler) {
+	xml_node node = parent->append_child("scheduler");
+	node.append_attribute("type").set_value("every_day");
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 string XmlWriter::save(const DocumentDTO& document) {
@@ -236,5 +247,11 @@ string XmlWriter::save(const PeriodicSchedulerDTO& scheduler) {
 string XmlWriter::save(const WeeklySchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveWeeklyScheduler(doc.get(), scheduler);
+	return toString(doc.get(), humanReadable);
+}
+
+string XmlWriter::save(const EveryDaySchedulerDTO& scheduler) {
+	unique_ptr<xml_document> doc(new xml_document());
+	saveEveryDayScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);
 }

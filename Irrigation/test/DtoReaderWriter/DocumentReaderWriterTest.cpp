@@ -13,6 +13,7 @@ void testDocumentRead(const DocumentSample& documentSample, XmlReader& reader) {
 	EXPECT_THAT(actualDto, Eq(documentSample.second));
 }
 
+
 void testDocumentWrite(const DocumentSample& documentSample, XmlWriter& writer) {
 	const string actualXml = writer.save(documentSample.second);
 	EXPECT_THAT(remove_xml_tag(actualXml), Eq(documentSample.first));

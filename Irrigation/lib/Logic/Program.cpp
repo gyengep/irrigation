@@ -7,6 +7,7 @@
 #include "Logger/Logger.h"
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
+#include "Schedulers/EveryDayScheduler.h"
 #include "Utils/ToString.h"
 
 using namespace std;
@@ -16,6 +17,7 @@ Program::Program() :
 	Program(false, "", 100, SchedulerType::WEEKLY,
 		shared_ptr<PeriodicScheduler>(new PeriodicScheduler()),
 		shared_ptr<WeeklyScheduler>(new WeeklyScheduler()),
+		shared_ptr<EveryDayScheduler>(new EveryDayScheduler()),
 		shared_ptr<RunTimeContainer>(new RunTimeContainer()),
 		shared_ptr<StartTimeContainer>(new StartTimeContainer())
 	)
@@ -28,6 +30,7 @@ Program::Program(const Program& other) :
 		other.getSchedulerType(),
 		shared_ptr<PeriodicScheduler>(new PeriodicScheduler(other.getPeriodicScheduler())),
 		shared_ptr<WeeklyScheduler>(new WeeklyScheduler(other.getWeeklyScheduler())),
+		shared_ptr<EveryDayScheduler>(new EveryDayScheduler(other.getEveryDayScheduler())),
 		shared_ptr<RunTimeContainer>(new RunTimeContainer(other.getRunTimes())),
 		shared_ptr<StartTimeContainer>(new StartTimeContainer(other.getStartTimes()))
 	)
@@ -35,7 +38,7 @@ Program::Program(const Program& other) :
 }
 
 Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
-	shared_ptr<PeriodicScheduler> periodicScheduler, shared_ptr<WeeklyScheduler> weeklyScheduler,
+	shared_ptr<PeriodicScheduler> periodicScheduler, shared_ptr<WeeklyScheduler> weeklyScheduler, shared_ptr<EveryDayScheduler> everyDayScheduler,
 	shared_ptr<RunTimeContainer> runTimes, shared_ptr<StartTimeContainer> startTimes) :
 	disabled(disabled),
 	name(name),
@@ -43,6 +46,7 @@ Program::Program(bool disabled, const string& name, unsigned adjustment, Schedul
 	schedulerType(schedulerType),
 	periodicScheduler(periodicScheduler),
 	weeklyScheduler(weeklyScheduler),
+	everyDayScheduler(everyDayScheduler),
 	runTimes(runTimes),
 	startTimes(startTimes)
 {
@@ -62,6 +66,7 @@ bool Program::operator== (const Program& other) const {
 			getSchedulerType() == other.getSchedulerType() &&
 			getPeriodicScheduler() == other.getPeriodicScheduler() &&
 			getWeeklyScheduler() == other.getWeeklyScheduler() &&
+			getEveryDayScheduler() == other.getEveryDayScheduler() &&
 			getRunTimes() == other.getRunTimes() &&
 			getStartTimes() == other.getStartTimes());
 }
@@ -104,6 +109,8 @@ const Scheduler& Program::getCurrentScheduler() const {
 		return getWeeklyScheduler();
 	case SchedulerType::PERIODIC:
 		return getPeriodicScheduler();
+	case SchedulerType::EVERY_DAY:
+		return getEveryDayScheduler();
 	default:
 		throw invalid_argument("Program::getCurrentScheduler(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
 	}
@@ -127,6 +134,7 @@ ProgramDTO Program::toProgramDto() const {
 			to_string(getSchedulerType()),
 			getPeriodicScheduler().toPeriodicSchedulerDto(),
 			getWeeklyScheduler().toWeeklySchedulerDto(),
+			getEveryDayScheduler().toEveryDaySchedulerDto(),
 			getRunTimes().toRunTimeDtoList(),
 			getStartTimes().toStartTimeDtoList());
 }
@@ -147,11 +155,14 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 	if (programDTO.hasSchedulerType()) {
 		const static string periodicSchedulerText = to_string(SchedulerType::PERIODIC);
 		const static string weeklySchedulerText = to_string(SchedulerType::WEEKLY);
+		const static string everyDaySchedulerText = to_string(SchedulerType::EVERY_DAY);
 
 		if (periodicSchedulerText == programDTO.getSchedulerType()) {
 			setSchedulerType(SchedulerType::PERIODIC);
 		} else if (weeklySchedulerText == programDTO.getSchedulerType()) {
 			setSchedulerType(SchedulerType::WEEKLY);
+		} else if (everyDaySchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::EVERY_DAY);
 		} else {
 			throw invalid_argument("Program::updateFromDTO(): invalid SchedulerType: " + programDTO.getSchedulerType());
 		}
@@ -163,6 +174,10 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 
 	if (programDTO.hasWeeklyScheduler()) {
 		weeklyScheduler->updateFromWeeklySchedulerDto(programDTO.getWeeklyScheduler());
+	}
+
+	if (programDTO.hasEveryDayScheduler()) {
+		everyDayScheduler->updateFromEveryDaySchedulerDto(programDTO.getEveryDayScheduler());
 	}
 
 	if (programDTO.hasRunTimes()) {
@@ -188,7 +203,8 @@ ostream& operator<<(ostream& os, const Program& program) {
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
 			to_string(program.getPeriodicScheduler()) << ", " <<
-			to_string(program.getWeeklyScheduler()) << "], ";
+			to_string(program.getWeeklyScheduler()) << ", " <<
+			to_string(program.getEveryDayScheduler()) << "], ";
 	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
 	os << "startTimes=" << to_string(program.getStartTimes());
 	os << "}";
@@ -237,6 +253,11 @@ Program::Builder& Program::Builder::setWeeklyScheduler(shared_ptr<WeeklySchedule
 	return *this;
 }
 
+Program::Builder& Program::Builder::setEveryDayScheduler(shared_ptr<EveryDayScheduler> everyDayScheduler) {
+	this->everyDayScheduler = everyDayScheduler;
+	return *this;
+}
+
 Program::Builder& Program::Builder::setRunTimeContainer(shared_ptr<RunTimeContainer> runTimes) {
 	this->runTimes = runTimes;
 	return *this;
@@ -257,6 +278,10 @@ shared_ptr<Program> Program::Builder::build() {
 		weeklyScheduler.reset(new WeeklyScheduler());
 	}
 
+	if (nullptr == everyDayScheduler) {
+		everyDayScheduler.reset(new EveryDayScheduler());
+	}
+
 	if (nullptr == runTimes) {
 		runTimes.reset(new RunTimeContainer());
 	}
@@ -272,6 +297,7 @@ shared_ptr<Program> Program::Builder::build() {
 			schedulerType,
 			periodicScheduler,
 			weeklyScheduler,
+			everyDayScheduler,
 			runTimes,
 			startTimes));
 }

@@ -30,6 +30,7 @@ namespace Dto2ObjectTest {
 					true, "name1", 54, to_string(SchedulerType::PERIODIC),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample1().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample1().getDto()),
+					EveryDaySchedulerDTO(),
 					std::list<RunTimeDTO>(RunTimeListSample1().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample1().getDtoList())
 				)
@@ -53,6 +54,7 @@ namespace Dto2ObjectTest {
 				ProgramDTO(false, "name2", 61, to_string(SchedulerType::WEEKLY),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample2().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample2().getDto()),
+					EveryDaySchedulerDTO(),
 					std::list<RunTimeDTO>(RunTimeListSample2().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample2().getDtoList())
 				)
@@ -77,6 +79,7 @@ namespace Dto2ObjectTest {
 					true, "name3", 159, to_string(SchedulerType::PERIODIC),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample3().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample3().getDto()),
+					EveryDaySchedulerDTO(),
 					std::list<RunTimeDTO>(RunTimeListSample3().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample3().getDtoList())
 				)
@@ -101,6 +104,7 @@ namespace Dto2ObjectTest {
 					false, "name4", 238, to_string(SchedulerType::WEEKLY),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample4().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample4().getDto()),
+					EveryDaySchedulerDTO(),
 					std::list<RunTimeDTO>(RunTimeListSample4().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample4().getDtoList())
 				)

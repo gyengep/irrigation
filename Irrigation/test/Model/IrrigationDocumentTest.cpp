@@ -30,6 +30,7 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	ProgramDTO(true, "Abcdefg", 56, "weekly",
 		PeriodicSchedulerDTO(list<bool>({ false, true, false}), 2016, 1, 2),
 		WeeklySchedulerDTO(list<bool>({ false, true, false, false, false, true, false})),
+		EveryDaySchedulerDTO(),
 		list<RunTimeDTO>({
 			RunTimeDTO(2, 0).setId(0),
 			RunTimeDTO(2, 1).setId(1),
@@ -47,6 +48,7 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	ProgramDTO(false, "Program2", 106, "weekly",
 		PeriodicSchedulerDTO(list<bool>({ true, false}), 2018, 10, 20),
 		WeeklySchedulerDTO(list<bool>({ true, false, false, false, false, false, false})),
+		EveryDaySchedulerDTO(),
 		list<RunTimeDTO>({
 			RunTimeDTO(1, 20).setId(0),
 			RunTimeDTO(1, 21).setId(1),

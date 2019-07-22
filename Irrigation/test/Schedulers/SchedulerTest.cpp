@@ -8,10 +8,11 @@ using namespace testing;
 TEST(SchedulerTypeTest, to_string) {
 	EXPECT_THAT(to_string(SchedulerType::WEEKLY), Eq("weekly"));
 	EXPECT_THAT(to_string(SchedulerType::PERIODIC), Eq("periodic"));
+	EXPECT_THAT(to_string(SchedulerType::EVERY_DAY), Eq("every_day"));
 }
 
 TEST(SchedulerTypeTest, to_string_Invalid) {
-	int lastSchedulerTypeAsInt = static_cast<int>(SchedulerType::PERIODIC);
+	int lastSchedulerTypeAsInt = static_cast<int>(SchedulerType::EVERY_DAY);
 	SchedulerType schedulerType = static_cast<SchedulerType>(lastSchedulerTypeAsInt + 1);
 	EXPECT_THROW(to_string(schedulerType), invalid_argument);
 }

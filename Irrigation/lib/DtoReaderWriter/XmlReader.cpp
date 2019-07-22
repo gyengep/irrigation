@@ -81,6 +81,10 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
 			program.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
 		}
+
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "every_day")) != nullptr) {
+			program.setEveryDayScheduler(loadEveryDayScheduler(schedulerNode));
+		}
 	}
 
 	if ((tmpNode = node.child("runtimes")) != nullptr) {
@@ -158,6 +162,18 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const xml_node& node) const {
 		}
 
 		scheduler.setValues(move(values));
+	}
+
+	return scheduler;
+}
+
+EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const xml_node& node) const {
+	EveryDaySchedulerDTO scheduler;
+	xml_attribute typeAttribute;
+	if ((typeAttribute = node.attribute("type")) != nullptr) {
+		if (strcmp(typeAttribute.as_string(), "every_day") != 0) {
+			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
+		}
 	}
 
 	return scheduler;
@@ -360,4 +376,19 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const string& text) const {
 	}
 
 	return loadWeeklyScheduler(node);
+}
+
+EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const string& text) const {
+	const char* tagName = "scheduler";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'scheduler' element tag not found");
+	}
+
+	return loadEveryDayScheduler(node);
 }

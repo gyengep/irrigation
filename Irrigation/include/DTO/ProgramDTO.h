@@ -6,7 +6,7 @@
 #include "StartTimeDTO.h"
 #include "PeriodicSchedulerDTO.h"
 #include "WeeklySchedulerDTO.h"
-
+#include "EveryDaySchedulerDTO.h"
 
 
 class ProgramDTO {
@@ -17,6 +17,7 @@ class ProgramDTO {
 	std::unique_ptr<const std::string> schedulerType;
 	std::unique_ptr<const PeriodicSchedulerDTO> periodicScheduler;
 	std::unique_ptr<const WeeklySchedulerDTO> weeklyScheduler;
+	std::unique_ptr<const EveryDaySchedulerDTO> everyDayScheduler;
 	std::unique_ptr<const std::list<RunTimeDTO>> runTimes;
 	std::unique_ptr<const std::list<StartTimeDTO>> startTimes;
 
@@ -29,6 +30,7 @@ public:
 			const std::string& schedulerType,
 			PeriodicSchedulerDTO&& periodicScheduler,
 			WeeklySchedulerDTO&& weeklyScheduler,
+			EveryDaySchedulerDTO&& everyDayScheduler,
 			std::list<RunTimeDTO>&& runTimes,
 			std::list<StartTimeDTO>&& startTimes);
 
@@ -43,6 +45,7 @@ public:
 	bool hasSchedulerType() const;
 	bool hasPeriodicScheduler() const;
 	bool hasWeeklyScheduler() const;
+	bool hasEveryDayScheduler() const;
 	bool hasRunTimes() const;
 	bool hasStartTimes() const;
 
@@ -53,6 +56,7 @@ public:
 	const std::string& getSchedulerType() const;
 	const PeriodicSchedulerDTO& getPeriodicScheduler() const;
 	const WeeklySchedulerDTO& getWeeklyScheduler() const;
+	const EveryDaySchedulerDTO& getEveryDayScheduler() const;
 	const std::list<RunTimeDTO>& getRunTimes() const;
 	const std::list<StartTimeDTO>& getStartTimes() const;
 
@@ -63,6 +67,7 @@ public:
 	ProgramDTO& setSchedulerType(const std::string& schedulerType);
 	ProgramDTO& setPeriodicScheduler(PeriodicSchedulerDTO&& periodicScheduler);
 	ProgramDTO& setWeeklyScheduler(WeeklySchedulerDTO&& weeklyScheduler);
+	ProgramDTO& setEveryDayScheduler(EveryDaySchedulerDTO&& everyDayScheduler);
 	ProgramDTO& setRunTimes(std::list<RunTimeDTO>&& runTimes);
 	ProgramDTO& setStartTimes(std::list<StartTimeDTO>&& startTimes);
 

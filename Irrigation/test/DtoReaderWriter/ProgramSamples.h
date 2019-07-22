@@ -7,6 +7,7 @@
 #include "StartTimeListSamples.h"
 #include "PeriodicSchedulerSamples.h"
 #include "WeeklySchedulerSamples.h"
+#include "EveryDaySchedulerSamples.h"
 
 #define PROGRAM_SAMPLE_1 programSample_all
 #define PROGRAM_SAMPLE_2 programSample_name
@@ -19,6 +20,7 @@
 #define PROGRAM_SAMPLE_9 programSample_empty
 #define PROGRAM_SAMPLE_10 programSample_disabled
 #define PROGRAM_SAMPLE_11 programSample_adjustment
+#define PROGRAM_SAMPLE_12 programSample_everyDayScheduler
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +37,7 @@ const ProgramSample programSample_all(
 			"<schedulers>" +
 				PERIODIC_SCHEDULER_SAMPLE_1.first +
 				WEEKLY_SCHEDULER_SAMPLE_1.first +
+				EVERY_DAY_SCHEDULER_SAMPLE.first +
 			"</schedulers>" +
 			RUNTIME_LIST_SAMPLE_1.first +
 			STARTTIME_LIST_SAMPLE_1.first +
@@ -47,6 +50,7 @@ const ProgramSample programSample_all(
 		.setSchedulerType("weekly")
 		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_1.second))
 		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_1.second))
+		.setEveryDayScheduler(EveryDaySchedulerDTO(EVERY_DAY_SCHEDULER_SAMPLE.second))
 		.setRunTimes(std::list<RunTimeDTO>(RUNTIME_LIST_SAMPLE_1.second))
 		.setStartTimes(std::list<StartTimeDTO>(STARTTIME_LIST_SAMPLE_1.second))
 		);
@@ -96,6 +100,15 @@ const ProgramSample programSample_weeklyScheduler(
 			"</schedulers>"
 		"</program>",
 		ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_3.second))
+		);
+
+const ProgramSample programSample_everyDayScheduler(
+		"<program>"
+			"<schedulers>" +
+				EVERY_DAY_SCHEDULER_SAMPLE.first +
+			"</schedulers>"
+		"</program>",
+		ProgramDTO().setEveryDayScheduler(EveryDaySchedulerDTO(EVERY_DAY_SCHEDULER_SAMPLE.second))
 		);
 
 const ProgramSample programSample_runTimes(
