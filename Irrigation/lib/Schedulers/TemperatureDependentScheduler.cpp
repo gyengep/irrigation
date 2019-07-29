@@ -16,7 +16,8 @@ BaseScheduler::BaseScheduler(const shared_ptr<TemperatureForecast>& temperatureF
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
 	maxAdjustment(numeric_limits<int>::max()),
-	adjustment(0)
+	adjustment(0),
+	first(true)
 {
 }
 
@@ -47,37 +48,19 @@ int BaseScheduler::getRequiredPercentFromTemperature(float temperature) const {
 }
 
 int BaseScheduler::getRequiredPercentForNextDay(const time_t now) const {
-	if (requiredPercentForNextDay == nullptr) {
-		const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds).max;
-		requiredPercentForNextDay.reset(new int(getRequiredPercentFromTemperature(temperature)));
+	const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds).max;
+	const int result = getRequiredPercentFromTemperature(temperature);
 
-		LOGGER.trace("BaseScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, *requiredPercentForNextDay);
-	}
-
-	return *requiredPercentForNextDay;
+	LOGGER.trace("BaseScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, result);
+	return result;
 }
 
 int BaseScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
-	if (requiredPercentForPreviousDay.get() == nullptr) {
-		const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now).max;
-		requiredPercentForPreviousDay.reset(new int(getRequiredPercentFromTemperature(temperature)));
+	const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now).max;
+	const int result = getRequiredPercentFromTemperature(temperature);
 
-		LOGGER.trace("BaseScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, *requiredPercentForPreviousDay);
-	}
-
-	return *requiredPercentForPreviousDay;
-}
-
-int BaseScheduler::getAndStoreRequiredPercent(int percentToStore) {
-	const auto temporary = move(storedPercent);
-
-	storedPercent.reset(new int(percentToStore));
-
-	if (temporary == nullptr) {
-		throw exception();
-	}
-
-	return *temporary;
+	LOGGER.trace("BaseScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, result);
+	return result;
 }
 
 bool BaseScheduler::isDayScheduled(const tm&) const {
@@ -88,31 +71,40 @@ unsigned BaseScheduler::getAdjustment() const {
 	return adjustment;
 }
 
-nlohmann::json BaseScheduler::saveTo() const {
-	nlohmann::json j;
+void BaseScheduler::process(const tm& timeinfo) {
+	LOGGER.trace(">>> BaseScheduler::process() <<<");
+	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	j["remainingPercent"] = remainingPercent;
-
-	if (storedPercent != nullptr) {
-		j["storedPercent"] = *storedPercent;
+	if (!first) {
+		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay();
+		remainingPercent -= requiredPercentForPreviousDay;
+		LOGGER.trace("%-30s%d", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+		LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
+	} else {
+		first = false;
 	}
 
+	adjustment = calculateAdjustment();
+	LOGGER.trace("%-30s%d", "adjustment", adjustment);
+
+	adjustment = max(adjustment, 0);
+	adjustment = min(adjustment, maxAdjustment);
+	LOGGER.trace("%-30s%d", "adjustment (min/max)", adjustment);
+
+	remainingPercent += adjustment;
+	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
+}
+
+nlohmann::json BaseScheduler::saveTo() const {
+	nlohmann::json j;
+	j["remainingPercent"] = remainingPercent;
 	return j;
 }
 
 void BaseScheduler::loadFrom(const nlohmann::json& values) {
-	{
-		auto it = values.find("storedPercent");
-		if (values.end() != it) {
-			storedPercent.reset(new int(it.value()));
-		}
-	}
-
-	{
-		auto it = values.find("remainingPercent");
-		if (values.end() != it) {
-			remainingPercent = it.value();
-		}
+	auto it = values.find("remainingPercent");
+	if (values.end() != it) {
+		remainingPercent = it.value();
 	}
 }
 
@@ -126,36 +118,15 @@ FixedAmountScheduler::FixedAmountScheduler(const shared_ptr<TemperatureForecast>
 FixedAmountScheduler::~FixedAmountScheduler() {
 }
 
-void FixedAmountScheduler::process(const tm& timeinfo) {
-	/*
-	LOGGER.trace("FixedAmountScheduler::calculatePercent()");
-
-	const int remainingPercent = getRemainingPercent();
+int FixedAmountScheduler::calculateAdjustment() {
 	const int requiredPercentForNextDay = getRequiredPercentForNextDay();
-	int usedPercentForPreviousDay = 0;
-	int requiredPercentForPreviousDay = 0;
-
-	try {
-		requiredPercentForPreviousDay = getRequiredPercentForPreviousDay();
-		usedPercentForPreviousDay = getAndStoreRequiredPercent(requiredPercentForNextDay);
-	} catch (const exception&) {
-	}
-
-	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
-	LOGGER.trace("%-30s%d", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
-	LOGGER.trace("%-30s%d", "usedPercentForPreviousDay", usedPercentForPreviousDay);
 
-	int accumulatedPercent = remainingPercent;
-	accumulatedPercent += requiredPercentForNextDay;
-	accumulatedPercent += (requiredPercentForPreviousDay - usedPercentForPreviousDay);
-
-	if (accumulatedPercent > remainingPercent) {
+	if (requiredPercentForNextDay > getRemainingPercent()) {
 		return 100;
 	} else {
 		return 0;
 	}
-	*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,38 +139,9 @@ FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>
 FixedPeriodScheduler::~FixedPeriodScheduler() {
 }
 
-void FixedPeriodScheduler::process(const tm& timeinfo) {
-	LOGGER.trace(">>> FixedPeriodScheduler::process() <<<");
-
-	requiredPercentForNextDay.reset();
-	requiredPercentForPreviousDay.reset();
-
+int FixedPeriodScheduler::calculateAdjustment() {
 	const int requiredPercentForNextDay = getRequiredPercentForNextDay();
-	int usedPercentForPreviousDay = 0;
-	int requiredPercentForPreviousDay = 0;
-
-	try {
-		usedPercentForPreviousDay = getAndStoreRequiredPercent(requiredPercentForNextDay);
-		requiredPercentForPreviousDay = getRequiredPercentForPreviousDay();
-	} catch (const exception&) {
-		LOGGER.trace("Can not read stored percent");
-	}
-
-	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
-	LOGGER.trace("%-30s%d", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
-	LOGGER.trace("%-30s%d", "usedPercentForPreviousDay", usedPercentForPreviousDay);
 
-	adjustment = 0;
-	adjustment += requiredPercentForNextDay;
-	adjustment += requiredPercentForPreviousDay;
-	adjustment -= usedPercentForPreviousDay;
-	LOGGER.trace("%-30s%d", "adjustment", adjustment);
-
-	adjustment = max(adjustment, 0);
-	adjustment = min(adjustment, maxAdjustment);
-	LOGGER.trace("%-30s%d", "adjustment (min/max)", adjustment);
-
-	remainingPercent += adjustment;
-	remainingPercent -= requiredPercentForPreviousDay;
+	return (requiredPercentForNextDay - getRemainingPercent());
 }

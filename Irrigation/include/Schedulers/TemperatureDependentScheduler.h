@@ -10,8 +10,6 @@
 namespace TemperatureDependentScheduler {
 
 class BaseScheduler : public Scheduler {
-protected:
-
 	struct findKey {
 		const std::string& key;
 
@@ -28,14 +26,11 @@ protected:
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
 	std::vector<std::pair<float, int>> temperatureAndPercents;
-	std::unique_ptr<int> storedPercent;
-
-	mutable std::unique_ptr<int> requiredPercentForNextDay;
-	mutable std::unique_ptr<int> requiredPercentForPreviousDay;
 
 	int remainingPercent;
 	int maxAdjustment;
 	int adjustment;
+	bool first;
 
 public:
 	BaseScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
@@ -47,10 +42,12 @@ public:
 	int getRemainingPercent() const { return remainingPercent; }
 	int getRequiredPercentForNextDay(const std::time_t = std::time(nullptr)) const;
 	int getRequiredPercentForPreviousDay(const std::time_t = std::time(nullptr)) const;
-	int getAndStoreRequiredPercent(int percentToStore);
 
+	virtual void process(const std::tm& timeinfo) override;
 	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
 	virtual unsigned getAdjustment() const override;
+
+	virtual int calculateAdjustment() { return 0; }
 
 	virtual nlohmann::json saveTo() const;
 	virtual void loadFrom(const nlohmann::json& json);
@@ -63,7 +60,7 @@ public:
 	FixedAmountScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
 	virtual ~FixedAmountScheduler();
 
-	virtual void process(const std::tm& timeinfo) override;
+	virtual int calculateAdjustment() override;
 };
 
 class FixedPeriodScheduler : public BaseScheduler {
@@ -71,7 +68,7 @@ public:
 	FixedPeriodScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
 	virtual ~FixedPeriodScheduler();
 
-	virtual void process(const std::tm& timeinfo) override;
+	virtual int calculateAdjustment() override;
 };
 
 }

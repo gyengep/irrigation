@@ -45,13 +45,6 @@ TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentFromTemperature) {
 	EXPECT_THAT(scheduler->getRequiredPercentFromTemperature(35.0f), Eq(100));
 }
 
-TEST_F(TemperatureDependentSchedulerTest, getAndStoreRequiredPercent) {
-	EXPECT_THAT(scheduler->getAndStoreRequiredPercent(25), Eq(0));
-	EXPECT_THAT(scheduler->getAndStoreRequiredPercent(30), Eq(25));
-	EXPECT_THAT(scheduler->getAndStoreRequiredPercent(20), Eq(30));
-	EXPECT_THAT(scheduler->getAndStoreRequiredPercent(10), Eq(20));
-}
-
 TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForNextDay) {
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(1000, 1000 + 24 * 60 * 60)).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));

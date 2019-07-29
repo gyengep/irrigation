@@ -21,7 +21,7 @@ void FixedAmountSchedulerTest::SetUp() {
 
 void FixedAmountSchedulerTest::TearDown() {
 }
-/*
+
 ///////////////////////////////////////////////////////////////////////////////
 #include "Logger/Logger.h"
 TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection) {
@@ -40,17 +40,17 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection) {
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80)); // 100 - 20
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
 
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(40)); // 80 - 40
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80)); // 100 - 20
 
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80)); // 40 + 100 - 60
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(140)); // 80 - 40 + 100
 }
 
 TEST_F(FixedAmountSchedulerTest, getAdjustmentWithCorrection) {
@@ -69,17 +69,17 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithCorrection) {
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80)); // 100 - 20
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100)); // 100 - 20
 
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(28)); // 80 - 40 - 12
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(68)); // 80 - 40 - 12
 
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80)); // 28 + 100 - 60 + 12
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(140)); // 28 + 100 - 60 + 12
 }
 
 TEST_F(FixedAmountSchedulerTest, getAdjustmentWithNegativeCorrection) {
@@ -93,11 +93,10 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithNegativeCorrection) {
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(20)); // 100 - 80
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
 
 	scheduler->process(toCalendarTime(2016, 11, 20));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2016, 11, 20)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80)); // 20 - 20 + 100 - 20
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
 }
-*/
