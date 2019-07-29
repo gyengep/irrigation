@@ -9,7 +9,8 @@ class TemperatureSensorImpl;
 class TemperatureSensorReader;
 class TemperatureHistoryImpl;
 class TemperatureHistoryPersister;
-class TemperatureForecast;
+class TemperatureForecastImpl;
+class TemperatureForecastProvider;
 
 
 class Temperature : public TimerCallback {
@@ -23,7 +24,7 @@ class Temperature : public TimerCallback {
 	std::shared_ptr<TemperatureSensorImpl> sensor;
 	std::shared_ptr<TemperatureHistoryImpl> history;
 	std::shared_ptr<TemperatureHistoryPersister> historyPersister;
-	std::shared_ptr<TemperatureForecast> forecast;
+	std::shared_ptr<TemperatureForecastImpl> forecast;
 
 	std::string storedForecastFrom, storedForecastTo;
 	std::unique_ptr<TemperatureForecast::Values> storedForecastValues;

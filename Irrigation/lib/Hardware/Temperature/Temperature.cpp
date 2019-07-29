@@ -5,7 +5,7 @@
 #include "TemperatureSensorReaderOWM.h"
 #include "TemperatureHistoryImpl.h"
 #include "TemperatureHistoryPersister.h"
-#include "TemperatureForecast.h"
+#include "TemperatureForecastImpl.h"
 #include "TemperatureForecastProviderDarkSky.h"
 #include "TemperatureForecastProviderOWM.h"
 #include "Logger/Logger.h"
@@ -79,7 +79,7 @@ Temperature::Temperature(
 			temperatureHistoryPersisterFileName
 		);
 
-	forecast = make_shared<TemperatureForecast>(
+	forecast = make_shared<TemperatureForecastImpl>(
 			createForecastProvider()
 		);
 

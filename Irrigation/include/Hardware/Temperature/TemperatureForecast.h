@@ -1,40 +1,16 @@
 #pragma once
-#include <chrono>
-#include <list>
-#include <memory>
-#include <mutex>
-#include "Utils/Timer.h"
-#include "TemperatureForecastProvider.h"
+#include <ctime>
+#include <ostream>
 
 
-class TemperatureForecast : public TimerCallback {
+class TemperatureForecast {
 public:
 	struct Values;
 
-private:
-	const std::shared_ptr<TemperatureForecastProvider> provider;
-
-	mutable std::mutex mtx;
-	std::list<TemperatureForecastProvider::ValuesWithTimes> temperatures;
-	std::unique_ptr<Timer> timer;
-
-public:
-	TemperatureForecast(const std::shared_ptr<TemperatureForecastProvider>& provider);
-	virtual ~TemperatureForecast();
-
-	Values getForecastValues(const std::time_t& from, const std::time_t& to) const;
-	void updateCache();
-
-	void startTimer(const std::chrono::seconds& period);
-	void stopTimer();
-	virtual void onTimer() override;
-
-	static void checkValueList(const std::list<TemperatureForecastProvider::ValuesWithTimes>& temperatures);
-
-	// only for testing
-	const std::list<TemperatureForecastProvider::ValuesWithTimes> getContainer() const;
-
+	virtual ~TemperatureForecast() = default;
+	virtual Values getForecastValues(const std::time_t& from, const std::time_t& to) const = 0;
 };
+
 
 struct TemperatureForecast::Values {
 	const float min;

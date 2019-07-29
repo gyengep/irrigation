@@ -3,23 +3,25 @@
 #include "RunTimeContainer.h"
 #include "StartTime.h"
 #include "StartTimeContainer.h"
-#include <sstream>
 #include "Logger/Logger.h"
-#include "Schedulers/PeriodicScheduler.h"
-#include "Schedulers/WeeklyScheduler.h"
 #include "Schedulers/EveryDayScheduler.h"
+#include "Schedulers/PeriodicScheduler.h"
+#include "Schedulers/TemperatureDependentScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 #include "Utils/ToString.h"
+#include <algorithm>
+#include <sstream>
 
 using namespace std;
 
 
 Program::Program() :
 	Program(false, "", 100, SchedulerType::WEEKLY,
-		shared_ptr<PeriodicScheduler>(new PeriodicScheduler()),
-		shared_ptr<WeeklyScheduler>(new WeeklyScheduler()),
-		shared_ptr<EveryDayScheduler>(new EveryDayScheduler()),
-		shared_ptr<RunTimeContainer>(new RunTimeContainer()),
-		shared_ptr<StartTimeContainer>(new StartTimeContainer())
+		make_shared<PeriodicScheduler>(),
+		make_shared<WeeklyScheduler>(),
+		make_shared<EveryDayScheduler>(),
+		make_shared<RunTimeContainer>(),
+		make_shared<StartTimeContainer>()
 	)
 {
 }
@@ -43,13 +45,15 @@ Program::Program(bool disabled, const string& name, unsigned adjustment, Schedul
 	disabled(disabled),
 	name(name),
 	adjustment(adjustment),
-	schedulerType(schedulerType),
 	periodicScheduler(periodicScheduler),
 	weeklyScheduler(weeklyScheduler),
 	everyDayScheduler(everyDayScheduler),
+	fixedAmountScheduler(make_shared<TemperatureDependentScheduler::FixedAmountScheduler>()),
+	fixedPeriodScheduler(make_shared<TemperatureDependentScheduler::FixedPeriodScheduler>()),
 	runTimes(runTimes),
 	startTimes(startTimes)
 {
+	setSchedulerType(schedulerType);
 }
 
 Program::Program(const ProgramDTO& programDTO) : Program() {
@@ -96,6 +100,21 @@ unsigned Program::getAdjustment() const {
 }
 
 void Program::setSchedulerType(SchedulerType schedulerType) {
+
+	switch (schedulerType) {
+	case SchedulerType::WEEKLY:
+		currentScheduler = weeklyScheduler;
+		break;
+	case SchedulerType::PERIODIC:
+		currentScheduler = periodicScheduler;
+		break;
+	case SchedulerType::EVERY_DAY:
+		currentScheduler = everyDayScheduler;
+		break;
+	default:
+		throw invalid_argument("Program::setSchedulerType(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
+	}
+
 	this->schedulerType = schedulerType;
 }
 
@@ -103,24 +122,12 @@ SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 
-const Scheduler& Program::getCurrentScheduler() const {
-	switch (schedulerType) {
-	case SchedulerType::WEEKLY:
-		return getWeeklyScheduler();
-	case SchedulerType::PERIODIC:
-		return getPeriodicScheduler();
-	case SchedulerType::EVERY_DAY:
-		return getEveryDayScheduler();
-	default:
-		throw invalid_argument("Program::getCurrentScheduler(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
-	}
-}
-
-bool Program::isScheduled(const tm& timeinfo) const {
+bool Program::isScheduled(const tm& timeinfo) {
 	if (false == disabled) {
-		for (auto& startTimeAndIdPair : *startTimes) {
+		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
 			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
+				getCurrentScheduler().process(timeinfo);
 				return getCurrentScheduler().isDayScheduled(timeinfo);
 			}
 		}
@@ -300,4 +307,25 @@ shared_ptr<Program> Program::Builder::build() {
 			everyDayScheduler,
 			runTimes,
 			startTimes));
+}
+
+nlohmann::json Program::saveTo() const {
+	nlohmann::json result;
+
+	result["fixedAmount"] = fixedAmountScheduler->saveTo();
+	result["fixedPeriod"] = fixedPeriodScheduler->saveTo();
+
+	return result;
+}
+
+void Program::loadFrom(const nlohmann::json& values) {
+	auto it = values.find("fixedAmount");
+	if (values.end() != it) {
+		fixedAmountScheduler->loadFrom(it.value());
+	}
+
+	it = values.find("fixedPeriod");
+	if (values.end() != it) {
+		fixedPeriodScheduler->loadFrom(it.value());
+	}
 }

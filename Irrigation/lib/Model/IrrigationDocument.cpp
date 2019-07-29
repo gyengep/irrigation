@@ -7,6 +7,7 @@
 #include "Logic/StartTimeContainer.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -80,4 +81,27 @@ shared_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
 	return shared_ptr<IrrigationDocument>(new IrrigationDocument(
 			programContainer,
 			wateringController));
+}
+
+nlohmann::json IrrigationDocument::saveTo() const {
+	nlohmann::json result;
+
+	for (const auto& programWithId : getPrograms()) {
+		const string key = "program_" + to_string(programWithId.first);
+		result[key] = programWithId.second->saveTo()
+	}
+
+	return result;
+}
+
+void IrrigationDocument::loadFrom(const nlohmann::json& values) {
+
+	for (const auto& programWithId : getPrograms()) {
+		const string key = "program_" + to_string(programWithId.first) + '/';
+
+		auto it = values.find(key);
+		if (values.end() != it) {
+			programWithId.second->loadFrom(it.value());
+		}
+	}
 }

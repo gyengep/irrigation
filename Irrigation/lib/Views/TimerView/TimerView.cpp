@@ -52,15 +52,15 @@ void TimerView::onTimer(const time_t rawTime) {
 
 	if (!wateringController.isWateringActive()) {
 		const tm timeinfo = *localtime(&rawTime);
-		for (auto& programAndIdPair : programs) {
-			const IdType& idType = programAndIdPair.first;
-			const shared_ptr<Program> program = programAndIdPair.second;
+		for (const auto& programAndIdPair : programs) {
+			const auto& idType = programAndIdPair.first;
+			const auto& program = programAndIdPair.second;
 			if (program->isScheduled(timeinfo)) {
 				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
 						to_string(idType).c_str(),
 						program->getName().c_str(),
 						to_string(program->getSchedulerType()).c_str());
-				wateringController.start(rawTime, program->getRunTimes(), program->getAdjustment());
+				wateringController.start(rawTime, program->getRunTimes(), program->getAdjustment(), program->getCurrentScheduler().getAdjustment());
 				break;
 			}
 		}

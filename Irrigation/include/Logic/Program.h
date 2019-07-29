@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "json.hpp"
 #include "DTO/ProgramDTO.h"
 #include "Schedulers/Scheduler.h"
 
@@ -12,6 +13,10 @@ class EveryDayScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
 
+namespace TemperatureDependentScheduler {
+	class FixedAmountScheduler;
+	class FixedPeriodScheduler;
+}
 
 class Program {
 public:
@@ -25,6 +30,9 @@ protected:
 	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
 	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
+	std::shared_ptr<TemperatureDependentScheduler::FixedAmountScheduler> fixedAmountScheduler;
+	std::shared_ptr<TemperatureDependentScheduler::FixedPeriodScheduler> fixedPeriodScheduler;
+	std::shared_ptr<Scheduler> currentScheduler;
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
 
@@ -60,8 +68,9 @@ public:
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
 
-	virtual bool isScheduled(const std::tm& timeinfo) const;
-	virtual const Scheduler& getCurrentScheduler() const;
+	virtual bool isScheduled(const std::tm& timeinfo);
+	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
+	virtual Scheduler& getCurrentScheduler() { return *currentScheduler; }
 
 	const PeriodicScheduler& getPeriodicScheduler() const { return *periodicScheduler; }
 	const WeeklyScheduler& getWeeklyScheduler() const { return *weeklyScheduler; }
@@ -80,6 +89,9 @@ public:
 
 	friend std::string to_string(const Program& program);
 	friend std::ostream& operator<<(std::ostream& os, const Program& program);
+
+	nlohmann::json saveTo() const;
+	void loadFrom(const nlohmann::json& values);
 };
 
 class Program::Builder {
