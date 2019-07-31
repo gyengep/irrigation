@@ -30,7 +30,7 @@ class TemperatureDependentScheduler : public Scheduler {
 	int adjustment;
 	std::time_t lastRun;
 
-	virtual int calculateAdjustment();
+	virtual int calculateAdjustment(const std::time_t rawTime);
 
 public:
 	TemperatureDependentScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
@@ -40,8 +40,8 @@ public:
 	int getRequiredPercentFromTemperature(float temperature) const;
 
 	int getRemainingPercent() const { return remainingPercent; }
-	int getRequiredPercentForNextDay(const std::time_t = std::time(nullptr)) const;
-	int getRequiredPercentForPreviousDay(const std::time_t = std::time(nullptr)) const;
+	int getRequiredPercentForNextDay(const std::time_t rawTime) const;
+	int getRequiredPercentForPreviousDay(const std::time_t rawTime) const;
 
 	virtual void process(const std::tm& timeinfo) override;
 	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
@@ -54,7 +54,7 @@ public:
 
 class FixedAmountScheduler : public TemperatureDependentScheduler {
 
-	virtual int calculateAdjustment() override;
+	virtual int calculateAdjustment(const std::time_t rawTime) override;
 
 public:
 	FixedAmountScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
@@ -64,7 +64,7 @@ public:
 
 class FixedPeriodScheduler : public TemperatureDependentScheduler {
 
-	virtual int calculateAdjustment() override;
+	virtual int calculateAdjustment(const std::time_t rawTime) override;
 
 public:
 	FixedPeriodScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);

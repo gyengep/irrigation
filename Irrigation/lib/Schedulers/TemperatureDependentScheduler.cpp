@@ -54,7 +54,8 @@ int TemperatureDependentScheduler::getRequiredPercentFromTemperature(float tempe
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
-	const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds).max;
+	LOGGER.trace("getForecastValues(%llu, %llu)", (long long unsigned)now, (long long unsigned)now + aDayInSeconds - 1);
+	const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds - 1).max;
 	const int result = getRequiredPercentFromTemperature(temperature);
 
 	LOGGER.trace("TemperatureDependentScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, result);
@@ -62,14 +63,15 @@ int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
-	const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now).max;
+	LOGGER.trace("getHistoryValues(%llu, %llu)", (long long unsigned)now - aDayInSeconds, (long long unsigned)now - 1);
+	const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now - 1).max;
 	const int result = getRequiredPercentFromTemperature(temperature);
 
 	LOGGER.trace("TemperatureDependentScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, result);
 	return result;
 }
 
-int TemperatureDependentScheduler::calculateAdjustment() {
+int TemperatureDependentScheduler::calculateAdjustment(const time_t) {
 	throw logic_error("Method not implemented: TemperatureDependentScheduler::calculateAdjustment()");
 }
 
@@ -118,7 +120,7 @@ void TemperatureDependentScheduler::process(const tm& timeinfo) {
 
 	if (yesterday.first <= savedLastRun &&  savedLastRun <= yesterday.second) {
 		LOGGER.trace("Last run is YESTERDAY");
-		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay();
+		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(currentTime);
 		remainingPercent -= requiredPercentForPreviousDay;
 		LOGGER.trace("%-30s%d", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
 	} else {
@@ -128,7 +130,7 @@ void TemperatureDependentScheduler::process(const tm& timeinfo) {
 
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	adjustment = calculateAdjustment();
+	adjustment = calculateAdjustment(currentTime);
 	LOGGER.trace("%-30s%d", "adjustment", adjustment);
 
 	adjustment = max(adjustment, 0);
@@ -182,8 +184,8 @@ FixedAmountScheduler::FixedAmountScheduler(const shared_ptr<TemperatureForecast>
 FixedAmountScheduler::~FixedAmountScheduler() {
 }
 
-int FixedAmountScheduler::calculateAdjustment() {
-	const int requiredPercentForNextDay = getRequiredPercentForNextDay();
+int FixedAmountScheduler::calculateAdjustment(const time_t rawTime) {
+	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
 
 	if (requiredPercentForNextDay > getRemainingPercent()) {
@@ -203,8 +205,8 @@ FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>
 FixedPeriodScheduler::~FixedPeriodScheduler() {
 }
 
-int FixedPeriodScheduler::calculateAdjustment() {
-	const int requiredPercentForNextDay = getRequiredPercentForNextDay();
+int FixedPeriodScheduler::calculateAdjustment(const time_t rawTime) {
+	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
 
 	return (requiredPercentForNextDay - getRemainingPercent());
