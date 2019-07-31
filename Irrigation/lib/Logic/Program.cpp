@@ -8,6 +8,7 @@
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
+#include "Hardware/Temperature/Temperature.h"
 #include "Utils/ToString.h"
 #include <algorithm>
 #include <sstream>
@@ -40,16 +41,39 @@ Program::Program(const Program& other) :
 }
 
 Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
-	shared_ptr<PeriodicScheduler> periodicScheduler, shared_ptr<WeeklyScheduler> weeklyScheduler, shared_ptr<EveryDayScheduler> everyDayScheduler,
-	shared_ptr<RunTimeContainer> runTimes, shared_ptr<StartTimeContainer> startTimes) :
+	shared_ptr<PeriodicScheduler> periodicScheduler,
+	shared_ptr<WeeklyScheduler> weeklyScheduler,
+	shared_ptr<EveryDayScheduler> everyDayScheduler,
+	shared_ptr<RunTimeContainer> runTimes,
+	shared_ptr<StartTimeContainer> startTimes) :
 	disabled(disabled),
 	name(name),
 	adjustment(adjustment),
 	periodicScheduler(periodicScheduler),
 	weeklyScheduler(weeklyScheduler),
 	everyDayScheduler(everyDayScheduler),
-	fixedAmountScheduler(make_shared<TemperatureDependentScheduler::FixedAmountScheduler>()),
-	fixedPeriodScheduler(make_shared<TemperatureDependentScheduler::FixedPeriodScheduler>()),
+	runTimes(runTimes),
+	startTimes(startTimes)
+{
+	setSchedulerType(schedulerType);
+}
+
+Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
+	shared_ptr<PeriodicScheduler> periodicScheduler,
+	shared_ptr<WeeklyScheduler> weeklyScheduler,
+	shared_ptr<EveryDayScheduler> everyDayScheduler,
+	shared_ptr<FixedAmountScheduler> fixedAmountScheduler,
+	shared_ptr<FixedPeriodScheduler> fixedPeriodScheduler,
+	shared_ptr<RunTimeContainer> runTimes,
+	shared_ptr<StartTimeContainer> startTimes) :
+	disabled(disabled),
+	name(name),
+	adjustment(adjustment),
+	periodicScheduler(periodicScheduler),
+	weeklyScheduler(weeklyScheduler),
+	everyDayScheduler(everyDayScheduler),
+	fixedAmountScheduler(fixedAmountScheduler),
+	fixedPeriodScheduler(fixedPeriodScheduler),
 	runTimes(runTimes),
 	startTimes(startTimes)
 {
@@ -111,6 +135,12 @@ void Program::setSchedulerType(SchedulerType schedulerType) {
 	case SchedulerType::EVERY_DAY:
 		currentScheduler = everyDayScheduler;
 		break;
+	case SchedulerType::FIXED_AMOUNT:
+		currentScheduler = fixedAmountScheduler;
+		break;
+	case SchedulerType::FIXED_PERIOD:
+		currentScheduler = fixedPeriodScheduler;
+		break;
 	default:
 		throw invalid_argument("Program::setSchedulerType(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
 	}
@@ -127,8 +157,9 @@ bool Program::isScheduled(const tm& timeinfo) {
 		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
 			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
-				getCurrentScheduler().process(timeinfo);
-				return getCurrentScheduler().isDayScheduled(timeinfo);
+				Scheduler& scheduler = getCurrentScheduler();
+				scheduler.process(timeinfo);
+				return scheduler.isDayScheduled(timeinfo);
 			}
 		}
 	}
@@ -163,6 +194,8 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 		const static string periodicSchedulerText = to_string(SchedulerType::PERIODIC);
 		const static string weeklySchedulerText = to_string(SchedulerType::WEEKLY);
 		const static string everyDaySchedulerText = to_string(SchedulerType::EVERY_DAY);
+		const static string fixedAmountSchedulerText = to_string(SchedulerType::FIXED_AMOUNT);
+		const static string FixedPeriodSchedulerText = to_string(SchedulerType::FIXED_PERIOD);
 
 		if (periodicSchedulerText == programDTO.getSchedulerType()) {
 			setSchedulerType(SchedulerType::PERIODIC);
@@ -170,6 +203,10 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 			setSchedulerType(SchedulerType::WEEKLY);
 		} else if (everyDaySchedulerText == programDTO.getSchedulerType()) {
 			setSchedulerType(SchedulerType::EVERY_DAY);
+		} else if (fixedAmountSchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::FIXED_AMOUNT);
+		} else if (FixedPeriodSchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::FIXED_PERIOD);
 		} else {
 			throw invalid_argument("Program::updateFromDTO(): invalid SchedulerType: " + programDTO.getSchedulerType());
 		}
@@ -265,6 +302,16 @@ Program::Builder& Program::Builder::setEveryDayScheduler(shared_ptr<EveryDaySche
 	return *this;
 }
 
+Program::Builder& Program::Builder::setFixedAmountScheduler(std::shared_ptr<FixedAmountScheduler> fixedAmountScheduler) {
+	this->fixedAmountScheduler = fixedAmountScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setFixedPeriodScheduler(std::shared_ptr<FixedPeriodScheduler> fixedPeriodScheduler) {
+	this->fixedPeriodScheduler = fixedPeriodScheduler;
+	return *this;
+}
+
 Program::Builder& Program::Builder::setRunTimeContainer(shared_ptr<RunTimeContainer> runTimes) {
 	this->runTimes = runTimes;
 	return *this;
@@ -289,6 +336,20 @@ shared_ptr<Program> Program::Builder::build() {
 		everyDayScheduler.reset(new EveryDayScheduler());
 	}
 
+	if (nullptr == fixedAmountScheduler) {
+		fixedAmountScheduler = make_shared<FixedAmountScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory()
+			);
+	}
+
+	if (nullptr == fixedPeriodScheduler) {
+		fixedPeriodScheduler = make_shared<FixedPeriodScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory()
+			);
+	}
+
 	if (nullptr == runTimes) {
 		runTimes.reset(new RunTimeContainer());
 	}
@@ -305,16 +366,16 @@ shared_ptr<Program> Program::Builder::build() {
 			periodicScheduler,
 			weeklyScheduler,
 			everyDayScheduler,
+			fixedAmountScheduler,
+			fixedPeriodScheduler,
 			runTimes,
 			startTimes));
 }
 
 nlohmann::json Program::saveTo() const {
 	nlohmann::json result;
-
 	result["fixedAmount"] = fixedAmountScheduler->saveTo();
 	result["fixedPeriod"] = fixedPeriodScheduler->saveTo();
-
 	return result;
 }
 

@@ -2,6 +2,7 @@
 #include <chrono>
 #include <memory>
 #include "TemperatureException.h"
+#include "TemperatureHistory.h"
 #include "TemperatureForecast.h"
 #include "Utils/Timer.h"
 
@@ -14,7 +15,6 @@ class TemperatureForecastProvider;
 
 
 class Temperature : public TimerCallback {
-	static std::shared_ptr<Temperature> instance;
 	static const std::chrono::seconds::rep periodInSeconds;
 
 	std::time_t lastUpdateTime;
@@ -29,14 +29,7 @@ class Temperature : public TimerCallback {
 	std::string storedForecastFrom, storedForecastTo;
 	std::unique_ptr<TemperatureForecast::Values> storedForecastValues;
 
-	Temperature(
-			const std::chrono::duration<int64_t>& sensorUpdatePeriod,
-			const std::string& temperatureHistoryFileName,
-			const std::chrono::duration<int64_t>& temperatureHistoryLength,
-			const std::string& temperatureHistoryPersisterFileName,
-			const std::chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
-			const std::chrono::duration<int64_t>& forecastUpdatePeriod
-		);
+	Temperature();
 
 	std::shared_ptr<TemperatureSensorReader> createSensorReader();
 	std::shared_ptr<TemperatureForecastProvider> createForecastProvider();
@@ -52,7 +45,10 @@ public:
 	virtual ~Temperature();
 	virtual void onTimer() override;
 
-	static void init(
+	const std::shared_ptr<TemperatureHistory> getTemperatureHistory() const;
+	const std::shared_ptr<TemperatureForecast> getTemperatureForecast() const;
+
+	void init(
 			const std::chrono::duration<int64_t>& sensorUpdatePeriod,
 			const std::string& temperatureHistoryFileName,
 			const std::chrono::duration<int64_t>& temperatureHistoryLength,
@@ -60,7 +56,7 @@ public:
 			const std::chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
 			const std::chrono::duration<int64_t>& forecastUpdatePeriod
 		);
+	void uninit();
 
-	static void uninit();
-	static std::shared_ptr<Temperature> getInstancePtr();
+	static Temperature& getInstance();
 };

@@ -17,8 +17,21 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-shared_ptr<Temperature> Temperature::instance;
+Temperature& Temperature::getInstance() {
+	static Temperature instance;
+	return instance;
+}
 
+///////////////////////////////////////////////////////////////////////////////
+
+Temperature::Temperature() :
+	lastUpdateTime(time(nullptr)),
+	period(chrono::hours(24))
+{
+}
+
+Temperature::~Temperature() {
+}
 
 void Temperature::init(
 		const chrono::duration<int64_t>& sensorUpdatePeriod,
@@ -27,40 +40,7 @@ void Temperature::init(
 		const string& temperatureHistoryPersisterFileName,
 		const chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
 		const chrono::duration<int64_t>& forecastUpdatePeriod
-	)
-{
-	instance = shared_ptr<Temperature>(new Temperature(
-			sensorUpdatePeriod,
-			temperatureHistoryFileName,
-			temperatureHistoryLength,
-			temperatureHistoryPersisterFileName,
-			temperatureHistoryPersisterPeriod,
-			forecastUpdatePeriod
-		));
-}
-
-void Temperature::uninit() {
-	instance.reset();
-}
-
-shared_ptr<Temperature> Temperature::getInstancePtr() {
-	return instance;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Temperature::Temperature(
-		const chrono::duration<int64_t>& sensorUpdatePeriod,
-		const string& temperatureHistoryFileName,
-		const chrono::duration<int64_t>& temperatureHistoryLength,
-		const string& temperatureHistoryPersisterFileName,
-		const chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
-		const chrono::duration<int64_t>& forecastUpdatePeriod
-	) :
-
-	lastUpdateTime(time(nullptr)),
-	period(chrono::hours(24))
-{
+) {
 	sensor = make_shared<TemperatureSensorImpl>(
 			createSensorReader()
 		);
@@ -97,7 +77,7 @@ Temperature::Temperature(
 	timer->start();
 }
 
-Temperature::~Temperature() {
+void Temperature::uninit() {
 	timer->stop();
 	timer.reset();
 
@@ -105,6 +85,14 @@ Temperature::~Temperature() {
 	historyPersister->stopTimer();
 	history->stopTimer();
 	sensor->stopTimer();
+}
+
+const shared_ptr<TemperatureHistory> Temperature::getTemperatureHistory() const {
+	return history;
+}
+
+const shared_ptr<TemperatureForecast> Temperature::getTemperatureForecast() const {
+	return forecast;
 }
 
 void Temperature::onTimer() {

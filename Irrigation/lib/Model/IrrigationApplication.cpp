@@ -63,7 +63,7 @@ void IrrigationApplication::initGpio() {
 
 void IrrigationApplication::initTemperatureSensor() {
 	try {
-		Temperature::init(
+		Temperature::getInstance().init(
 			Configuration::getInstance().getTemperatureSensorUpdatePeriod(),
 			Configuration::getInstance().getTemperatureCacheFileName(),
 			Configuration::getInstance().getTemperatureCacheLength(),
@@ -79,7 +79,7 @@ void IrrigationApplication::initTemperatureSensor() {
 
 void IrrigationApplication::uninitTemperatureSensor() {
 	try {
-		Temperature::uninit();
+		Temperature::getInstance().uninit();
 	} catch (const exception& e) {
 		LOGGER.warning("An error during uninitialize temperature modul", e);
 	}
@@ -101,6 +101,8 @@ void IrrigationApplication::initDocument() {
 			make_shared<XmlReader>(),
 			make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
 		);
+
+		irrigationDocument->loadState();
 
 		documentSaver->startTimer();
 

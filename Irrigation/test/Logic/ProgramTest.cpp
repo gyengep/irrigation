@@ -188,7 +188,6 @@ TEST(ProgramTest, isScheduled1) {
 			Times(AnyNumber()).
 			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
 	EXPECT_CALL(program, getCurrentScheduler()).
-			Times(4).
 			WillRepeatedly(ReturnRef(scheduler));
 	EXPECT_CALL(scheduler, isDayScheduled(_)).
 			Times(4).
@@ -217,7 +216,6 @@ TEST(ProgramTest, isScheduled2_enabled) {
 			Times(AnyNumber()).
 			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
 	EXPECT_CALL(program, getCurrentScheduler()).
-			Times(4).
 			WillRepeatedly(ReturnRef(scheduler));
 	EXPECT_CALL(scheduler, isDayScheduled(_)).
 			Times(4).

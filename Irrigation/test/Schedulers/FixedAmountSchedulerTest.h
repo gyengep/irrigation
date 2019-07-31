@@ -10,7 +10,7 @@ protected:
 
 	std::shared_ptr<MockTemperatureForecast> mockTemperatureForecast;
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
-	std::unique_ptr<TemperatureDependentScheduler::FixedAmountScheduler> scheduler;
+	std::unique_ptr<FixedAmountScheduler> scheduler;
 
 	virtual void SetUp();
     virtual void TearDown();

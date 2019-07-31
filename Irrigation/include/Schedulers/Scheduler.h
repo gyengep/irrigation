@@ -6,7 +6,9 @@
 enum class SchedulerType {
 	WEEKLY,
 	PERIODIC,
-	EVERY_DAY
+	EVERY_DAY,
+	FIXED_AMOUNT,
+	FIXED_PERIOD
 };
 
 std::string to_string(SchedulerType schedulerType);

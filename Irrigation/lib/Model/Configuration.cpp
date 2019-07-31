@@ -5,6 +5,7 @@ using namespace std;
 using namespace chrono;
 
 const string Configuration::defaultConfigFileName = "/usr/share/irrigation/irrigation.xml";
+const string Configuration::defaultPersistedDataFileName = "/usr/share/irrigation/persist.json";
 const string Configuration::defaultLogFileName = "/var/log/irrigation/irrigation.log";
 const string Configuration::defaultTemperatureCacheFileName = "/usr/share/irrigation/temperature_cache.csv";
 const string Configuration::defaultTemperatureHistoryFileName = "/usr/share/irrigation/temperature.csv";

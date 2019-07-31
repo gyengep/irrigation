@@ -19,7 +19,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDES	    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
+INCLUDES	    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME) -I$(PROJECT_ROOT)/3p/nlohmann
 ARFLAGS         = r 
 VERSION         = $(shell $(PROJECT_ROOT)/scripts/build/get_version.sh)
 

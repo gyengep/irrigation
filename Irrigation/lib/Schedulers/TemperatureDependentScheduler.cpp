@@ -1,34 +1,40 @@
 #include "TemperatureDependentScheduler.h"
 #include "Logger/Logger.h"
+#include "Utils/TimePeriod.h"
 #include <algorithm>
 #include <chrono>
 #include <limits>
+#include <time.h>
 
 using namespace std;
-using namespace TemperatureDependentScheduler;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const time_t BaseScheduler::aDayInSeconds = chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count();
+const time_t TemperatureDependentScheduler::aDayInSeconds = chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count();
 
-BaseScheduler::BaseScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
+TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
-	maxAdjustment(numeric_limits<int>::max()),
 	adjustment(0),
-	first(true)
+	lastRun(0)
 {
+	temperatureAndPercents = vector<pair<float, int>>{
+		{ 15.0f, 25 },
+		{ 25.0f, 50 },
+		{ 35.0f, 100 }
+	};
+
 }
 
-BaseScheduler::~BaseScheduler() {
+TemperatureDependentScheduler::~TemperatureDependentScheduler() {
 }
 
-void BaseScheduler::setTemperatureAndPercents(const vector<pair<float, int>>& temperatureAndPercents) {
+void TemperatureDependentScheduler::setTemperatureAndPercents(const vector<pair<float, int>>& temperatureAndPercents) {
 	this->temperatureAndPercents = temperatureAndPercents;
 }
 
-int BaseScheduler::getRequiredPercentFromTemperature(float temperature) const {
+int TemperatureDependentScheduler::getRequiredPercentFromTemperature(float temperature) const {
 	if (temperature < temperatureAndPercents.front().first) {
 		return 0;
 	}
@@ -47,71 +53,129 @@ int BaseScheduler::getRequiredPercentFromTemperature(float temperature) const {
 	return temperatureAndPercents.back().second;
 }
 
-int BaseScheduler::getRequiredPercentForNextDay(const time_t now) const {
+int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
 	const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds).max;
 	const int result = getRequiredPercentFromTemperature(temperature);
 
-	LOGGER.trace("BaseScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, result);
+	LOGGER.trace("TemperatureDependentScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, result);
 	return result;
 }
 
-int BaseScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
+int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
 	const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now).max;
 	const int result = getRequiredPercentFromTemperature(temperature);
 
-	LOGGER.trace("BaseScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, result);
+	LOGGER.trace("TemperatureDependentScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, result);
 	return result;
 }
 
-bool BaseScheduler::isDayScheduled(const tm&) const {
+int TemperatureDependentScheduler::calculateAdjustment() {
+	throw logic_error("Method not implemented: TemperatureDependentScheduler::calculateAdjustment()");
+}
+
+bool TemperatureDependentScheduler::isDayScheduled(const tm&) const {
 	return (adjustment > 0);
 }
 
-unsigned BaseScheduler::getAdjustment() const {
+unsigned TemperatureDependentScheduler::getAdjustment() const {
 	return adjustment;
 }
 
-void BaseScheduler::process(const tm& timeinfo) {
-	LOGGER.trace(">>> BaseScheduler::process() <<<");
+void TemperatureDependentScheduler::process(const tm& timeinfo) {
+	if (nullptr == temperatureForecast) {
+		throw logic_error("TemperatureDependentScheduler::process()  nullptr == temperatureForecast");
+	}
+
+	if (nullptr == temperatureHistory) {
+		throw logic_error("TemperatureDependentScheduler::process()  nullptr == temperatureHistory");
+	}
+
+	LOGGER.trace(">>> TemperatureDependentScheduler::process() <<<");
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	if (!first) {
+	tm timeinfoCopy {0};
+	memcpy(&timeinfoCopy, &timeinfo, sizeof(timeinfo));
+
+	const time_t currentTime = timelocal(&timeinfoCopy);
+	const auto yesterday = getPreviousPeriod(currentTime, chrono::hours(24));
+	const auto today = getCurrentPeriod(currentTime, chrono::hours(24));
+
+	const auto savedLastRun = lastRun;
+	lastRun = currentTime;
+
+	LOGGER.trace("Yesterday start: %s", asctime(localtime(&yesterday.first)));
+	LOGGER.trace("Yesterday end:   %s", asctime(localtime(&yesterday.second)));
+	LOGGER.trace("Today start:     %s", asctime(localtime(&today.first)));
+	LOGGER.trace("Today end:       %s", asctime(localtime(&today.second)));
+	LOGGER.trace("Last run:        %s", asctime(localtime(&savedLastRun)));
+	LOGGER.trace("Current time:    %s", asctime(localtime(&currentTime)));
+
+	if (today.first <= savedLastRun &&  savedLastRun <= today.second) {
+		LOGGER.trace("Last run is TODAY");
+		adjustment = 0;
+		return;
+	}
+
+	if (yesterday.first <= savedLastRun &&  savedLastRun <= yesterday.second) {
+		LOGGER.trace("Last run is YESTERDAY");
 		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay();
 		remainingPercent -= requiredPercentForPreviousDay;
 		LOGGER.trace("%-30s%d", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
-		LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 	} else {
-		first = false;
+		LOGGER.trace("Last run is OTHER");
+		remainingPercent = 0;
 	}
+
+	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
 	adjustment = calculateAdjustment();
 	LOGGER.trace("%-30s%d", "adjustment", adjustment);
 
 	adjustment = max(adjustment, 0);
-	adjustment = min(adjustment, maxAdjustment);
 	LOGGER.trace("%-30s%d", "adjustment (min/max)", adjustment);
 
 	remainingPercent += adjustment;
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
+
 }
 
-nlohmann::json BaseScheduler::saveTo() const {
+nlohmann::json TemperatureDependentScheduler::saveTo() const {
+	LOGGER.trace("TemperatureDependentScheduler::saveTo()");
+
 	nlohmann::json j;
 	j["remainingPercent"] = remainingPercent;
+	j["lastRun"] = lastRun;
+
+	LOGGER.trace("remainingPercent: %d", remainingPercent);
+	LOGGER.trace("lastRun: %llu", (long long unsigned)lastRun);
 	return j;
 }
 
-void BaseScheduler::loadFrom(const nlohmann::json& values) {
-	auto it = values.find("remainingPercent");
-	if (values.end() != it) {
-		remainingPercent = it.value();
+void TemperatureDependentScheduler::loadFrom(const nlohmann::json& values) {
+	LOGGER.trace("TemperatureDependentScheduler::loadFrom()");
+
+	{
+		auto it = values.find("remainingPercent");
+		if (values.end() != it) {
+			remainingPercent = it.value();
+		}
 	}
+
+	{
+		auto it = values.find("lastRun");
+		if (values.end() != it) {
+			lastRun = it.value();
+		}
+	}
+
+	LOGGER.trace("remainingPercent: %d", remainingPercent);
+	LOGGER.trace("lastRun: %llu", (long long unsigned)lastRun);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 FixedAmountScheduler::FixedAmountScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
-	BaseScheduler(temperatureForecast, temperatureHistory)
+	TemperatureDependentScheduler(temperatureForecast, temperatureHistory)
 {
 }
 
@@ -132,7 +196,7 @@ int FixedAmountScheduler::calculateAdjustment() {
 ///////////////////////////////////////////////////////////////////////////////
 
 FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
-	BaseScheduler(temperatureForecast, temperatureHistory)
+	TemperatureDependentScheduler(temperatureForecast, temperatureHistory)
 {
 }
 

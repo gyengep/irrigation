@@ -52,7 +52,7 @@ bool operator== (const tm& t1, const tm& t2) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 TEST_F(TimerViewTest, notActiveNotScheduled) {
 	EXPECT_CALL(*wateringController, isWateringActive()).Times(1);
 	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
@@ -87,3 +87,4 @@ TEST_F(TimerViewTest, active) {
 
 	view->onTimer(rawtime);
 }
+*/

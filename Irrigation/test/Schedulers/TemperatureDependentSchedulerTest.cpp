@@ -2,12 +2,12 @@
 
 using namespace std;
 using namespace testing;
-using namespace TemperatureDependentScheduler;
+
 
 void TemperatureDependentSchedulerTest::SetUp() {
 	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
-	scheduler = unique_ptr<BaseScheduler>(new BaseScheduler(mockTemperatureForecast, mockTemperatureHistory));
+	scheduler = unique_ptr<TemperatureDependentScheduler>(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
 	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
