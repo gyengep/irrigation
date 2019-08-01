@@ -24,8 +24,7 @@ private:
 	bool isScheduled;
 
 	void checkIndex(size_t day) const;
-	bool onProcess(const std::tm& timeinfo) const;
-
+	bool onProcess(const std::time_t rawtime) const;
 
 public:
 	WeeklyScheduler();
@@ -41,7 +40,7 @@ public:
 	void enableDay(size_t day, bool enable);
 	bool isDayEnabled(size_t day) const;
 
-	virtual unsigned onProcess(const std::time_t rawtime) override;
+	virtual Result process(const std::time_t rawtime) override;
 
 	WeeklySchedulerDTO toWeeklySchedulerDto() const;
 	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO);

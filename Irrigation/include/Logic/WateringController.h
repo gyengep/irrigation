@@ -34,7 +34,6 @@ public:
 
 	virtual void on1SecTimer(const std::time_t& rawTime);
 	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent);
-	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent, unsigned schedulerPercent);
 	virtual void stop();
 
 	virtual bool isWateringActive() const;

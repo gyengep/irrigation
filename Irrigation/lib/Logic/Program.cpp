@@ -152,20 +152,32 @@ SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 
-bool Program::isScheduled(const std::time_t rawtime) {
-	if (false == disabled) {
+pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
+	if (!disabled) {
 		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
-			const tm* timeinfo = localtime(&rawtime);
-			if (startTime.equals(timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec)) {
-				Scheduler& scheduler = getCurrentScheduler();
-				scheduler.process(rawtime);
-				return scheduler.isDayScheduled();
+			struct tm timeinfo;
+			localtime_r(&rawtime, &timeinfo);
+
+			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
+				const Scheduler::Result result = getCurrentScheduler().process(rawtime);
+
+				unsigned adjustment = 0;
+
+				if (result.isScheduled) {
+					if (result.overrideAdjustment) {
+						adjustment = result.adjustment;
+					} else {
+						adjustment = getAdjustment();
+					}
+				}
+
+				return make_pair(true, adjustment);
 			}
 		}
 	}
 
-	return false;
+	return make_pair(false, 0);
 }
 
 ProgramDTO Program::toProgramDto() const {

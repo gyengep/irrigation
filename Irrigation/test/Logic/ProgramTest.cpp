@@ -184,15 +184,13 @@ TEST(ProgramTest, isScheduled1) {
 	MockProgram program;
 	MockScheduler scheduler;
 
-	EXPECT_CALL(program, isScheduled(_)).
-			Times(AnyNumber()).
-			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
 	EXPECT_CALL(program, getCurrentScheduler()).
 			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, onProcess(_)).
+	EXPECT_CALL(scheduler, process(_)).
 			Times(4).
-			WillRepeatedly(Return(0));
+			WillRepeatedly(Return(Scheduler::Result(false, false, 0)));
 
+	program.setAdjustment(76);
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
 	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
 	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
@@ -201,35 +199,7 @@ TEST(ProgramTest, isScheduled1) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				EXPECT_FALSE(program.isScheduled(timelocal(&timeinfo)));
-			}
-		}
-	}
-}
-
-TEST(ProgramTest, isScheduled2_enabled) {
-	MockProgram program;
-	MockScheduler scheduler;
-
-	EXPECT_CALL(program, isScheduled(_)).
-			Times(AnyNumber()).
-			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
-	EXPECT_CALL(program, getCurrentScheduler()).
-			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, onProcess(_)).
-			Times(4).
-			WillRepeatedly(Return(100));
-
-	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
-
-	for (int hour = 0; hour < 24; hour++) {
-		for (int min = 0; min < 60; min++) {
-			for (int sec = 0; sec < 60; sec++) {
-				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
+				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
 
 				bool expectedResult = false;
 				expectedResult |= (hour == 4 && min == 0 && sec == 0);
@@ -237,19 +207,81 @@ TEST(ProgramTest, isScheduled2_enabled) {
 				expectedResult |= (hour == 6 && min == 30 && sec == 0);
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				EXPECT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(expectedResult));
+				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, 0)));
 			}
 		}
 	}
 }
 
-TEST(ProgramTest, isScheduled2_disabled) {
+TEST(ProgramTest, isScheduled2) {
 	MockProgram program;
 	MockScheduler scheduler;
 
-	EXPECT_CALL(program, isScheduled(_)).
-			Times(AnyNumber()).
-			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
+	EXPECT_CALL(program, getCurrentScheduler()).
+			WillRepeatedly(ReturnRef(scheduler));
+	EXPECT_CALL(scheduler, process(_)).
+			Times(4).
+			WillRepeatedly(Return(Scheduler::Result(true, false, 0)));
+
+	program.setAdjustment(76);
+	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+
+	for (int hour = 0; hour < 24; hour++) {
+		for (int min = 0; min < 60; min++) {
+			for (int sec = 0; sec < 60; sec++) {
+				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
+
+				bool expectedResult = false;
+				expectedResult |= (hour == 4 && min == 0 && sec == 0);
+				expectedResult |= (hour == 6 && min == 0 && sec == 0);
+				expectedResult |= (hour == 6 && min == 30 && sec == 0);
+				expectedResult |= (hour == 20 && min == 15 && sec == 0);
+
+				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 76 : 0)));
+			}
+		}
+	}
+}
+
+TEST(ProgramTest, isScheduled3) {
+	MockProgram program;
+	MockScheduler scheduler;
+
+	EXPECT_CALL(program, getCurrentScheduler()).
+			WillRepeatedly(ReturnRef(scheduler));
+	EXPECT_CALL(scheduler, process(_)).
+			Times(4).
+			WillRepeatedly(Return(Scheduler::Result(true, true, 25)));
+
+	program.setAdjustment(76);
+	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
+	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
+	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
+	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+
+	for (int hour = 0; hour < 24; hour++) {
+		for (int min = 0; min < 60; min++) {
+			for (int sec = 0; sec < 60; sec++) {
+				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
+
+				bool expectedResult = false;
+				expectedResult |= (hour == 4 && min == 0 && sec == 0);
+				expectedResult |= (hour == 6 && min == 0 && sec == 0);
+				expectedResult |= (hour == 6 && min == 30 && sec == 0);
+				expectedResult |= (hour == 20 && min == 15 && sec == 0);
+
+				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 25 : 0)));
+			}
+		}
+	}
+}
+
+TEST(ProgramTest, isScheduled_disabled) {
+	MockProgram program;
+	MockScheduler scheduler;
 
 	program.setDisabled(true);
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
@@ -260,8 +292,8 @@ TEST(ProgramTest, isScheduled2_disabled) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				EXPECT_FALSE(program.isScheduled(timelocal(&timeinfo)));
+				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
+				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(false, 0)));
 			}
 		}
 	}

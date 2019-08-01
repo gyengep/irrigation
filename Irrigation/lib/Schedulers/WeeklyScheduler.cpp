@@ -47,11 +47,15 @@ bool WeeklyScheduler::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-unsigned WeeklyScheduler::onProcess(const time_t rawtime) {
-	const tm* timeinfo = localtime(&rawtime);
-	const size_t weekDay = timeinfo->tm_wday;
+bool WeeklyScheduler::onProcess(const time_t rawtime) const {
+	struct tm timeinfo;
+	const size_t weekDay = localtime_r(&rawtime, &timeinfo)->tm_wday;
 	checkIndex(weekDay);
-	return (days[(weekDay + 6) % 7] ? 100 : 0);
+	return days[(weekDay + 6) % 7];
+}
+
+Scheduler::Result WeeklyScheduler::process(const time_t rawtime) {
+	return Scheduler::Result(onProcess(rawtime));
 }
 
 WeeklySchedulerDTO WeeklyScheduler::toWeeklySchedulerDto() const {

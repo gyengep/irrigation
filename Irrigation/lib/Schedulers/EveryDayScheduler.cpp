@@ -24,8 +24,8 @@ bool EveryDayScheduler::operator== (const EveryDayScheduler& other) const {
 	return true;
 }
 
-unsigned EveryDayScheduler::onProcess(const time_t) {
-	return 100;
+Scheduler::Result EveryDayScheduler::process(const time_t rawtime) {
+	return Scheduler::Result(true);
 }
 
 EveryDaySchedulerDTO EveryDayScheduler::toEveryDaySchedulerDto() const {

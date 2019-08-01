@@ -79,11 +79,11 @@ int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t
 	return result;
 }
 
-int TemperatureDependentScheduler::calculateAdjustment(const time_t) {
-	throw logic_error("Method not implemented: TemperatureDependentScheduler::calculateAdjustment()");
+int TemperatureDependentScheduler::onCalculateAdjustment(const time_t) {
+	throw logic_error("Method not implemented: TemperatureDependentScheduler::onCalculateAdjustment()");
 }
 
-unsigned TemperatureDependentScheduler::onProcess(const time_t rawtime) {
+Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 
 	if (nullptr == temperatureForecast) {
 		throw logic_error("TemperatureDependentScheduler::process()  nullptr == temperatureForecast");
@@ -96,8 +96,10 @@ unsigned TemperatureDependentScheduler::onProcess(const time_t rawtime) {
 	LOGGER.trace(">>> TemperatureDependentScheduler::process() <<<");
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(*localtime(&rawtime));
-	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(*localtime(&lastRun));
+	struct tm timeinfo;
+
+	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(*localtime_r(&rawtime, &timeinfo));
+	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(*localtime_r(&lastRun, &timeinfo));
 
 	LOGGER.trace("Current time:    %s", ctime(&rawtime));
 	LOGGER.trace("Last run:        %s", ctime(&lastRun));
@@ -106,7 +108,7 @@ unsigned TemperatureDependentScheduler::onProcess(const time_t rawtime) {
 
 	if (currentDaysSinceEpoch == lastRunDaySinceEpoch) {
 		LOGGER.trace("Last run is TODAY");
-		return 0;
+		return Scheduler::Result(0U);
 	}
 
 	if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
@@ -121,7 +123,7 @@ unsigned TemperatureDependentScheduler::onProcess(const time_t rawtime) {
 
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	int adjustment = calculateAdjustment(rawtime);
+	int adjustment = onCalculateAdjustment(rawtime);
 	LOGGER.trace("%-30s%d", "adjustment", adjustment);
 
 	adjustment = max(adjustment, 0);
@@ -130,7 +132,7 @@ unsigned TemperatureDependentScheduler::onProcess(const time_t rawtime) {
 	remainingPercent += adjustment;
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	return static_cast<unsigned>(adjustment);
+	return Scheduler::Result(static_cast<unsigned>(adjustment));
 }
 
 nlohmann::json TemperatureDependentScheduler::saveTo() const {
@@ -176,7 +178,7 @@ FixedAmountScheduler::FixedAmountScheduler(const shared_ptr<TemperatureForecast>
 FixedAmountScheduler::~FixedAmountScheduler() {
 }
 
-int FixedAmountScheduler::calculateAdjustment(const time_t rawTime) {
+int FixedAmountScheduler::onCalculateAdjustment(const time_t rawTime) {
 	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
 
@@ -197,7 +199,7 @@ FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>
 FixedPeriodScheduler::~FixedPeriodScheduler() {
 }
 
-int FixedPeriodScheduler::calculateAdjustment(const time_t rawTime) {
+int FixedPeriodScheduler::onCalculateAdjustment(const time_t rawTime) {
 	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
 

@@ -61,31 +61,6 @@ void WateringController::start(const time_t& rawTime, const RunTimeContainer& ru
 	startNextRequiredZone(rawTime);
 }
 
-void WateringController::start(const time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent, unsigned schedulerPercent) {
-	zoneHandler->deactivate();
-	wateringProperties.reset(new WateringProperties());
-
-	for (size_t i = 0; i < runTimes.size(); ++i) {
-		unsigned adjustedSeconds = runTimes.at(i)->getSeconds() * adjustmentPercent * schedulerPercent / ( 100 * 100 );
-		wateringProperties->runTimes[i].setSeconds(adjustedSeconds);
-	}
-
-	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-		LOGGER.debug("Irrigation started with parameters: \n"
-			"\tadjustment: %u%%, schedulerAdjustment: %u%%, runTimes: %s\n"
-			"\tadjusted runTimes: %s",
-			adjustmentPercent, schedulerPercent, to_string(runTimes).c_str(),
-				to_string(
-					wateringProperties->runTimes.begin(),
-					wateringProperties->runTimes.end()).c_str()
-				);
-	} else {
-		LOGGER.info("Irrigation started");
-	}
-
-	startNextRequiredZone(rawTime);
-}
-
 void WateringController::stop() {
 	LOGGER.info("Irrigation stopped");
 	zoneHandler->deactivate();

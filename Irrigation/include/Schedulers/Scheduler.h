@@ -15,15 +15,19 @@ std::string to_string(SchedulerType schedulerType);
 
 
 class Scheduler {
-	unsigned adjustment;
-
 public:
-	Scheduler();
+	struct Result {
+		const bool isScheduled;
+		const bool overrideAdjustment;
+		const unsigned adjustment;
+
+		Result(bool isScheduled);
+		Result(unsigned adjustment);
+		Result(bool isScheduled, bool overrideAdjustment, unsigned adjustment);
+
+		bool operator== (const Result& other) const;
+	};
+
 	virtual ~Scheduler() = default;
-
-	void process(const std::time_t rawtime);
-	bool isDayScheduled() const;
-	unsigned getAdjustment() const;
-
-	virtual unsigned onProcess(const std::time_t rawtime) = 0;
+	virtual Result process(const std::time_t rawtime) = 0;
 };

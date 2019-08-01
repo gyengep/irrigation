@@ -23,19 +23,29 @@ string to_string(SchedulerType schedulerType) {
 	}
 }
 
-Scheduler::Scheduler() :
+Scheduler::Result::Result(bool isScheduled) :
+	isScheduled(isScheduled),
+	overrideAdjustment(false),
 	adjustment(0)
 {
 }
 
-void Scheduler::process(const std::time_t rawtime) {
-	adjustment = onProcess(rawtime);
+Scheduler::Result::Result(unsigned adjustment) :
+	isScheduled(adjustment > 0),
+	overrideAdjustment(true),
+	adjustment(adjustment)
+{
 }
 
-bool Scheduler::isDayScheduled() const {
-	return (adjustment > 0);
+Scheduler::Result::Result(bool isScheduled, bool overrideAdjustment, unsigned adjustment) :
+	isScheduled(isScheduled),
+	overrideAdjustment(overrideAdjustment),
+	adjustment(adjustment)
+{
 }
 
-unsigned Scheduler::getAdjustment() const {
-	return adjustment;
+bool Scheduler::Result::operator== (const Result& other) const {
+	return  (isScheduled == other.isScheduled) &&
+			(overrideAdjustment == other.overrideAdjustment) &&
+			(adjustment == other.adjustment);
 }

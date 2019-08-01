@@ -15,7 +15,7 @@ public:
 	EveryDayScheduler& operator= (const EveryDayScheduler&) = delete;
 	bool operator== (const EveryDayScheduler& other) const;
 
-	virtual unsigned onProcess(const std::time_t rawtime) override;
+	virtual Result process(const std::time_t rawtime) override;
 
 	EveryDaySchedulerDTO toEveryDaySchedulerDto() const;
 	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO);

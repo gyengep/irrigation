@@ -76,8 +76,8 @@ public:
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
 
-	virtual bool isScheduled(const std::time_t rawtime);
-	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
+	virtual std::pair<bool, unsigned> isScheduled(const std::time_t rawtime);
+//	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
 	virtual Scheduler& getCurrentScheduler() { return *currentScheduler; }
 
 	const PeriodicScheduler& getPeriodicScheduler() const { return *periodicScheduler; }

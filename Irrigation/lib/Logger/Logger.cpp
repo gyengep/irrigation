@@ -149,8 +149,9 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 string Logger::getTime() {
 	const time_t t = time(nullptr);
 
+	struct tm timeinfo;
 	ostringstream oss;
-	oss << put_time(localtime(&t), "%Y.%m.%d %H:%M:%S");
+	oss << put_time(localtime_r(&t, &timeinfo), "%Y.%m.%d %H:%M:%S");
 	return oss.str();
 }
 

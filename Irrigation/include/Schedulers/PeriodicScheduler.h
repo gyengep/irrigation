@@ -14,6 +14,7 @@ class PeriodicScheduler: public Scheduler {
 	unsigned elapsedDaysSinceEpochToPeriodStart;
 
 	void checkIndex(size_t day) const;
+	bool onProcess(const std::time_t rawtime) const;
 
 public:
 	PeriodicScheduler();
@@ -37,7 +38,7 @@ public:
 	bool isDayEnabled(size_t day) const;
 	unsigned getPeriod() const;
 
-	virtual unsigned onProcess(const std::time_t rawtime) override;
+	virtual Result process(const std::time_t rawtime) override;
 
 	PeriodicSchedulerDTO toPeriodicSchedulerDto() const;
 	virtual void updateFromPeriodicSchedulerDto(const PeriodicSchedulerDTO& schedulerDTO);
