@@ -37,7 +37,7 @@ public:
 	bool isDayEnabled(size_t day) const;
 	unsigned getPeriod() const;
 
-	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
+	virtual unsigned onProcess(const std::time_t rawtime) override;
 
 	PeriodicSchedulerDTO toPeriodicSchedulerDto() const;
 	virtual void updateFromPeriodicSchedulerDto(const PeriodicSchedulerDTO& schedulerDTO);

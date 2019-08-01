@@ -188,11 +188,9 @@ std::shared_ptr<TemperatureForecastProvider> Temperature::createForecastProvider
 }
 
 string Temperature::toTimeStr(const time_t& rawTime) {
-	struct tm * timeinfo;
 	char buffer [80];
 
-	timeinfo = localtime(&rawTime);
-
+	struct tm* timeinfo = localtime(&rawTime);
 	strftime(buffer, 80, "%F %T",timeinfo);
 	return buffer;
 }

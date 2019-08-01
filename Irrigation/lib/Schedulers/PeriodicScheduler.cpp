@@ -81,16 +81,17 @@ void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsign
 	periodStartDay = day;
 }
 
-bool PeriodicScheduler::isDayScheduled(const tm& timeinfo) const {
+unsigned PeriodicScheduler::onProcess(const time_t rawtime) {
+	const tm* timeinfo = localtime(&rawtime);
 	unsigned const period = getPeriod();
 
 	if (0 == period) {
-		return false;
+		return 0;
 	}
 
 	unsigned offset = elapsedDaysSinceEpochToPeriodStart % period;
-	unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + period - offset) % period;
-	return isDayEnabled(index);
+	unsigned index = (getElapsedDaysSinceEpoch(*timeinfo) + period - offset) % period;
+	return (isDayEnabled(index) ? 100 : 0);
 }
 
 PeriodicSchedulerDTO PeriodicScheduler::toPeriodicSchedulerDto() const {

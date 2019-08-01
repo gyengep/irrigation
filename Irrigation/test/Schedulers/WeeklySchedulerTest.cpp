@@ -11,14 +11,17 @@ using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void checkDay(tm& timeinfo, const Scheduler& scheduler, bool expectedResult) {
+void checkDay(tm& timeinfo, Scheduler& scheduler, bool expectedResult) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
+
 				timeinfo.tm_hour = hour;
 				timeinfo.tm_min = min;
 				timeinfo.tm_sec = sec;
-				ASSERT_THAT(scheduler.isDayScheduled(timeinfo), Eq(expectedResult));
+
+				scheduler.process(timelocal(&timeinfo));
+				ASSERT_THAT(scheduler.isDayScheduled(), Eq(expectedResult));
 			}
 		}
 	}

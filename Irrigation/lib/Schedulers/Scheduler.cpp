@@ -22,3 +22,20 @@ string to_string(SchedulerType schedulerType) {
 		throw invalid_argument("Unknown value of enum SchedulerType: " + to_string(static_cast<unsigned>(schedulerType)));
 	}
 }
+
+Scheduler::Scheduler() :
+	adjustment(0)
+{
+}
+
+void Scheduler::process(const std::time_t rawtime) {
+	adjustment = onProcess(rawtime);
+}
+
+bool Scheduler::isDayScheduled() const {
+	return (adjustment > 0);
+}
+
+unsigned Scheduler::getAdjustment() const {
+	return adjustment;
+}

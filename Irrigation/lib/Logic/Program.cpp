@@ -152,14 +152,15 @@ SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 
-bool Program::isScheduled(const tm& timeinfo) {
+bool Program::isScheduled(const std::time_t rawtime) {
 	if (false == disabled) {
 		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
-			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
+			const tm* timeinfo = localtime(&rawtime);
+			if (startTime.equals(timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec)) {
 				Scheduler& scheduler = getCurrentScheduler();
-				scheduler.process(timeinfo);
-				return scheduler.isDayScheduled(timeinfo);
+				scheduler.process(rawtime);
+				return scheduler.isDayScheduled();
 			}
 		}
 	}

@@ -43,9 +43,7 @@ public:
 	int getRequiredPercentForNextDay(const std::time_t rawTime) const;
 	int getRequiredPercentForPreviousDay(const std::time_t rawTime) const;
 
-	virtual void process(const std::tm& timeinfo) override;
-	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
-	virtual unsigned getAdjustment() const override;
+	virtual unsigned onProcess(const std::time_t rawtime) override;
 
 	virtual nlohmann::json saveTo() const;
 	virtual void loadFrom(const nlohmann::json& json);

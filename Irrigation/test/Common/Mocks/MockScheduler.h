@@ -6,6 +6,6 @@
 
 class MockScheduler : public Scheduler {
 public:
-	MOCK_CONST_METHOD1(isDayScheduled, bool(const std::tm& timeinfo));
+	MOCK_METHOD1(onProcess, unsigned(const std::time_t rawtime));
 };
 

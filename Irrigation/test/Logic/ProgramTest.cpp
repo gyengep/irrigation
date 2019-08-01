@@ -189,9 +189,9 @@ TEST(ProgramTest, isScheduled1) {
 			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
 	EXPECT_CALL(program, getCurrentScheduler()).
 			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, isDayScheduled(_)).
+	EXPECT_CALL(scheduler, onProcess(_)).
 			Times(4).
-			WillRepeatedly(Return(false));
+			WillRepeatedly(Return(0));
 
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
 	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
@@ -202,7 +202,7 @@ TEST(ProgramTest, isScheduled1) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				EXPECT_FALSE(program.isScheduled(timeinfo));
+				EXPECT_FALSE(program.isScheduled(timelocal(&timeinfo)));
 			}
 		}
 	}
@@ -217,9 +217,9 @@ TEST(ProgramTest, isScheduled2_enabled) {
 			WillRepeatedly(Invoke(&program, &MockProgram::programIsScheduled));
 	EXPECT_CALL(program, getCurrentScheduler()).
 			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, isDayScheduled(_)).
+	EXPECT_CALL(scheduler, onProcess(_)).
 			Times(4).
-			WillRepeatedly(Return(true));
+			WillRepeatedly(Return(100));
 
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
 	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
@@ -237,7 +237,7 @@ TEST(ProgramTest, isScheduled2_enabled) {
 				expectedResult |= (hour == 6 && min == 30 && sec == 0);
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				EXPECT_THAT(program.isScheduled(timeinfo), Eq(expectedResult));
+				EXPECT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(expectedResult));
 			}
 		}
 	}
@@ -261,7 +261,7 @@ TEST(ProgramTest, isScheduled2_disabled) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				EXPECT_FALSE(program.isScheduled(timeinfo));
+				EXPECT_FALSE(program.isScheduled(timelocal(&timeinfo)));
 			}
 		}
 	}

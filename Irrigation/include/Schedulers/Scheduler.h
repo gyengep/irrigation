@@ -15,9 +15,15 @@ std::string to_string(SchedulerType schedulerType);
 
 
 class Scheduler {
+	unsigned adjustment;
+
 public:
+	Scheduler();
 	virtual ~Scheduler() = default;
-	virtual void process(const std::tm& timeinfo) {}
-	virtual bool isDayScheduled(const std::tm& timeinfo) const = 0;
-	virtual unsigned getAdjustment() const { return 100; }
+
+	void process(const std::time_t rawtime);
+	bool isDayScheduled() const;
+	unsigned getAdjustment() const;
+
+	virtual unsigned onProcess(const std::time_t rawtime) = 0;
 };

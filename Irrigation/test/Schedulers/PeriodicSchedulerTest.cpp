@@ -8,6 +8,7 @@ using namespace std;
 using namespace testing;
 using namespace Dto2ObjectTest;
 
+extern bool isScheduled(Scheduler& scheduler, const tm& timeinfo);
 
 TEST(PeriodicSchedulerTest, defaultConstructor) {
 	PeriodicScheduler scheduler;
@@ -293,56 +294,56 @@ TEST(PeriodicSchedulerTest, isDayScheduled) {
 	scheduler.enableDay(5, false);
 	scheduler.enableDay(6, false);
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 5)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 6)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 7)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 8)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 9)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 10)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 11)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 5)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 6)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 7)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 8)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 9)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 10)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 11)));
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 12)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 13)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 14)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 15)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 16)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 17)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 18)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 12)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 13)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 14)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 15)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 16)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 17)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 18)));
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 19)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 20)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 21)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 22)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 23)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 24)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 25)));
-
-	///////////////////////////////////////////////////////////////////////////
-
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 13)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 14)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 15)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 16)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 17)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 18)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 19)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 19)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 20)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 21)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2018, 11, 22)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 23)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 24)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 25)));
 
 	///////////////////////////////////////////////////////////////////////////
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 14)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 15)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 16)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 17)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 18)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 19)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 20)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2017, 11, 13)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2017, 11, 14)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2017, 11, 15)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2017, 11, 16)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2017, 11, 17)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2017, 11, 18)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2017, 11, 19)));
+
+	///////////////////////////////////////////////////////////////////////////
+
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2016, 11, 14)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2016, 11, 15)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2016, 11, 16)));
+	EXPECT_TRUE(isScheduled(scheduler, toCalendarTime(2016, 11, 17)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2016, 11, 18)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2016, 11, 19)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2016, 11, 20)));
 }
 
 TEST(PeriodicSchedulerTest, isDayScheduledInvalid) {
 	PeriodicScheduler scheduler;
 
 	scheduler.setPeriod(0);
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 5)));
+	EXPECT_FALSE(isScheduled(scheduler, toCalendarTime(2018, 11, 5)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

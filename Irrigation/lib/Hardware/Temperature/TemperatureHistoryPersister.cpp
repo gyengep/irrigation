@@ -93,10 +93,10 @@ void TemperatureHistoryPersister::onTimer() {
 ///////////////////////////////////////////////////////////////////////////////
 
 string TemperatureHistoryPersister::timeToString(const time_t& rawTime) {
-	const tm* ptm = localtime(&rawTime);
 	char buffer[32];
 
-	strftime(buffer, 32, "%Y.%m.%d %H:%M", ptm);
+	const tm* timeinfo = localtime(&rawTime);
+	strftime(buffer, 32, "%Y.%m.%d %H:%M", timeinfo);
 	return string(buffer);
 }
 
