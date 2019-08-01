@@ -1,6 +1,7 @@
 #include "TimeConversion.h"
 #include <cstring>
 #include <stdexcept>
+#include <mutex>
 
 using namespace std;
 
@@ -56,4 +57,8 @@ unsigned getElapsedDaysSinceEpoch(const tm& timeinfo) {
 	}
 
 	return rawtime / (60 * 60 * 24);
+}
+
+unsigned getElapsedDaysSinceEpoch(const std::time_t rawtime) {
+	return getElapsedDaysSinceEpoch(*localtime(&rawtime));
 }

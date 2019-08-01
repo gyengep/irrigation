@@ -1,6 +1,6 @@
 #include "TemperatureDependentScheduler.h"
 #include "Logger/Logger.h"
-#include "Utils/TimePeriod.h"
+#include "Utils/TimeConversion.h"
 #include <algorithm>
 #include <chrono>
 #include <limits>
@@ -50,7 +50,16 @@ int TemperatureDependentScheduler::getRequiredPercentFromTemperature(float tempe
 		}
 	}
 
-	return temperatureAndPercents.back().second;
+//	return temperatureAndPercents.back().second;
+	const auto prev1 = prev(temperatureAndPercents.end());
+	const auto prev2 = prev(prev1);
+
+	const double t0 = prev2->first;
+	const double t1 = prev1->first;
+	const double p0 = prev2->second;
+	const double p1 = prev1->second;
+	const double ratio = (temperature - t0) / (t1 - t0);
+	return ((p1 - p0) * ratio ) + p0;
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
@@ -84,6 +93,10 @@ unsigned TemperatureDependentScheduler::getAdjustment() const {
 }
 
 void TemperatureDependentScheduler::process(const tm& timeinfo) {
+
+	tm timeinfoCopy(timeinfo);
+	const time_t currentTime = timelocal(&timeinfoCopy);
+
 	if (nullptr == temperatureForecast) {
 		throw logic_error("TemperatureDependentScheduler::process()  nullptr == temperatureForecast");
 	}
@@ -95,30 +108,21 @@ void TemperatureDependentScheduler::process(const tm& timeinfo) {
 	LOGGER.trace(">>> TemperatureDependentScheduler::process() <<<");
 	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
 
-	tm timeinfoCopy {0};
-	memcpy(&timeinfoCopy, &timeinfo, sizeof(timeinfo));
+	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(timeinfo);
+	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(lastRun);
 
-	const time_t currentTime = timelocal(&timeinfoCopy);
-	const auto yesterday = getPreviousPeriod(currentTime, chrono::hours(24));
-	const auto today = getCurrentPeriod(currentTime, chrono::hours(24));
+	LOGGER.trace("Last run:        %s", asctime(localtime(&lastRun)));
+	LOGGER.trace("Current time:    %s", asctime(&timeinfo));
 
-	const auto savedLastRun = lastRun;
 	lastRun = currentTime;
 
-	LOGGER.trace("Yesterday start: %s", asctime(localtime(&yesterday.first)));
-	LOGGER.trace("Yesterday end:   %s", asctime(localtime(&yesterday.second)));
-	LOGGER.trace("Today start:     %s", asctime(localtime(&today.first)));
-	LOGGER.trace("Today end:       %s", asctime(localtime(&today.second)));
-	LOGGER.trace("Last run:        %s", asctime(localtime(&savedLastRun)));
-	LOGGER.trace("Current time:    %s", asctime(localtime(&currentTime)));
-
-	if (today.first <= savedLastRun &&  savedLastRun <= today.second) {
+	if (currentDaysSinceEpoch == lastRunDaySinceEpoch) {
 		LOGGER.trace("Last run is TODAY");
 		adjustment = 0;
 		return;
 	}
 
-	if (yesterday.first <= savedLastRun &&  savedLastRun <= yesterday.second) {
+	if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
 		LOGGER.trace("Last run is YESTERDAY");
 		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(currentTime);
 		remainingPercent -= requiredPercentForPreviousDay;

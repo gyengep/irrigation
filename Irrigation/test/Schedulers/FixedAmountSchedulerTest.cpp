@@ -1,5 +1,6 @@
 #include "FixedAmountSchedulerTest.h"
 #include "Utils/TimeConversion.h"
+#include "Logger/Logger.h"
 
 using namespace std;
 using namespace testing;
@@ -28,12 +29,7 @@ time_t toLocalTime(int year, int month, int day, int hour, int min, int sec) {
 	return timelocal(&timeinfo);
 }
 
-#include "Logger/Logger.h"
-
 TEST_F(FixedAmountSchedulerTest, getAdjustment) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
-
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
 
@@ -43,20 +39,45 @@ TEST_F(FixedAmountSchedulerTest, getAdjustment) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
 }
 
-TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection1) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
-
-	const int temp1 = 20;
-	const int temp2 = 12;
+TEST_F(FixedAmountSchedulerTest, getAdjustmentLower) {
+	const int forecastedTemp1 = 9;
 
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp1)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
+	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(0));
+}
+/*
+TEST_F(FixedAmountSchedulerTest, getAdjustmentHigher) {
+	const int forecastedTemp1 = 35;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(120));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(120));
+}
+*/
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection1) {
+	const int forecastedTemp1 = 20;
+	const int forecastedTemp2 = 12;
+	const int measuredTemp1 = forecastedTemp1;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 29, 4, 0, 0), toLocalTime(2020, 3, 1, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp2)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp2)));
 
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureHistory::Values(0, temp1, 0)));
+		WillOnce(Return(TemperatureHistory::Values(0, measuredTemp1, 0)));
 
 	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
@@ -70,20 +91,17 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection1) {
 }
 
 TEST_F(FixedAmountSchedulerTest, getAdjustmentWithCorrection1) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
-
-	const int temp1 = 20;
-	const int correction1 = 5;
-	const int temp2 = 12;
+	const int forecastedTemp1 = 20;
+	const int forecastedTemp2 = 12;
+	const int measuredTemp1 = forecastedTemp1 + 5;
 
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp1)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 29, 4, 0, 0), toLocalTime(2020, 3, 1, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp2)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp2)));
 
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureHistory::Values(0, temp1 + correction1, 0)));
+		WillOnce(Return(TemperatureHistory::Values(0, measuredTemp1, 0)));
 
 	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
@@ -96,20 +114,56 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithCorrection1) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(120));
 }
 
-TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection2) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
-
-	const int temp1 = 15;
-	const int temp2 = 22;
+TEST_F(FixedAmountSchedulerTest, getAdjustmentSameDay1) {
+	const int forecastedTemp1 = 20;
 
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp1)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 10, 0, 0));
+	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 10, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+}
+
+TEST_F(FixedAmountSchedulerTest, getAdjustmentEarlierDay1) {
+	const int forecastedTemp1 = 20;
+	const int forecastedTemp2 = 12;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 20, 4, 0, 0), toLocalTime(2020, 2, 21, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 22, 4, 0, 0), toLocalTime(2020, 2, 23, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp2)));
+
+	scheduler->process(toCalendarTime(2020, 2, 20, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 20, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+
+	scheduler->process(toCalendarTime(2020, 2, 22, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 22, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection2) {
+	const int forecastedTemp1 = 15;
+	const int forecastedTemp2 = 22;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 29, 4, 0, 0), toLocalTime(2020, 3, 1, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp2)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp2)));
 
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureHistory::Values(0, temp1, 0)));
+		WillOnce(Return(TemperatureHistory::Values(0, forecastedTemp1, 0)));
 
 	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
@@ -123,20 +177,17 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithoutCorrection2) {
 }
 
 TEST_F(FixedAmountSchedulerTest, getAdjustmentWithCorrection2) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
-
-	const int temp1 = 15;
-	const int correction1 = -5;
-	const int temp2 = 22;
+	const int forecastedTemp1 = 15;
+	const int forecastedTemp2 = 22;
+	const int measuredTemp1 = forecastedTemp1 - 5;
 
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp1)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 29, 4, 0, 0), toLocalTime(2020, 3, 1, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, temp2)));
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp2)));
 
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
-		WillOnce(Return(TemperatureHistory::Values(0, temp1 + correction1, 0)));
+		WillOnce(Return(TemperatureHistory::Values(0, measuredTemp1, 0)));
 
 	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
 	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
@@ -147,4 +198,63 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentWithCorrection2) {
 	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 29, 4, 0, 0)));
 	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
+
+TEST_F(FixedAmountSchedulerTest, getAdjustmentSameDay2) {
+	const int forecastedTemp1 = 15;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 10, 0, 0));
+	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 10, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+}
+
+TEST_F(FixedAmountSchedulerTest, getAdjustmentEarlierDay2) {
+	const int forecastedTemp1 = 15;
+	const int forecastedTemp2 = 22;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 20, 4, 0, 0), toLocalTime(2020, 2, 21, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 22, 4, 0, 0), toLocalTime(2020, 2, 23, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp2)));
+
+	scheduler->process(toCalendarTime(2020, 2, 20, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 20, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+
+	scheduler->process(toCalendarTime(2020, 2, 22, 4, 0, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 22, 4, 0, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(FixedAmountSchedulerTest, dayStart) {
+	LOGGER.setLevel(LogLevel::TRACE);
+	LOGGER.setOutputStream(cout);
+
+	const int forecastedTemp1 = 15;
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 0, 30, 0), toLocalTime(2020, 2, 29, 0, 29, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 0, 30, 0));
+	EXPECT_TRUE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 0, 30, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(100));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
+
+	scheduler->process(toCalendarTime(2020, 2, 28, 23, 30, 0));
+	EXPECT_FALSE(scheduler->isDayScheduled(toCalendarTime(2020, 2, 28, 23, 30, 0)));
+	EXPECT_THAT(scheduler->getAdjustment(), Eq(0));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
 }
