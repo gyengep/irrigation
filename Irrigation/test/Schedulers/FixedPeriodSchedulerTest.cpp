@@ -1,11 +1,15 @@
 #include "FixedPeriodSchedulerTest.h"
 #include "Utils/TimeConversion.h"
+#include "Logger/Logger.h"
 
 using namespace std;
 using namespace testing;
 
 
 void FixedPeriodSchedulerTest::SetUp() {
+//	LOGGER.setLevel(LogLevel::TRACE);
+//	LOGGER.setOutputStream(cout);
+
 	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new FixedPeriodScheduler(mockTemperatureForecast, mockTemperatureHistory));

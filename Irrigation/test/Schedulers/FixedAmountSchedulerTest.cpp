@@ -5,7 +5,11 @@
 using namespace std;
 using namespace testing;
 
+
 void FixedAmountSchedulerTest::SetUp() {
+//	LOGGER.setLevel(LogLevel::TRACE);
+//	LOGGER.setOutputStream(cout);
+
 	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new FixedAmountScheduler(mockTemperatureForecast, mockTemperatureHistory));
@@ -46,19 +50,16 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentLower) {
 	EXPECT_THAT(scheduler->process(toLocalTime(2020, 2, 28, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(0));
 }
-/*
+
 TEST_F(FixedAmountSchedulerTest, getAdjustmentHigher) {
 	const int forecastedTemp1 = 35;
 
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, forecastedTemp1)));
 
-	scheduler->process(toLocalTime(2020, 2, 28, 4, 0, 0));
-	EXPECT_TRUE(scheduler->isDayScheduled());
-	EXPECT_THAT(scheduler->getAdjustment(), Eq(120));
+	EXPECT_THAT(scheduler->process(toLocalTime(2020, 2, 28, 4, 0, 0)), Eq(Scheduler::Result(true, true, 120)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(120));
 }
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 

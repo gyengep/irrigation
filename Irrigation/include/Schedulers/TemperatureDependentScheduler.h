@@ -17,7 +17,6 @@ class TemperatureDependentScheduler : public Scheduler {
 	std::vector<std::pair<float, int>> temperatureAndPercents;
 
 	int remainingPercent;
-	int adjustment;
 	std::time_t lastRun;
 
 	virtual int onCalculateAdjustment(const std::time_t rawTime);

@@ -183,7 +183,7 @@ int FixedAmountScheduler::onCalculateAdjustment(const time_t rawTime) {
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
 
 	if (requiredPercentForNextDay > getRemainingPercent()) {
-		return 100;
+		return max(requiredPercentForNextDay, 100);
 	} else {
 		return 0;
 	}
