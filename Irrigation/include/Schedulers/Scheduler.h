@@ -26,6 +26,8 @@ public:
 		Result(bool isScheduled, bool overrideAdjustment, unsigned adjustment);
 
 		bool operator== (const Result& other) const;
+
+		friend std::ostream& operator<<(std::ostream& os, const Result& result);
 	};
 
 	virtual ~Scheduler() = default;

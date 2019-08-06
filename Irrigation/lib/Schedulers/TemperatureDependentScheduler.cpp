@@ -16,7 +16,8 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<Te
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
-	lastRun(0)
+	lastRun(0),
+	useRemainingWithPercent(100)
 {
 	temperatureAndPercents = vector<pair<float, int>>{
 		{ 15.0f, 25 },
@@ -94,7 +95,7 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	}
 
 	LOGGER.trace(">>> TemperatureDependentScheduler::process() <<<");
-	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
+	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 
 	struct tm timeinfo;
 
@@ -115,22 +116,26 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		LOGGER.trace("Last run is YESTERDAY");
 		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
 		remainingPercent -= requiredPercentForPreviousDay;
-		LOGGER.trace("%-30s%d", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+		LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+		LOGGER.trace("%-30s-= %d", "remainingPercent", requiredPercentForPreviousDay);
+		remainingPercent *= (useRemainingWithPercent / 100.0f);
+		LOGGER.trace("%-30s%d%%", "useRemainingWithPercent", useRemainingWithPercent);
+		LOGGER.trace("%-30s*= %d%%", "remainingPercent", useRemainingWithPercent);
 	} else {
 		LOGGER.trace("Last run is OTHER");
 		remainingPercent = 0;
 	}
 
-	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
+	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 
 	int adjustment = onCalculateAdjustment(rawtime);
-	LOGGER.trace("%-30s%d", "adjustment", adjustment);
+	LOGGER.trace("%-30s%d%%", "adjustment", adjustment);
 
 	adjustment = max(adjustment, 0);
-	LOGGER.trace("%-30s%d", "adjustment (min/max)", adjustment);
+	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustment);
 
 	remainingPercent += adjustment;
-	LOGGER.trace("%-30s%d", "remainingPercent", remainingPercent);
+	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 
 	return Scheduler::Result(static_cast<unsigned>(adjustment));
 }
@@ -194,6 +199,7 @@ int FixedAmountScheduler::onCalculateAdjustment(const time_t rawTime) {
 FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
 	TemperatureDependentScheduler(temperatureForecast, temperatureHistory)
 {
+	setUseRemainingWithPercent(50);
 }
 
 FixedPeriodScheduler::~FixedPeriodScheduler() {
@@ -204,4 +210,12 @@ int FixedPeriodScheduler::onCalculateAdjustment(const time_t rawTime) {
 	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
 
 	return (requiredPercentForNextDay - getRemainingPercent());
+}
+
+void FixedPeriodScheduler::setUseRemainingWithPercent(int useRemainingWithPercent) {
+	this->useRemainingWithPercent = useRemainingWithPercent;
+}
+
+int FixedPeriodScheduler::getUseRemainingWithPercent() const {
+	return useRemainingWithPercent;
 }

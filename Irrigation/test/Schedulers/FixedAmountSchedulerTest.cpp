@@ -205,9 +205,6 @@ TEST_F(FixedAmountSchedulerTest, getAdjustmentEarlierDay2) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(FixedAmountSchedulerTest, dayStart) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
-
 	const int forecastedTemp1 = 15;
 
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 0, 30, 0), toLocalTime(2020, 2, 29, 0, 29, 59))).

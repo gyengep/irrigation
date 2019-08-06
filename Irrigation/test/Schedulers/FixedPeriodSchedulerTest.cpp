@@ -7,13 +7,14 @@ using namespace testing;
 
 
 void FixedPeriodSchedulerTest::SetUp() {
-//	LOGGER.setLevel(LogLevel::TRACE);
-//	LOGGER.setOutputStream(cout);
+	//LOGGER.setLevel(LogLevel::TRACE);
+	//LOGGER.setOutputStream(cout);
 
 	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new FixedPeriodScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
+	scheduler->setUseRemainingWithPercent(100);
 	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 10.0f, 20 },
 		{ 15.0f, 40 },
@@ -29,6 +30,12 @@ void FixedPeriodSchedulerTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 extern time_t toLocalTime(int year, int month, int day, int hour, int min, int sec);
+
+
+TEST_F(FixedPeriodSchedulerTest, getDefaultgetRemainingWithPercent) {
+	scheduler.reset(new FixedPeriodScheduler(mockTemperatureForecast, mockTemperatureHistory));
+	EXPECT_THAT(scheduler->getUseRemainingWithPercent(), Eq(50));
+}
 
 TEST_F(FixedPeriodSchedulerTest, getAdjustment) {
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
@@ -58,6 +65,161 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentHigher) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(120));
 }
 
+TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith100Remaining) {
+
+	scheduler->setUseRemainingWithPercent(100);
+	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+		{ 15.0f, 25 },
+		{ 25.0f, 50 },
+		{ 35.0f, 100 }
+	});
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 2, 4, 0, 0), toLocalTime(2019, 8, 3, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 32.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 3, 4, 0, 0), toLocalTime(2019, 8, 4, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 4, 4, 0, 0), toLocalTime(2019, 8, 5, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 27.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 5, 4, 0, 0), toLocalTime(2019, 8, 6, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 6, 4, 0, 0), toLocalTime(2019, 8, 7, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 7, 4, 0, 0), toLocalTime(2019, 8, 8, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 31.0f)));
+
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 2, 4, 0, 0), toLocalTime(2019, 8, 3, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 3, 4, 0, 0), toLocalTime(2019, 8, 4, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 25.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 4, 4, 0, 0), toLocalTime(2019, 8, 5, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 5, 4, 0, 0), toLocalTime(2019, 8, 6, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 31.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 6, 4, 0, 0), toLocalTime(2019, 8, 7, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70))); // 33 - 32
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 45))); // 25 - 28
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80))); // 30 - 27
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85))); // 31 - 28
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 100))); // 33 - 29
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
+
+TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith50Remaining) {
+
+	scheduler->setUseRemainingWithPercent(50);
+	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+		{ 15.0f, 25 },
+		{ 25.0f, 50 },
+		{ 35.0f, 100 }
+	});
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 2, 4, 0, 0), toLocalTime(2019, 8, 3, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 32.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 3, 4, 0, 0), toLocalTime(2019, 8, 4, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 4, 4, 0, 0), toLocalTime(2019, 8, 5, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 27.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 5, 4, 0, 0), toLocalTime(2019, 8, 6, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 6, 4, 0, 0), toLocalTime(2019, 8, 7, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 7, 4, 0, 0), toLocalTime(2019, 8, 8, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 31.0f)));
+
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 2, 4, 0, 0), toLocalTime(2019, 8, 3, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 3, 4, 0, 0), toLocalTime(2019, 8, 4, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 25.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 4, 4, 0, 0), toLocalTime(2019, 8, 5, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 5, 4, 0, 0), toLocalTime(2019, 8, 6, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 31.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 6, 4, 0, 0), toLocalTime(2019, 8, 7, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 67)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 53)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 72)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(true, true, 77)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 90)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
+
+TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith0Remaining) {
+
+	scheduler->setUseRemainingWithPercent(0);
+	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+		{ 15.0f, 25 },
+		{ 25.0f, 50 },
+		{ 35.0f, 100 }
+	});
+
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 2, 4, 0, 0), toLocalTime(2019, 8, 3, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 32.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 3, 4, 0, 0), toLocalTime(2019, 8, 4, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 4, 4, 0, 0), toLocalTime(2019, 8, 5, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 27.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 5, 4, 0, 0), toLocalTime(2019, 8, 6, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 6, 4, 0, 0), toLocalTime(2019, 8, 7, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
+	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 7, 4, 0, 0), toLocalTime(2019, 8, 8, 3, 59, 59))).
+		WillOnce(Return(TemperatureForecast::Values(0, 31.0f)));
+
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 2, 4, 0, 0), toLocalTime(2019, 8, 3, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 3, 4, 0, 0), toLocalTime(2019, 8, 4, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 25.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 4, 4, 0, 0), toLocalTime(2019, 8, 5, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 5, 4, 0, 0), toLocalTime(2019, 8, 6, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 31.0f, 0)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 6, 4, 0, 0), toLocalTime(2019, 8, 7, 3, 59, 59))).
+		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 60)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWithoutCorrection1) {

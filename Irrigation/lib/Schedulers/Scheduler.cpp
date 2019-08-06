@@ -1,4 +1,6 @@
 #include "Scheduler.h"
+#include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -48,4 +50,14 @@ bool Scheduler::Result::operator== (const Result& other) const {
 	return  (isScheduled == other.isScheduled) &&
 			(overrideAdjustment == other.overrideAdjustment) &&
 			(adjustment == other.adjustment);
+}
+
+ostream& operator<<(ostream& os, const Scheduler::Result& result) {
+	ostringstream oss;
+	os << "SchedulerResult{";
+	os << "isScheduled: " << std::boolalpha << result.isScheduled  << ", ";
+	os << "overrideAdjustment: " << std::boolalpha << result.overrideAdjustment  << ", ";
+	os << "adjustment: " << result.adjustment << "%";
+	os << "}";
+	return os;
 }
