@@ -273,7 +273,7 @@ TEST(ProgramTest, isScheduled3) {
 				expectedResult |= (hour == 6 && min == 30 && sec == 0);
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 25 : 0)));
+				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
 			}
 		}
 	}

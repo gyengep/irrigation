@@ -20,6 +20,8 @@ string to_string(SchedulerType schedulerType) {
 		return "fixed_amount";
 	case SchedulerType::FIXED_PERIOD:
 		return "fixed_period";
+	case SchedulerType::HOT_WEATHER:
+		return "hot_weather";
 	default:
 		throw invalid_argument("Unknown value of enum SchedulerType: " + to_string(static_cast<unsigned>(schedulerType)));
 	}

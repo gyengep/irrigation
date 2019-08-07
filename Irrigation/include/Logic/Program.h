@@ -12,6 +12,7 @@ class WeeklyScheduler;
 class EveryDayScheduler;
 class FixedAmountScheduler;
 class FixedPeriodScheduler;
+class HotWeatherScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
 
@@ -30,6 +31,7 @@ protected:
 	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
 	std::shared_ptr<FixedAmountScheduler> fixedAmountScheduler;
 	std::shared_ptr<FixedPeriodScheduler> fixedPeriodScheduler;
+	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
 	std::shared_ptr<Scheduler> currentScheduler;
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
@@ -54,6 +56,7 @@ public:
 		std::shared_ptr<EveryDayScheduler> everyDayScheduler,
 		std::shared_ptr<FixedAmountScheduler> fixedAmountScheduler,
 		std::shared_ptr<FixedPeriodScheduler> fixedPeriodScheduler,
+		std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler,
 		std::shared_ptr<RunTimeContainer> runTimes,
 		std::shared_ptr<StartTimeContainer> startTimes);
 	Program(const ProgramDTO& programDTO);
@@ -112,6 +115,7 @@ class Program::Builder {
 	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
 	std::shared_ptr<FixedAmountScheduler> fixedAmountScheduler;
 	std::shared_ptr<FixedPeriodScheduler> fixedPeriodScheduler;
+	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
 	std::shared_ptr<RunTimeContainer> runTimes;
 	std::shared_ptr<StartTimeContainer> startTimes;
 
@@ -126,8 +130,6 @@ public:
 	Builder& setPeriodicScheduler(std::shared_ptr<PeriodicScheduler> periodicScheduler);
 	Builder& setWeeklyScheduler(std::shared_ptr<WeeklyScheduler> weeklyScheduler);
 	Builder& setEveryDayScheduler(std::shared_ptr<EveryDayScheduler> everyDayScheduler);
-	Builder& setFixedAmountScheduler(std::shared_ptr<FixedAmountScheduler> fixedAmountScheduler);
-	Builder& setFixedPeriodScheduler(std::shared_ptr<FixedPeriodScheduler> fixedPeriodScheduler);
 	Builder& setRunTimeContainer(std::shared_ptr<RunTimeContainer> runTimes);
 	Builder& setStartTimeContainer(std::shared_ptr<StartTimeContainer> startTimes);
 

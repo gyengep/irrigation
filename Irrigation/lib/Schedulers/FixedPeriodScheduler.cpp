@@ -20,11 +20,3 @@ int FixedPeriodScheduler::onCalculateAdjustment(const time_t rawTime) {
 
 	return (requiredPercentForNextDay - getRemainingPercent());
 }
-
-void FixedPeriodScheduler::setUseRemainingWithPercent(int useRemainingWithPercent) {
-	this->useRemainingWithPercent = useRemainingWithPercent;
-}
-
-int FixedPeriodScheduler::getUseRemainingWithPercent() const {
-	return useRemainingWithPercent;
-}

@@ -15,9 +15,9 @@ const time_t TemperatureDependentScheduler::aDayInSeconds = chrono::duration_cas
 TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
+	useRemainingWithPercent(100),
 	remainingPercent(0),
-	lastRun(0),
-	useRemainingWithPercent(100)
+	lastRun(0)
 {
 	temperatureAndPercents = vector<pair<float, int>>{
 		{ 15.0f, 25 },
@@ -171,4 +171,12 @@ void TemperatureDependentScheduler::loadFrom(const nlohmann::json& values) {
 
 	LOGGER.trace("remainingPercent: %d", remainingPercent);
 	LOGGER.trace("lastRun: %llu", (long long unsigned)lastRun);
+}
+
+void TemperatureDependentScheduler::setUseRemainingWithPercent(int useRemainingWithPercent) {
+	this->useRemainingWithPercent = useRemainingWithPercent;
+}
+
+int TemperatureDependentScheduler::getUseRemainingWithPercent() const {
+	return useRemainingWithPercent;
 }
