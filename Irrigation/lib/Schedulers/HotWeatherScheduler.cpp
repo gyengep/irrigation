@@ -8,7 +8,7 @@ HotWeatherScheduler::HotWeatherScheduler(const shared_ptr<TemperatureHistory>& t
 	temperatureHistory(temperatureHistory),
 	lastRun(0),
 	periodInSeconds(60 * 60 *2),
-	minTemperature(30.0f)
+	minTemperature(33.0f)
 {
 }
 
