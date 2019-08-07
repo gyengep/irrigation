@@ -117,7 +117,7 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
 		remainingPercent -= requiredPercentForPreviousDay;
 		LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
-		LOGGER.trace("%-30s-= %d", "remainingPercent", requiredPercentForPreviousDay);
+		LOGGER.trace("%-30s-= %d%%", "remainingPercent", requiredPercentForPreviousDay);
 		remainingPercent *= (useRemainingWithPercent / 100.0f);
 		LOGGER.trace("%-30s%d%%", "useRemainingWithPercent", useRemainingWithPercent);
 		LOGGER.trace("%-30s*= %d%%", "remainingPercent", useRemainingWithPercent);
@@ -171,51 +171,4 @@ void TemperatureDependentScheduler::loadFrom(const nlohmann::json& values) {
 
 	LOGGER.trace("remainingPercent: %d", remainingPercent);
 	LOGGER.trace("lastRun: %llu", (long long unsigned)lastRun);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-FixedAmountScheduler::FixedAmountScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
-	TemperatureDependentScheduler(temperatureForecast, temperatureHistory)
-{
-}
-
-FixedAmountScheduler::~FixedAmountScheduler() {
-}
-
-int FixedAmountScheduler::onCalculateAdjustment(const time_t rawTime) {
-	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
-	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
-
-	if (requiredPercentForNextDay > getRemainingPercent()) {
-		return max(requiredPercentForNextDay, 100);
-	} else {
-		return 0;
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
-	TemperatureDependentScheduler(temperatureForecast, temperatureHistory)
-{
-	setUseRemainingWithPercent(50);
-}
-
-FixedPeriodScheduler::~FixedPeriodScheduler() {
-}
-
-int FixedPeriodScheduler::onCalculateAdjustment(const time_t rawTime) {
-	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
-	LOGGER.trace("%-30s%d", "requiredPercentForNextDay", requiredPercentForNextDay);
-
-	return (requiredPercentForNextDay - getRemainingPercent());
-}
-
-void FixedPeriodScheduler::setUseRemainingWithPercent(int useRemainingWithPercent) {
-	this->useRemainingWithPercent = useRemainingWithPercent;
-}
-
-int FixedPeriodScheduler::getUseRemainingWithPercent() const {
-	return useRemainingWithPercent;
 }
