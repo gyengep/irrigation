@@ -175,8 +175,15 @@ pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
 					adjustment = getAdjustment();
 
 					if (result.overrideAdjustment) {
-						LOGGER.debug("The scheduler overrides the adjustment with %d%%", result.adjustment);
 						adjustment *= (result.adjustment / 100.0f);
+						LOGGER.debug("The scheduler overrides the adjustment\n"
+								"\tuser adjustment        %d%%\n"
+								"\tscheduler adjustment   %d%%\n"
+								"\taccumulated adjustment %d%%",
+								getAdjustment(),
+								result.adjustment,
+								adjustment
+							);
 					}
 				}
 

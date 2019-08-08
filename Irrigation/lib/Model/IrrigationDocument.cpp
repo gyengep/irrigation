@@ -109,15 +109,12 @@ void IrrigationDocument::loadFrom(const nlohmann::json& values) {
 }
 
 void IrrigationDocument::saveState() const {
-	LOGGER.trace("IrrigationDocument::saveState() >>>>>");
 	ofstream o(Configuration::getInstance().getPersistedDatFileName());
 	o << setw(4) << saveTo() << endl;
 	LOGGER.debug("Document state is saved");
-	LOGGER.trace("<<<<< IrrigationDocument::saveState()");
 }
 
 void IrrigationDocument::loadState() {
-	LOGGER.trace("IrrigationDocument::loadState() >>>>>");
 	std::ifstream i(Configuration::getInstance().getPersistedDatFileName());
 	if (i.is_open()) {
 		nlohmann::json j;
@@ -127,5 +124,4 @@ void IrrigationDocument::loadState() {
 	} else {
 		LOGGER.debug("Document state is NOT loaded");
 	}
-	LOGGER.trace("<<<<< IrrigationDocument::loadState()");
 }
