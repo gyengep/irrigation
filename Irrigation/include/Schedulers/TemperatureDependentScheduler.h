@@ -16,9 +16,11 @@ class TemperatureDependentScheduler : public Scheduler {
 
 	std::vector<std::pair<float, int>> temperatureAndPercents;
 
-	int useRemainingWithPercent;
 	int remainingPercent;
 	std::time_t lastRun;
+	float remainingA;
+	float forecastA, forecastB;
+	float historyA, historyB;
 
 	virtual int onCalculateAdjustment(const std::time_t rawTime);
 
@@ -29,8 +31,9 @@ public:
 	void setTemperatureAndPercents(const std::vector<std::pair<float, int>>& temperatureAndPercents);
 	int getRequiredPercentFromTemperature(float temperature) const;
 
-	void setUseRemainingWithPercent(int useRemainingWithPercent);
-	int getUseRemainingWithPercent() const;
+	void setRemainingCorrection(float a);
+	void setHistoryCorrection(float a, float b);
+	void setForecastCorrection(float a, float b);
 
 	int getRemainingPercent() const { return remainingPercent; }
 	int getRequiredPercentForNextDay(const std::time_t rawTime) const;

@@ -14,7 +14,7 @@ void FixedPeriodSchedulerTest::SetUp() {
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new FixedPeriodScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
-	scheduler->setUseRemainingWithPercent(100);
+	scheduler->setRemainingCorrection(1.0f);
 	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 10.0f, 20 },
 		{ 15.0f, 40 },
@@ -31,11 +31,6 @@ void FixedPeriodSchedulerTest::TearDown() {
 
 extern time_t toLocalTime(int year, int month, int day, int hour, int min, int sec);
 
-
-TEST_F(FixedPeriodSchedulerTest, getDefaultgetRemainingWithPercent) {
-	scheduler.reset(new FixedPeriodScheduler(mockTemperatureForecast, mockTemperatureHistory));
-	EXPECT_THAT(scheduler->getUseRemainingWithPercent(), Eq(50));
-}
 
 TEST_F(FixedPeriodSchedulerTest, getAdjustment) {
 	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2020, 2, 28, 4, 0, 0), toLocalTime(2020, 2, 29, 3, 59, 59))).
@@ -67,7 +62,7 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentHigher) {
 
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith100Remaining) {
 
-	scheduler->setUseRemainingWithPercent(100);
+	scheduler->setRemainingCorrection(1.0f);
 	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },
@@ -119,7 +114,7 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith100Remaining) {
 
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith50Remaining) {
 
-	scheduler->setUseRemainingWithPercent(50);
+	scheduler->setRemainingCorrection(0.5f);
 	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },
@@ -171,7 +166,7 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith50Remaining) {
 
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith0Remaining) {
 
-	scheduler->setUseRemainingWithPercent(0);
+	scheduler->setRemainingCorrection(0.0f);
 	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },

@@ -92,6 +92,8 @@ TEST_F(HotWeatherSchedulerTest, lastRun2Hour) {
 
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 7, 12, 0, 0), toLocalTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
+	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 7, 13, 0, 0), toLocalTime(2019, 8, 7, 15, 0, 0))).
+		WillOnce(Return(TemperatureHistory::Values(20, 30, 27)));
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 7, 14, 0, 0), toLocalTime(2019, 8, 7, 16, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 28)));
 

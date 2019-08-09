@@ -15,9 +15,13 @@ const time_t TemperatureDependentScheduler::aDayInSeconds = chrono::duration_cas
 TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
-	useRemainingWithPercent(100),
 	remainingPercent(0),
-	lastRun(0)
+	lastRun(0),
+	remainingA(1.0f),
+	forecastA(1.0f),
+	forecastB(0.0f),
+	historyA(1.0f),
+	historyB(0.0f)
 {
 	temperatureAndPercents = vector<pair<float, int>>{
 		{ 15.0f, 25 },
@@ -64,17 +68,41 @@ int TemperatureDependentScheduler::getRequiredPercentFromTemperature(float tempe
 
 int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
 	const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds - 1).max;
+	const float calculatedTemperature = forecastA * temperature + forecastB;
 	const int result = getRequiredPercentFromTemperature(temperature);
 
-	LOGGER.trace("TemperatureDependentScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, result);
+	LOGGER.trace("TemperatureDependentScheduler temperature forecast:\n"
+			"\tforecasted temperature:   %.1f°C\n"
+			"\ta, b:                     %.1f, %.1f\n"
+			"\tcalculated value:         %.1f°C\n"
+			"\trequired adjustment:      %d%%",
+			temperature,
+			forecastA, forecastB,
+			calculatedTemperature,
+			result
+		);
+
+	//LOGGER.trace("TemperatureDependentScheduler: temperature forecast: %.1f°C, required adjustment: %d%%", temperature, result);
 	return result;
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
 	const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now - 1).max;
+	const float calculatedTemperature = historyA * temperature + historyB;
 	const int result = getRequiredPercentFromTemperature(temperature);
 
-	LOGGER.trace("TemperatureDependentScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, result);
+	LOGGER.trace("TemperatureDependentScheduler temperature history:\n"
+			"\tmeasured temperature:     %.1f°C\n"
+			"\ta, b:                     %.1f, %.1f\n"
+			"\tcalculated value:         %.1f°C\n"
+			"\trequired adjustment:      %d%%",
+			temperature,
+			historyA, historyB,
+			calculatedTemperature,
+			result
+		);
+
+//	LOGGER.trace("TemperatureDependentScheduler: measured temperature: %.1f°C, required adjustment: %d%%", temperature, result);
 	return result;
 }
 
@@ -116,8 +144,8 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		remainingPercent -= requiredPercentForPreviousDay;
 		LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
 		LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
-		remainingPercent *= (useRemainingWithPercent / 100.0f);
-		LOGGER.trace("%-30s%d%%", "useRemainingWithPercent", useRemainingWithPercent);
+		remainingPercent *= remainingA;
+		LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
 		LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 	} else {
 		LOGGER.trace("Last run is OTHER");
@@ -160,10 +188,16 @@ void TemperatureDependentScheduler::loadFrom(const nlohmann::json& values) {
 	}
 }
 
-void TemperatureDependentScheduler::setUseRemainingWithPercent(int useRemainingWithPercent) {
-	this->useRemainingWithPercent = useRemainingWithPercent;
+void TemperatureDependentScheduler::setRemainingCorrection(float a) {
+	remainingA = a;
 }
 
-int TemperatureDependentScheduler::getUseRemainingWithPercent() const {
-	return useRemainingWithPercent;
+void TemperatureDependentScheduler::setHistoryCorrection(float a, float b) {
+	historyA = a;
+	historyB = b;
+}
+
+void TemperatureDependentScheduler::setForecastCorrection(float a, float b) {
+	forecastA = a;
+	forecastB = b;
 }

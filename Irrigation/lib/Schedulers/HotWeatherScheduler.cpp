@@ -1,5 +1,6 @@
 #include "HotWeatherScheduler.h"
 #include "Logger/Logger.h"
+#include <sstream>
 
 using namespace std;
 
@@ -25,35 +26,40 @@ void HotWeatherScheduler::setPeriod(const chrono::seconds& period) {
 
 Scheduler::Result HotWeatherScheduler::process(const std::time_t rawtime) {
 
-	if (lastRun + periodInSeconds <= rawtime) {
-		if (temperatureHistory->getHistoryValues(rawtime - periodInSeconds, rawtime).avg >= minTemperature) {
-			lastRun = rawtime;
-			return Scheduler::Result(true);
-		}
+	const auto historyValues = temperatureHistory->getHistoryValues(rawtime - periodInSeconds, rawtime);
+	const bool periodIsOk = (lastRun + periodInSeconds <= rawtime);
+	const bool temperatureIsOk = (historyValues.avg >= minTemperature);
+
+	if (LOGGER.isLoggable(LogLevel::TRACE)) {
+		ostringstream oss;
+		oss << "HotWeatherScheduler::process()\n";
+		oss << "\t";
+		oss << "tempearture min: " << historyValues.min << ", ";
+		oss << "max: " << historyValues.max << ", ";
+		oss << "avg: " << historyValues.avg << "  ";
+		oss << (temperatureIsOk ? "OK" : "SKIPPED") << "\n";
+
+		oss << "\tlast run: " << ((rawtime - lastRun) / 60) << " minutes ago  " << (periodIsOk ? "OK" : "SKIPPED");
+		LOGGER.trace(oss.str().c_str());
+	}
+
+	if (periodIsOk && temperatureIsOk) {
+		lastRun = rawtime;
+		return Scheduler::Result(true);
 	}
 
 	return Scheduler::Result(false);
 }
 
 nlohmann::json HotWeatherScheduler::saveTo() const {
-	LOGGER.trace("HotWeatherScheduler::saveTo()");
-
 	nlohmann::json j;
 	j["lastRun"] = lastRun;
-
-	LOGGER.trace("lastRun: %llu", (long long unsigned)lastRun);
 	return j;
 }
 
 void HotWeatherScheduler::loadFrom(const nlohmann::json& values) {
-	LOGGER.trace("HotWeatherScheduler::loadFrom()");
-
-	{
-		auto it = values.find("lastRun");
-		if (values.end() != it) {
-			lastRun = it.value();
-		}
+	auto it = values.find("lastRun");
+	if (values.end() != it) {
+		lastRun = it.value();
 	}
-
-	LOGGER.trace("lastRun: %llu", (long long unsigned)lastRun);
 }
