@@ -1,4 +1,5 @@
 #include "FixedPeriodSchedulerTest.h"
+#include "Schedulers/TemperatureToPercent.h"
 #include "Utils/TimeConversion.h"
 #include "Logger/Logger.h"
 
@@ -14,8 +15,7 @@ void FixedPeriodSchedulerTest::SetUp() {
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new FixedPeriodScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
-	scheduler->setRemainingCorrection(1.0f);
-	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 10.0f, 20 },
 		{ 15.0f, 40 },
 		{ 20.0f, 60 },
@@ -63,7 +63,7 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentHigher) {
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith100Remaining) {
 
 	scheduler->setRemainingCorrection(1.0f);
-	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },
 		{ 35.0f, 100 }
@@ -115,7 +115,7 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith100Remaining) {
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith50Remaining) {
 
 	scheduler->setRemainingCorrection(0.5f);
-	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },
 		{ 35.0f, 100 }
@@ -167,7 +167,7 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith50Remaining) {
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith0Remaining) {
 
 	scheduler->setRemainingCorrection(0.0f);
-	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },
 		{ 35.0f, 100 }

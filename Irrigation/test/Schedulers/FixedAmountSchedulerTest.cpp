@@ -1,4 +1,5 @@
 #include "FixedAmountSchedulerTest.h"
+#include "Schedulers/TemperatureToPercent.h"
 #include "Utils/TimeConversion.h"
 #include "Logger/Logger.h"
 
@@ -14,7 +15,7 @@ void FixedAmountSchedulerTest::SetUp() {
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new FixedAmountScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
-	scheduler->setTemperatureAndPercents(vector<pair<float, int>>{
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 10.0f, 20 },
 		{ 15.0f, 40 },
 		{ 20.0f, 60 },

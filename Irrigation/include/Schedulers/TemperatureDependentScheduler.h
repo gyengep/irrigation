@@ -14,8 +14,6 @@ class TemperatureDependentScheduler : public Scheduler {
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
-	std::vector<std::pair<float, int>> temperatureAndPercents;
-
 	int remainingPercent;
 	std::time_t lastRun;
 	float remainingA;
@@ -27,9 +25,6 @@ class TemperatureDependentScheduler : public Scheduler {
 public:
 	TemperatureDependentScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
 	virtual ~TemperatureDependentScheduler();
-
-	void setTemperatureAndPercents(const std::vector<std::pair<float, int>>& temperatureAndPercents);
-	int getRequiredPercentFromTemperature(float temperature) const;
 
 	void setRemainingCorrection(float a);
 	void setHistoryCorrection(float a, float b);
