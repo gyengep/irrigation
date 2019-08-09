@@ -19,6 +19,7 @@ class TemperatureDependentScheduler : public Scheduler {
 	float remainingA;
 	float forecastA, forecastB;
 	float historyA, historyB;
+	std::unique_ptr<int> maxAdjustment;
 
 	virtual int onCalculateAdjustment(const std::time_t rawTime);
 

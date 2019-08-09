@@ -104,8 +104,8 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
 		LOGGER.trace("Last run is YESTERDAY");
 		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
-		remainingPercent -= requiredPercentForPreviousDay;
 		LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+		remainingPercent -= requiredPercentForPreviousDay;
 		LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 		remainingPercent *= remainingA;
 		LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
@@ -120,6 +120,10 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	LOGGER.trace("%-30s%d%%", "adjustment", adjustment);
 
 	adjustment = max(adjustment, 0);
+	if (maxAdjustment != nullptr) {
+		adjustment = min(adjustment, *maxAdjustment);
+	}
+
 	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustment);
 
 	remainingPercent += adjustment;
