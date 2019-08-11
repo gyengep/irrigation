@@ -16,13 +16,16 @@ const time_t TemperatureDependentScheduler::aDayInSeconds = chrono::duration_cas
 TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
+	requiredAdjustmentForWholeDay(0),
 	remainingPercent(0),
 	lastRun(0),
 	remainingA(1.0f),
 	forecastA(1.0f),
 	forecastB(0.0f),
 	historyA(1.0f),
-	historyB(0.0f)
+	historyB(0.0f),
+	minAdjustment(0),
+	maxAdjustment(numeric_limits<int>::max())
 {
 }
 
@@ -37,7 +40,7 @@ int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now
 	LOGGER.trace("TemperatureDependentScheduler temperature forecast:\n"
 			"\tforecasted temperature:   %.1f°C\n"
 			"\ta, b:                     %.1f, %.1f\n"
-			"\tcalculated value:         %.1f°C\n"
+			"\tcalculated temperature:   %.1f°C\n"
 			"\trequired adjustment:      %d%%",
 			temperature,
 			forecastA, forecastB,
@@ -69,10 +72,6 @@ int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t
 	return result;
 }
 
-int TemperatureDependentScheduler::onCalculateAdjustment(const time_t) {
-	throw logic_error("Method not implemented: TemperatureDependentScheduler::onCalculateAdjustment()");
-}
-
 Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 
 	if (nullptr == temperatureForecast) {
@@ -97,39 +96,47 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	lastRun = rawtime;
 
 	if (currentDaysSinceEpoch == lastRunDaySinceEpoch) {
+
 		LOGGER.trace("Last run is TODAY");
-		return Scheduler::Result(0U);
-	}
 
-	if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
-		LOGGER.trace("Last run is YESTERDAY");
-		const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
-		LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
-		remainingPercent -= requiredPercentForPreviousDay;
-		LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
-		remainingPercent *= remainingA;
-		LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
-		LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 	} else {
-		LOGGER.trace("Last run is OTHER");
-		remainingPercent = 0;
-		LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+
+		if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
+			LOGGER.trace("Last run is YESTERDAY");
+			const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
+			LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+			remainingPercent -= requiredPercentForPreviousDay;
+			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+			remainingPercent *= remainingA;
+			LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
+			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+		} else {
+			LOGGER.trace("Last run is OTHER");
+			remainingPercent = 0;
+			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+		}
+
+		requiredAdjustmentForWholeDay = (getRequiredPercentForNextDay(rawtime) - getRemainingPercent());
 	}
 
-	int adjustment = onCalculateAdjustment(rawtime);
-	LOGGER.trace("%-30s%d%%", "adjustment", adjustment);
+	int adjustmentForThisScheduling = requiredAdjustmentForWholeDay;
+	LOGGER.trace("%-30s%d%%", "adjustment", adjustmentForThisScheduling);
 
-	adjustment = max(adjustment, 0);
-	if (maxAdjustment != nullptr) {
-		adjustment = min(adjustment, *maxAdjustment);
+	if (adjustmentForThisScheduling < 0) {
+		adjustmentForThisScheduling = 0;
+	} else if (adjustmentForThisScheduling > 0) {
+		adjustmentForThisScheduling = max(adjustmentForThisScheduling, minAdjustment);
+		adjustmentForThisScheduling = min(adjustmentForThisScheduling, maxAdjustment);
 	}
 
-	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustment);
+	requiredAdjustmentForWholeDay -= adjustmentForThisScheduling;
 
-	remainingPercent += adjustment;
+	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustmentForThisScheduling);
+
+	remainingPercent += adjustmentForThisScheduling;
 	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 
-	return Scheduler::Result(static_cast<unsigned>(adjustment));
+	return Scheduler::Result(static_cast<unsigned>(adjustmentForThisScheduling));
 }
 
 nlohmann::json TemperatureDependentScheduler::saveTo() const {
@@ -167,4 +174,12 @@ void TemperatureDependentScheduler::setHistoryCorrection(float a, float b) {
 void TemperatureDependentScheduler::setForecastCorrection(float a, float b) {
 	forecastA = a;
 	forecastB = b;
+}
+
+void TemperatureDependentScheduler::setMinAdjustment(unsigned minAdjustment) {
+	this->minAdjustment = minAdjustment;
+}
+
+void TemperatureDependentScheduler::setMaxAdjustment(unsigned maxAdjustment) {
+	this->maxAdjustment = maxAdjustment;
 }

@@ -12,10 +12,3 @@ FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>
 
 FixedPeriodScheduler::~FixedPeriodScheduler() {
 }
-
-int FixedPeriodScheduler::onCalculateAdjustment(const time_t rawTime) {
-	const int requiredPercentForNextDay = getRequiredPercentForNextDay(rawTime);
-	LOGGER.trace("%-30s%d%%", "requiredPercentForNextDay", requiredPercentForNextDay);
-
-	return (requiredPercentForNextDay - getRemainingPercent());
-}
