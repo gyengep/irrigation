@@ -20,7 +20,6 @@ class TemperatureDependentScheduler : public Scheduler {
 	float remainingA;
 	float forecastA, forecastB;
 	float historyA, historyB;
-	//std::unique_ptr<int> maxAdjustment;
 	int minAdjustment;
 	int maxAdjustment;
 

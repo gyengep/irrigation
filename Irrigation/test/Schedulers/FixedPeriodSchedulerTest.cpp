@@ -57,6 +57,8 @@ void FixedPeriodSchedulerTest::SetUp() {
 }
 
 void FixedPeriodSchedulerTest::TearDown() {
+	LOGGER.setLevel(LogLevel::OFF);
+	LOGGER.setOutputStream(cout);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,37 +89,160 @@ TEST_F(FixedPeriodSchedulerTest, process) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
 }
 
+TEST_F(FixedPeriodSchedulerTest, processForecastCorrection) {
+	scheduler->setForecastCorrection(1.0f, 2.0f);
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 95)));	// 95 : 90
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
+
+	//	remaining: 95 - 90 = 5
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 75 : 75
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
+
+	//	remaining: 75 - 75 = 0
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));	// 105 : 110
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(105));
+
+	//	remaining: 105 - 110 = -5
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));	// 70 : 50
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	//	remaining: 70 - 50 = 20
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 75 : 45
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
+
+	//	remaining: 75 - 45 = 30
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(30));
+
+	//	remaining: 30 - 0 = 30
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));	// 80 : 70
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+
+	//	remaining: 80 - 70 = 10
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	//	90
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(90));
+}
+
+TEST_F(FixedPeriodSchedulerTest, processHistoryCorrection) {
+	LOGGER.setLevel(LogLevel::TRACE);
+	LOGGER.setOutputStream(cout);
+
+	scheduler->setHistoryCorrection(1.0f, 2.0f);
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 100
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
+
+	//	remaining: 85 - 100 = -15
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	// 65 : 85
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	//	remaining: 65 - 85 = -20
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 115)));	// 95 : 120
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
+
+	//	remaining: 95 - 120 = -25
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 60 : 60
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	//	remaining: 60 - 60 = 0
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));	// 65 : 50
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	//	remaining: 65 - 50 = 15
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(15));
+
+	//	remaining: 15 - 0 = 15
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 70 : 80
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	//	remaining: 70 - 80 = -10
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 90)));	//	80
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
+
+TEST_F(FixedPeriodSchedulerTest, processDailyTwoTimes) {
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 85 : 90
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 65 : 75
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 65 : 75
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));	// 95 : 110
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 95 : 110
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));	// 60 : 50
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 60 : 50
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 65 : 45
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 65 : 45
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(20));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(20));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));	// 70 : 70
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 70 : 70
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	//	80
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 16, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	//	80
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
+
 TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith100Remaining) {
 	scheduler->setRemainingCorrection(1.0f);
 
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
 
-	//	reaining: 85 - 90 = -5
+	//	remaining: 85 - 90 = -5
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 65 : 75
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
 
-	//	reaining: 65 - 75 = -10
+	//	remaining: 65 - 75 = -10
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));	// 95 : 110
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
 
-	//	reaining: 95 - 110 = -15
+	//	remaining: 95 - 110 = -15
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));	// 60 : 50
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
 
-	//	reaining: 60 - 50 = 10
+	//	remaining: 60 - 50 = 10
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 65 : 45
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
 
-	//	reaining: 65 - 45 = 20
+	//	remaining: 65 - 45 = 20
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(20));
 
-	//	reaining: 20 - 0 = 20
+	//	remaining: 20 - 0 = 20
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));	// 70 : 70
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
 
-	//	reaining: 70 - 70 = 0
+	//	remaining: 70 - 70 = 0
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	//	80
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
 }
@@ -128,31 +253,31 @@ TEST_F(FixedPeriodSchedulerTest, getAdjustmentWith50Remaining) {
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
 
-	//	reaining: 85 - 90 = -5
+	//	remaining: 85 - 90 = -5
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 67)));	// 65 : 75
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
 
-	//	reaining: 65 - 75 = -10
+	//	remaining: 65 - 75 = -10
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 100)));	// 95 : 110
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
 
-	//	reaining: 95 - 110 = -15
+	//	remaining: 95 - 110 = -15
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 67)));	// 60 : 50
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
 
-	//	reaining: 60 - 50 = 10
+	//	remaining: 60 - 50 = 10
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 60)));	// 65 : 45
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
 
-	//	reaining: 65 - 45 = 20
+	//	remaining: 65 - 45 = 20
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(10));
 
-	//	reaining: 10 - 0 = 10
+	//	remaining: 10 - 0 = 10
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));	// 70 : 70
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
 
-	//	reaining: 70 - 70 = 0
+	//	remaining: 70 - 70 = 0
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	//	80
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
 }
