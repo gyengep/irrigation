@@ -1,4 +1,5 @@
 #include "HotWeatherSchedulerTest.h"
+#include "TemperatureDependentSchedulerTest.h"
 #include "Utils/TimeConversion.h"
 #include "Logger/Logger.h"
 
@@ -20,7 +21,6 @@ void HotWeatherSchedulerTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 extern time_t toLocalTime(int year, int month, int day, int hour, int min, int sec);
-
 
 TEST_F(HotWeatherSchedulerTest, process) {
 	scheduler->setMinTemperature(25);
