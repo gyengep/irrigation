@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <memory>
+#include <sstream>
 #include <vector>
 #include "json.hpp"
 #include "Schedulers/Scheduler.h"
@@ -9,7 +10,7 @@
 
 
 class TemperatureDependentScheduler : public Scheduler {
-	static const std::time_t aDayInSeconds;
+	static const std::time_t aDayInSeconds = 24 * 60 * 60;
 
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
@@ -22,6 +23,7 @@ class TemperatureDependentScheduler : public Scheduler {
 	float historyA, historyB;
 	int minAdjustment;
 	int maxAdjustment;
+	std::unique_ptr<int> trim;
 
 public:
 	TemperatureDependentScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
@@ -32,6 +34,7 @@ public:
 	void setForecastCorrection(float a, float b);
 	void setMinAdjustment(unsigned minAdjustment);
 	void setMaxAdjustment(unsigned maxAdjustment);
+	void trimAdjustmentOver(unsigned percent);
 
 	int getRemainingPercent() const { return remainingPercent; }
 	int getRequiredPercentForNextDay(const std::time_t rawTime) const;
@@ -41,4 +44,7 @@ public:
 
 	virtual nlohmann::json saveTo() const;
 	virtual void loadFrom(const nlohmann::json& json);
+
+	friend std::string to_string(const TemperatureDependentScheduler& scheduler);
+	friend std::ostream& operator<<(std::ostream& os, const TemperatureDependentScheduler& scheduler);
 };

@@ -369,11 +369,7 @@ shared_ptr<Program> Program::Builder::build() {
 				Temperature::getInstance().getTemperatureForecast(),
 				Temperature::getInstance().getTemperatureHistory()
 			);
-
-		fixedPeriodScheduler->setRemainingCorrection(0.5f);
-		fixedPeriodScheduler->setForecastCorrection(1.0f, 2.0f);
-		fixedPeriodScheduler->setHistoryCorrection(1.0f, 0.0f);
-}
+	}
 
 	if (nullptr == hotWeatherScheduler) {
 		hotWeatherScheduler = make_shared<HotWeatherScheduler>(

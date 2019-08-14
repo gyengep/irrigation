@@ -63,3 +63,17 @@ void HotWeatherScheduler::loadFrom(const nlohmann::json& values) {
 		lastRun = it.value();
 	}
 }
+
+string to_string(const HotWeatherScheduler& scheduler) {
+	ostringstream oss;
+	oss << scheduler;
+	return oss.str();
+}
+
+ostream& operator<<(ostream& os, const HotWeatherScheduler& scheduler) {
+	os << "HotWeatherScheduler{";
+	os << "periodInSeconds=" << scheduler.periodInSeconds << ", ";
+	os << "minTemperature=" << scheduler.minTemperature;
+	os << "}";
+	return os;
+}

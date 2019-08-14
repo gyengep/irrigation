@@ -485,6 +485,43 @@ TEST_F(TemperatureDependentSchedulerProcessTest, historyCorrection) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Trim
+
+TEST_F(TemperatureDependentSchedulerProcessTest, trim) {
+	scheduler->trimAdjustmentOver(80);
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	// 85 : 90
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+
+	// remaining: 80 - 80 = 0
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));	// 65 : 75
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	// remaining: 65 - 75 = -10
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 90)));	// 95 : 110
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+
+	// remaining: 80 - 80 = 0
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 60)));	// 60 : 50
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
+
+	// remaining: 60 - 50 = 10
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 65 : 45
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
+
+	// remaining: 65 - 45 = 20
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(20));
+
+	// remaining: 20 - 0 = 20
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));	// 70 : 70
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
+
+	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	//	80
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Min adjustment / Remaining correction
 
 TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrection100) {

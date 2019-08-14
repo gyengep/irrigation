@@ -14,6 +14,12 @@
 #include "Utils/FileReaderWriterImpl.h"
 #include <stdexcept>
 
+#include "Logic/Program.h"
+#include "Logic/ProgramContainer.h"
+#include "Schedulers/FixedAmountScheduler.h"
+#include "Schedulers/FixedPeriodScheduler.h"
+#include "Schedulers/HotWeatherScheduler.h"
+
 using namespace std;
 
 
@@ -101,6 +107,36 @@ void IrrigationApplication::initDocument() {
 			make_shared<XmlReader>(),
 			make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
 		);
+
+		// fulocsolas
+		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setMinAdjustment(50);
+		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setForecastCorrection(1.0f, 2.0f);
+		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setRemainingCorrection(0.5f);
+		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().trimAdjustmentOver(100);
+
+		// buxus
+		irrigationDocument->getPrograms().at(IdType(7))->getFixedAmountScheduler();
+
+		// kanikula
+		irrigationDocument->getPrograms().at(IdType(9))->getHotWeatherScheduler();
+
+		// paradicsom
+		irrigationDocument->getPrograms().at(IdType(12))->getFixedAmountScheduler().setMinAdjustment(75);
+		irrigationDocument->getPrograms().at(IdType(12))->getFixedAmountScheduler().setMaxAdjustment(75);
+
+		// virag
+		irrigationDocument->getPrograms().at(IdType(14))->getFixedAmountScheduler().setMinAdjustment(75);
+		irrigationDocument->getPrograms().at(IdType(14))->getFixedAmountScheduler().setMaxAdjustment(75);
+
+
+ 		LOGGER.debug("Temperature dependent schedulers are set");
+
+		if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+			for (const auto& programWithId : irrigationDocument->getPrograms()) {
+				LOGGER.debug("Program[%s] is added: %s", to_string(programWithId.first).c_str(), to_string(*programWithId.second).c_str());
+			}
+		}
+
 
 		irrigationDocument->loadState();
 

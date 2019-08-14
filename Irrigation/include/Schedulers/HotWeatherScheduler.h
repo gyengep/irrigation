@@ -24,4 +24,7 @@ public:
 
 	nlohmann::json saveTo() const;
 	void loadFrom(const nlohmann::json& json);
+
+	friend std::string to_string(const HotWeatherScheduler& scheduler);
+	friend std::ostream& operator<<(std::ostream& os, const HotWeatherScheduler& scheduler);
 };

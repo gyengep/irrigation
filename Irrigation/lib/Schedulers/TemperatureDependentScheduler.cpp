@@ -11,8 +11,6 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const time_t TemperatureDependentScheduler::aDayInSeconds = chrono::duration_cast<chrono::seconds>(chrono::hours(24)).count();
-
 TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
@@ -82,16 +80,24 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		throw logic_error("TemperatureDependentScheduler::process()  nullptr == temperatureHistory");
 	}
 
-	LOGGER.trace(">>> TemperatureDependentScheduler::process() <<<");
+	LOGGER.trace(">>>>>>>>>>> TemperatureDependentScheduler::process() <<<<<<<<<<<");
 
 	struct tm timeinfo;
 
 	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(*localtime_r(&rawtime, &timeinfo));
 	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(*localtime_r(&lastRun, &timeinfo));
 
-	LOGGER.trace("%-30s%s", "current time", ctime(&rawtime));
-	LOGGER.trace("%-30s%s", "last run", ctime(&lastRun));
+	if (LOGGER.isLoggable(LogLevel::TRACE)) {
+		char buffer[80];
+		strftime(buffer, 80, "%F %T", localtime(&rawtime));
+		LOGGER.trace("%-30s%s", "current time", buffer);
+
+		strftime(buffer, 80, "%F %T", localtime(&lastRun));
+		LOGGER.trace("%-30s%s", "last run", buffer);
+	}
+
 	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+	LOGGER.trace("%-30s", "CALCULATE REMAINING __BEGIN__");
 
 	lastRun = rawtime;
 
@@ -103,24 +109,54 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 
 		if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
 			LOGGER.trace("Last run is YESTERDAY");
-			const int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
+			int requiredPercentForPreviousDay = getRequiredPercentForPreviousDay(rawtime);
+
+			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 			LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+
+			if (trim != nullptr && requiredPercentForPreviousDay > * trim) {
+				requiredPercentForPreviousDay = *trim;
+
+				LOGGER.trace("%-30s", "TRIM requiredPercentForPreviousDay");
+				LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
+			}
+
 			remainingPercent -= requiredPercentForPreviousDay;
 			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 			remainingPercent *= remainingA;
 			LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
 			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+
 		} else {
 			LOGGER.trace("Last run is OTHER");
 			remainingPercent = 0;
-			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 		}
 
-		requiredAdjustmentForWholeDay = (getRequiredPercentForNextDay(rawtime) - getRemainingPercent());
+		int requiredPercentForNextDay = getRequiredPercentForNextDay(rawtime);
+
+		LOGGER.trace("%-30s%d%%", "requiredPercentForNextDay", requiredPercentForNextDay);
+
+		if (trim != nullptr && requiredPercentForNextDay > *trim) {
+			requiredPercentForNextDay = *trim;
+
+			LOGGER.trace("%-30s", "TRIM requiredPercentForNextDay");
+			LOGGER.trace("%-30s%d%%", "requiredPercentForNextDay", requiredPercentForNextDay);
+		}
+
+		requiredAdjustmentForWholeDay = requiredPercentForNextDay;
+		requiredAdjustmentForWholeDay -= remainingPercent;
+
+		LOGGER.trace("%-30s%d%%", "requiredAdjustmentForWholeDay", requiredAdjustmentForWholeDay);
 	}
 
+	LOGGER.trace("%-30s", "CALCULATE REMAINING __END__");
+	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+	LOGGER.trace("%-30s%d%%", "requiredAdjustmentForWholeDay", requiredAdjustmentForWholeDay);
+
 	int adjustmentForThisScheduling = requiredAdjustmentForWholeDay;
-	LOGGER.trace("%-30s%d%%", "adjustment", adjustmentForThisScheduling);
+
+	LOGGER.trace("%-30s%d%%", "adjustment", requiredAdjustmentForWholeDay);
+
 
 	if (adjustmentForThisScheduling < 0) {
 		adjustmentForThisScheduling = 0;
@@ -129,12 +165,10 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		adjustmentForThisScheduling = min(adjustmentForThisScheduling, maxAdjustment);
 	}
 
+	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", requiredAdjustmentForWholeDay);
+
 	requiredAdjustmentForWholeDay -= adjustmentForThisScheduling;
-
-	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustmentForThisScheduling);
-
 	remainingPercent += adjustmentForThisScheduling;
-	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 
 	return Scheduler::Result(static_cast<unsigned>(adjustmentForThisScheduling));
 }
@@ -182,4 +216,29 @@ void TemperatureDependentScheduler::setMinAdjustment(unsigned minAdjustment) {
 
 void TemperatureDependentScheduler::setMaxAdjustment(unsigned maxAdjustment) {
 	this->maxAdjustment = maxAdjustment;
+}
+
+void TemperatureDependentScheduler::trimAdjustmentOver(unsigned percent) {
+	trim.reset(new int(percent));
+}
+
+string to_string(const TemperatureDependentScheduler& scheduler) {
+	ostringstream oss;
+	oss << scheduler;
+	return oss.str();
+}
+
+ostream& operator<<(ostream& os, const TemperatureDependentScheduler& scheduler) {
+	os << "TemperatureDependentScheduler{";
+	os << "minAdjustment=" << scheduler.minAdjustment << ", ";
+	os << "maxAdjustment=" << scheduler.maxAdjustment << ", ";
+	if (nullptr == scheduler.trim) {
+		os << "trimOver=" << "disabled" << ", ";
+	} else {
+		os << "trimOver=" << *scheduler.trim << ", ";
+	}
+	os << "forecastA=" << scheduler.forecastA << ", forecastB=" << scheduler.forecastB << ", ";
+	os << "historyA=" << scheduler.historyA << ", historyB=" << scheduler.historyB;
+	os << "}";
+	return os;
 }

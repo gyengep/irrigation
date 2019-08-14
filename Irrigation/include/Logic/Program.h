@@ -86,12 +86,18 @@ public:
 	const PeriodicScheduler& getPeriodicScheduler() const { return *periodicScheduler; }
 	const WeeklyScheduler& getWeeklyScheduler() const { return *weeklyScheduler; }
 	const EveryDayScheduler& getEveryDayScheduler() const { return *everyDayScheduler; }
+	const FixedAmountScheduler& getFixedAmountScheduler() const { return *fixedAmountScheduler; }
+	const FixedPeriodScheduler& getFixedPeriodScheduler() const { return *fixedPeriodScheduler; }
+	const HotWeatherScheduler& getHotWeatherScheduler() const { return *hotWeatherScheduler; }
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
 	const StartTimeContainer& getStartTimes() const { return *startTimes; }
 
 	PeriodicScheduler& getPeriodicScheduler() { return *periodicScheduler; }
 	WeeklyScheduler& getWeeklyScheduler() { return *weeklyScheduler; }
 	EveryDayScheduler& getEveryDayScheduler() { return *everyDayScheduler; }
+	FixedAmountScheduler& getFixedAmountScheduler() { return *fixedAmountScheduler; }
+	FixedPeriodScheduler& getFixedPeriodScheduler() { return *fixedPeriodScheduler; }
+	HotWeatherScheduler& getHotWeatherScheduler() { return *hotWeatherScheduler; }
 	RunTimeContainer& getRunTimes() { return *runTimes; }
 	StartTimeContainer& getStartTimes() { return *startTimes; }
 
