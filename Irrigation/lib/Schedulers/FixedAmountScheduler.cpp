@@ -22,6 +22,7 @@ string to_string(const FixedAmountScheduler& scheduler) {
 
 ostream& operator<<(ostream& os, const FixedAmountScheduler& scheduler) {
 	os << "FixedAmountScheduler{";
+	os << static_cast<const TemperatureDependentScheduler&>(scheduler);
 	os << "}";
 	return os;
 }
