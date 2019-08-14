@@ -279,7 +279,10 @@ ostream& operator<<(ostream& os, const Program& program) {
 	os << "schedulers=[" <<
 			to_string(program.getPeriodicScheduler()) << ", " <<
 			to_string(program.getWeeklyScheduler()) << ", " <<
-			to_string(program.getEveryDayScheduler()) << "], ";
+			to_string(program.getEveryDayScheduler()) << ", " <<
+			to_string(program.getFixedAmountScheduler()) << ", " <<
+			to_string(program.getFixedPeriodScheduler()) << ", " <<
+			to_string(program.getHotWeatherScheduler()) << "], ";
 	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
 	os << "startTimes=" << to_string(program.getStartTimes());
 	os << "}";

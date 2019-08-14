@@ -8,4 +8,7 @@ class FixedAmountScheduler : public TemperatureDependentScheduler {
 public:
 	FixedAmountScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
 	virtual ~FixedAmountScheduler();
+
+	friend std::string to_string(const TemperatureDependentScheduler& scheduler);
+	friend std::ostream& operator<<(std::ostream& os, const TemperatureDependentScheduler& scheduler);
 };

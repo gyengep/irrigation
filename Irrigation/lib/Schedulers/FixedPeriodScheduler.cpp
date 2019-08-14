@@ -12,3 +12,16 @@ FixedPeriodScheduler::FixedPeriodScheduler(const shared_ptr<TemperatureForecast>
 
 FixedPeriodScheduler::~FixedPeriodScheduler() {
 }
+
+string to_string(const FixedPeriodScheduler& scheduler) {
+	ostringstream oss;
+	oss << scheduler;
+	return oss.str();
+}
+
+ostream& operator<<(ostream& os, const FixedPeriodScheduler& scheduler) {
+	os << "FixedPeriodScheduler{";
+	os << static_cast<const TemperatureDependentScheduler&>(scheduler);
+	os << "}";
+	return os;
+}
