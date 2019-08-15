@@ -96,7 +96,7 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		LOGGER.trace("%-30s%s", "last run", buffer);
 	}
 
-	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+	LOGGER.trace("%-30s%d%%", "remainingPercent from previous run: ", remainingPercent);
 	LOGGER.trace("%-30s", "CALCULATE REMAINING __BEGIN__");
 
 	lastRun = rawtime;
@@ -104,6 +104,7 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	if (currentDaysSinceEpoch == lastRunDaySinceEpoch) {
 
 		LOGGER.trace("Last run is TODAY");
+		LOGGER.trace("%-30s%d%%", "NEW remainingPercent", remainingPercent);
 
 	} else {
 
@@ -125,11 +126,12 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 			remainingPercent *= remainingA;
 			LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
-			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
+			LOGGER.trace("%-30s%d%%", "NEW remainingPercent", remainingPercent);
 
 		} else {
 			LOGGER.trace("Last run is OTHER");
 			remainingPercent = 0;
+			LOGGER.trace("%-30s%d%%", "NEW remainingPercent", remainingPercent);
 		}
 
 		int requiredPercentForNextDay = getRequiredPercentForNextDay(rawtime);
@@ -150,13 +152,10 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	}
 
 	LOGGER.trace("%-30s", "CALCULATE REMAINING __END__");
-	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
-	LOGGER.trace("%-30s%d%%", "requiredAdjustmentForWholeDay", requiredAdjustmentForWholeDay);
 
 	int adjustmentForThisScheduling = requiredAdjustmentForWholeDay;
 
-	LOGGER.trace("%-30s%d%%", "adjustment", requiredAdjustmentForWholeDay);
-
+	LOGGER.trace("%-30s%d%%", "adjustment", adjustmentForThisScheduling);
 
 	if (adjustmentForThisScheduling < 0) {
 		adjustmentForThisScheduling = 0;
@@ -165,10 +164,12 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		adjustmentForThisScheduling = min(adjustmentForThisScheduling, maxAdjustment);
 	}
 
-	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", requiredAdjustmentForWholeDay);
+	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustmentForThisScheduling);
 
 	requiredAdjustmentForWholeDay -= adjustmentForThisScheduling;
 	remainingPercent += adjustmentForThisScheduling;
+
+	LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 
 	return Scheduler::Result(static_cast<unsigned>(adjustmentForThisScheduling));
 }
