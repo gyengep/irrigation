@@ -110,7 +110,7 @@ void IrrigationApplication::initDocument() {
 
 		// fulocsolas
 		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setMinAdjustment(50);
-		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setForecastCorrection(1.0f, 2.0f);
+		//irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setForecastCorrection(1.0f, 2.0f);
 		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setRemainingCorrection(0.5f);
 		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().trimAdjustmentOver(100);
 
