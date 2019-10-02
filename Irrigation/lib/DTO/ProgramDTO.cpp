@@ -51,9 +51,9 @@ ProgramDTO::ProgramDTO(const ProgramDTO& other) {
 ProgramDTO::ProgramDTO(bool disabled, const string& name,
 		unsigned adjustment,
 		const string& schedulerType,
+		EveryDaySchedulerDTO&& everyDayScheduler,
 		PeriodicSchedulerDTO&& periodicScheduler,
 		WeeklySchedulerDTO&& weeklyScheduler,
-		EveryDaySchedulerDTO&& everyDayScheduler,
 		list<RunTimeDTO>&& runTimes,
 		list<StartTimeDTO>&& startTimes) {
 
@@ -61,9 +61,9 @@ ProgramDTO::ProgramDTO(bool disabled, const string& name,
 	setName(name);
 	setAdjustment(adjustment);
 	setSchedulerType(schedulerType);
+	setEveryDayScheduler(move(everyDayScheduler));
 	setPeriodicScheduler(move(periodicScheduler));
 	setWeeklyScheduler(move(weeklyScheduler));
-	setEveryDayScheduler(move(everyDayScheduler));
 	setRunTimes(move(runTimes));
 	setStartTimes(move(startTimes));
 }
@@ -74,9 +74,9 @@ bool ProgramDTO::operator== (const ProgramDTO& other) const {
 			equalsPtr(name.get(), other.name.get()) &&
 			equalsPtr(adjustment.get(), other.adjustment.get()) &&
 			equalsPtr(schedulerType.get(), other.schedulerType.get()) &&
+			equalsPtr(everyDayScheduler.get(), other.everyDayScheduler.get()) &&
 			equalsPtr(periodicScheduler.get(), other.periodicScheduler.get()) &&
 			equalsPtr(weeklyScheduler.get(), other.weeklyScheduler.get()) &&
-			equalsPtr(everyDayScheduler.get(), other.everyDayScheduler.get()) &&
 			equalsPtr(runTimes.get(), other.runTimes.get()) &&
 			equalsPtr(startTimes.get(), other.startTimes.get()));
 }
@@ -101,16 +101,16 @@ bool ProgramDTO::hasSchedulerType() const {
 	return (schedulerType.get() != nullptr);
 }
 
+bool ProgramDTO::hasEveryDayScheduler() const {
+	return (everyDayScheduler.get() != nullptr);
+}
+
 bool ProgramDTO::hasPeriodicScheduler() const {
 	return (periodicScheduler.get() != nullptr);
 }
 
 bool ProgramDTO::hasWeeklyScheduler() const {
 	return (weeklyScheduler.get() != nullptr);
-}
-
-bool ProgramDTO::hasEveryDayScheduler() const {
-	return (everyDayScheduler.get() != nullptr);
 }
 
 bool ProgramDTO::hasRunTimes() const {
@@ -161,6 +161,14 @@ const string& ProgramDTO::getSchedulerType() const {
 	return *schedulerType.get();
 }
 
+const EveryDaySchedulerDTO& ProgramDTO::getEveryDayScheduler() const {
+	if (!hasEveryDayScheduler()) {
+		throw logic_error("ProgramDTO::getEveryDayScheduler(): !hasEveryDayScheduler()");
+	}
+
+	return *everyDayScheduler.get();
+}
+
 const PeriodicSchedulerDTO& ProgramDTO::getPeriodicScheduler() const {
 	if (!hasPeriodicScheduler()) {
 		throw logic_error("ProgramDTO::getPeriodicScheduler(): !hasPeriodicScheduler()");
@@ -175,14 +183,6 @@ const WeeklySchedulerDTO& ProgramDTO::getWeeklyScheduler() const {
 	}
 
 	return *weeklyScheduler.get();
-}
-
-const EveryDaySchedulerDTO& ProgramDTO::getEveryDayScheduler() const {
-	if (!hasEveryDayScheduler()) {
-		throw logic_error("ProgramDTO::getEveryDayScheduler(): !hasEveryDayScheduler()");
-	}
-
-	return *everyDayScheduler.get();
 }
 
 const list<RunTimeDTO>& ProgramDTO::getRunTimes() const {
@@ -226,6 +226,11 @@ ProgramDTO& ProgramDTO::setSchedulerType(const string& schedulerType) {
 	return *this;
 }
 
+ProgramDTO& ProgramDTO::setEveryDayScheduler(EveryDaySchedulerDTO&& everyDayScheduler) {
+	this->everyDayScheduler.reset(new EveryDaySchedulerDTO(move(everyDayScheduler)));
+	return *this;
+}
+
 ProgramDTO& ProgramDTO::setPeriodicScheduler(PeriodicSchedulerDTO&& periodicScheduler) {
 	this->periodicScheduler.reset(new PeriodicSchedulerDTO(move(periodicScheduler)));
 	return *this;
@@ -233,11 +238,6 @@ ProgramDTO& ProgramDTO::setPeriodicScheduler(PeriodicSchedulerDTO&& periodicSche
 
 ProgramDTO& ProgramDTO::setWeeklyScheduler(WeeklySchedulerDTO&& weeklyScheduler) {
 	this->weeklyScheduler.reset(new WeeklySchedulerDTO(move(weeklyScheduler)));
-	return *this;
-}
-
-ProgramDTO& ProgramDTO::setEveryDayScheduler(EveryDaySchedulerDTO&& everyDayScheduler) {
-	this->everyDayScheduler.reset(new EveryDaySchedulerDTO(move(everyDayScheduler)));
 	return *this;
 }
 
@@ -263,11 +263,11 @@ ostream& operator<<(ostream& os, const ProgramDTO& program) {
 	os << ", ";
 	PRINT_STR(os, "schedulerType", program.schedulerType.get());
 	os << ", ";
+	PRINT_PTR(os, "everyDayScheduler", program.everyDayScheduler.get());
+	os << ", ";
 	PRINT_PTR(os, "periodicScheduler", program.periodicScheduler.get());
 	os << ", ";
 	PRINT_PTR(os, "weeklyScheduler", program.weeklyScheduler.get());
-	os << ", ";
-	PRINT_PTR(os, "everyDayScheduler", program.everyDayScheduler.get());
 	os << ", ";
 	PRINT_PTR(os, "runTimes", program.runTimes.get());
 	os << ", ";

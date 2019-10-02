@@ -38,9 +38,9 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 			expectedName,
 			expectedAdjustment,
 			expectedSchedulerType,
+			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
-			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
 			list<StartTimeDTO>(expectedStartTimes));
 
@@ -49,9 +49,9 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	EXPECT_TRUE(programDTO.hasName());
 	EXPECT_TRUE(programDTO.hasAdjustment());
 	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
-	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 
@@ -59,9 +59,9 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 	EXPECT_THAT(programDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
-	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
 }
@@ -71,9 +71,9 @@ TEST(ProgramDTOTest, copyConstructor) {
 	const string expectedName("name");
 	const unsigned expectedAdjustment = 85;
 	const string expectedSchedulerType("scheduler");
+	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ true, false, true }), 2018, 11, 15);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
-	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
 
@@ -82,9 +82,9 @@ TEST(ProgramDTOTest, copyConstructor) {
 			expectedName,
 			expectedAdjustment,
 			expectedSchedulerType,
+			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
-			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
 			list<StartTimeDTO>(expectedStartTimes));
 
@@ -95,9 +95,9 @@ TEST(ProgramDTOTest, copyConstructor) {
 	EXPECT_TRUE(programDTO.hasName());
 	EXPECT_TRUE(programDTO.hasAdjustment());
 	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
-	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 
@@ -105,9 +105,9 @@ TEST(ProgramDTOTest, copyConstructor) {
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 	EXPECT_THAT(programDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
-	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
 }
@@ -117,9 +117,9 @@ TEST(ProgramDTOTest, moveConstructor) {
 	const string expectedName("name");
 	const unsigned expectedAdjustment = 93;
 	const string expectedSchedulerType("scheduler");
+	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ false, true }), 2018, 11, 10);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
-	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
 
@@ -128,9 +128,9 @@ TEST(ProgramDTOTest, moveConstructor) {
 			expectedName,
 			expectedAdjustment,
 			expectedSchedulerType,
+			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
-			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
 			list<StartTimeDTO>(expectedStartTimes));
 
@@ -141,9 +141,9 @@ TEST(ProgramDTOTest, moveConstructor) {
 	EXPECT_TRUE(programDTO.hasName());
 	EXPECT_TRUE(programDTO.hasAdjustment());
 	EXPECT_TRUE(programDTO.hasSchedulerType());
+	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
-	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
 	EXPECT_TRUE(programDTO.hasStartTimes());
 
@@ -151,9 +151,9 @@ TEST(ProgramDTOTest, moveConstructor) {
 	EXPECT_THAT(programDTO.getName(), Eq(expectedName));
 	EXPECT_THAT(programDTO.getAdjustment(), Eq(expectedAdjustment));
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
+	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
-	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
 	EXPECT_THAT(programDTO.getStartTimes(), ContainerEq(expectedStartTimes));
 }
@@ -251,6 +251,24 @@ TEST(ProgramDTOTest, getSchedulerType) {
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
 }
 
+TEST(ProgramDTOTest, hasEveryDayScheduler) {
+	ProgramDTO programDTO;
+
+	EXPECT_FALSE(programDTO.hasEveryDayScheduler());
+	programDTO.setEveryDayScheduler(EveryDaySchedulerDTO());
+	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
+}
+
+TEST(ProgramDTOTest, getEveryDayScheduler) {
+	const EveryDaySchedulerDTO expectedScheduler;
+	ProgramDTO programDTO;
+
+	EXPECT_THROW(programDTO.getEveryDayScheduler(), logic_error);
+	programDTO.setEveryDayScheduler(EveryDaySchedulerDTO(expectedScheduler));
+	ASSERT_NO_THROW(programDTO.getEveryDayScheduler());
+	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedScheduler));
+}
+
 TEST(ProgramDTOTest, hasPeriodicScheduler) {
 	ProgramDTO programDTO;
 
@@ -285,24 +303,6 @@ TEST(ProgramDTOTest, getWeeklyScheduler) {
 	programDTO.setWeeklyScheduler(WeeklySchedulerDTO(expectedScheduler));
 	ASSERT_NO_THROW(programDTO.getWeeklyScheduler());
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedScheduler));
-}
-
-TEST(ProgramDTOTest, hasEveryDayScheduler) {
-	ProgramDTO programDTO;
-
-	EXPECT_FALSE(programDTO.hasEveryDayScheduler());
-	programDTO.setEveryDayScheduler(EveryDaySchedulerDTO());
-	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
-}
-
-TEST(ProgramDTOTest, getEveryDayScheduler) {
-	const EveryDaySchedulerDTO expectedScheduler;
-	ProgramDTO programDTO;
-
-	EXPECT_THROW(programDTO.getEveryDayScheduler(), logic_error);
-	programDTO.setEveryDayScheduler(EveryDaySchedulerDTO(expectedScheduler));
-	ASSERT_NO_THROW(programDTO.getEveryDayScheduler());
-	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedScheduler));
 }
 
 TEST(ProgramDTOTest, hasRunTimes) {

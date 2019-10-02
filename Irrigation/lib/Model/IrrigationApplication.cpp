@@ -16,8 +16,7 @@
 
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
-#include "Schedulers/FixedAmountScheduler.h"
-#include "Schedulers/FixedPeriodScheduler.h"
+#include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/HotWeatherScheduler.h"
 
 using namespace std;
@@ -109,24 +108,24 @@ void IrrigationApplication::initDocument() {
 		);
 
 		// fulocsolas
-		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setMinAdjustment(50);
+		irrigationDocument->getPrograms().at(IdType(1))->getTemperatureDependentScheduler().setMinAdjustment(50);
 		//irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setForecastCorrection(1.0f, 2.0f);
-		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().setRemainingCorrection(0.5f);
-		irrigationDocument->getPrograms().at(IdType(1))->getFixedPeriodScheduler().trimAdjustmentOver(100);
+		irrigationDocument->getPrograms().at(IdType(1))->getTemperatureDependentScheduler().setRemainingCorrection(0.5f);
+		irrigationDocument->getPrograms().at(IdType(1))->getTemperatureDependentScheduler().trimAdjustmentOver(100);
 
 		// buxus
-		irrigationDocument->getPrograms().at(IdType(7))->getFixedAmountScheduler();
+		irrigationDocument->getPrograms().at(IdType(7))->getTemperatureDependentScheduler().setMinAdjustment(100);
 
 		// kanikula
 		irrigationDocument->getPrograms().at(IdType(9))->getHotWeatherScheduler();
 
 		// paradicsom
-		irrigationDocument->getPrograms().at(IdType(12))->getFixedAmountScheduler().setMinAdjustment(75);
-		irrigationDocument->getPrograms().at(IdType(12))->getFixedAmountScheduler().setMaxAdjustment(75);
+		irrigationDocument->getPrograms().at(IdType(12))->getTemperatureDependentScheduler().setMinAdjustment(75);
+		irrigationDocument->getPrograms().at(IdType(12))->getTemperatureDependentScheduler().setMaxAdjustment(75);
 
 		// virag
-		irrigationDocument->getPrograms().at(IdType(14))->getFixedAmountScheduler().setMinAdjustment(75);
-		irrigationDocument->getPrograms().at(IdType(14))->getFixedAmountScheduler().setMaxAdjustment(75);
+		irrigationDocument->getPrograms().at(IdType(14))->getTemperatureDependentScheduler().setMinAdjustment(75);
+		irrigationDocument->getPrograms().at(IdType(14))->getTemperatureDependentScheduler().setMaxAdjustment(75);
 
 
  		LOGGER.debug("Temperature dependent schedulers are set");

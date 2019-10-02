@@ -4,12 +4,11 @@
 
 
 enum class SchedulerType {
-	WEEKLY,
-	PERIODIC,
 	EVERY_DAY,
-	FIXED_AMOUNT,
-	FIXED_PERIOD,
-	HOT_WEATHER
+	HOT_WEATHER,
+	PERIODIC,
+	TEMPERATURE_DEPENDENT,
+	WEEKLY,
 };
 
 std::string to_string(SchedulerType schedulerType);

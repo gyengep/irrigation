@@ -15,9 +15,9 @@ class ProgramDTO {
 	std::unique_ptr<const std::string> name;
 	std::unique_ptr<const unsigned> adjustment;
 	std::unique_ptr<const std::string> schedulerType;
+	std::unique_ptr<const EveryDaySchedulerDTO> everyDayScheduler;
 	std::unique_ptr<const PeriodicSchedulerDTO> periodicScheduler;
 	std::unique_ptr<const WeeklySchedulerDTO> weeklyScheduler;
-	std::unique_ptr<const EveryDaySchedulerDTO> everyDayScheduler;
 	std::unique_ptr<const std::list<RunTimeDTO>> runTimes;
 	std::unique_ptr<const std::list<StartTimeDTO>> startTimes;
 
@@ -28,9 +28,9 @@ public:
 	ProgramDTO(bool disabled, const std::string& name,
 			unsigned adjustment,
 			const std::string& schedulerType,
+			EveryDaySchedulerDTO&& everyDayScheduler,
 			PeriodicSchedulerDTO&& periodicScheduler,
 			WeeklySchedulerDTO&& weeklyScheduler,
-			EveryDaySchedulerDTO&& everyDayScheduler,
 			std::list<RunTimeDTO>&& runTimes,
 			std::list<StartTimeDTO>&& startTimes);
 
@@ -43,9 +43,9 @@ public:
 	bool hasName() const;
 	bool hasAdjustment() const;
 	bool hasSchedulerType() const;
+	bool hasEveryDayScheduler() const;
 	bool hasPeriodicScheduler() const;
 	bool hasWeeklyScheduler() const;
-	bool hasEveryDayScheduler() const;
 	bool hasRunTimes() const;
 	bool hasStartTimes() const;
 
@@ -54,9 +54,9 @@ public:
 	const std::string& getName() const;
 	unsigned getAdjustment() const;
 	const std::string& getSchedulerType() const;
+	const EveryDaySchedulerDTO& getEveryDayScheduler() const;
 	const PeriodicSchedulerDTO& getPeriodicScheduler() const;
 	const WeeklySchedulerDTO& getWeeklyScheduler() const;
-	const EveryDaySchedulerDTO& getEveryDayScheduler() const;
 	const std::list<RunTimeDTO>& getRunTimes() const;
 	const std::list<StartTimeDTO>& getStartTimes() const;
 
@@ -65,9 +65,9 @@ public:
 	ProgramDTO& setName(const std::string& name);
 	ProgramDTO& setAdjustment(unsigned adjustment);
 	ProgramDTO& setSchedulerType(const std::string& schedulerType);
+	ProgramDTO& setEveryDayScheduler(EveryDaySchedulerDTO&& everyDayScheduler);
 	ProgramDTO& setPeriodicScheduler(PeriodicSchedulerDTO&& periodicScheduler);
 	ProgramDTO& setWeeklyScheduler(WeeklySchedulerDTO&& weeklyScheduler);
-	ProgramDTO& setEveryDayScheduler(EveryDaySchedulerDTO&& everyDayScheduler);
 	ProgramDTO& setRunTimes(std::list<RunTimeDTO>&& runTimes);
 	ProgramDTO& setStartTimes(std::list<StartTimeDTO>&& startTimes);
 

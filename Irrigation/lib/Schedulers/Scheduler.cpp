@@ -10,18 +10,16 @@ using namespace std;
 
 string to_string(SchedulerType schedulerType) {
 	switch (schedulerType) {
-	case SchedulerType::WEEKLY:
-		return "weekly";
-	case SchedulerType::PERIODIC:
-		return "periodic";
 	case SchedulerType::EVERY_DAY:
 		return "every_day";
-	case SchedulerType::FIXED_AMOUNT:
-		return "fixed_amount";
-	case SchedulerType::FIXED_PERIOD:
-		return "fixed_period";
 	case SchedulerType::HOT_WEATHER:
 		return "hot_weather";
+	case SchedulerType::PERIODIC:
+		return "periodic";
+	case SchedulerType::TEMPERATURE_DEPENDENT:
+		return "temperature_dependent";
+	case SchedulerType::WEEKLY:
+		return "weekly";
 	default:
 		throw invalid_argument("Unknown value of enum SchedulerType: " + to_string(static_cast<unsigned>(schedulerType)));
 	}
