@@ -18,6 +18,13 @@ void TemperatureDependentSchedulerProcessTest::SetUp() {
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
+	scheduler->setRemainingCorrection(1.0f);
+	scheduler->setForecastCorrection(1.0f, 0.0f);
+	scheduler->setHistoryCorrection(1.0f, 0.0f);
+	scheduler->setMinAdjustment(0);
+	scheduler->setMaxAdjustment(0);
+	scheduler->trimAdjustmentOver(0);
+
 	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
 		{ 15.0f, 25 },
 		{ 25.0f, 50 },
