@@ -19,7 +19,7 @@ class PeriodicScheduler: public Scheduler {
 public:
 	PeriodicScheduler();
 	PeriodicScheduler(PeriodicScheduler&&) = default;
-	PeriodicScheduler(const PeriodicScheduler&);
+	PeriodicScheduler(const PeriodicScheduler&) = default;
 	PeriodicScheduler(const std::vector<bool>& days, unsigned year, unsigned month, unsigned day);
 	virtual ~PeriodicScheduler();
 

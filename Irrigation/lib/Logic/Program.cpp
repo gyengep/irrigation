@@ -20,7 +20,14 @@ using namespace std;
 Program::Program() :
 	Program(false, "", 100, SchedulerType::WEEKLY,
 		make_shared<EveryDayScheduler>(),
+		make_shared<HotWeatherScheduler>(
+				Temperature::getInstance().getTemperatureHistory()
+				),
 		make_shared<PeriodicScheduler>(),
+		make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory()
+				),
 		make_shared<WeeklyScheduler>(),
 		make_shared<RunTimeContainer>(),
 		make_shared<StartTimeContainer>()
@@ -32,41 +39,25 @@ Program::Program(const Program& other) :
 	Program(other.isDisabled(), other.getName(),
 		other.getAdjustment(),
 		other.getSchedulerType(),
-		shared_ptr<EveryDayScheduler>(new EveryDayScheduler(other.getEveryDayScheduler())),
-		shared_ptr<PeriodicScheduler>(new PeriodicScheduler(other.getPeriodicScheduler())),
-		shared_ptr<WeeklyScheduler>(new WeeklyScheduler(other.getWeeklyScheduler())),
-		shared_ptr<RunTimeContainer>(new RunTimeContainer(other.getRunTimes())),
-		shared_ptr<StartTimeContainer>(new StartTimeContainer(other.getStartTimes()))
+		make_shared<EveryDayScheduler>(other.getEveryDayScheduler()),
+		make_shared<HotWeatherScheduler>(other.getHotWeatherScheduler()),
+		make_shared<PeriodicScheduler>(other.getPeriodicScheduler()),
+		make_shared<TemperatureDependentScheduler>(other.getTemperatureDependentScheduler()),
+		make_shared<WeeklyScheduler>(other.getWeeklyScheduler()),
+		make_shared<RunTimeContainer>(other.getRunTimes()),
+		make_shared<StartTimeContainer>(other.getStartTimes())
 	)
 {
 }
 
 Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
-	shared_ptr<EveryDayScheduler> everyDayScheduler,
-	shared_ptr<PeriodicScheduler> periodicScheduler,
-	shared_ptr<WeeklyScheduler> weeklyScheduler,
-	shared_ptr<RunTimeContainer> runTimes,
-	shared_ptr<StartTimeContainer> startTimes) :
-	disabled(disabled),
-	name(name),
-	adjustment(adjustment),
-	everyDayScheduler(everyDayScheduler),
-	periodicScheduler(periodicScheduler),
-	weeklyScheduler(weeklyScheduler),
-	runTimes(runTimes),
-	startTimes(startTimes)
-{
-	setSchedulerType(schedulerType);
-}
-
-Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
-	shared_ptr<EveryDayScheduler> everyDayScheduler,
-	shared_ptr<HotWeatherScheduler> hotWeatherScheduler,
-	shared_ptr<PeriodicScheduler> periodicScheduler,
-	shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler,
-	shared_ptr<WeeklyScheduler> weeklyScheduler,
-	shared_ptr<RunTimeContainer> runTimes,
-	shared_ptr<StartTimeContainer> startTimes) :
+		const shared_ptr<EveryDayScheduler>& everyDayScheduler,
+		const shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
+		const shared_ptr<PeriodicScheduler>& periodicScheduler,
+		const shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
+		const shared_ptr<WeeklyScheduler>& weeklyScheduler,
+		const shared_ptr<RunTimeContainer>& runTimes,
+		const shared_ptr<StartTimeContainer>& startTimes) :
 	disabled(disabled),
 	name(name),
 	adjustment(adjustment),
@@ -193,7 +184,9 @@ ProgramDTO Program::toProgramDto() const {
 	return ProgramDTO(disabled, name, adjustment,
 			to_string(getSchedulerType()),
 			getEveryDayScheduler().toEveryDaySchedulerDto(),
+			getHotWeatherScheduler().toHotWeatherSchedulerDto(),
 			getPeriodicScheduler().toPeriodicSchedulerDto(),
+			getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto(),
 			getWeeklyScheduler().toWeeklySchedulerDto(),
 			getRunTimes().toRunTimeDtoList(),
 			getStartTimes().toStartTimeDtoList());
@@ -238,8 +231,16 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 		everyDayScheduler->updateFromEveryDaySchedulerDto(programDTO.getEveryDayScheduler());
 	}
 
+	if (programDTO.hasHotWeatherScheduler()) {
+		hotWeatherScheduler->updateFromHotWeatherSchedulerDto(programDTO.getHotWeatherScheduler());
+	}
+
 	if (programDTO.hasPeriodicScheduler()) {
 		periodicScheduler->updateFromPeriodicSchedulerDto(programDTO.getPeriodicScheduler());
+	}
+
+	if (programDTO.hasTemperatureDependentScheduler()) {
+		temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(programDTO.getTemperatureDependentScheduler());
 	}
 
 	if (programDTO.hasWeeklyScheduler()) {
@@ -311,27 +312,37 @@ Program::Builder& Program::Builder::setSchedulerType(SchedulerType schedulerType
 	return *this;
 }
 
-Program::Builder& Program::Builder::setPeriodicScheduler(shared_ptr<PeriodicScheduler> periodicScheduler) {
-	this->periodicScheduler = periodicScheduler;
-	return *this;
-}
-
-Program::Builder& Program::Builder::setWeeklyScheduler(shared_ptr<WeeklyScheduler> weeklyScheduler) {
-	this->weeklyScheduler = weeklyScheduler;
-	return *this;
-}
-
-Program::Builder& Program::Builder::setEveryDayScheduler(shared_ptr<EveryDayScheduler> everyDayScheduler) {
+Program::Builder& Program::Builder::setEveryDayScheduler(const shared_ptr<EveryDayScheduler>& everyDayScheduler) {
 	this->everyDayScheduler = everyDayScheduler;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setRunTimeContainer(shared_ptr<RunTimeContainer> runTimes) {
+Program::Builder& Program::Builder::setHotWeatherScheduler(const shared_ptr<HotWeatherScheduler>& hotWeatherScheduler) {
+	this->hotWeatherScheduler = hotWeatherScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setPeriodicScheduler(const shared_ptr<PeriodicScheduler>& periodicScheduler) {
+	this->periodicScheduler = periodicScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setTemperatureDependentScheduler(const shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler) {
+	this->temperatureDependentScheduler = temperatureDependentScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setWeeklyScheduler(const shared_ptr<WeeklyScheduler>& weeklyScheduler) {
+	this->weeklyScheduler = weeklyScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setRunTimeContainer(const shared_ptr<RunTimeContainer>& runTimes) {
 	this->runTimes = runTimes;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setStartTimeContainer(shared_ptr<StartTimeContainer> startTimes) {
+Program::Builder& Program::Builder::setStartTimeContainer(const shared_ptr<StartTimeContainer>& startTimes) {
 	this->startTimes = startTimes;
 	return *this;
 }

@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
 #include "Logic/Program.h"
+#include "HotWeatherSchedulerSamples.h"
 #include "PeriodicSchedulerSamples.h"
+#include "TemperatureDependentSchedulerSamples.h"
 #include "WeeklySchedulerSamples.h"
 #include "RunTimeListSamples.h"
 #include "StartTimeListSamples.h"
@@ -21,7 +23,9 @@ namespace Dto2ObjectTest {
 					setName("name1").
 					setAdjustment(54).
 					setSchedulerType(SchedulerType::PERIODIC).
+					setHotWeatherScheduler(HotWeatherSchedulerSample1().getObject()).
 					setPeriodicScheduler(PeriodicSchedulerSample1().getObject()).
+					setTemperatureDependentScheduler(TemperatureDependentSchedulerSample1().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample1().getObject()).
 					setRunTimeContainer(RunTimeListSample1().getContainer()).
 					setStartTimeContainer(StartTimeListSample1().getContainer()).
@@ -29,7 +33,9 @@ namespace Dto2ObjectTest {
 				ProgramDTO(
 					true, "name1", 54, to_string(SchedulerType::PERIODIC),
 					EveryDaySchedulerDTO(),
+					HotWeatherSchedulerDTO(HotWeatherSchedulerSample1().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample1().getDto()),
+					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSample1().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample1().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample1().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample1().getDtoList())
@@ -46,14 +52,18 @@ namespace Dto2ObjectTest {
 					setName("name2").
 					setAdjustment(61).
 					setSchedulerType(SchedulerType::WEEKLY).
+					setHotWeatherScheduler(HotWeatherSchedulerSample2().getObject()).
 					setPeriodicScheduler(PeriodicSchedulerSample2().getObject()).
+					setTemperatureDependentScheduler(TemperatureDependentSchedulerSample2().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample2().getObject()).
 					setRunTimeContainer(RunTimeListSample2().getContainer()).
 					setStartTimeContainer(StartTimeListSample2().getContainer()).
 					build(),
 				ProgramDTO(false, "name2", 61, to_string(SchedulerType::WEEKLY),
 					EveryDaySchedulerDTO(),
+					HotWeatherSchedulerDTO(HotWeatherSchedulerSample2().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample2().getDto()),
+					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSample2().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample2().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample2().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample2().getDtoList())
@@ -70,7 +80,9 @@ namespace Dto2ObjectTest {
 					setName("name3").
 					setAdjustment(159).
 					setSchedulerType(SchedulerType::PERIODIC).
+					setHotWeatherScheduler(HotWeatherSchedulerSample3().getObject()).
 					setPeriodicScheduler(PeriodicSchedulerSample3().getObject()).
+					setTemperatureDependentScheduler(TemperatureDependentSchedulerSample3().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample3().getObject()).
 					setRunTimeContainer(RunTimeListSample3().getContainer()).
 					setStartTimeContainer(StartTimeListSample3().getContainer()).
@@ -78,7 +90,9 @@ namespace Dto2ObjectTest {
 				ProgramDTO(
 					true, "name3", 159, to_string(SchedulerType::PERIODIC),
 					EveryDaySchedulerDTO(),
+					HotWeatherSchedulerDTO(HotWeatherSchedulerSample3().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample3().getDto()),
+					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSample3().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample3().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample3().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample3().getDtoList())
@@ -95,7 +109,9 @@ namespace Dto2ObjectTest {
 					setName("name4").
 					setAdjustment(238).
 					setSchedulerType(SchedulerType::WEEKLY).
+					setHotWeatherScheduler(HotWeatherSchedulerSample4().getObject()).
 					setPeriodicScheduler(PeriodicSchedulerSample4().getObject()).
+					setTemperatureDependentScheduler(TemperatureDependentSchedulerSample4().getObject()).
 					setWeeklyScheduler(WeeklySchedulerSample4().getObject()).
 					setRunTimeContainer(RunTimeListSample4().getContainer()).
 					setStartTimeContainer(StartTimeListSample4().getContainer()).
@@ -103,7 +119,9 @@ namespace Dto2ObjectTest {
 				ProgramDTO(
 					false, "name4", 238, to_string(SchedulerType::WEEKLY),
 					EveryDaySchedulerDTO(),
+					HotWeatherSchedulerDTO(HotWeatherSchedulerSample4().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample4().getDto()),
+					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSample4().getDto()),
 					WeeklySchedulerDTO(WeeklySchedulerSample4().getDto()),
 					std::list<RunTimeDTO>(RunTimeListSample4().getDtoList()),
 					std::list<StartTimeDTO>(StartTimeListSample4().getDtoList())

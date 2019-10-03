@@ -13,6 +13,14 @@ HotWeatherScheduler::HotWeatherScheduler(const shared_ptr<TemperatureHistory>& t
 {
 }
 
+HotWeatherScheduler::HotWeatherScheduler(const std::chrono::seconds& period, float minTemperature) :
+	temperatureHistory(nullptr),
+	lastRun(0),
+	periodInSeconds(period.count()),
+	minTemperature(minTemperature)
+{
+}
+
 HotWeatherScheduler::~HotWeatherScheduler() {
 }
 
@@ -61,6 +69,20 @@ void HotWeatherScheduler::loadFrom(const nlohmann::json& values) {
 	auto it = values.find("lastRun");
 	if (values.end() != it) {
 		lastRun = it.value();
+	}
+}
+
+HotWeatherSchedulerDTO HotWeatherScheduler::toHotWeatherSchedulerDto() const {
+	return HotWeatherSchedulerDTO(periodInSeconds, minTemperature);
+}
+
+void HotWeatherScheduler::updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) {
+	if (schedulerDTO.hasMinTemperature()) {
+		setMinTemperature(schedulerDTO.getMinTemperature());
+	}
+
+	if (schedulerDTO.hasPeriodInSeconds()) {
+		setPeriod(chrono::seconds(schedulerDTO.getPeriodInSeconds()));
 	}
 }
 

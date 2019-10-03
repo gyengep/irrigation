@@ -29,7 +29,7 @@ private:
 public:
 	WeeklyScheduler();
 	WeeklyScheduler(WeeklyScheduler&&) = default;
-	WeeklyScheduler(const WeeklyScheduler&);
+	WeeklyScheduler(const WeeklyScheduler&) = default;
 	WeeklyScheduler(const std::array<bool, 7>& days);
 	virtual ~WeeklyScheduler();
 

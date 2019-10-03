@@ -6,10 +6,10 @@
 
 class EveryDayScheduler : public Scheduler {
 public:
-	EveryDayScheduler();
+	EveryDayScheduler() = default;
 	EveryDayScheduler(EveryDayScheduler&&) = default;
-	EveryDayScheduler(const EveryDayScheduler&);
-	virtual ~EveryDayScheduler();
+	EveryDayScheduler(const EveryDayScheduler&) = default;
+	virtual ~EveryDayScheduler() = default;
 
 	EveryDayScheduler& operator= (EveryDayScheduler&&) = delete;
 	EveryDayScheduler& operator= (const EveryDayScheduler&) = delete;

@@ -41,21 +41,13 @@ public:
 	Program(bool disabled, const std::string& name,
 		unsigned adjustment,
 		SchedulerType schedulerType,
-		std::shared_ptr<EveryDayScheduler> everyDayScheduler,
-		std::shared_ptr<PeriodicScheduler> periodicScheduler,
-		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
-		std::shared_ptr<RunTimeContainer> runTimes,
-		std::shared_ptr<StartTimeContainer> startTimes);
-	Program(bool disabled, const std::string& name,
-		unsigned adjustment,
-		SchedulerType schedulerType,
-		std::shared_ptr<EveryDayScheduler> everyDayScheduler,
-		std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler,
-		std::shared_ptr<PeriodicScheduler> periodicScheduler,
-		std::shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler,
-		std::shared_ptr<WeeklyScheduler> weeklyScheduler,
-		std::shared_ptr<RunTimeContainer> runTimes,
-		std::shared_ptr<StartTimeContainer> startTimes);
+		const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
+		const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
+		const std::shared_ptr<PeriodicScheduler>& periodicScheduler,
+		const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
+		const std::shared_ptr<WeeklyScheduler>& weeklyScheduler,
+		const std::shared_ptr<RunTimeContainer>& runTimes,
+		const std::shared_ptr<StartTimeContainer>& startTimes);
 	Program(const ProgramDTO& programDTO);
 
 	virtual ~Program();
@@ -127,11 +119,13 @@ public:
 	Builder& setName(const std::string& name);
 	Builder& setAdjustment(unsigned adjustment);
 	Builder& setSchedulerType(SchedulerType schedulerType);
-	Builder& setPeriodicScheduler(std::shared_ptr<PeriodicScheduler> periodicScheduler);
-	Builder& setWeeklyScheduler(std::shared_ptr<WeeklyScheduler> weeklyScheduler);
-	Builder& setEveryDayScheduler(std::shared_ptr<EveryDayScheduler> everyDayScheduler);
-	Builder& setRunTimeContainer(std::shared_ptr<RunTimeContainer> runTimes);
-	Builder& setStartTimeContainer(std::shared_ptr<StartTimeContainer> startTimes);
+	Builder& setEveryDayScheduler(const std::shared_ptr<EveryDayScheduler>& everyDayScheduler);
+	Builder& setHotWeatherScheduler(const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler);
+	Builder& setPeriodicScheduler(const std::shared_ptr<PeriodicScheduler>& periodicScheduler);
+	Builder& setTemperatureDependentScheduler(const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler);
+	Builder& setWeeklyScheduler(const std::shared_ptr<WeeklyScheduler>& weeklyScheduler);
+	Builder& setRunTimeContainer(const std::shared_ptr<RunTimeContainer>& runTimes);
+	Builder& setStartTimeContainer(const std::shared_ptr<StartTimeContainer>& startTimes);
 
 	std::shared_ptr<Program> build();
 };

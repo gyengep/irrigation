@@ -11,15 +11,6 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-EveryDayScheduler::EveryDayScheduler() {
-}
-
-EveryDayScheduler::EveryDayScheduler(const EveryDayScheduler& other) {
-}
-
-EveryDayScheduler::~EveryDayScheduler() {
-}
-
 bool EveryDayScheduler::operator== (const EveryDayScheduler& other) const {
 	return true;
 }

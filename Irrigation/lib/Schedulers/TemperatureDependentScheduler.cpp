@@ -18,12 +18,35 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<Te
 	remainingPercent(0),
 	lastRun(0),
 	remainingA(1.0f),
-	forecastA(1.0f),
-	forecastB(0.0f),
-	historyA(1.0f),
-	historyB(0.0f),
+	forecastA(defaultForecastA),
+	forecastB(defaultForecastB),
+	historyA(defaultHistoryA),
+	historyB(defaultHistoryB),
 	minAdjustment(0),
-	maxAdjustment(numeric_limits<int>::max())
+	maxAdjustment(numeric_limits<int>::max()),
+	trim(0)
+{
+}
+
+TemperatureDependentScheduler::TemperatureDependentScheduler(
+		float remainingA,
+		float forecastA, float forecastB,
+		float historyA, float historyB,
+		int minAdjustment, int maxAdjustment,
+		int trim) :
+	temperatureForecast(nullptr),
+	temperatureHistory(nullptr),
+	requiredAdjustmentForWholeDay(0),
+	remainingPercent(0),
+	lastRun(0),
+	remainingA(remainingA),
+	forecastA(forecastA),
+	forecastB(forecastB),
+	historyA(historyA),
+	historyB(historyB),
+	minAdjustment(minAdjustment),
+	maxAdjustment(maxAdjustment),
+	trim(trim)
 {
 }
 
@@ -31,7 +54,7 @@ TemperatureDependentScheduler::~TemperatureDependentScheduler() {
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
-	const float temperature = temperatureForecast->getForecastValues(now, now + aDayInSeconds - 1).max;
+	const float temperature = temperatureForecast->getForecastValues(now, now + oneDayInSeconds - 1).max;
 	const float calculatedTemperature = forecastA * temperature + forecastB;
 	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(calculatedTemperature);
 
@@ -51,7 +74,7 @@ int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
-	const float temperature = temperatureHistory->getHistoryValues(now - aDayInSeconds, now - 1).max;
+	const float temperature = temperatureHistory->getHistoryValues(now - oneDayInSeconds, now - 1).max;
 	const float calculatedTemperature = historyA * temperature + historyB;
 	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(calculatedTemperature);
 
@@ -115,8 +138,8 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
 			LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
 
-			if (trim != nullptr && requiredPercentForPreviousDay > * trim) {
-				requiredPercentForPreviousDay = *trim;
+			if (trim > 0 && requiredPercentForPreviousDay > trim) {
+				requiredPercentForPreviousDay = trim;
 
 				LOGGER.trace("%-30s", "TRIM requiredPercentForPreviousDay");
 				LOGGER.trace("%-30s%d%%", "requiredPercentForPreviousDay", requiredPercentForPreviousDay);
@@ -138,8 +161,8 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 
 		LOGGER.trace("%-30s%d%%", "requiredPercentForNextDay", requiredPercentForNextDay);
 
-		if (trim != nullptr && requiredPercentForNextDay > *trim) {
-			requiredPercentForNextDay = *trim;
+		if (trim > 0 && requiredPercentForNextDay > trim) {
+			requiredPercentForNextDay = trim;
 
 			LOGGER.trace("%-30s", "TRIM requiredPercentForNextDay");
 			LOGGER.trace("%-30s%d%%", "requiredPercentForNextDay", requiredPercentForNextDay);
@@ -219,8 +242,65 @@ void TemperatureDependentScheduler::setMaxAdjustment(unsigned maxAdjustment) {
 	this->maxAdjustment = maxAdjustment;
 }
 
-void TemperatureDependentScheduler::trimAdjustmentOver(unsigned percent) {
-	trim.reset(new int(percent));
+void TemperatureDependentScheduler::trimAdjustmentOver(unsigned trim) {
+	this->trim = trim;
+}
+
+TemperatureDependentSchedulerDTO TemperatureDependentScheduler::toTemperatureDependentSchedulerDto() const {
+	return TemperatureDependentSchedulerDTO(
+			remainingA,
+			forecastA, forecastB,
+			historyA, historyB,
+			minAdjustment, maxAdjustment,
+			trim);
+}
+
+void TemperatureDependentScheduler::updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDTO& schedulerDTO) {
+	if (schedulerDTO.hasRemainingA()) {
+		setRemainingCorrection(schedulerDTO.getRemainingA());
+	}
+
+	if (schedulerDTO.hasForecastA() || schedulerDTO.hasForecastB()) {
+		float forecastA = defaultForecastA;
+		float forecastB = defaultForecastB;
+
+		if (schedulerDTO.hasForecastA()) {
+			forecastA = schedulerDTO.getForecastA();
+		}
+
+		if (schedulerDTO.hasForecastB()) {
+			forecastB = schedulerDTO.getForecastB();
+		}
+
+		setForecastCorrection(forecastA, forecastB);
+	}
+
+	if (schedulerDTO.hasHistoryA() || schedulerDTO.hasHistoryB()) {
+		float historyA = defaultHistoryA;
+		float historyB = defaultHistoryB;
+
+		if (schedulerDTO.hasHistoryA()) {
+			historyA = schedulerDTO.getHistoryA();
+		}
+
+		if (schedulerDTO.hasHistoryB()) {
+			historyB = schedulerDTO.getHistoryB();
+		}
+
+		setHistoryCorrection(historyA, historyB);
+	}
+
+	if (schedulerDTO.hasMinAdjustment()) {
+		setMinAdjustment(schedulerDTO.getMinAdjustment());
+	}
+
+	if (schedulerDTO.hasMaxAdjustment()) {
+		setMaxAdjustment(schedulerDTO.getMaxAdjustment());
+	}
+
+	if (schedulerDTO.hasTrim()) {
+		trimAdjustmentOver(schedulerDTO.getTrim());
+	}
 }
 
 string to_string(const TemperatureDependentScheduler& scheduler) {
@@ -233,11 +313,7 @@ ostream& operator<<(ostream& os, const TemperatureDependentScheduler& scheduler)
 	os << "TemperatureDependentScheduler{";
 	os << "minAdjustment=" << scheduler.minAdjustment << ", ";
 	os << "maxAdjustment=" << scheduler.maxAdjustment << ", ";
-	if (nullptr == scheduler.trim) {
-		os << "trimOver=" << "disabled" << ", ";
-	} else {
-		os << "trimOver=" << *scheduler.trim << ", ";
-	}
+	os << "trimOver=" << scheduler.trim << ", ";
 	os << "forecastA=" << scheduler.forecastA << ", forecastB=" << scheduler.forecastB << ", ";
 	os << "historyA=" << scheduler.historyA << ", historyB=" << scheduler.historyB;
 	os << "}";

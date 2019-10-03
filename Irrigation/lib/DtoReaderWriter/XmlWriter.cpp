@@ -68,22 +68,34 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 	}
 
 	if (includeContainers) {
-		if (program.hasPeriodicScheduler() || program.hasWeeklyScheduler() || program.hasEveryDayScheduler()) {
+		if (program.hasEveryDayScheduler() || program.hasHotWeatherScheduler() || program.hasPeriodicScheduler() ||
+				program.hasTemperatureDependentScheduler() || program.hasWeeklyScheduler()) {
+
 			xml_node schedulersListNode = node.append_child("schedulers");
 
+			if (program.hasEveryDayScheduler()) {
+				const EveryDaySchedulerDTO& scheduler = program.getEveryDayScheduler();
+				saveEveryDayScheduler(&schedulersListNode, scheduler);
+			}
+
+			if (program.hasHotWeatherScheduler()) {
+				const HotWeatherSchedulerDTO& scheduler = program.getHotWeatherScheduler();
+				saveHotWeatherScheduler(&schedulersListNode, scheduler);
+			}
+
 			if (program.hasPeriodicScheduler()) {
-				const PeriodicSchedulerDTO& periodicScheduler = program.getPeriodicScheduler();
-				savePeriodicScheduler(&schedulersListNode, periodicScheduler);
+				const PeriodicSchedulerDTO& scheduler = program.getPeriodicScheduler();
+				savePeriodicScheduler(&schedulersListNode, scheduler);
+			}
+
+			if (program.hasTemperatureDependentScheduler()) {
+				const TemperatureDependentSchedulerDTO& scheduler = program.getTemperatureDependentScheduler();
+				saveTemperatureDependentScheduler(&schedulersListNode, scheduler);
 			}
 
 			if (program.hasWeeklyScheduler()) {
-				const WeeklySchedulerDTO& weeklyScheduler = program.getWeeklyScheduler();
-				saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
-			}
-
-			if (program.hasEveryDayScheduler()) {
-				const EveryDaySchedulerDTO& everyDayScheduler = program.getEveryDayScheduler();
-				saveEveryDayScheduler(&schedulersListNode, everyDayScheduler);
+				const WeeklySchedulerDTO& scheduler = program.getWeeklyScheduler();
+				saveWeeklyScheduler(&schedulersListNode, scheduler);
 			}
 		}
 
@@ -145,6 +157,24 @@ void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDTO& startTime) {
 	}
 }
 
+void XmlWriter::saveEveryDayScheduler(xml_node* parent, const EveryDaySchedulerDTO& scheduler) {
+	xml_node node = parent->append_child("scheduler");
+	node.append_attribute("type").set_value("every_day");
+}
+
+void XmlWriter::saveHotWeatherScheduler(xml_node* parent, const HotWeatherSchedulerDTO& scheduler) {
+	xml_node node = parent->append_child("scheduler");
+	node.append_attribute("type").set_value("hot_weather");
+
+	if (scheduler.hasPeriodInSeconds()) {
+		node.append_child("period").text().set(scheduler.getPeriodInSeconds());
+	}
+
+	if (scheduler.hasMinTemperature()) {
+		node.append_child("temperature").text().set(scheduler.getMinTemperature());
+	}
+}
+
 void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("periodic");
@@ -176,6 +206,44 @@ void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerD
 	}
 }
 
+
+void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const TemperatureDependentSchedulerDTO& scheduler) {
+	xml_node node = parent->append_child("scheduler");
+	node.append_attribute("type").set_value("temperature_dependent");
+
+	if (scheduler.hasRemainingA()) {
+		node.append_child("remaining_a").text().set(scheduler.getRemainingA());
+	}
+
+	if (scheduler.hasForecastA()) {
+		node.append_child("forecast_a").text().set(scheduler.getForecastA());
+	}
+
+	if (scheduler.hasForecastB()) {
+		node.append_child("forecast_b").text().set(scheduler.getForecastB());
+	}
+
+	if (scheduler.hasHistoryA()) {
+		node.append_child("history_a").text().set(scheduler.getHistoryA());
+	}
+
+	if (scheduler.hasHistoryB()) {
+		node.append_child("history_b").text().set(scheduler.getHistoryB());
+	}
+
+	if (scheduler.hasMinAdjustment()) {
+		node.append_child("min_adjustment").text().set(scheduler.getMinAdjustment());
+	}
+
+	if (scheduler.hasMaxAdjustment()) {
+		node.append_child("max_adjustment").text().set(scheduler.getMaxAdjustment());
+	}
+
+	if (scheduler.hasTrim()) {
+		node.append_child("trim").text().set(scheduler.getTrim());
+	}
+}
+
 void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("weekly");
@@ -187,11 +255,6 @@ void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& 
 			daysNode.append_child("day").text().set(value);
 		}
 	}
-}
-
-void XmlWriter::saveEveryDayScheduler(xml_node* parent, const EveryDaySchedulerDTO& scheduler) {
-	xml_node node = parent->append_child("scheduler");
-	node.append_attribute("type").set_value("every_day");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -238,20 +301,32 @@ string XmlWriter::save(const list<StartTimeDTO>& startTimes) {
 	return toString(doc.get(), humanReadable);
 }
 
+string XmlWriter::save(const EveryDaySchedulerDTO& scheduler) {
+	unique_ptr<xml_document> doc(new xml_document());
+	saveEveryDayScheduler(doc.get(), scheduler);
+	return toString(doc.get(), humanReadable);
+}
+
+string XmlWriter::save(const HotWeatherSchedulerDTO& scheduler) {
+	unique_ptr<xml_document> doc(new xml_document());
+	saveHotWeatherScheduler(doc.get(), scheduler);
+	return toString(doc.get(), humanReadable);
+}
+
 string XmlWriter::save(const PeriodicSchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
 	savePeriodicScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const WeeklySchedulerDTO& scheduler) {
+string XmlWriter::save(const TemperatureDependentSchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveWeeklyScheduler(doc.get(), scheduler);
+	saveTemperatureDependentScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const EveryDaySchedulerDTO& scheduler) {
+string XmlWriter::save(const WeeklySchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveEveryDayScheduler(doc.get(), scheduler);
+	saveWeeklyScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);
 }

@@ -103,6 +103,28 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+class HotWeatherSchedulerReaderTest : public ::testing::Test {
+protected:
+
+	XmlReader reader;
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+class HotWeatherSchedulerWriterTest : public ::testing::Test {
+protected:
+
+	XmlWriter writer;
+
+	HotWeatherSchedulerWriterTest() : writer(false) {}
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 class PeriodicSchedulerReaderTest : public ::testing::Test {
 protected:
 
@@ -118,6 +140,28 @@ protected:
 	XmlWriter writer;
 
 	PeriodicSchedulerWriterTest() : writer(false) {}
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class TemperatureDependentSchedulerReaderTest : public ::testing::Test {
+protected:
+
+	XmlReader reader;
+
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+};
+
+class TemperatureDependentSchedulerWriterTest : public ::testing::Test {
+protected:
+
+	XmlWriter writer;
+
+	TemperatureDependentSchedulerWriterTest() : writer(false) {}
 
     virtual void SetUp() {}
     virtual void TearDown() {}

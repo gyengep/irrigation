@@ -7,9 +7,11 @@ class DocumentDTO;
 class ProgramDTO;
 class RunTimeDTO;
 class StartTimeDTO;
-class PeriodicSchedulerDTO;
-class WeeklySchedulerDTO;
 class EveryDaySchedulerDTO;
+class HotWeatherSchedulerDTO;
+class PeriodicSchedulerDTO;
+class TemperatureDependentSchedulerDTO;
+class WeeklySchedulerDTO;
 
 
 class DtoReader {
@@ -19,9 +21,11 @@ public:
 	virtual ProgramDTO loadProgram(const std::string& text) const = 0;
 	virtual RunTimeDTO loadRunTime(const std::string& text) const = 0;
 	virtual StartTimeDTO loadStartTime(const std::string& text) const = 0;
-	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const = 0;
-	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const = 0;
 	virtual EveryDaySchedulerDTO loadEveryDayScheduler(const std::string& text) const = 0;
+	virtual HotWeatherSchedulerDTO loadHotWeatherScheduler(const std::string& text) const = 0;
+	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const = 0;
+	virtual TemperatureDependentSchedulerDTO loadTemperatureDependentScheduler(const std::string& text) const = 0;
+	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const = 0;
 	virtual std::list<ProgramDTO> loadProgramList(const std::string& text) const = 0;
 	virtual std::list<RunTimeDTO> loadRunTimeList(const std::string& text) const = 0;
 	virtual std::list<StartTimeDTO> loadStartTimeList(const std::string& text) const = 0;
@@ -35,9 +39,11 @@ public:
 	virtual std::string save(const ProgramDTO& program, bool includeContainers = true) = 0;
 	virtual std::string save(const RunTimeDTO& runTime) = 0;
 	virtual std::string save(const StartTimeDTO& startTime) = 0;
-	virtual std::string save(const PeriodicSchedulerDTO& scheduler) = 0;
-	virtual std::string save(const WeeklySchedulerDTO& scheduler) = 0;
 	virtual std::string save(const EveryDaySchedulerDTO& scheduler) = 0;
+	virtual std::string save(const HotWeatherSchedulerDTO& scheduler) = 0;
+	virtual std::string save(const PeriodicSchedulerDTO& scheduler) = 0;
+	virtual std::string save(const TemperatureDependentSchedulerDTO& scheduler) = 0;
+	virtual std::string save(const WeeklySchedulerDTO& scheduler) = 0;
 	virtual std::string save(const std::list<ProgramDTO>& programs, bool includeContainers = true) = 0;
 	virtual std::string save(const std::list<RunTimeDTO>& runTimes) = 0;
 	virtual std::string save(const std::list<StartTimeDTO>& startTimes) = 0;

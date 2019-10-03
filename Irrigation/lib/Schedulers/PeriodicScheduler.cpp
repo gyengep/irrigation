@@ -14,15 +14,6 @@ using namespace std;
 PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(vector<bool>(), 1970, 1, 1) {
 }
 
-PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
-	days(other.days),
-	periodStartYear(other.periodStartYear),
-	periodStartMonth(other.periodStartMonth),
-	periodStartDay(other.periodStartDay),
-	elapsedDaysSinceEpochToPeriodStart(other.elapsedDaysSinceEpochToPeriodStart)
-{
-}
-
 PeriodicScheduler::PeriodicScheduler(const vector<bool>& days, unsigned year, unsigned month, unsigned day) {
 	setPeriod(days.size());
 	this->days = days;

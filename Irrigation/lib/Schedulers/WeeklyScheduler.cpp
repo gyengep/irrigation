@@ -13,9 +13,6 @@ using namespace std;
 WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(array<bool, 7>({false, false, false, false, false, false, false})) {
 }
 
-WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.days) {
-}
-
 WeeklyScheduler::WeeklyScheduler(const array<bool, 7>& days) :
 	days(days),
 	isScheduled(false)
