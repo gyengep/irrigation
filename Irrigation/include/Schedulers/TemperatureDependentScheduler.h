@@ -12,10 +12,6 @@
 
 class TemperatureDependentScheduler : public Scheduler {
 	static const std::time_t oneDayInSeconds = 24 * 60 * 60;
-	static constexpr float defaultForecastA = 1.0f;
-	static constexpr float defaultForecastB = 0.0f;
-	static constexpr float defaultHistoryA = 1.0f;
-	static constexpr float defaultHistoryB = 0.0f;
 
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;

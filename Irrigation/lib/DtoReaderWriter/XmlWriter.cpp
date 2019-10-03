@@ -159,12 +159,12 @@ void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDTO& startTime) {
 
 void XmlWriter::saveEveryDayScheduler(xml_node* parent, const EveryDaySchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
-	node.append_attribute("type").set_value("every_day");
+	node.append_attribute("type").set_value("every-day");
 }
 
 void XmlWriter::saveHotWeatherScheduler(xml_node* parent, const HotWeatherSchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
-	node.append_attribute("type").set_value("hot_weather");
+	node.append_attribute("type").set_value("hot-weather");
 
 	if (scheduler.hasPeriodInSeconds()) {
 		node.append_child("period").text().set(scheduler.getPeriodInSeconds());
@@ -209,34 +209,34 @@ void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerD
 
 void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const TemperatureDependentSchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
-	node.append_attribute("type").set_value("temperature_dependent");
+	node.append_attribute("type").set_value("temperature-dependent");
 
 	if (scheduler.hasRemainingA()) {
-		node.append_child("remaining_a").text().set(scheduler.getRemainingA());
+		node.append_child("remaining-a").text().set(scheduler.getRemainingA());
 	}
 
 	if (scheduler.hasForecastA()) {
-		node.append_child("forecast_a").text().set(scheduler.getForecastA());
+		node.append_child("forecast-a").text().set(scheduler.getForecastA());
 	}
 
 	if (scheduler.hasForecastB()) {
-		node.append_child("forecast_b").text().set(scheduler.getForecastB());
+		node.append_child("forecast-b").text().set(scheduler.getForecastB());
 	}
 
 	if (scheduler.hasHistoryA()) {
-		node.append_child("history_a").text().set(scheduler.getHistoryA());
+		node.append_child("history-a").text().set(scheduler.getHistoryA());
 	}
 
 	if (scheduler.hasHistoryB()) {
-		node.append_child("history_b").text().set(scheduler.getHistoryB());
+		node.append_child("history-b").text().set(scheduler.getHistoryB());
 	}
 
 	if (scheduler.hasMinAdjustment()) {
-		node.append_child("min_adjustment").text().set(scheduler.getMinAdjustment());
+		node.append_child("min-adjustment").text().set(scheduler.getMinAdjustment());
 	}
 
 	if (scheduler.hasMaxAdjustment()) {
-		node.append_child("max_adjustment").text().set(scheduler.getMaxAdjustment());
+		node.append_child("max-adjustment").text().set(scheduler.getMaxAdjustment());
 	}
 
 	if (scheduler.hasTrim()) {

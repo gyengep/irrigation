@@ -6,10 +6,10 @@ using namespace testing;
 
 
 TEST(SchedulerTypeTest, to_string) {
-	EXPECT_THAT(to_string(SchedulerType::EVERY_DAY), Eq("every_day"));
-	EXPECT_THAT(to_string(SchedulerType::HOT_WEATHER), Eq("hot_weather"));
+	EXPECT_THAT(to_string(SchedulerType::EVERY_DAY), Eq("every-day"));
+	EXPECT_THAT(to_string(SchedulerType::HOT_WEATHER), Eq("hot-weather"));
 	EXPECT_THAT(to_string(SchedulerType::PERIODIC), Eq("periodic"));
-	EXPECT_THAT(to_string(SchedulerType::TEMPERATURE_DEPENDENT), Eq("temperature_dependent"));
+	EXPECT_THAT(to_string(SchedulerType::TEMPERATURE_DEPENDENT), Eq("temperature-dependent"));
 	EXPECT_THAT(to_string(SchedulerType::WEEKLY), Eq("weekly"));
 }
 

@@ -74,11 +74,11 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	if ((tmpNode = node.child("schedulers")) != nullptr) {
 		xml_node schedulerNode;
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "every_day")) != nullptr) {
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "every-day")) != nullptr) {
 			program.setEveryDayScheduler(loadEveryDayScheduler(schedulerNode));
 		}
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "hot_weather")) != nullptr) {
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "hot-weather")) != nullptr) {
 			program.setHotWeatherScheduler(loadHotWeatherScheduler(schedulerNode));
 		}
 
@@ -86,7 +86,7 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 			program.setPeriodicScheduler(loadPeriodicScheduler(schedulerNode));
 		}
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "temperature_dependent")) != nullptr) {
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "temperature-dependent")) != nullptr) {
 			program.setTemperatureDependentScheduler(loadTemperatureDependentScheduler(schedulerNode));
 		}
 
@@ -110,7 +110,7 @@ EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const xml_node& node) cons
 	EveryDaySchedulerDTO scheduler;
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		if (strcmp(typeAttribute.as_string(), "every_day") != 0) {
+		if (strcmp(typeAttribute.as_string(), "every-day") != 0) {
 			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
 		}
 	}
@@ -123,7 +123,7 @@ HotWeatherSchedulerDTO XmlReader::loadHotWeatherScheduler(const xml_node& node) 
 
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		if (strcmp(typeAttribute.as_string(), "hot_weather") != 0) {
+		if (strcmp(typeAttribute.as_string(), "hot-weather") != 0) {
 			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
 		}
 	}
@@ -188,37 +188,37 @@ TemperatureDependentSchedulerDTO XmlReader::loadTemperatureDependentScheduler(co
 
 	xml_attribute typeAttribute;
 	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		if (strcmp(typeAttribute.as_string(), "temperature_dependent") != 0) {
+		if (strcmp(typeAttribute.as_string(), "temperature-dependent") != 0) {
 			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
 		}
 	}
 
 	xml_node tmpNode;
-	if ((tmpNode = node.child("remaining_a")) != nullptr) {
+	if ((tmpNode = node.child("remaining-a")) != nullptr) {
 		scheduler.setRemainingA(tmpNode.text().as_float());
 	}
 
-	if ((tmpNode = node.child("forecast_a")) != nullptr) {
+	if ((tmpNode = node.child("forecast-a")) != nullptr) {
 		scheduler.setForecastA(tmpNode.text().as_float());
 	}
 
-	if ((tmpNode = node.child("forecast_b")) != nullptr) {
+	if ((tmpNode = node.child("forecast-b")) != nullptr) {
 		scheduler.setForecastB(tmpNode.text().as_float());
 	}
 
-	if ((tmpNode = node.child("history_a")) != nullptr) {
+	if ((tmpNode = node.child("history-a")) != nullptr) {
 		scheduler.setHistoryA(tmpNode.text().as_float());
 	}
 
-	if ((tmpNode = node.child("history_b")) != nullptr) {
+	if ((tmpNode = node.child("history-b")) != nullptr) {
 		scheduler.setHistoryB(tmpNode.text().as_float());
 	}
 
-	if ((tmpNode = node.child("min_adjustment")) != nullptr) {
+	if ((tmpNode = node.child("min-adjustment")) != nullptr) {
 		scheduler.setMinAdjustment(tmpNode.text().as_uint());
 	}
 
-	if ((tmpNode = node.child("max_adjustment")) != nullptr) {
+	if ((tmpNode = node.child("max-adjustment")) != nullptr) {
 		scheduler.setMaxAdjustment(tmpNode.text().as_uint());
 	}
 

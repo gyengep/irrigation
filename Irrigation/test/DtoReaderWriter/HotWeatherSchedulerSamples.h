@@ -16,7 +16,7 @@ typedef std::pair<std::string, HotWeatherSchedulerDTO> HotWeatherSchedulerSample
 ///////////////////////////////////////////////////////////////////////////////
 
 const HotWeatherSchedulerSample hotWeatherSchedulerSample_all(
-		"<scheduler type=\"hot_weather\">"
+		"<scheduler type=\"hot-weather\">"
 			"<period>145</period>"
 			"<temperature>26</temperature>"
 		"</scheduler>",
@@ -24,20 +24,20 @@ const HotWeatherSchedulerSample hotWeatherSchedulerSample_all(
 		);
 
 const HotWeatherSchedulerSample hotWeatherSchedulerSample_period(
-		"<scheduler type=\"hot_weather\">"
+		"<scheduler type=\"hot-weather\">"
 			"<period>155</period>"
 		"</scheduler>",
 		HotWeatherSchedulerDTO().setPeriodInSeconds(155)
 		);
 
 const HotWeatherSchedulerSample hotWeatherSchedulerSample_temperature(
-		"<scheduler type=\"hot_weather\">"
+		"<scheduler type=\"hot-weather\">"
 			"<temperature>24</temperature>"
 		"</scheduler>",
 		HotWeatherSchedulerDTO().setMinTemperature(24)
 		);
 
 const HotWeatherSchedulerSample hotWeatherSchedulerSample_empty(
-		"<scheduler type=\"hot_weather\"/>",
+		"<scheduler type=\"hot-weather\"/>",
 		HotWeatherSchedulerDTO()
 		);

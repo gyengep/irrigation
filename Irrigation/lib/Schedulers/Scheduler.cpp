@@ -11,13 +11,13 @@ using namespace std;
 string to_string(SchedulerType schedulerType) {
 	switch (schedulerType) {
 	case SchedulerType::EVERY_DAY:
-		return "every_day";
+		return "every-day";
 	case SchedulerType::HOT_WEATHER:
-		return "hot_weather";
+		return "hot-weather";
 	case SchedulerType::PERIODIC:
 		return "periodic";
 	case SchedulerType::TEMPERATURE_DEPENDENT:
-		return "temperature_dependent";
+		return "temperature-dependent";
 	case SchedulerType::WEEKLY:
 		return "weekly";
 	default:

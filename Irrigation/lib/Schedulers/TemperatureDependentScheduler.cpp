@@ -18,12 +18,12 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<Te
 	remainingPercent(0),
 	lastRun(0),
 	remainingA(1.0f),
-	forecastA(defaultForecastA),
-	forecastB(defaultForecastB),
-	historyA(defaultHistoryA),
-	historyB(defaultHistoryB),
-	minAdjustment(0),
-	maxAdjustment(numeric_limits<int>::max()),
+	forecastA(1.0f),
+	forecastB(0.0f),
+	historyA(1.0f),
+	historyB(0.0f),
+	minAdjustment(100),
+	maxAdjustment(0),
 	trim(0)
 {
 }
@@ -184,7 +184,9 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 		adjustmentForThisScheduling = 0;
 	} else if (adjustmentForThisScheduling > 0) {
 		adjustmentForThisScheduling = max(adjustmentForThisScheduling, minAdjustment);
-		adjustmentForThisScheduling = min(adjustmentForThisScheduling, maxAdjustment);
+		if (maxAdjustment > 0) {
+			adjustmentForThisScheduling = min(adjustmentForThisScheduling, maxAdjustment);
+		}
 	}
 
 	LOGGER.trace("%-30s%d%%", "adjustment (min/max)", adjustmentForThisScheduling);
@@ -261,8 +263,8 @@ void TemperatureDependentScheduler::updateFromTemperatureDependentSchedulerDto(c
 	}
 
 	if (schedulerDTO.hasForecastA() || schedulerDTO.hasForecastB()) {
-		float forecastA = defaultForecastA;
-		float forecastB = defaultForecastB;
+		float forecastA = this->forecastA;
+		float forecastB = this->forecastB;
 
 		if (schedulerDTO.hasForecastA()) {
 			forecastA = schedulerDTO.getForecastA();
@@ -276,8 +278,8 @@ void TemperatureDependentScheduler::updateFromTemperatureDependentSchedulerDto(c
 	}
 
 	if (schedulerDTO.hasHistoryA() || schedulerDTO.hasHistoryB()) {
-		float historyA = defaultHistoryA;
-		float historyB = defaultHistoryB;
+		float historyA = this->historyA;
+		float historyB = this->historyB;
 
 		if (schedulerDTO.hasHistoryA()) {
 			historyA = schedulerDTO.getHistoryA();
