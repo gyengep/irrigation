@@ -18,7 +18,10 @@ public:
 	HotWeatherScheduler(const std::shared_ptr<TemperatureHistory>& temperatureHistory);
 	HotWeatherScheduler(HotWeatherScheduler&&) = default;
 	HotWeatherScheduler(const HotWeatherScheduler&) = default;
-	HotWeatherScheduler(const std::chrono::seconds& period, float minTemperature);
+	HotWeatherScheduler(
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+			const std::chrono::seconds& period, float minTemperature
+		);
 
 	virtual ~HotWeatherScheduler();
 

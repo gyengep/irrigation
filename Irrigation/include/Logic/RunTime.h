@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <string>
 #include "DTO/RunTimeDTO.h"
 
@@ -13,6 +14,7 @@ public:
 	RunTime(RunTime&&) = default;
 	RunTime(const RunTime&) = default;
 	RunTime(unsigned seconds);
+	RunTime(const std::chrono::seconds& seconds);
 	virtual ~RunTime() = default;
 
 	RunTime& operator= (RunTime&&) = delete;

@@ -6,15 +6,15 @@ using namespace std;
 
 
 HotWeatherScheduler::HotWeatherScheduler(const shared_ptr<TemperatureHistory>& temperatureHistory) :
-	temperatureHistory(temperatureHistory),
-	lastRun(0),
-	periodInSeconds(60 * 60 *2),
-	minTemperature(35.0f)
+	HotWeatherScheduler(temperatureHistory, chrono::hours(2), 35)
 {
 }
 
-HotWeatherScheduler::HotWeatherScheduler(const std::chrono::seconds& period, float minTemperature) :
-	temperatureHistory(nullptr),
+HotWeatherScheduler::HotWeatherScheduler(
+		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+		const std::chrono::seconds& period, float minTemperature
+	) :
+	temperatureHistory(temperatureHistory),
 	lastRun(0),
 	periodInSeconds(period.count()),
 	minTemperature(minTemperature)

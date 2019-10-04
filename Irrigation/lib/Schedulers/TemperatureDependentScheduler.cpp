@@ -29,13 +29,15 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<Te
 }
 
 TemperatureDependentScheduler::TemperatureDependentScheduler(
+		const shared_ptr<TemperatureForecast>& temperatureForecast,
+		const shared_ptr<TemperatureHistory>& temperatureHistory,
 		float remainingA,
 		float forecastA, float forecastB,
 		float historyA, float historyB,
 		int minAdjustment, int maxAdjustment,
 		int trim) :
-	temperatureForecast(nullptr),
-	temperatureHistory(nullptr),
+	temperatureForecast(temperatureForecast),
+	temperatureHistory(temperatureHistory),
 	requiredAdjustmentForWholeDay(0),
 	remainingPercent(0),
 	lastRun(0),

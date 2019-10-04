@@ -8,16 +8,19 @@
 #include "Hardware/Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
-#include "Model/IrrigationDocument.h"
-#include "Views/RestView/RestView.h"
-#include "Views/TimerView/TimerView.h"
-#include "Utils/FileReaderWriterImpl.h"
-#include <stdexcept>
-
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
+#include "Logic/RunTime.h"
+#include "Logic/RunTimeContainer.h"
+#include "Logic/StartTime.h"
+#include "Logic/StartTimeContainer.h"
+#include "Model/IrrigationDocument.h"
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/HotWeatherScheduler.h"
+#include "Utils/FileReaderWriterImpl.h"
+#include "Views/RestView/RestView.h"
+#include "Views/TimerView/TimerView.h"
+#include <stdexcept>
 
 using namespace std;
 
@@ -102,10 +105,14 @@ void IrrigationApplication::initDocument() {
 	try {
 		LOGGER.debug("Loading configuration...");
 
-		documentSaver->load(
-			make_shared<XmlReader>(),
-			make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
-		);
+		if (true) {
+			documentSaver->load(
+				make_shared<XmlReader>(),
+				make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
+			);
+		} else {
+			setMyDefaults();
+		}
 
 		if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 			for (const auto& programWithId : irrigationDocument->getPrograms()) {
@@ -113,9 +120,7 @@ void IrrigationApplication::initDocument() {
 			}
 		}
 
-
 		irrigationDocument->loadState();
-
 		documentSaver->startTimer();
 
 	} catch (const FileNotFoundException& e) {
@@ -163,4 +168,160 @@ void IrrigationApplication::onTerminate() {
 	uninitTemperatureSensor();
 
 	LOGGER.info("Irrigation System stopped");
+}
+
+void IrrigationApplication::setMyDefaults() {
+	irrigationDocument->getPrograms().insert(
+		IdType(),
+		Program::Builder().
+			setName("fulocsolas").
+			setDisabled(false).
+			setAdjustment(100).
+			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory(),
+				0.75f,
+				1.0f, 0.0f,
+				1.0f, 0.0f,
+				50, 0,
+				100
+			)).
+			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+				RunTime(chrono::minutes(26)),
+				RunTime(chrono::minutes(38)),
+				RunTime(chrono::minutes(32)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0))
+			})).
+			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+				{ IdType(), make_shared<StartTime>(4, 0) }
+			})).
+			build()
+		);
+
+	irrigationDocument->getPrograms().insert(
+		IdType(),
+		Program::Builder().
+			setName("buxus").
+			setDisabled(false).
+			setAdjustment(100).
+			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory(),
+				1.0f,
+				1.0f, 0.0f,
+				1.0f, 0.0f,
+				100, 0,
+				0
+			)).
+			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(15)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0))
+			})).
+			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+				{ IdType(), make_shared<StartTime>(6, 0) }
+			})).
+			build()
+		);
+
+	irrigationDocument->getPrograms().insert(
+		IdType(),
+		Program::Builder().
+			setName("kanikula").
+			setDisabled(false).
+			setAdjustment(100).
+			setSchedulerType(SchedulerType::HOT_WEATHER).
+			setHotWeatherScheduler(make_shared<HotWeatherScheduler>(
+				Temperature::getInstance().getTemperatureHistory(),
+				chrono::hours(2), 33
+			)).
+			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+				RunTime(chrono::minutes(2) + chrono::seconds(30)),
+				RunTime(chrono::minutes(3) + chrono::seconds(30)),
+				RunTime(chrono::minutes(3)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0))
+			})).
+			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+				{ IdType(), make_shared<StartTime>(12, 0) },
+				{ IdType(), make_shared<StartTime>(13, 0) },
+				{ IdType(), make_shared<StartTime>(14, 0) },
+				{ IdType(), make_shared<StartTime>(15, 0) },
+				{ IdType(), make_shared<StartTime>(16, 0) },
+				{ IdType(), make_shared<StartTime>(17, 0) }
+			})).
+			build()
+		);
+
+	irrigationDocument->getPrograms().insert(
+		IdType(),
+		Program::Builder().
+			setName("paradicsom").
+			setDisabled(false).
+			setAdjustment(100).
+			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory(),
+				1.0f,
+				1.0f, 0.0f,
+				1.0f, 0.0f,
+				75, 75,
+				0
+			)).
+			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(1)),
+				RunTime(chrono::minutes(0))
+			})).
+			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+				{ IdType(), make_shared<StartTime>(7, 0) },
+				{ IdType(), make_shared<StartTime>(20, 0) }
+			})).
+			build()
+		);
+
+	irrigationDocument->getPrograms().insert(
+		IdType(),
+		Program::Builder().
+			setName("virag").
+			setDisabled(false).
+			setAdjustment(100).
+			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory(),
+				1.0f,
+				1.0f, 0.0f,
+				1.0f, 0.0f,
+				75, 75,
+				0
+			)).
+			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(0)),
+				RunTime(chrono::minutes(2))
+			})).
+			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+				{ IdType(), make_shared<StartTime>(7, 10) },
+				{ IdType(), make_shared<StartTime>(20, 10) }
+			})).
+			build()
+		);
+
+	irrigationDocument->setModified();
 }

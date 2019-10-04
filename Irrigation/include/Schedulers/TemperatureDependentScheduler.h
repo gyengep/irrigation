@@ -30,6 +30,8 @@ public:
 	TemperatureDependentScheduler(TemperatureDependentScheduler&&) = default;
 	TemperatureDependentScheduler(const TemperatureDependentScheduler&) = default;
 	TemperatureDependentScheduler(
+			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 			float remainingA,
 			float forecastA, float forecastB,
 			float historyA, float historyB,
