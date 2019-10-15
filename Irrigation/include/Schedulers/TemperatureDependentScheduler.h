@@ -19,9 +19,7 @@ class TemperatureDependentScheduler : public Scheduler {
 	int requiredAdjustmentForWholeDay;
 	int remainingPercent;
 	std::time_t lastRun;
-	float remainingA;
-	float forecastA, forecastB;
-	float historyA, historyB;
+	float remainingCorrection;
 	int minAdjustment, maxAdjustment;
 	int trim;
 
@@ -32,17 +30,13 @@ public:
 	TemperatureDependentScheduler(
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
-			float remainingA,
-			float forecastA, float forecastB,
-			float historyA, float historyB,
+			float remainingCorrection,
 			int minAdjustment, int maxAdjustment,
 			int trim
 		);
 	virtual ~TemperatureDependentScheduler();
 
 	void setRemainingCorrection(float a);
-	void setHistoryCorrection(float a, float b);
-	void setForecastCorrection(float a, float b);
 	void setMinAdjustment(unsigned minAdjustment);
 	void setMaxAdjustment(unsigned maxAdjustment);
 	void trimAdjustmentOver(unsigned percent);

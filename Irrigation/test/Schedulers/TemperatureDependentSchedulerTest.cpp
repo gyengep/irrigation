@@ -13,8 +13,6 @@ void TemperatureDependentSchedulerTest::SetUp() {
 	scheduler.reset(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
 	scheduler->setRemainingCorrection(1.0f);
-	scheduler->setForecastCorrection(1.0f, 0.0f);
-	scheduler->setHistoryCorrection(1.0f, 0.0f);
 	scheduler->setMinAdjustment(0);
 	scheduler->setMaxAdjustment(0);
 	scheduler->trimAdjustmentOver(0);
@@ -65,47 +63,11 @@ TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForNextDay) {
 	EXPECT_THAT(scheduler->getRequiredPercentForNextDay(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(50));
 }
 
-TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForNextDayWithCorrection1) {
-	scheduler->setForecastCorrection(1.1f, 0.0f);
-
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 1, 4, 0, 0), toLocalTime(2019, 8, 2, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, 30)));
-
-	EXPECT_THAT(scheduler->getRequiredPercentForNextDay(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(90));
-}
-
-TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForNextDayWithCorrection2) {
-	scheduler->setForecastCorrection(1.1f, -1.0f);
-
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(toLocalTime(2019, 8, 1, 4, 0, 0), toLocalTime(2019, 8, 2, 3, 59, 59))).
-		WillOnce(Return(TemperatureForecast::Values(0, 30)));
-
-	EXPECT_THAT(scheduler->getRequiredPercentForNextDay(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(85));
-}
-
 TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForPreviousDay) {
 	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 1, 4, 0, 0), toLocalTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 25, 0)));
 
 	EXPECT_THAT(scheduler->getRequiredPercentForPreviousDay(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(50));
-}
-
-TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForPreviousDayWithCorrection1) {
-	scheduler->setHistoryCorrection(1.0f, 2.0f);
-
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 1, 4, 0, 0), toLocalTime(2019, 8, 2, 3, 59, 59))).
-		WillOnce(Return(TemperatureHistory::Values(0, 25, 0)));
-
-	EXPECT_THAT(scheduler->getRequiredPercentForPreviousDay(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(60));
-}
-
-TEST_F(TemperatureDependentSchedulerTest, getRequiredPercentForPreviousDayWithCorrection2) {
-	scheduler->setHistoryCorrection(0.8f, -1.0f);
-
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(toLocalTime(2019, 8, 1, 4, 0, 0), toLocalTime(2019, 8, 2, 3, 59, 59))).
-		WillOnce(Return(TemperatureHistory::Values(0, 25, 0)));
-
-	EXPECT_THAT(scheduler->getRequiredPercentForPreviousDay(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(35));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

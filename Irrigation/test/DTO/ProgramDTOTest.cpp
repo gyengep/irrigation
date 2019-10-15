@@ -33,7 +33,7 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(120, 35.0f);
 	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ true, false, true }), 2018, 11, 15);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 1.2f, 1.3f, 1.4f, 1.5f, 80, 90, 120);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 80, 90, 120);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10, 0), RunTimeDTO(15, 0), RunTimeDTO(20, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(5, 0), StartTimeDTO(6, 0) });
@@ -85,7 +85,7 @@ TEST(ProgramDTOTest, copyConstructor) {
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(90, 31.0f);
 	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ true, false, true }), 2018, 11, 15);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(2.1f, 2.2f, 2.3f, 2.4f, 2.5f, 180, 190, 20);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(2.1f, 180, 190, 20);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
@@ -139,7 +139,7 @@ TEST(ProgramDTOTest, moveConstructor) {
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(43, 15.0f);
 	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ false, true }), 2018, 11, 10);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 2.2f, 3.3f, 4.4f, 5.5f, 63, 64, 65);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 63, 64, 65);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
 	const list<StartTimeDTO> expectedStartTimes({ StartTimeDTO(1, 30), StartTimeDTO(4, 0), StartTimeDTO(6, 0) });
@@ -531,8 +531,8 @@ TEST(ProgramDTOTest, equalsOperator) {
 	}
 
 	{
-		const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler1(10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 15, 25, 35);
-		const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler2(15.0f, 25.0f, 30.0f, 40.0f, 50.0f, 15, 25, 35);
+		const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler1(10.0f, 15, 25, 35);
+		const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler2(15.0f, 15, 25, 35);
 
 		programDTO1.setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(expectedTemperatureDependentScheduler1));
 		EXPECT_FALSE(programDTO1 == programDTO2);

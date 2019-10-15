@@ -42,24 +42,8 @@ TEST_F(TemperatureDependentSchedulerReaderTest, schedulerAll) {
 	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_all, reader);
 }
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerRemainingA) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_remainingA, reader);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerForecastA) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_forecastA, reader);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerForecastB) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_forecastB, reader);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerHistoryA) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_historyA, reader);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerHistoryB) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_historyA, reader);
+TEST_F(TemperatureDependentSchedulerReaderTest, schedulerRemainingCorrection) {
+	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_remainingCorrection, reader);
 }
 
 TEST_F(TemperatureDependentSchedulerReaderTest, schedulerMinAdjustment) {
@@ -84,24 +68,8 @@ TEST_F(TemperatureDependentSchedulerWriterTest, schedulerAll) {
 	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_all, writer);
 }
 
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerRemainingA) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_remainingA, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerForecastA) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_forecastA, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerForecastB) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_forecastB, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerHistoryA) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_historyA, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerHistoryB) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_historyB, writer);
+TEST_F(TemperatureDependentSchedulerWriterTest, schedulerRemainingCorrection) {
+	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_remainingCorrection, writer);
 }
 
 TEST_F(TemperatureDependentSchedulerWriterTest, schedulerMinAdjustment) {

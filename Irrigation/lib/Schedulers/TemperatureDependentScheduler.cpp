@@ -17,11 +17,7 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<Te
 	requiredAdjustmentForWholeDay(0),
 	remainingPercent(0),
 	lastRun(0),
-	remainingA(1.0f),
-	forecastA(1.0f),
-	forecastB(0.0f),
-	historyA(1.0f),
-	historyB(0.0f),
+	remainingCorrection(1.0f),
 	minAdjustment(100),
 	maxAdjustment(0),
 	trim(0)
@@ -31,9 +27,7 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(const shared_ptr<Te
 TemperatureDependentScheduler::TemperatureDependentScheduler(
 		const shared_ptr<TemperatureForecast>& temperatureForecast,
 		const shared_ptr<TemperatureHistory>& temperatureHistory,
-		float remainingA,
-		float forecastA, float forecastB,
-		float historyA, float historyB,
+		float remainingCorrection,
 		int minAdjustment, int maxAdjustment,
 		int trim) :
 	temperatureForecast(temperatureForecast),
@@ -41,11 +35,7 @@ TemperatureDependentScheduler::TemperatureDependentScheduler(
 	requiredAdjustmentForWholeDay(0),
 	remainingPercent(0),
 	lastRun(0),
-	remainingA(remainingA),
-	forecastA(forecastA),
-	forecastB(forecastB),
-	historyA(historyA),
-	historyB(historyB),
+	remainingCorrection(remainingCorrection),
 	minAdjustment(minAdjustment),
 	maxAdjustment(maxAdjustment),
 	trim(trim)
@@ -57,17 +47,12 @@ TemperatureDependentScheduler::~TemperatureDependentScheduler() {
 
 int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
 	const float temperature = temperatureForecast->getForecastValues(now, now + oneDayInSeconds - 1).max;
-	const float calculatedTemperature = forecastA * temperature + forecastB;
-	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(calculatedTemperature);
+	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	LOGGER.trace("TemperatureDependentScheduler temperature forecast:\n"
 			"\tforecasted temperature:   %.1f°C\n"
-			"\ta, b:                     %.1f, %.1f\n"
-			"\tcalculated temperature:   %.1f°C\n"
 			"\trequired adjustment:      %d%%",
 			temperature,
-			forecastA, forecastB,
-			calculatedTemperature,
 			result
 		);
 
@@ -77,17 +62,12 @@ int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now
 
 int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
 	const float temperature = temperatureHistory->getHistoryValues(now - oneDayInSeconds, now - 1).max;
-	const float calculatedTemperature = historyA * temperature + historyB;
-	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(calculatedTemperature);
+	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	LOGGER.trace("TemperatureDependentScheduler temperature history:\n"
 			"\tmeasured temperature:     %.1f°C\n"
-			"\ta, b:                     %.1f, %.1f\n"
-			"\tcalculated value:         %.1f°C\n"
 			"\trequired adjustment:      %d%%",
 			temperature,
-			historyA, historyB,
-			calculatedTemperature,
 			result
 		);
 
@@ -149,8 +129,8 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 
 			remainingPercent -= requiredPercentForPreviousDay;
 			LOGGER.trace("%-30s%d%%", "remainingPercent", remainingPercent);
-			remainingPercent *= remainingA;
-			LOGGER.trace("%-30s%.1f", "remainingA", remainingA);
+			remainingPercent *= remainingCorrection;
+			LOGGER.trace("%-30s%.1f", "remainingCorrection", remainingCorrection);
 			LOGGER.trace("%-30s%d%%", "NEW remainingPercent", remainingPercent);
 
 		} else {
@@ -225,17 +205,7 @@ void TemperatureDependentScheduler::loadFrom(const nlohmann::json& values) {
 }
 
 void TemperatureDependentScheduler::setRemainingCorrection(float a) {
-	remainingA = a;
-}
-
-void TemperatureDependentScheduler::setHistoryCorrection(float a, float b) {
-	historyA = a;
-	historyB = b;
-}
-
-void TemperatureDependentScheduler::setForecastCorrection(float a, float b) {
-	forecastA = a;
-	forecastB = b;
+	remainingCorrection = a;
 }
 
 void TemperatureDependentScheduler::setMinAdjustment(unsigned minAdjustment) {
@@ -252,46 +222,14 @@ void TemperatureDependentScheduler::trimAdjustmentOver(unsigned trim) {
 
 TemperatureDependentSchedulerDTO TemperatureDependentScheduler::toTemperatureDependentSchedulerDto() const {
 	return TemperatureDependentSchedulerDTO(
-			remainingA,
-			forecastA, forecastB,
-			historyA, historyB,
+			remainingCorrection,
 			minAdjustment, maxAdjustment,
 			trim);
 }
 
 void TemperatureDependentScheduler::updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasRemainingA()) {
-		setRemainingCorrection(schedulerDTO.getRemainingA());
-	}
-
-	if (schedulerDTO.hasForecastA() || schedulerDTO.hasForecastB()) {
-		float forecastA = this->forecastA;
-		float forecastB = this->forecastB;
-
-		if (schedulerDTO.hasForecastA()) {
-			forecastA = schedulerDTO.getForecastA();
-		}
-
-		if (schedulerDTO.hasForecastB()) {
-			forecastB = schedulerDTO.getForecastB();
-		}
-
-		setForecastCorrection(forecastA, forecastB);
-	}
-
-	if (schedulerDTO.hasHistoryA() || schedulerDTO.hasHistoryB()) {
-		float historyA = this->historyA;
-		float historyB = this->historyB;
-
-		if (schedulerDTO.hasHistoryA()) {
-			historyA = schedulerDTO.getHistoryA();
-		}
-
-		if (schedulerDTO.hasHistoryB()) {
-			historyB = schedulerDTO.getHistoryB();
-		}
-
-		setHistoryCorrection(historyA, historyB);
+	if (schedulerDTO.hasRemainingCorrection()) {
+		setRemainingCorrection(schedulerDTO.getRemainingCorrection());
 	}
 
 	if (schedulerDTO.hasMinAdjustment()) {
@@ -315,11 +253,10 @@ string to_string(const TemperatureDependentScheduler& scheduler) {
 
 ostream& operator<<(ostream& os, const TemperatureDependentScheduler& scheduler) {
 	os << "TemperatureDependentScheduler{";
+	os << "remainingCorrection=" << scheduler.remainingCorrection << ", ";
 	os << "minAdjustment=" << scheduler.minAdjustment << ", ";
 	os << "maxAdjustment=" << scheduler.maxAdjustment << ", ";
-	os << "trimOver=" << scheduler.trim << ", ";
-	os << "forecastA=" << scheduler.forecastA << ", forecastB=" << scheduler.forecastB << ", ";
-	os << "historyA=" << scheduler.historyA << ", historyB=" << scheduler.historyB;
+	os << "trimOver=" << scheduler.trim;
 	os << "}";
 	return os;
 }

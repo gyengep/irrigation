@@ -19,8 +19,6 @@ void TemperatureDependentSchedulerProcessTest::SetUp() {
 	scheduler.reset(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
 
 	scheduler->setRemainingCorrection(1.0f);
-	scheduler->setForecastCorrection(1.0f, 0.0f);
-	scheduler->setHistoryCorrection(1.0f, 0.0f);
 	scheduler->setMinAdjustment(0);
 	scheduler->setMaxAdjustment(0);
 	scheduler->trimAdjustmentOver(0);
@@ -416,82 +414,6 @@ TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection0) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Forecast correction
-
-TEST_F(TemperatureDependentSchedulerProcessTest, forecastCorrection) {
-	scheduler->setForecastCorrection(1.0f, 2.0f);
-
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 95)));	// 95 : 90
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
-
-	//	remaining: 95 - 90 = 5
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 75 : 75
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
-
-	//	remaining: 75 - 75 = 0
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));	// 105 : 110
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(105));
-
-	//	remaining: 105 - 110 = -5
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));	// 70 : 50
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
-
-	//	remaining: 70 - 50 = 20
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 75 : 45
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
-
-	//	remaining: 75 - 45 = 30
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(30));
-
-	//	remaining: 30 - 0 = 30
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));	// 80 : 70
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
-
-	//	remaining: 80 - 70 = 10
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	//	90
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(90));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// History correction
-
-TEST_F(TemperatureDependentSchedulerProcessTest, historyCorrection) {
-	scheduler->setHistoryCorrection(1.0f, 2.0f);
-
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 100
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
-
-	//	remaining: 85 - 100 = -15
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	// 65 : 85
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
-
-	//	remaining: 65 - 85 = -20
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 115)));	// 95 : 120
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
-
-	//	remaining: 95 - 120 = -25
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 60 : 60
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(60));
-
-	//	remaining: 60 - 60 = 0
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));	// 65 : 50
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(65));
-
-	//	remaining: 65 - 50 = 15
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));	// 0 : 0
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(15));
-
-	//	remaining: 15 - 0 = 15
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 55)));	// 70 : 80
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
-
-	//	remaining: 70 - 80 = -10
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 90)));	//	80
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Trim
 
 TEST_F(TemperatureDependentSchedulerProcessTest, trim) {
@@ -630,83 +552,4 @@ TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrec
 
 	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 100)));	//	80
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(100));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Forecast correction / Remaining correction
-
-TEST_F(TemperatureDependentSchedulerProcessTest, processForecastAndRemainingCorrection) {
-	scheduler->setForecastCorrection(1.0f, 2.0f);
-	scheduler->setRemainingCorrection(0.5f);
-
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 95)));	// 95 : 90
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
-
-	//	remaining: 95 - 90 = 5
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 73)));	// 75 : 75
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
-
-	//	remaining: 75 - 75 = 0
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));	// 105 : 110
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(105));
-
-	//	remaining: 105 - 110 = -5
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 72)));	// 70 : 50
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
-
-	//	remaining: 70 - 50 = 20
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 65)));	// 75 : 45
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
-
-	//	remaining: 75 - 45 = 30
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(true, true, 12)));	// 27 : 0
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(27));
-
-	//	remaining: 27 - 0 = 27
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 67)));	// 80 : 70
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
-
-	//	remaining: 80 - 70 = 10
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	//	90
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(90));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Forecast correction / Remaining correction / MinAdjustment
-
-TEST_F(TemperatureDependentSchedulerProcessTest, processForecastAndRemainingCorrectionAndMinAdjustment) {
-	scheduler->setMinAdjustment(70);
-	scheduler->setForecastCorrection(1.0f, 2.0f);
-	scheduler->setRemainingCorrection(0.5f);
-
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 95)));	// 95 : 90
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(95));
-
-	//	remaining: 95 - 90 = 5
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 2, 4, 0, 0)), Eq(Scheduler::Result(true, true, 73)));	// 75 : 75
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
-
-	//	remaining: 75 - 75 = 0
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 3, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));	// 105 : 110
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(105));
-
-	//	remaining: 105 - 110 = -5
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 4, 4, 0, 0)), Eq(Scheduler::Result(true, true, 72)));	// 70 : 50
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(70));
-
-	//	remaining: 70 - 50 = 20
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 5, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 75 : 45
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
-
-	//	remaining: 80 - 45 = 35
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 6, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 27 : 0
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(87));
-
-	//	remaining: 87 - 0 = 87
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 7, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	// 80 : 70
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(113));
-
-	//	remaining: 113 - 70 = 43
-	EXPECT_THAT(scheduler->process(toLocalTime(2019, 8, 8, 4, 0, 0)), Eq(Scheduler::Result(true, true, 70)));	//	90
-	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(91));
 }

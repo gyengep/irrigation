@@ -194,24 +194,8 @@ TemperatureDependentSchedulerDTO XmlReader::loadTemperatureDependentScheduler(co
 	}
 
 	xml_node tmpNode;
-	if ((tmpNode = node.child("remaining-a")) != nullptr) {
-		scheduler.setRemainingA(tmpNode.text().as_float());
-	}
-
-	if ((tmpNode = node.child("forecast-a")) != nullptr) {
-		scheduler.setForecastA(tmpNode.text().as_float());
-	}
-
-	if ((tmpNode = node.child("forecast-b")) != nullptr) {
-		scheduler.setForecastB(tmpNode.text().as_float());
-	}
-
-	if ((tmpNode = node.child("history-a")) != nullptr) {
-		scheduler.setHistoryA(tmpNode.text().as_float());
-	}
-
-	if ((tmpNode = node.child("history-b")) != nullptr) {
-		scheduler.setHistoryB(tmpNode.text().as_float());
+	if ((tmpNode = node.child("remaining-correction")) != nullptr) {
+		scheduler.setRemainingCorrection(tmpNode.text().as_float());
 	}
 
 	if ((tmpNode = node.child("min-adjustment")) != nullptr) {

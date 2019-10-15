@@ -211,24 +211,8 @@ void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const Temper
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("temperature-dependent");
 
-	if (scheduler.hasRemainingA()) {
-		node.append_child("remaining-a").text().set(scheduler.getRemainingA());
-	}
-
-	if (scheduler.hasForecastA()) {
-		node.append_child("forecast-a").text().set(scheduler.getForecastA());
-	}
-
-	if (scheduler.hasForecastB()) {
-		node.append_child("forecast-b").text().set(scheduler.getForecastB());
-	}
-
-	if (scheduler.hasHistoryA()) {
-		node.append_child("history-a").text().set(scheduler.getHistoryA());
-	}
-
-	if (scheduler.hasHistoryB()) {
-		node.append_child("history-b").text().set(scheduler.getHistoryB());
+	if (scheduler.hasRemainingCorrection()) {
+		node.append_child("remaining-correction").text().set(scheduler.getRemainingCorrection());
 	}
 
 	if (scheduler.hasMinAdjustment()) {

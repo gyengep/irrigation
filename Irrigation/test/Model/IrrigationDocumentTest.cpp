@@ -31,7 +31,7 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 		EveryDaySchedulerDTO(),
 		HotWeatherSchedulerDTO(65, 31),
 		PeriodicSchedulerDTO(list<bool>({ false, true, false}), 2016, 1, 2),
-		TemperatureDependentSchedulerDTO(10.01f, 11.01f, 12.01f, 13.01f, 14.01f, 50, 51, 52),
+		TemperatureDependentSchedulerDTO(10.01f, 50, 51, 52),
 		WeeklySchedulerDTO(list<bool>({ false, true, false, false, false, true, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(2, 0).setId(0),
@@ -51,7 +51,7 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 		EveryDaySchedulerDTO(),
 		HotWeatherSchedulerDTO(70, 28),
 		PeriodicSchedulerDTO(list<bool>({ true, false}), 2018, 10, 20),
-		TemperatureDependentSchedulerDTO(20.01f, 21.01f, 22.01f, 23.01f, 24.01f, 30, 31, 32),
+		TemperatureDependentSchedulerDTO(20.01f, 30, 31, 32),
 		WeeklySchedulerDTO(list<bool>({ true, false, false, false, false, false, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(1, 20).setId(0),

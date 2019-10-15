@@ -8,24 +8,8 @@ using namespace std;
 
 TemperatureDependentSchedulerDTO::TemperatureDependentSchedulerDTO(const TemperatureDependentSchedulerDTO& other) {
 
-	if (other.hasRemainingA()) {
-		setRemainingA(other.getRemainingA());
-	}
-
-	if (other.hasForecastA()) {
-		setForecastA(other.getForecastA());
-	}
-
-	if (other.hasForecastB()) {
-		setForecastB(other.getForecastB());
-	}
-
-	if (other.hasHistoryA()) {
-		setHistoryA(other.getHistoryA());
-	}
-
-	if (other.hasHistoryB()) {
-		setHistoryB(other.getHistoryB());
+	if (other.hasRemainingCorrection()) {
+		setRemainingCorrection(other.getRemainingCorrection());
 	}
 
 	if (other.hasMinAdjustment()) {
@@ -42,38 +26,24 @@ TemperatureDependentSchedulerDTO::TemperatureDependentSchedulerDTO(const Tempera
 }
 
 TemperatureDependentSchedulerDTO::TemperatureDependentSchedulerDTO(
-		float remainingA,
-		float forecastA, float forecastB,
-		float historyA, float historyB,
+		float remainingCorrection,
 		int minAdjustment, int maxAdjustment,
 		int trim)
 {
-	setRemainingA(remainingA);
-	setForecastA(forecastA);
-	setForecastB(forecastB);
-	setHistoryA(historyA);
-	setHistoryB(historyB);
+	setRemainingCorrection(remainingCorrection);
 	setMinAdjustment(minAdjustment);
 	setMaxAdjustment(maxAdjustment);
 	setTrim(trim);
 }
 
 bool TemperatureDependentSchedulerDTO::operator== (const TemperatureDependentSchedulerDTO& other) const {
-	return (equalsPtr(RemainingA.get(), other.RemainingA.get()) &&
-			equalsPtr(ForecastA.get(), other.ForecastA.get()) &&
-			equalsPtr(ForecastB.get(), other.ForecastB.get()) &&
-			equalsPtr(HistoryA.get(), other.HistoryA.get()) &&
-			equalsPtr(HistoryB.get(), other.HistoryB.get()) &&
+	return (equalsPtr(RemainingCorrection.get(), other.RemainingCorrection.get()) &&
 			equalsPtr(MinAdjustment.get(), other.MinAdjustment.get()) &&
 			equalsPtr(MaxAdjustment.get(), other.MaxAdjustment.get()) &&
 			equalsPtr(Trim.get(), other.Trim.get()));
 }
 
-IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, RemainingA);
-IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, ForecastA);
-IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, ForecastB);
-IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, HistoryA);
-IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, HistoryB);
+IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, RemainingCorrection);
 IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, MinAdjustment);
 IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, MaxAdjustment);
 IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, Trim);
@@ -81,15 +51,7 @@ IMPLEMENT_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, Trim);
 
 ostream& operator<<(ostream& os, const TemperatureDependentSchedulerDTO& scheduler) {
 	os << "TemperatureDependentSchedulerDTO{";
-	PRINT_PTR(os, "remainingA", scheduler.RemainingA.get());
-	os << ", ";
-	PRINT_PTR(os, "forecastA", scheduler.ForecastA.get());
-	os << ", ";
-	PRINT_PTR(os, "forecastB", scheduler.ForecastB.get());
-	os << ", ";
-	PRINT_PTR(os, "historyA", scheduler.HistoryA.get());
-	os << ", ";
-	PRINT_PTR(os, "historyB", scheduler.HistoryB.get());
+	PRINT_PTR(os, "remainingCorrection", scheduler.RemainingCorrection.get());
 	os << ", ";
 	PRINT_PTR(os, "minAdjustment", scheduler.MinAdjustment.get());
 	os << ", ";

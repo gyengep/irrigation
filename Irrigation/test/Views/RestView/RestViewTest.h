@@ -37,7 +37,9 @@ protected:
     void testGetRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
     void testPatchRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
     void testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
+    void testGetHotWeatherScheduler(const Dto2ObjectTest::HotWeatherSchedulerSample& hotWeatherSchedulerSample);
     void testGetPeriodicScheduler(const Dto2ObjectTest::PeriodicSchedulerSample& periodicSchedulerSample);
+    void testGetTemperatureDependentScheduler(const Dto2ObjectTest::TemperatureDependentSchedulerSample& temperatureDependentSchedulerSample);
     void testGetWeeklyScheduler(const Dto2ObjectTest::WeeklySchedulerSample& weeklySchedulerSample);
 
     static void checkErrorResponse(const Response& response, long statusCode, const std::string& contentType);
@@ -50,7 +52,9 @@ protected:
     static std::string createProgramListUrl(const std::string& requestParameters = "");
     static std::string createRunTimeListUrl(IdType programId);
     static std::string createStartTimeListUrl(IdType programId);
+    static std::string createHotWeatherSchedulerUrl(IdType programId);
     static std::string createPeriodicSchedulerUrl(IdType programId);
+    static std::string createTemperatureDependentSchedulerUrl(IdType programId);
     static std::string createWeeklySchedulerUrl(IdType programId);
     static std::string createIrrigationActionUrl();
 };
