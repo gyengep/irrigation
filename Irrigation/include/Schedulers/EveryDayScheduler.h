@@ -6,16 +6,16 @@
 
 class EveryDayScheduler : public Scheduler {
 public:
-	EveryDayScheduler();
+	EveryDayScheduler() = default;
 	EveryDayScheduler(EveryDayScheduler&&) = default;
-	EveryDayScheduler(const EveryDayScheduler&);
-	virtual ~EveryDayScheduler();
+	EveryDayScheduler(const EveryDayScheduler&) = default;
+	virtual ~EveryDayScheduler() = default;
 
 	EveryDayScheduler& operator= (EveryDayScheduler&&) = delete;
 	EveryDayScheduler& operator= (const EveryDayScheduler&) = delete;
 	bool operator== (const EveryDayScheduler& other) const;
 
-	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
+	virtual Result process(const std::time_t rawtime) override;
 
 	EveryDaySchedulerDTO toEveryDaySchedulerDto() const;
 	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO);

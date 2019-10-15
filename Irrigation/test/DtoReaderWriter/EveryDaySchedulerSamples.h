@@ -13,6 +13,6 @@ typedef std::pair<std::string, EveryDaySchedulerDTO> EveryDaySchedulerSample;
 ///////////////////////////////////////////////////////////////////////////////
 
 const EveryDaySchedulerSample everyDaySchedulerSample(
-		"<scheduler type=\"every_day\"/>",
+		"<scheduler type=\"every-day\"/>",
 		EveryDaySchedulerDTO()
 		);

@@ -1,4 +1,5 @@
 #include "IrrigationDocument.h"
+#include "Configuration.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
@@ -7,6 +8,9 @@
 #include "Logic/StartTimeContainer.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
+#include <algorithm>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -80,4 +84,44 @@ shared_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
 	return shared_ptr<IrrigationDocument>(new IrrigationDocument(
 			programContainer,
 			wateringController));
+}
+
+nlohmann::json IrrigationDocument::saveTo() const {
+	nlohmann::json result;
+
+	for (const auto& programWithId : getPrograms()) {
+		const string key = "program_" + to_string(programWithId.first);
+		result[key] = programWithId.second->saveTo();
+	}
+
+	return result;
+}
+
+void IrrigationDocument::loadFrom(const nlohmann::json& values) {
+	for (const auto& programWithId : getPrograms()) {
+		const string key = "program_" + to_string(programWithId.first);
+
+		auto it = values.find(key);
+		if (values.end() != it) {
+			programWithId.second->loadFrom(it.value());
+		}
+	}
+}
+
+void IrrigationDocument::saveState() const {
+	ofstream o(Configuration::getInstance().getPersistedDatFileName());
+	o << setw(4) << saveTo() << endl;
+	LOGGER.debug("Document state is saved");
+}
+
+void IrrigationDocument::loadState() {
+	std::ifstream i(Configuration::getInstance().getPersistedDatFileName());
+	if (i.is_open()) {
+		nlohmann::json j;
+		i >> j;
+		loadFrom(j);
+		LOGGER.debug("Document state is loaded");
+	} else {
+		LOGGER.debug("Document state is NOT loaded");
+	}
 }

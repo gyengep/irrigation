@@ -14,11 +14,12 @@ class PeriodicScheduler: public Scheduler {
 	unsigned elapsedDaysSinceEpochToPeriodStart;
 
 	void checkIndex(size_t day) const;
+	bool onProcess(const std::time_t rawtime) const;
 
 public:
 	PeriodicScheduler();
 	PeriodicScheduler(PeriodicScheduler&&) = default;
-	PeriodicScheduler(const PeriodicScheduler&);
+	PeriodicScheduler(const PeriodicScheduler&) = default;
 	PeriodicScheduler(const std::vector<bool>& days, unsigned year, unsigned month, unsigned day);
 	virtual ~PeriodicScheduler();
 
@@ -37,7 +38,7 @@ public:
 	bool isDayEnabled(size_t day) const;
 	unsigned getPeriod() const;
 
-	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
+	virtual Result process(const std::time_t rawtime) override;
 
 	PeriodicSchedulerDTO toPeriodicSchedulerDto() const;
 	virtual void updateFromPeriodicSchedulerDto(const PeriodicSchedulerDTO& schedulerDTO);

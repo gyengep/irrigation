@@ -3,23 +3,34 @@
 #include "RunTimeContainer.h"
 #include "StartTime.h"
 #include "StartTimeContainer.h"
-#include <sstream>
 #include "Logger/Logger.h"
-#include "Schedulers/PeriodicScheduler.h"
-#include "Schedulers/WeeklyScheduler.h"
 #include "Schedulers/EveryDayScheduler.h"
+#include "Schedulers/HotWeatherScheduler.h"
+#include "Schedulers/PeriodicScheduler.h"
+#include "Schedulers/TemperatureDependentScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
+#include "Hardware/Temperature/Temperature.h"
 #include "Utils/ToString.h"
+#include <algorithm>
+#include <sstream>
 
 using namespace std;
 
 
 Program::Program() :
 	Program(false, "", 100, SchedulerType::WEEKLY,
-		shared_ptr<PeriodicScheduler>(new PeriodicScheduler()),
-		shared_ptr<WeeklyScheduler>(new WeeklyScheduler()),
-		shared_ptr<EveryDayScheduler>(new EveryDayScheduler()),
-		shared_ptr<RunTimeContainer>(new RunTimeContainer()),
-		shared_ptr<StartTimeContainer>(new StartTimeContainer())
+		make_shared<EveryDayScheduler>(),
+		make_shared<HotWeatherScheduler>(
+				Temperature::getInstance().getTemperatureHistory()
+				),
+		make_shared<PeriodicScheduler>(),
+		make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory()
+				),
+		make_shared<WeeklyScheduler>(),
+		make_shared<RunTimeContainer>(),
+		make_shared<StartTimeContainer>()
 	)
 {
 }
@@ -28,28 +39,37 @@ Program::Program(const Program& other) :
 	Program(other.isDisabled(), other.getName(),
 		other.getAdjustment(),
 		other.getSchedulerType(),
-		shared_ptr<PeriodicScheduler>(new PeriodicScheduler(other.getPeriodicScheduler())),
-		shared_ptr<WeeklyScheduler>(new WeeklyScheduler(other.getWeeklyScheduler())),
-		shared_ptr<EveryDayScheduler>(new EveryDayScheduler(other.getEveryDayScheduler())),
-		shared_ptr<RunTimeContainer>(new RunTimeContainer(other.getRunTimes())),
-		shared_ptr<StartTimeContainer>(new StartTimeContainer(other.getStartTimes()))
+		make_shared<EveryDayScheduler>(other.getEveryDayScheduler()),
+		make_shared<HotWeatherScheduler>(other.getHotWeatherScheduler()),
+		make_shared<PeriodicScheduler>(other.getPeriodicScheduler()),
+		make_shared<TemperatureDependentScheduler>(other.getTemperatureDependentScheduler()),
+		make_shared<WeeklyScheduler>(other.getWeeklyScheduler()),
+		make_shared<RunTimeContainer>(other.getRunTimes()),
+		make_shared<StartTimeContainer>(other.getStartTimes())
 	)
 {
 }
 
 Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
-	shared_ptr<PeriodicScheduler> periodicScheduler, shared_ptr<WeeklyScheduler> weeklyScheduler, shared_ptr<EveryDayScheduler> everyDayScheduler,
-	shared_ptr<RunTimeContainer> runTimes, shared_ptr<StartTimeContainer> startTimes) :
+		const shared_ptr<EveryDayScheduler>& everyDayScheduler,
+		const shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
+		const shared_ptr<PeriodicScheduler>& periodicScheduler,
+		const shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
+		const shared_ptr<WeeklyScheduler>& weeklyScheduler,
+		const shared_ptr<RunTimeContainer>& runTimes,
+		const shared_ptr<StartTimeContainer>& startTimes) :
 	disabled(disabled),
 	name(name),
 	adjustment(adjustment),
-	schedulerType(schedulerType),
-	periodicScheduler(periodicScheduler),
-	weeklyScheduler(weeklyScheduler),
 	everyDayScheduler(everyDayScheduler),
+	hotWeatherScheduler(hotWeatherScheduler),
+	periodicScheduler(periodicScheduler),
+	temperatureDependentScheduler(temperatureDependentScheduler),
+	weeklyScheduler(weeklyScheduler),
 	runTimes(runTimes),
 	startTimes(startTimes)
 {
+	setSchedulerType(schedulerType);
 }
 
 Program::Program(const ProgramDTO& programDTO) : Program() {
@@ -64,9 +84,9 @@ bool Program::operator== (const Program& other) const {
 			getName() == other.getName() &&
 			getAdjustment() == other.getAdjustment() &&
 			getSchedulerType() == other.getSchedulerType() &&
+			getEveryDayScheduler() == other.getEveryDayScheduler() &&
 			getPeriodicScheduler() == other.getPeriodicScheduler() &&
 			getWeeklyScheduler() == other.getWeeklyScheduler() &&
-			getEveryDayScheduler() == other.getEveryDayScheduler() &&
 			getRunTimes() == other.getRunTimes() &&
 			getStartTimes() == other.getStartTimes());
 }
@@ -96,6 +116,27 @@ unsigned Program::getAdjustment() const {
 }
 
 void Program::setSchedulerType(SchedulerType schedulerType) {
+
+	switch (schedulerType) {
+	case SchedulerType::EVERY_DAY:
+		currentScheduler = everyDayScheduler;
+		break;
+	case SchedulerType::HOT_WEATHER:
+		currentScheduler = hotWeatherScheduler;
+		break;
+	case SchedulerType::PERIODIC:
+		currentScheduler = periodicScheduler;
+		break;
+	case SchedulerType::TEMPERATURE_DEPENDENT:
+		currentScheduler = temperatureDependentScheduler;
+		break;
+	case SchedulerType::WEEKLY:
+		currentScheduler = weeklyScheduler;
+		break;
+	default:
+		throw invalid_argument("Program::setSchedulerType(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
+	}
+
 	this->schedulerType = schedulerType;
 }
 
@@ -103,38 +144,50 @@ SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 
-const Scheduler& Program::getCurrentScheduler() const {
-	switch (schedulerType) {
-	case SchedulerType::WEEKLY:
-		return getWeeklyScheduler();
-	case SchedulerType::PERIODIC:
-		return getPeriodicScheduler();
-	case SchedulerType::EVERY_DAY:
-		return getEveryDayScheduler();
-	default:
-		throw invalid_argument("Program::getCurrentScheduler(): unknown SchedulerType " + to_string(static_cast<unsigned>(schedulerType)));
-	}
-}
-
-bool Program::isScheduled(const tm& timeinfo) const {
-	if (false == disabled) {
-		for (auto& startTimeAndIdPair : *startTimes) {
+pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
+	if (!disabled) {
+		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
+			struct tm timeinfo;
+			localtime_r(&rawtime, &timeinfo);
+
 			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
-				return getCurrentScheduler().isDayScheduled(timeinfo);
+				const Scheduler::Result result = getCurrentScheduler().process(rawtime);
+
+				unsigned adjustment = 0;
+
+				if (result.isScheduled) {
+					adjustment = getAdjustment();
+
+					if (result.overrideAdjustment) {
+						adjustment *= (result.adjustment / 100.0f);
+						LOGGER.debug("The scheduler overrides the adjustment\n"
+								"\tuser adjustment        %d%%\n"
+								"\tscheduler adjustment   %d%%\n"
+								"\taccumulated adjustment %d%%",
+								getAdjustment(),
+								result.adjustment,
+								adjustment
+							);
+					}
+				}
+
+				return make_pair(true, adjustment);
 			}
 		}
 	}
 
-	return false;
+	return make_pair(false, 0);
 }
 
 ProgramDTO Program::toProgramDto() const {
 	return ProgramDTO(disabled, name, adjustment,
 			to_string(getSchedulerType()),
-			getPeriodicScheduler().toPeriodicSchedulerDto(),
-			getWeeklyScheduler().toWeeklySchedulerDto(),
 			getEveryDayScheduler().toEveryDaySchedulerDto(),
+			getHotWeatherScheduler().toHotWeatherSchedulerDto(),
+			getPeriodicScheduler().toPeriodicSchedulerDto(),
+			getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto(),
+			getWeeklyScheduler().toWeeklySchedulerDto(),
 			getRunTimes().toRunTimeDtoList(),
 			getStartTimes().toStartTimeDtoList());
 }
@@ -153,31 +206,45 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasSchedulerType()) {
-		const static string periodicSchedulerText = to_string(SchedulerType::PERIODIC);
-		const static string weeklySchedulerText = to_string(SchedulerType::WEEKLY);
 		const static string everyDaySchedulerText = to_string(SchedulerType::EVERY_DAY);
+		const static string hotWeatherSchedulerText = to_string(SchedulerType::HOT_WEATHER);
+		const static string periodicSchedulerText = to_string(SchedulerType::PERIODIC);
+		const static string temperatureDependentSchedulerText = to_string(SchedulerType::TEMPERATURE_DEPENDENT);
+		const static string weeklySchedulerText = to_string(SchedulerType::WEEKLY);
 
-		if (periodicSchedulerText == programDTO.getSchedulerType()) {
+		if (everyDaySchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::EVERY_DAY);
+		} else if (hotWeatherSchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::HOT_WEATHER);
+		} else if (periodicSchedulerText == programDTO.getSchedulerType()) {
 			setSchedulerType(SchedulerType::PERIODIC);
+		} else if (temperatureDependentSchedulerText == programDTO.getSchedulerType()) {
+			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT);
 		} else if (weeklySchedulerText == programDTO.getSchedulerType()) {
 			setSchedulerType(SchedulerType::WEEKLY);
-		} else if (everyDaySchedulerText == programDTO.getSchedulerType()) {
-			setSchedulerType(SchedulerType::EVERY_DAY);
 		} else {
 			throw invalid_argument("Program::updateFromDTO(): invalid SchedulerType: " + programDTO.getSchedulerType());
 		}
+	}
+
+	if (programDTO.hasEveryDayScheduler()) {
+		everyDayScheduler->updateFromEveryDaySchedulerDto(programDTO.getEveryDayScheduler());
+	}
+
+	if (programDTO.hasHotWeatherScheduler()) {
+		hotWeatherScheduler->updateFromHotWeatherSchedulerDto(programDTO.getHotWeatherScheduler());
 	}
 
 	if (programDTO.hasPeriodicScheduler()) {
 		periodicScheduler->updateFromPeriodicSchedulerDto(programDTO.getPeriodicScheduler());
 	}
 
-	if (programDTO.hasWeeklyScheduler()) {
-		weeklyScheduler->updateFromWeeklySchedulerDto(programDTO.getWeeklyScheduler());
+	if (programDTO.hasTemperatureDependentScheduler()) {
+		temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(programDTO.getTemperatureDependentScheduler());
 	}
 
-	if (programDTO.hasEveryDayScheduler()) {
-		everyDayScheduler->updateFromEveryDaySchedulerDto(programDTO.getEveryDayScheduler());
+	if (programDTO.hasWeeklyScheduler()) {
+		weeklyScheduler->updateFromWeeklySchedulerDto(programDTO.getWeeklyScheduler());
 	}
 
 	if (programDTO.hasRunTimes()) {
@@ -202,9 +269,11 @@ ostream& operator<<(ostream& os, const Program& program) {
 	os << "adjustment=\"" << program.getAdjustment() << "\", ";
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
+			to_string(program.getEveryDayScheduler()) << ", " <<
+			((program.hotWeatherScheduler == nullptr) ? "NULL" : to_string(program.getHotWeatherScheduler())) << ", " <<
 			to_string(program.getPeriodicScheduler()) << ", " <<
-			to_string(program.getWeeklyScheduler()) << ", " <<
-			to_string(program.getEveryDayScheduler()) << "], ";
+			((program.temperatureDependentScheduler == nullptr) ? "NULL" : to_string(program.getTemperatureDependentScheduler())) << ", " <<
+			to_string(program.getWeeklyScheduler()) << "], ";
 	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
 	os << "startTimes=" << to_string(program.getStartTimes());
 	os << "}";
@@ -243,43 +312,66 @@ Program::Builder& Program::Builder::setSchedulerType(SchedulerType schedulerType
 	return *this;
 }
 
-Program::Builder& Program::Builder::setPeriodicScheduler(shared_ptr<PeriodicScheduler> periodicScheduler) {
-	this->periodicScheduler = periodicScheduler;
-	return *this;
-}
-
-Program::Builder& Program::Builder::setWeeklyScheduler(shared_ptr<WeeklyScheduler> weeklyScheduler) {
-	this->weeklyScheduler = weeklyScheduler;
-	return *this;
-}
-
-Program::Builder& Program::Builder::setEveryDayScheduler(shared_ptr<EveryDayScheduler> everyDayScheduler) {
+Program::Builder& Program::Builder::setEveryDayScheduler(const shared_ptr<EveryDayScheduler>& everyDayScheduler) {
 	this->everyDayScheduler = everyDayScheduler;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setRunTimeContainer(shared_ptr<RunTimeContainer> runTimes) {
+Program::Builder& Program::Builder::setHotWeatherScheduler(const shared_ptr<HotWeatherScheduler>& hotWeatherScheduler) {
+	this->hotWeatherScheduler = hotWeatherScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setPeriodicScheduler(const shared_ptr<PeriodicScheduler>& periodicScheduler) {
+	this->periodicScheduler = periodicScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setTemperatureDependentScheduler(const shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler) {
+	this->temperatureDependentScheduler = temperatureDependentScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setWeeklyScheduler(const shared_ptr<WeeklyScheduler>& weeklyScheduler) {
+	this->weeklyScheduler = weeklyScheduler;
+	return *this;
+}
+
+Program::Builder& Program::Builder::setRunTimeContainer(const shared_ptr<RunTimeContainer>& runTimes) {
 	this->runTimes = runTimes;
 	return *this;
 }
 
-Program::Builder& Program::Builder::setStartTimeContainer(shared_ptr<StartTimeContainer> startTimes) {
+Program::Builder& Program::Builder::setStartTimeContainer(const shared_ptr<StartTimeContainer>& startTimes) {
 	this->startTimes = startTimes;
 	return *this;
 }
 
 shared_ptr<Program> Program::Builder::build() {
 
+	if (nullptr == everyDayScheduler) {
+		everyDayScheduler.reset(new EveryDayScheduler());
+	}
+
+	if (nullptr == hotWeatherScheduler) {
+		hotWeatherScheduler = make_shared<HotWeatherScheduler>(
+				Temperature::getInstance().getTemperatureHistory()
+			);
+	}
+
 	if (nullptr == periodicScheduler) {
 		periodicScheduler.reset(new PeriodicScheduler());
 	}
 
-	if (nullptr == weeklyScheduler) {
-		weeklyScheduler.reset(new WeeklyScheduler());
+	if (nullptr == temperatureDependentScheduler) {
+		temperatureDependentScheduler = make_shared<TemperatureDependentScheduler>(
+				Temperature::getInstance().getTemperatureForecast(),
+				Temperature::getInstance().getTemperatureHistory()
+			);
 	}
 
-	if (nullptr == everyDayScheduler) {
-		everyDayScheduler.reset(new EveryDayScheduler());
+	if (nullptr == weeklyScheduler) {
+		weeklyScheduler.reset(new WeeklyScheduler());
 	}
 
 	if (nullptr == runTimes) {
@@ -295,9 +387,30 @@ shared_ptr<Program> Program::Builder::build() {
 			name,
 			adjustment,
 			schedulerType,
-			periodicScheduler,
-			weeklyScheduler,
 			everyDayScheduler,
+			hotWeatherScheduler,
+			periodicScheduler,
+			temperatureDependentScheduler,
+			weeklyScheduler,
 			runTimes,
 			startTimes));
+}
+
+nlohmann::json Program::saveTo() const {
+	nlohmann::json result;
+	result["temperatureDependent"] = temperatureDependentScheduler->saveTo();
+	result["hotWeather"] = hotWeatherScheduler->saveTo();
+	return result;
+}
+
+void Program::loadFrom(const nlohmann::json& values) {
+	auto it = values.find("temperatureDependent");
+	if (values.end() != it) {
+		temperatureDependentScheduler->loadFrom(it.value());
+	}
+
+	it = values.find("hotWeather");
+	if (values.end() != it) {
+		hotWeatherScheduler->loadFrom(it.value());
+	}
 }

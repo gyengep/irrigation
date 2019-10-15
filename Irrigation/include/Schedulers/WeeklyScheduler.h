@@ -21,13 +21,15 @@ public:
 private:
 
 	std::array<bool, 7> days;
+	bool isScheduled;
 
 	void checkIndex(size_t day) const;
+	bool onProcess(const std::time_t rawtime) const;
 
 public:
 	WeeklyScheduler();
 	WeeklyScheduler(WeeklyScheduler&&) = default;
-	WeeklyScheduler(const WeeklyScheduler&);
+	WeeklyScheduler(const WeeklyScheduler&) = default;
 	WeeklyScheduler(const std::array<bool, 7>& days);
 	virtual ~WeeklyScheduler();
 
@@ -38,7 +40,7 @@ public:
 	void enableDay(size_t day, bool enable);
 	bool isDayEnabled(size_t day) const;
 
-	virtual bool isDayScheduled(const std::tm& timeinfo) const override;
+	virtual Result process(const std::time_t rawtime) override;
 
 	WeeklySchedulerDTO toWeeklySchedulerDto() const;
 	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO);

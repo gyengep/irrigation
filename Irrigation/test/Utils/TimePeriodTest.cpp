@@ -7,7 +7,7 @@ using namespace testing;
 
 
 time_t toTime(int year, int month, int day, int hour, int min, int sec) {
-	tm timeinfo = toCalendarTime(year, month, day, hour, min, sec);
+	struct tm timeinfo = toCalendarTime(year, month, day, hour, min, sec);
 	return mktime(&timeinfo);
 
 }

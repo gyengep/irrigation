@@ -10,8 +10,5 @@ public:
 	void setRunTimes(std::shared_ptr<RunTimeContainer> runTimes) { Program::runTimes = runTimes; }
 
 	MOCK_METHOD1(updateFromProgramDto, void(const ProgramDTO& programDTO));
-	MOCK_CONST_METHOD1(isScheduled, bool(const std::tm& timeinfo));
-	MOCK_CONST_METHOD0(getCurrentScheduler, const Scheduler&());
-
-	bool programIsScheduled(const std::tm& timeinfo) const { return Program::isScheduled(timeinfo); }
+	MOCK_METHOD0(getCurrentScheduler, Scheduler&());
 };

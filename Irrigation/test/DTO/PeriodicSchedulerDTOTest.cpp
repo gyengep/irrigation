@@ -6,7 +6,6 @@ using namespace std;
 using namespace testing;
 
 
-
 TEST(PeriodicSchedulerDTOTest, defaultConstructor) {
 	PeriodicSchedulerDTO schedulerDTO;
 

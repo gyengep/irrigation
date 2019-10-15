@@ -1,6 +1,7 @@
 #include "TimeConversion.h"
 #include <cstring>
 #include <stdexcept>
+#include <mutex>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 				" sec: " + to_string(sec));
 	}
 
-	tm timeinfo;
+	struct tm timeinfo;
 	memset(&timeinfo, 0, sizeof(timeinfo));
 
 	timeinfo.tm_year = year - 1900;
@@ -43,8 +44,8 @@ tm toCalendarTime(int year, int month, int day) {
 }
 
 unsigned getElapsedDaysSinceEpoch(const tm& timeinfo) {
-	tm timeinfoCopy = timeinfo;
-	time_t rawtime = timegm(&timeinfoCopy);
+	struct tm timeinfoCopy = timeinfo;
+	const time_t rawtime = timegm(&timeinfoCopy);
 	if (rawtime == (time_t)-1) {
 		throw runtime_error(string("Invalid timeinfo:") +
 				" year: " + to_string(timeinfo.tm_year) +

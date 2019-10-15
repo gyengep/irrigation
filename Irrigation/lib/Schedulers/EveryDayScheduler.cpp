@@ -11,21 +11,12 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-EveryDayScheduler::EveryDayScheduler() {
-}
-
-EveryDayScheduler::EveryDayScheduler(const EveryDayScheduler& other) {
-}
-
-EveryDayScheduler::~EveryDayScheduler() {
-}
-
 bool EveryDayScheduler::operator== (const EveryDayScheduler& other) const {
 	return true;
 }
 
-bool EveryDayScheduler::isDayScheduled(const tm& timeinfo) const {
-	return true;
+Scheduler::Result EveryDayScheduler::process(const time_t rawtime) {
+	return Scheduler::Result(true);
 }
 
 EveryDaySchedulerDTO EveryDayScheduler::toEveryDaySchedulerDto() const {

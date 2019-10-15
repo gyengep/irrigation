@@ -14,15 +14,6 @@ using namespace std;
 PeriodicScheduler::PeriodicScheduler() : PeriodicScheduler(vector<bool>(), 1970, 1, 1) {
 }
 
-PeriodicScheduler::PeriodicScheduler(const PeriodicScheduler& other) :
-	days(other.days),
-	periodStartYear(other.periodStartYear),
-	periodStartMonth(other.periodStartMonth),
-	periodStartDay(other.periodStartDay),
-	elapsedDaysSinceEpochToPeriodStart(other.elapsedDaysSinceEpochToPeriodStart)
-{
-}
-
 PeriodicScheduler::PeriodicScheduler(const vector<bool>& days, unsigned year, unsigned month, unsigned day) {
 	setPeriod(days.size());
 	this->days = days;
@@ -73,7 +64,7 @@ bool PeriodicScheduler::isDayEnabled(size_t day) const {
 }
 
 void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsigned day) {
-	const tm timeinfo = toCalendarTime(year, month, day);
+	const struct tm timeinfo = toCalendarTime(year, month, day);
 	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
 
 	periodStartYear = year;
@@ -81,16 +72,22 @@ void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsign
 	periodStartDay = day;
 }
 
-bool PeriodicScheduler::isDayScheduled(const tm& timeinfo) const {
-	unsigned const period = getPeriod();
+bool PeriodicScheduler::onProcess(const time_t rawtime) const {
+	struct tm timeinfo;
+	localtime_r(&rawtime, &timeinfo);
 
+	const unsigned period = getPeriod();
 	if (0 == period) {
 		return false;
 	}
 
-	unsigned offset = elapsedDaysSinceEpochToPeriodStart % period;
-	unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + period - offset) % period;
+	const unsigned offset = elapsedDaysSinceEpochToPeriodStart % period;
+	const unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + period - offset) % period;
 	return isDayEnabled(index);
+}
+
+Scheduler::Result PeriodicScheduler::process(const time_t rawtime) {
+	return Scheduler::Result(onProcess(rawtime));
 }
 
 PeriodicSchedulerDTO PeriodicScheduler::toPeriodicSchedulerDto() const {

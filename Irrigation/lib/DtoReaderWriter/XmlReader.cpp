@@ -74,16 +74,24 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	if ((tmpNode = node.child("schedulers")) != nullptr) {
 		xml_node schedulerNode;
 
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "every-day")) != nullptr) {
+			program.setEveryDayScheduler(loadEveryDayScheduler(schedulerNode));
+		}
+
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "hot-weather")) != nullptr) {
+			program.setHotWeatherScheduler(loadHotWeatherScheduler(schedulerNode));
+		}
+
 		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "periodic")) != nullptr) {
 			program.setPeriodicScheduler(loadPeriodicScheduler(schedulerNode));
 		}
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
-			program.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "temperature-dependent")) != nullptr) {
+			program.setTemperatureDependentScheduler(loadTemperatureDependentScheduler(schedulerNode));
 		}
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "every_day")) != nullptr) {
-			program.setEveryDayScheduler(loadEveryDayScheduler(schedulerNode));
+		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
+			program.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
 		}
 	}
 
@@ -96,6 +104,40 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	}
 
 	return program;
+}
+
+EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const xml_node& node) const {
+	EveryDaySchedulerDTO scheduler;
+	xml_attribute typeAttribute;
+	if ((typeAttribute = node.attribute("type")) != nullptr) {
+		if (strcmp(typeAttribute.as_string(), "every-day") != 0) {
+			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
+		}
+	}
+
+	return scheduler;
+}
+
+HotWeatherSchedulerDTO XmlReader::loadHotWeatherScheduler(const xml_node& node) const {
+	HotWeatherSchedulerDTO scheduler;
+
+	xml_attribute typeAttribute;
+	if ((typeAttribute = node.attribute("type")) != nullptr) {
+		if (strcmp(typeAttribute.as_string(), "hot-weather") != 0) {
+			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
+		}
+	}
+
+	xml_node tmpNode;
+	if ((tmpNode = node.child("period")) != nullptr) {
+		scheduler.setPeriodInSeconds(tmpNode.text().as_uint());
+	}
+
+	if ((tmpNode = node.child("temperature")) != nullptr) {
+		scheduler.setMinTemperature(tmpNode.text().as_float());
+	}
+
+	return scheduler;
 }
 
 PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const xml_node& node) const {
@@ -141,6 +183,36 @@ PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const xml_node& node) cons
 	return scheduler;
 }
 
+TemperatureDependentSchedulerDTO XmlReader::loadTemperatureDependentScheduler(const xml_node& node) const {
+	TemperatureDependentSchedulerDTO scheduler;
+
+	xml_attribute typeAttribute;
+	if ((typeAttribute = node.attribute("type")) != nullptr) {
+		if (strcmp(typeAttribute.as_string(), "temperature-dependent") != 0) {
+			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
+		}
+	}
+
+	xml_node tmpNode;
+	if ((tmpNode = node.child("remaining-correction")) != nullptr) {
+		scheduler.setRemainingCorrection(tmpNode.text().as_float());
+	}
+
+	if ((tmpNode = node.child("min-adjustment")) != nullptr) {
+		scheduler.setMinAdjustment(tmpNode.text().as_uint());
+	}
+
+	if ((tmpNode = node.child("max-adjustment")) != nullptr) {
+		scheduler.setMaxAdjustment(tmpNode.text().as_uint());
+	}
+
+	if ((tmpNode = node.child("trim")) != nullptr) {
+		scheduler.setTrim(tmpNode.text().as_uint());
+	}
+
+	return scheduler;
+}
+
 WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const xml_node& node) const {
 	WeeklySchedulerDTO scheduler;
 	xml_attribute typeAttribute;
@@ -162,18 +234,6 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const xml_node& node) const {
 		}
 
 		scheduler.setValues(move(values));
-	}
-
-	return scheduler;
-}
-
-EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const xml_node& node) const {
-	EveryDaySchedulerDTO scheduler;
-	xml_attribute typeAttribute;
-	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		if (strcmp(typeAttribute.as_string(), "every_day") != 0) {
-			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
-		}
 	}
 
 	return scheduler;
@@ -348,6 +408,36 @@ StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 	return loadStartTime(node);
 }
 
+EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const string& text) const {
+	const char* tagName = "scheduler";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'scheduler' element tag not found");
+	}
+
+	return loadEveryDayScheduler(node);
+}
+
+HotWeatherSchedulerDTO XmlReader::loadHotWeatherScheduler(const string& text) const {
+	const char* tagName = "scheduler";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'scheduler' element tag not found");
+	}
+
+	return loadHotWeatherScheduler(node);
+}
+
 PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const string& text) const {
 	const char* tagName = "scheduler";
 
@@ -363,6 +453,21 @@ PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const string& text) const 
 	return loadPeriodicScheduler(node);
 }
 
+TemperatureDependentSchedulerDTO XmlReader::loadTemperatureDependentScheduler(const string& text) const {
+	const char* tagName = "scheduler";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'scheduler' element tag not found");
+	}
+
+	return loadTemperatureDependentScheduler(node);
+}
+
 WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const string& text) const {
 	const char* tagName = "scheduler";
 
@@ -376,19 +481,4 @@ WeeklySchedulerDTO XmlReader::loadWeeklyScheduler(const string& text) const {
 	}
 
 	return loadWeeklyScheduler(node);
-}
-
-EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const string& text) const {
-	const char* tagName = "scheduler";
-
-	unique_ptr<xml_document> doc(new xml_document());
-	loadFromString(doc.get(), text);
-
-	const xml_node node = doc->child(tagName);
-
-	if (node == nullptr) {
-		throw RequiredTagMissing("The 'scheduler' element tag not found");
-	}
-
-	return loadEveryDayScheduler(node);
 }

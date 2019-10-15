@@ -1,152 +1,402 @@
 <?xml version="1.0"?>
 <irrigation>
 	<programs>
-		<program>
+		<program id="7">
 			<name>fulocsolas</name>
 			<disabled>false</disabled>
-			<adjustment>30</adjustment>
-			<schedulertype>weekly</schedulertype>
+			<adjustment>100</adjustment>
+			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
+				<scheduler type="every-day" />
+				<scheduler type="hot-weather">
+					<period>7200</period>
+					<temperature>35</temperature>
+				</scheduler>
+				<scheduler type="periodic">
+					<days />
+					<periodStartDate>
+						<year>1970</year>
+						<month>1</month>
+						<day>1</day>
+					</periodStartDate>
+				</scheduler>
+				<scheduler type="temperature-dependent">
+					<remaining-a>0.75</remaining-a>
+					<forecast-a>1</forecast-a>
+					<forecast-b>0</forecast-b>
+					<history-a>1</history-a>
+					<history-b>0</history-b>
+					<min-adjustment>50</min-adjustment>
+					<max-adjustment>0</max-adjustment>
+					<trim>100</trim>
+				</scheduler>
 				<scheduler type="weekly">
 					<days>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0"><minute>26</minute></runtime>
-				<runtime id="1"><minute>38</minute></runtime>
-				<runtime id="2"><minute>32</minute></runtime>
-				<runtime id="3"><minute>0</minute></runtime>
-				<runtime id="4"><minute>0</minute></runtime>
-				<runtime id="5"><minute>0</minute></runtime>
+				<runtime id="0">
+					<minute>26</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="1">
+					<minute>38</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="2">
+					<minute>32</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="3">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="4">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="5">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
 			</runtimes>
 			<starttimes>
-				<starttime><hour>4</hour></starttime>
+				<starttime id="6">
+					<hour>4</hour>
+					<minute>0</minute>
+				</starttime>
 			</starttimes>
 		</program>
-		<program>
+		<program id="9">
 			<name>buxus</name>
 			<disabled>false</disabled>
 			<adjustment>100</adjustment>
-			<schedulertype>periodic</schedulertype>
+			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
+				<scheduler type="every-day" />
+				<scheduler type="hot-weather">
+					<period>7200</period>
+					<temperature>35</temperature>
+				</scheduler>
 				<scheduler type="periodic">
+					<days />
+					<periodStartDate>
+						<year>1970</year>
+						<month>1</month>
+						<day>1</day>
+					</periodStartDate>
+				</scheduler>
+				<scheduler type="temperature-dependent">
+					<remaining-a>1</remaining-a>
+					<forecast-a>1</forecast-a>
+					<forecast-b>0</forecast-b>
+					<history-a>1</history-a>
+					<history-b>0</history-b>
+					<min-adjustment>100</min-adjustment>
+					<max-adjustment>0</max-adjustment>
+					<trim>0</trim>
+				</scheduler>
+				<scheduler type="weekly">
 					<days>
-						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
 						<day>false</day>
 						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0"><minute>0</minute></runtime>
-				<runtime id="1"><minute>0</minute></runtime>
-				<runtime id="2"><minute>0</minute></runtime>
-				<runtime id="3"><minute>15</minute></runtime>
-				<runtime id="4"><minute>0</minute></runtime>
-				<runtime id="5"><minute>0</minute></runtime>
+				<runtime id="0">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="1">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="2">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="3">
+					<minute>15</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="4">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="5">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
 			</runtimes>
 			<starttimes>
-				<starttime><hour>6</hour></starttime>
+				<starttime id="8">
+					<hour>6</hour>
+					<minute>0</minute>
+				</starttime>
 			</starttimes>
 		</program>
-		<program>
+		<program id="16">
+			<name>kanikula</name>
+			<disabled>false</disabled>
+			<adjustment>100</adjustment>
+			<schedulertype>hot-weather</schedulertype>
+			<schedulers>
+				<scheduler type="every-day" />
+				<scheduler type="hot-weather">
+					<period>7200</period>
+					<temperature>33</temperature>
+				</scheduler>
+				<scheduler type="periodic">
+					<days />
+					<periodStartDate>
+						<year>1970</year>
+						<month>1</month>
+						<day>1</day>
+					</periodStartDate>
+				</scheduler>
+				<scheduler type="temperature-dependent">
+					<remaining-a>1</remaining-a>
+					<forecast-a>1</forecast-a>
+					<forecast-b>0</forecast-b>
+					<history-a>1</history-a>
+					<history-b>0</history-b>
+					<min-adjustment>100</min-adjustment>
+					<max-adjustment>0</max-adjustment>
+					<trim>0</trim>
+				</scheduler>
+				<scheduler type="weekly">
+					<days>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+					</days>
+				</scheduler>
+			</schedulers>
+			<runtimes>
+				<runtime id="0">
+					<minute>2</minute>
+					<second>30</second>
+				</runtime>
+				<runtime id="1">
+					<minute>3</minute>
+					<second>30</second>
+				</runtime>
+				<runtime id="2">
+					<minute>3</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="3">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="4">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="5">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+			</runtimes>
+			<starttimes>
+				<starttime id="10">
+					<hour>12</hour>
+					<minute>0</minute>
+				</starttime>
+				<starttime id="11">
+					<hour>13</hour>
+					<minute>0</minute>
+				</starttime>
+				<starttime id="12">
+					<hour>14</hour>
+					<minute>0</minute>
+				</starttime>
+				<starttime id="13">
+					<hour>15</hour>
+					<minute>0</minute>
+				</starttime>
+				<starttime id="14">
+					<hour>16</hour>
+					<minute>0</minute>
+				</starttime>
+				<starttime id="15">
+					<hour>17</hour>
+					<minute>0</minute>
+				</starttime>
+			</starttimes>
+		</program>
+		<program id="19">
 			<name>paradicsom</name>
 			<disabled>false</disabled>
 			<adjustment>100</adjustment>
-			<schedulertype>periodic</schedulertype>
+			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
-				<scheduler type="periodic">
-					<days>
-						<day>true</day>
-						<day>false</day>
-						<day>false</day>
-					</days>
+				<scheduler type="every-day" />
+				<scheduler type="hot-weather">
+					<period>7200</period>
+					<temperature>35</temperature>
 				</scheduler>
-			</schedulers>
-			<runtimes>
-				<runtime id="0"><minute>0</minute></runtime>
-				<runtime id="1"><minute>0</minute></runtime>
-				<runtime id="2"><minute>0</minute></runtime>
-				<runtime id="3"><minute>0</minute></runtime>
-				<runtime id="4"><second>120</second></runtime>
-				<runtime id="5"><second>120</second></runtime>
-			</runtimes>
-			<starttimes>
-				<starttime><hour>6</hour><minute>30</minute></starttime>
-			</starttimes>
-		</program>
-		<program>
-			<name>kanikula</name>
-			<disabled>true</disabled>
-			<adjustment>10</adjustment>
-			<schedulertype>weekly</schedulertype>
-			<schedulers>
 				<scheduler type="periodic">
-					<days>
-						<day>true</day>
-					</days>
+					<days />
+					<periodStartDate>
+						<year>1970</year>
+						<month>1</month>
+						<day>1</day>
+					</periodStartDate>
+				</scheduler>
+				<scheduler type="temperature-dependent">
+					<remaining-a>1</remaining-a>
+					<forecast-a>1</forecast-a>
+					<forecast-b>0</forecast-b>
+					<history-a>1</history-a>
+					<history-b>0</history-b>
+					<min-adjustment>75</min-adjustment>
+					<max-adjustment>75</max-adjustment>
+					<trim>0</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0"><minute>26</minute></runtime>
-				<runtime id="1"><minute>38</minute></runtime>
-				<runtime id="2"><minute>32</minute></runtime>
-				<runtime id="3"><minute>0</minute></runtime>
-				<runtime id="4"><minute>0</minute></runtime>
-				<runtime id="5"><minute>0</minute></runtime>
+				<runtime id="0">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="1">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="2">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="3">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="4">
+					<minute>1</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="5">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
 			</runtimes>
 			<starttimes>
+				<starttime id="17">
+					<hour>7</hour>
+					<minute>0</minute>
+				</starttime>
+				<starttime id="18">
+					<hour>20</hour>
+					<minute>0</minute>
+				</starttime>
 			</starttimes>
 		</program>
-		<program>
-			<name>test</name>
-			<disabled>true</disabled>
+		<program id="22">
+			<name>virag</name>
+			<disabled>false</disabled>
 			<adjustment>100</adjustment>
-			<schedulertype>weekly</schedulertype>
+			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
+				<scheduler type="every-day" />
+				<scheduler type="hot-weather">
+					<period>7200</period>
+					<temperature>35</temperature>
+				</scheduler>
 				<scheduler type="periodic">
-					<days/>
+					<days />
+					<periodStartDate>
+						<year>1970</year>
+						<month>1</month>
+						<day>1</day>
+					</periodStartDate>
+				</scheduler>
+				<scheduler type="temperature-dependent">
+					<remaining-a>1</remaining-a>
+					<forecast-a>1</forecast-a>
+					<forecast-b>0</forecast-b>
+					<history-a>1</history-a>
+					<history-b>0</history-b>
+					<min-adjustment>75</min-adjustment>
+					<max-adjustment>75</max-adjustment>
+					<trim>0</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
-						<day>true</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
+						<day>false</day>
 					</days>
 				</scheduler>
 			</schedulers>
 			<runtimes>
-				<runtime id="0"><second>10</second></runtime>
-				<runtime id="1"><second>10</second></runtime>
-				<runtime id="2"><second>10</second></runtime>
-				<runtime id="3"><second>10</second></runtime>
-				<runtime id="4"><second>10</second></runtime>
-				<runtime id="5"><second>10</second></runtime>
+				<runtime id="0">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="1">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="2">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="3">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="4">
+					<minute>0</minute>
+					<second>0</second>
+				</runtime>
+				<runtime id="5">
+					<minute>2</minute>
+					<second>0</second>
+				</runtime>
 			</runtimes>
 			<starttimes>
+				<starttime id="20">
+					<hour>7</hour>
+					<minute>10</minute>
+				</starttime>
+				<starttime id="21">
+					<hour>20</hour>
+					<minute>10</minute>
+				</starttime>
 			</starttimes>
 		</program>
 	</programs>

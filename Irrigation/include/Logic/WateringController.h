@@ -2,6 +2,7 @@
 #include <ctime>
 #include <memory>
 #include <vector>
+#include "Program.h"
 #include "RunTime.h"
 #include "RunTimeContainer.h"
 #include "Hardware/Valves/ZoneHandler.h"
@@ -32,7 +33,7 @@ public:
 	WateringController& operator= (const WateringController&) = delete;
 
 	virtual void on1SecTimer(const std::time_t& rawTime);
-	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent = 100);
+	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent);
 	virtual void stop();
 
 	virtual bool isWateringActive() const;

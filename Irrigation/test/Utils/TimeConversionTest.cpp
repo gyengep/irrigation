@@ -48,16 +48,42 @@ TEST(GetElapsedDaysSinceEpochTest, getDays) {
 	}
 }
 
-TEST(GetElapsedDaysSinceEpochTest, getHours) {
-	const tm timeinfo = toCalendarTime(2018, 11, 24);
+TEST(GetElapsedDaysSinceEpochTest, getHoursWinter) {
+	tm timeinfo = toCalendarTime(2018, 12, 10);
 	const int elapsedDays = getElapsedDaysSinceEpoch(timeinfo);
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				const tm timeinfo = toCalendarTime(2018, 11, 24, hour, min, sec);
+				timeinfo = toCalendarTime(2018, 12, 10, hour, min, sec);
 				ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
 			}
 		}
 	}
+
+	timeinfo = toCalendarTime(2018, 12, 9, 23, 59, 59);
+	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays - 1);
+
+	timeinfo = toCalendarTime(2018, 12, 11, 0, 0, 0);
+	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays + 1);
+}
+
+TEST(GetElapsedDaysSinceEpochTest, getHoursSummer) {
+	tm timeinfo = toCalendarTime(2018, 6, 10);
+	const int elapsedDays = getElapsedDaysSinceEpoch(timeinfo);
+
+	for (int hour = 0; hour < 24; hour++) {
+		for (int min = 0; min < 60; min++) {
+			for (int sec = 0; sec < 60; sec++) {
+				timeinfo = toCalendarTime(2018, 6, 10, hour, min, sec);
+				ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
+			}
+		}
+	}
+
+	timeinfo = toCalendarTime(2018, 6, 9, 23, 59, 59);
+	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays - 1);
+
+	timeinfo = toCalendarTime(2018, 6, 11, 0, 0, 0);
+	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays + 1);
 }

@@ -8,6 +8,7 @@ using namespace std;
 using namespace testing;
 using namespace Dto2ObjectTest;
 
+extern time_t toLocalTime(int year, int month, int day);
 
 TEST(PeriodicSchedulerTest, defaultConstructor) {
 	PeriodicScheduler scheduler;
@@ -280,7 +281,7 @@ TEST(PeriodicSchedulerTest, isDayEnableAfterResize) {
 	EXPECT_FALSE(scheduler.isDayEnabled(3));
 }
 
-TEST(PeriodicSchedulerTest, isDayScheduled) {
+TEST(PeriodicSchedulerTest, process) {
 	PeriodicScheduler scheduler;
 
 	scheduler.setPeriod(7);
@@ -293,56 +294,56 @@ TEST(PeriodicSchedulerTest, isDayScheduled) {
 	scheduler.enableDay(5, false);
 	scheduler.enableDay(6, false);
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 5)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 6)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 7)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 8)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 9)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 10)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 11)));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 5)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 6)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 7)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 8)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 9)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 10)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 11)), Scheduler::Result(false, false, 0));
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 12)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 13)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 14)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 15)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 16)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 17)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 18)));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 12)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 13)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 14)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 15)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 16)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 17)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 18)), Scheduler::Result(false, false, 0));
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 19)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 20)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 21)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 22)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 23)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 24)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 25)));
-
-	///////////////////////////////////////////////////////////////////////////
-
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 13)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 14)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 15)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 16)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 17)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 18)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2017, 11, 19)));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 19)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 20)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 21)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 22)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 23)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 24)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 25)), Scheduler::Result(false, false, 0));
 
 	///////////////////////////////////////////////////////////////////////////
 
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 14)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 15)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 16)));
-	EXPECT_TRUE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 17)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 18)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 19)));
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2016, 11, 20)));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 13)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 14)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 15)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 16)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 17)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 18)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2017, 11, 19)), Scheduler::Result(false, false, 0));
+
+	///////////////////////////////////////////////////////////////////////////
+
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 14)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 15)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 16)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 17)), Scheduler::Result(true, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 18)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 19)), Scheduler::Result(false, false, 0));
+	EXPECT_THAT(scheduler.process(toLocalTime(2016, 11, 20)), Scheduler::Result(false, false, 0));
 }
 
-TEST(PeriodicSchedulerTest, isDayScheduledInvalid) {
+TEST(PeriodicSchedulerTest, processInvalid) {
 	PeriodicScheduler scheduler;
 
 	scheduler.setPeriod(0);
-	EXPECT_FALSE(scheduler.isDayScheduled(toCalendarTime(2018, 11, 5)));
+	EXPECT_THAT(scheduler.process(toLocalTime(2018, 11, 5)), Scheduler::Result(false, false, 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

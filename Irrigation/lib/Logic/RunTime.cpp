@@ -15,6 +15,9 @@ RunTime::RunTime(unsigned seconds) :
 {
 }
 
+RunTime::RunTime(const chrono::seconds& seconds) : RunTime(seconds.count()) {
+}
+
 bool RunTime::operator== (const RunTime& other) const {
 	return (seconds == other.seconds);
 }

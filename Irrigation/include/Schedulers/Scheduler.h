@@ -4,9 +4,11 @@
 
 
 enum class SchedulerType {
-	WEEKLY,
+	EVERY_DAY,
+	HOT_WEATHER,
 	PERIODIC,
-	EVERY_DAY
+	TEMPERATURE_DEPENDENT,
+	WEEKLY,
 };
 
 std::string to_string(SchedulerType schedulerType);
@@ -14,6 +16,20 @@ std::string to_string(SchedulerType schedulerType);
 
 class Scheduler {
 public:
+	struct Result {
+		const bool isScheduled;
+		const bool overrideAdjustment;
+		const unsigned adjustment;
+
+		Result(bool isScheduled);
+		Result(unsigned adjustment);
+		Result(bool isScheduled, bool overrideAdjustment, unsigned adjustment);
+
+		bool operator== (const Result& other) const;
+
+		friend std::ostream& operator<<(std::ostream& os, const Result& result);
+	};
+
 	virtual ~Scheduler() = default;
-	virtual bool isDayScheduled(const std::tm& timeinfo) const = 0;
+	virtual Result process(const std::time_t rawtime) = 0;
 };

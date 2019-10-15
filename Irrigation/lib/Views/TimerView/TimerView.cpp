@@ -51,16 +51,22 @@ void TimerView::onTimer(const time_t rawTime) {
 	const ProgramContainer& programs = irrigationDocument.getPrograms();
 
 	if (!wateringController.isWateringActive()) {
-		const tm timeinfo = *localtime(&rawTime);
-		for (auto& programAndIdPair : programs) {
+		for (const auto& programAndIdPair : programs) {
 			const IdType& idType = programAndIdPair.first;
-			const shared_ptr<Program> program = programAndIdPair.second;
-			if (program->isScheduled(timeinfo)) {
-				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
-						to_string(idType).c_str(),
-						program->getName().c_str(),
-						to_string(program->getSchedulerType()).c_str());
-				wateringController.start(rawTime, program->getRunTimes(), program->getAdjustment());
+			const shared_ptr<Program>& program = programAndIdPair.second;
+
+			const auto result = program->isScheduled(rawTime);
+			if (result.first) {
+				if (0 < result.second) {
+					LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
+							to_string(idType).c_str(),
+							program->getName().c_str(),
+							to_string(program->getSchedulerType()).c_str());
+
+					wateringController.start(rawTime, program->getRunTimes(), result.second);
+				}
+
+				irrigationDocument.saveState();
 				break;
 			}
 		}
@@ -89,10 +95,11 @@ bool TimerView::checkSystemTime(const system_clock::time_point& expectedSystemTi
 		const time_t previousTime = system_clock::to_time_t(expectedSystemTime);
 		const time_t currentTime = system_clock::to_time_t(system_clock::now());
 
+		struct tm timeinfo;
 		ostringstream o;
 		o << "Time is changed! ";
-		o << "from " << put_time(localtime(&previousTime), "%Y.%m.%d %H:%M:%S") << " ";
-		o << "to " << put_time(localtime(&currentTime), "%Y.%m.%d %H:%M:%S");
+		o << "from " << put_time(localtime_r(&previousTime, &timeinfo), "%Y.%m.%d %H:%M:%S") << " ";
+		o << "to " << put_time(localtime_r(&currentTime, &timeinfo), "%Y.%m.%d %H:%M:%S");
 
 		LOGGER.warning(o.str().c_str());
 		return false;

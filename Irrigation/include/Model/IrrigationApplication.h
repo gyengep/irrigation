@@ -15,6 +15,7 @@ class IrrigationApplication : public Application {
 	void uninitTemperatureSensor();
 	void initDocument();
 	void uninitDocument();
+	void setMyDefaults();
 
 	virtual void onInitialize() override;
 	virtual void onTerminate() override;

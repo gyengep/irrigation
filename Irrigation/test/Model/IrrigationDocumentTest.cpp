@@ -28,9 +28,11 @@ using namespace Dto2ObjectTest;
 
 const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	ProgramDTO(true, "Abcdefg", 56, "weekly",
-		PeriodicSchedulerDTO(list<bool>({ false, true, false}), 2016, 1, 2),
-		WeeklySchedulerDTO(list<bool>({ false, true, false, false, false, true, false})),
 		EveryDaySchedulerDTO(),
+		HotWeatherSchedulerDTO(65, 31),
+		PeriodicSchedulerDTO(list<bool>({ false, true, false}), 2016, 1, 2),
+		TemperatureDependentSchedulerDTO(10.01f, 50, 51, 52),
+		WeeklySchedulerDTO(list<bool>({ false, true, false, false, false, true, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(2, 0).setId(0),
 			RunTimeDTO(2, 1).setId(1),
@@ -46,9 +48,11 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 		})
 	).setId(15),
 	ProgramDTO(false, "Program2", 106, "weekly",
-		PeriodicSchedulerDTO(list<bool>({ true, false}), 2018, 10, 20),
-		WeeklySchedulerDTO(list<bool>({ true, false, false, false, false, false, false})),
 		EveryDaySchedulerDTO(),
+		HotWeatherSchedulerDTO(70, 28),
+		PeriodicSchedulerDTO(list<bool>({ true, false}), 2018, 10, 20),
+		TemperatureDependentSchedulerDTO(20.01f, 30, 31, 32),
+		WeeklySchedulerDTO(list<bool>({ true, false, false, false, false, false, false})),
 		list<RunTimeDTO>({
 			RunTimeDTO(1, 20).setId(0),
 			RunTimeDTO(1, 21).setId(1),

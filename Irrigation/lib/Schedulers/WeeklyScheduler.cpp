@@ -13,11 +13,9 @@ using namespace std;
 WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(array<bool, 7>({false, false, false, false, false, false, false})) {
 }
 
-WeeklyScheduler::WeeklyScheduler(const WeeklyScheduler& other) : WeeklyScheduler(other.days) {
-}
-
 WeeklyScheduler::WeeklyScheduler(const array<bool, 7>& days) :
-	days(days)
+	days(days),
+	isScheduled(false)
 {
 }
 
@@ -46,10 +44,15 @@ bool WeeklyScheduler::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-bool WeeklyScheduler::isDayScheduled(const tm& timeinfo) const {
-	const size_t weekDay = timeinfo.tm_wday;
+bool WeeklyScheduler::onProcess(const time_t rawtime) const {
+	struct tm timeinfo;
+	const size_t weekDay = localtime_r(&rawtime, &timeinfo)->tm_wday;
 	checkIndex(weekDay);
 	return days[(weekDay + 6) % 7];
+}
+
+Scheduler::Result WeeklyScheduler::process(const time_t rawtime) {
+	return Scheduler::Result(onProcess(rawtime));
 }
 
 WeeklySchedulerDTO WeeklyScheduler::toWeeklySchedulerDto() const {

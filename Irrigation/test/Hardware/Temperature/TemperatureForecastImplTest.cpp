@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "Hardware/Temperature/TemperatureException.h"
-#include "Hardware/Temperature/TemperatureForecast.h"
+#include "Hardware/Temperature/TemperatureForecastImpl.h"
 
 using namespace std;
 using namespace chrono;
@@ -39,44 +39,44 @@ static const list<TemperatureForecastProvider::ValuesWithTimes> invalidList2 {
 	TemperatureForecastProvider::ValuesWithTimes(30, 40, 22, 28)
 };
 
-TEST(TemperatureForecastTest, checkValueList) {
-	EXPECT_NO_THROW(TemperatureForecast::checkValueList(valueList1));
-	EXPECT_NO_THROW(TemperatureForecast::checkValueList(valueList2));
+TEST(TemperatureForecastImplTest, checkValueList) {
+	EXPECT_NO_THROW(TemperatureForecastImpl::checkValueList(valueList1));
+	EXPECT_NO_THROW(TemperatureForecastImpl::checkValueList(valueList2));
 }
 
-TEST(TemperatureForecastTest, checkValueListInvalid) {
-	EXPECT_THROW(TemperatureForecast::checkValueList(invalidList1), TemperatureException);
-	EXPECT_THROW(TemperatureForecast::checkValueList(invalidList2), TemperatureException);
+TEST(TemperatureForecastImplTest, checkValueListInvalid) {
+	EXPECT_THROW(TemperatureForecastImpl::checkValueList(invalidList1), TemperatureException);
+	EXPECT_THROW(TemperatureForecastImpl::checkValueList(invalidList2), TemperatureException);
 }
 
-TEST(TemperatureForecastTest, updateCache) {
+TEST(TemperatureForecastImplTest, updateCache) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 	EXPECT_CALL(*mockProvider, getForecast()).Times(1).
 			WillOnce(Return(valueList1));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 
 	temperatureForecast.updateCache();
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
 }
 
-TEST(TemperatureForecastTest, updateCacheInvalid) {
+TEST(TemperatureForecastImplTest, updateCacheInvalid) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 	EXPECT_CALL(*mockProvider, getForecast()).Times(1).WillOnce(Return(invalidList1));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 	temperatureForecast.updateCache();
 
 	EXPECT_THAT(temperatureForecast.getContainer(), IsEmpty());
 }
 
-TEST(TemperatureForecastTest, updateCacheTwoTimes) {
+TEST(TemperatureForecastImplTest, updateCacheTwoTimes) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 	EXPECT_CALL(*mockProvider, getForecast()).Times(2).
 			WillOnce(Return(valueList1)).
 			WillOnce(Return(valueList2));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 
 	temperatureForecast.updateCache();
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
@@ -85,13 +85,13 @@ TEST(TemperatureForecastTest, updateCacheTwoTimes) {
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList2));
 }
 
-TEST(TemperatureForecastTest, updateCacheTwoTimesInvalid) {
+TEST(TemperatureForecastImplTest, updateCacheTwoTimesInvalid) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 	EXPECT_CALL(*mockProvider, getForecast()).Times(2).
 			WillOnce(Return(valueList1)).
 			WillOnce(Return(invalidList1));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 
 	temperatureForecast.updateCache();
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
@@ -100,7 +100,7 @@ TEST(TemperatureForecastTest, updateCacheTwoTimesInvalid) {
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
 }
 
-TEST(TemperatureForecastTest, getForecastValues) {
+TEST(TemperatureForecastImplTest, getForecastValues) {
 	const list<TemperatureForecastProvider::ValuesWithTimes> expectedList {
 		TemperatureForecastProvider::ValuesWithTimes(10, 20, 12, 14),
 		TemperatureForecastProvider::ValuesWithTimes(20, 30, 16, 18),
@@ -112,7 +112,7 @@ TEST(TemperatureForecastTest, getForecastValues) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 	EXPECT_CALL(*mockProvider, getForecast()).Times(1).WillOnce(Return(expectedList));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 	temperatureForecast.updateCache();
 
 	EXPECT_THAT(temperatureForecast.getForecastValues(20, 40), TemperatureForecast::Values(16, 22));
@@ -121,7 +121,7 @@ TEST(TemperatureForecastTest, getForecastValues) {
 	EXPECT_THAT(temperatureForecast.getForecastValues(20, 45), TemperatureForecast::Values(16, 26));
 }
 
-TEST(TemperatureForecastTest, getForecastOutOfBounds) {
+TEST(TemperatureForecastImplTest, getForecastOutOfBounds) {
 	const list<TemperatureForecastProvider::ValuesWithTimes> expectedList {
 		TemperatureForecastProvider::ValuesWithTimes(10, 20, 12, 14),
 		TemperatureForecastProvider::ValuesWithTimes(20, 30, 16, 18),
@@ -133,20 +133,20 @@ TEST(TemperatureForecastTest, getForecastOutOfBounds) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 	EXPECT_CALL(*mockProvider, getForecast()).Times(1).WillOnce(Return(expectedList));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 	temperatureForecast.updateCache();
 
 	EXPECT_THROW(temperatureForecast.getForecastValues(60, 70), TemperatureException);
 	EXPECT_THROW(temperatureForecast.getForecastValues(5, 10), TemperatureException);
 }
 
-TEST(TemperatureForecastTest, onTimer) {
+TEST(TemperatureForecastImplTest, onTimer) {
 	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
 
 	EXPECT_CALL(*mockProvider, getForecast()).Times(1).
 			WillOnce(Return(valueList1));
 
-	TemperatureForecast temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockProvider);
 
 	EXPECT_NO_THROW(temperatureForecast.onTimer());
 }

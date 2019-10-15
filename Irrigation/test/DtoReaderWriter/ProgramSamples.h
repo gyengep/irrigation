@@ -5,9 +5,11 @@
 #include "DTO/ProgramDTO.h"
 #include "RunTimeListSamples.h"
 #include "StartTimeListSamples.h"
-#include "PeriodicSchedulerSamples.h"
-#include "WeeklySchedulerSamples.h"
 #include "EveryDaySchedulerSamples.h"
+#include "HotWeatherSchedulerSamples.h"
+#include "PeriodicSchedulerSamples.h"
+#include "TemperatureDependentSchedulerSamples.h"
+#include "WeeklySchedulerSamples.h"
 
 #define PROGRAM_SAMPLE_1 programSample_all
 #define PROGRAM_SAMPLE_2 programSample_name
@@ -21,6 +23,8 @@
 #define PROGRAM_SAMPLE_10 programSample_disabled
 #define PROGRAM_SAMPLE_11 programSample_adjustment
 #define PROGRAM_SAMPLE_12 programSample_everyDayScheduler
+#define PROGRAM_SAMPLE_13 programSample_hotWeatherScheduler
+#define PROGRAM_SAMPLE_14 programSample_temperatureDependentScheduler
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -35,9 +39,11 @@ const ProgramSample programSample_all(
 			"<adjustment>183</adjustment>"
 			"<schedulertype>weekly</schedulertype>"
 			"<schedulers>" +
-				PERIODIC_SCHEDULER_SAMPLE_1.first +
-				WEEKLY_SCHEDULER_SAMPLE_1.first +
 				EVERY_DAY_SCHEDULER_SAMPLE.first +
+				HOT_WEATHER_SCHEDULER_SAMPLE_1.first +
+				PERIODIC_SCHEDULER_SAMPLE_1.first +
+				TEMPERATURE_DEPENDENT_SCHEDULER_SAMPLE_1.first +
+				WEEKLY_SCHEDULER_SAMPLE_1.first +
 			"</schedulers>" +
 			RUNTIME_LIST_SAMPLE_1.first +
 			STARTTIME_LIST_SAMPLE_1.first +
@@ -48,9 +54,11 @@ const ProgramSample programSample_all(
 		.setName("abcdefg")
 		.setAdjustment(183)
 		.setSchedulerType("weekly")
-		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_1.second))
-		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_1.second))
 		.setEveryDayScheduler(EveryDaySchedulerDTO(EVERY_DAY_SCHEDULER_SAMPLE.second))
+		.setHotWeatherScheduler(HotWeatherSchedulerDTO(HOT_WEATHER_SCHEDULER_SAMPLE_1.second))
+		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_1.second))
+		.setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(TEMPERATURE_DEPENDENT_SCHEDULER_SAMPLE_1.second))
+		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_1.second))
 		.setRunTimes(std::list<RunTimeDTO>(RUNTIME_LIST_SAMPLE_1.second))
 		.setStartTimes(std::list<StartTimeDTO>(STARTTIME_LIST_SAMPLE_1.second))
 		);
@@ -84,6 +92,24 @@ const ProgramSample programSample_schedulerType(
 		ProgramDTO().setSchedulerType("weekly")
 		);
 
+const ProgramSample programSample_everyDayScheduler(
+		"<program>"
+			"<schedulers>" +
+				EVERY_DAY_SCHEDULER_SAMPLE.first +
+			"</schedulers>"
+		"</program>",
+		ProgramDTO().setEveryDayScheduler(EveryDaySchedulerDTO(EVERY_DAY_SCHEDULER_SAMPLE.second))
+		);
+
+const ProgramSample programSample_hotWeatherScheduler(
+		"<program>"
+			"<schedulers>" +
+				HOT_WEATHER_SCHEDULER_SAMPLE_2.first +
+			"</schedulers>"
+		"</program>",
+		ProgramDTO().setHotWeatherScheduler(HotWeatherSchedulerDTO(HOT_WEATHER_SCHEDULER_SAMPLE_2.second))
+		);
+
 const ProgramSample programSample_periodicScheduler(
 		"<program>"
 			"<schedulers>" +
@@ -93,6 +119,15 @@ const ProgramSample programSample_periodicScheduler(
 		ProgramDTO().setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_3.second))
 		);
 
+const ProgramSample programSample_temperatureDependentScheduler(
+		"<program>"
+			"<schedulers>" +
+				TEMPERATURE_DEPENDENT_SCHEDULER_SAMPLE_1.first +
+			"</schedulers>"
+		"</program>",
+		ProgramDTO().setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(TEMPERATURE_DEPENDENT_SCHEDULER_SAMPLE_1.second))
+		);
+
 const ProgramSample programSample_weeklyScheduler(
 		"<program>"
 			"<schedulers>" +
@@ -100,15 +135,6 @@ const ProgramSample programSample_weeklyScheduler(
 			"</schedulers>"
 		"</program>",
 		ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_3.second))
-		);
-
-const ProgramSample programSample_everyDayScheduler(
-		"<program>"
-			"<schedulers>" +
-				EVERY_DAY_SCHEDULER_SAMPLE.first +
-			"</schedulers>"
-		"</program>",
-		ProgramDTO().setEveryDayScheduler(EveryDaySchedulerDTO(EVERY_DAY_SCHEDULER_SAMPLE.second))
 		);
 
 const ProgramSample programSample_runTimes(

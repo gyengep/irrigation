@@ -3,6 +3,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include "json.hpp"
 #include "DocumentView/Document.h"
 #include "DTO/DocumentDTO.h"
 
@@ -41,6 +42,12 @@ public:
 
 	DocumentDTO toDocumentDto() const;
 	void updateFromDocumentDto(const DocumentDTO& documentDTO);
+
+	nlohmann::json saveTo() const;
+	void loadFrom(const nlohmann::json& values);
+
+	void saveState() const;
+	void loadState();
 };
 
 class IrrigationDocument::Builder {
