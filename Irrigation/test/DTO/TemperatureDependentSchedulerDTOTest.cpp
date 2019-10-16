@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
 #include "DTO/TemperatureDependentSchedulerDTO.h"
-#include "DtoTest.h"
+#include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
@@ -94,12 +94,14 @@ TEST(TemperatureDependentSchedulerDTOTest, moveConstructor) {
 	EXPECT_THAT(schedulerDTO.getTrim(), Eq(expectedTrim));
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
 CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, float, RemainingCorrection, 21.2f);
 CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, int, MinAdjustment, 23);
 CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, int, MaxAdjustment, 46);
 CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, int, Trim, 2);
 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TemperatureDependentSchedulerDTOTest, equalsOperator) {
 	TemperatureDependentSchedulerDTO dto1;
@@ -108,8 +110,8 @@ TEST(TemperatureDependentSchedulerDTOTest, equalsOperator) {
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);
 
-	CHECK_DTO_EQUALS(float, RemainingCorrection, 25.3, 35.1);
-	CHECK_DTO_EQUALS(int, MinAdjustment, 10, 20);
-	CHECK_DTO_EQUALS(int, MaxAdjustment, 15, 18);
-	CHECK_DTO_EQUALS(int, Trim, 4, 5);
+	CHECK_DTO_EQUALS_COPY(float, RemainingCorrection, 25.3, 35.1);
+	CHECK_DTO_EQUALS_COPY(int, MinAdjustment, 10, 20);
+	CHECK_DTO_EQUALS_COPY(int, MaxAdjustment, 15, 18);
+	CHECK_DTO_EQUALS_COPY(int, Trim, 4, 5);
 }

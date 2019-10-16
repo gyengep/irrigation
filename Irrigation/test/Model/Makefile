@@ -21,7 +21,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -l$(TARGET_NAME) -lLogic -lSchedulers -lDTO -lDtoReaderWriter -lDocumentView -lLogger -lValves -lTimerView -lTemperature -lUtils
+LOCAL_LIBS      = -l$(TARGET_NAME) -lLogic -lSchedulers -lDtoReaderWriter -lDocumentView -lLogger -lValves -lTimerView -lTemperature -lUtils
 INCLUDES	    = -isystem $(PROJECT_ROOT)/3p/gmock_gtest -I$(INCLUDE_DIR) -I$(COMMON_DIR) -I$(PROJECT_ROOT)/3p/nlohmann
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
 LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lpugixml -lcurl -lssl -lcrypto -ldl

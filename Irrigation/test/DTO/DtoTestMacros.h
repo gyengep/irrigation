@@ -1,5 +1,5 @@
 #pragma once
-#include "DTO/DTO.h"
+#include "DTO/DtoMacros.h"
 
 
 #define CHECK_DTO_FUNCTIONS(CLASS, TYPE, NAME, VALUE)			\
@@ -19,7 +19,7 @@ TEST(CAT(CLASS, Test), GET_FUNCTION(NAME)) {					\
 }
 
 
-#define CHECK_DTO_EQUALS(TYPE, NAME, VALUE1, VALUE2)			\
+#define CHECK_DTO_EQUALS_COPY(TYPE, NAME, VALUE1, VALUE2)		\
 {																\
 	const TYPE CAT(NAME, 1) = VALUE1;							\
 	const TYPE CAT(NAME, 2) = VALUE2;							\
@@ -30,6 +30,19 @@ TEST(CAT(CLASS, Test), GET_FUNCTION(NAME)) {					\
 	EXPECT_FALSE(dto1 == dto2);									\
 	EXPECT_FALSE(dto2 == dto1);									\
 	dto1.SET_FUNCTION(NAME)(CAT(NAME, 2));						\
+	EXPECT_TRUE(dto1 == dto2);									\
+	EXPECT_TRUE(dto2 == dto1);									\
+}
+
+#define CHECK_DTO_EQUALS_MOVE(TYPE, NAME, VALUE1, VALUE2)		\
+{																\
+	dto1.SET_FUNCTION(NAME)(std::move(TYPE(VALUE1)));			\
+	EXPECT_FALSE(dto1 == dto2);									\
+	EXPECT_FALSE(dto2 == dto1);									\
+	dto2.SET_FUNCTION(NAME)(std::move(TYPE(VALUE2)));			\
+	EXPECT_FALSE(dto1 == dto2);									\
+	EXPECT_FALSE(dto2 == dto1);									\
+	dto1.SET_FUNCTION(NAME)(std::move(TYPE(VALUE2)));			\
 	EXPECT_TRUE(dto1 == dto2);									\
 	EXPECT_TRUE(dto2 == dto1);									\
 }

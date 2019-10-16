@@ -1,16 +1,17 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
 #include "DTO/DocumentDTO.h"
+#include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
-
 
 
 TEST(DocumentDTOTest, defaultConstructor) {
 	DocumentDTO documentDTO;
 
 	EXPECT_FALSE(documentDTO.hasPrograms());
+	EXPECT_THROW(documentDTO.getPrograms(), logic_error);
 }
 
 TEST(DocumentDTOTest, parametrizedConstructor) {
@@ -99,16 +100,10 @@ TEST(DocumentDTOTest, moveConstructor) {
 	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
 }
 
-TEST(DocumentDTOTest, hasPrograms) {
-	DocumentDTO documentDTO;
+///////////////////////////////////////////////////////////////////////////////
 
-	EXPECT_FALSE(documentDTO.hasPrograms());
-	documentDTO.setPrograms(list<ProgramDTO>());
-	EXPECT_TRUE(documentDTO.hasPrograms());
-}
-
-TEST(DocumentDTOTest, getPrograms) {
-	const list<ProgramDTO> expectedPrograms({
+CHECK_DTO_FUNCTIONS(DocumentDTO, list<ProgramDTO>, Programs,
+	list<ProgramDTO>({
 		ProgramDTO(true, "abc", 83, "sch1",
 				EveryDaySchedulerDTO(),
 				HotWeatherSchedulerDTO(),
@@ -127,57 +122,40 @@ TEST(DocumentDTOTest, getPrograms) {
 				list<RunTimeDTO>(),
 				list<StartTimeDTO>({ StartTimeDTO()})
 				)
-	});
+	})
+);
 
-	DocumentDTO documentDTO;
-
-	EXPECT_THROW(documentDTO.getPrograms(), logic_error);
-	documentDTO.setPrograms(list<ProgramDTO>(expectedPrograms));
-	ASSERT_NO_THROW(documentDTO.getPrograms());
-	EXPECT_THAT(documentDTO.getPrograms(),	ContainerEq(expectedPrograms));
-}
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(DocumentDTOTest, equalsOperator) {
-	const list<ProgramDTO> expectedPrograms1({
-		ProgramDTO(true, "abc", 83, "sch1",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				PeriodicSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
-				list<RunTimeDTO>({ RunTimeDTO() }),
-				list<StartTimeDTO>()
-				)
-	});
+	DocumentDTO dto1;
+	DocumentDTO dto2;
 
-	const list<ProgramDTO> expectedPrograms2({
-		ProgramDTO(false, "123", 125, "sch2",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				PeriodicSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
-				list<RunTimeDTO>(),
-				list<StartTimeDTO>({ StartTimeDTO()})
-				)
-	});
+	EXPECT_TRUE(dto1 == dto2);
+	EXPECT_TRUE(dto2 == dto1);
 
-	DocumentDTO documentDTO1;
-	DocumentDTO documentDTO2;
-
-	EXPECT_TRUE(documentDTO1 == documentDTO2);
-	EXPECT_TRUE(documentDTO2 == documentDTO1);
-
-	documentDTO1.setPrograms(list<ProgramDTO>(expectedPrograms1));
-	EXPECT_FALSE(documentDTO1 == documentDTO2);
-	EXPECT_FALSE(documentDTO2 == documentDTO1);
-
-	documentDTO2.setPrograms(list<ProgramDTO>(expectedPrograms2));
-	EXPECT_FALSE(documentDTO1 == documentDTO2);
-	EXPECT_FALSE(documentDTO2 == documentDTO1);
-
-	documentDTO1.setPrograms(list<ProgramDTO>(expectedPrograms2));
-	EXPECT_TRUE(documentDTO1 == documentDTO2);
-	EXPECT_TRUE(documentDTO2 == documentDTO1);
+	CHECK_DTO_EQUALS_MOVE(list<ProgramDTO>, Programs,
+			list<ProgramDTO>({
+				ProgramDTO(true, "abc", 83, "sch1",
+						EveryDaySchedulerDTO(),
+						HotWeatherSchedulerDTO(),
+						PeriodicSchedulerDTO(),
+						TemperatureDependentSchedulerDTO(),
+						WeeklySchedulerDTO(),
+						list<RunTimeDTO>({ RunTimeDTO() }),
+						list<StartTimeDTO>()
+					)
+			}),
+			list<ProgramDTO>({
+				ProgramDTO(false, "123", 125, "sch2",
+						EveryDaySchedulerDTO(),
+						HotWeatherSchedulerDTO(),
+						PeriodicSchedulerDTO(),
+						TemperatureDependentSchedulerDTO(),
+						WeeklySchedulerDTO(),
+						list<RunTimeDTO>(),
+						list<StartTimeDTO>({ StartTimeDTO()})
+					)
+			})
+		);
 }
-

@@ -1,24 +1,77 @@
 #pragma once
-#include <memory>
-#include <ostream>
-#include "DTO.h"
+#include "DtoMacros.h"
 
 
-class TemperatureDependentSchedulerDTO {
-public:
-	TemperatureDependentSchedulerDTO() = default;
-	TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerDTO&& other) = default;
-	TemperatureDependentSchedulerDTO(const TemperatureDependentSchedulerDTO& other);
-	TemperatureDependentSchedulerDTO(float remainingCorrection, int minAdjustment, int maxAdjustment, int trim);
+#define TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS											\
+	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, float, RemainingCorrection);			\
+	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, int, MinAdjustment);					\
+	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, int, MaxAdjustment);					\
+	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, int, Trim)
 
-	TemperatureDependentSchedulerDTO& operator= (TemperatureDependentSchedulerDTO&&) = default;
-	TemperatureDependentSchedulerDTO& operator= (const TemperatureDependentSchedulerDTO&) = delete;
-	bool operator== (const TemperatureDependentSchedulerDTO& other) const;
 
-	DECLARE_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, float, RemainingCorrection);
-	DECLARE_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, MinAdjustment);
-	DECLARE_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, MaxAdjustment);
-	DECLARE_DTO_VALUE_COPY(TemperatureDependentSchedulerDTO, int, Trim);
+CREATE_DTO_CLASS(TemperatureDependentSchedulerDTO)
 
-	friend std::ostream& operator<<(std::ostream& os, const TemperatureDependentSchedulerDTO& scheduler);
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_INIT_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_INIT_VALUE_MOVE(CLASS, TYPE, NAME)
+
+	TemperatureDependentSchedulerDTO(
+			float RemainingCorrection,
+			int MinAdjustment,
+			int MaxAdjustment,
+			int Trim
+		)
+	{
+		TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS;
+	}
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_COPY_CTOR_MOVE(CLASS, TYPE, NAME)
+
+	IMPLEMENT_COPY_CTOR(TemperatureDependentSchedulerDTO, TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+
+	IMPLEMENT_EQUALS_OPERATOR(TemperatureDependentSchedulerDTO, TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_MOVE(CLASS, TYPE, NAME)
+
+	TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 };
+
+#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+
+IMPLEMENT_OSS_OPERATOR(TemperatureDependentSchedulerDTO, TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS);
+
+#undef DTO_MEMBER_INIT
+#undef DTO_MEMBER_COPY
+#undef DTO_MEMBER_MOVE

@@ -1,16 +1,53 @@
 #pragma once
-#include <ostream>
+#include "DtoMacros.h"
 
 
-class EveryDaySchedulerDTO {
-public:
-	EveryDaySchedulerDTO() = default;
-	EveryDaySchedulerDTO(EveryDaySchedulerDTO&& other) = default;
-	EveryDaySchedulerDTO(const EveryDaySchedulerDTO& other) = default;
+#define EVERYDAY_SCHEDULER_DTO_MEMBERS
 
-	EveryDaySchedulerDTO& operator= (EveryDaySchedulerDTO&&) = default;
-	EveryDaySchedulerDTO& operator= (const EveryDaySchedulerDTO&) = delete;
-	bool operator== (const EveryDaySchedulerDTO& other) const;
 
-	friend std::ostream& operator<<(std::ostream& os, const EveryDaySchedulerDTO& scheduler);
+CREATE_DTO_CLASS(EveryDaySchedulerDTO)
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_COPY_CTOR_MOVE(CLASS, TYPE, NAME)
+
+	IMPLEMENT_COPY_CTOR(EveryDaySchedulerDTO, EVERYDAY_SCHEDULER_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_EQUALS_VALUE(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_EQUALS_VALUE(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_EQUALS_VALUE(CLASS, TYPE, NAME)
+
+	IMPLEMENT_EQUALS_OPERATOR(EveryDaySchedulerDTO, EVERYDAY_SCHEDULER_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_MOVE(CLASS, TYPE, NAME)
+
+	EVERYDAY_SCHEDULER_DTO_MEMBERS;
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 };
+
+#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+
+IMPLEMENT_OSS_OPERATOR(EveryDaySchedulerDTO, EVERYDAY_SCHEDULER_DTO_MEMBERS);
+
+#undef DTO_MEMBER_INIT
+#undef DTO_MEMBER_COPY
+#undef DTO_MEMBER_MOVE

@@ -1,26 +1,69 @@
 #pragma once
 #include <list>
-#include <memory>
-#include <ostream>
+#include "DtoMacros.h"
 
 
+#define WEEKLY_SCHEDULER_DTO_MEMBERS										\
+	DTO_MEMBER_MOVE(WeeklySchedulerDTO, std::list<bool>, Values)
 
-class WeeklySchedulerDTO {
-	std::unique_ptr<const std::list<bool>> values;
 
-public:
-	WeeklySchedulerDTO() = default;
-	WeeklySchedulerDTO(WeeklySchedulerDTO&& other) = default;
-	WeeklySchedulerDTO(const WeeklySchedulerDTO& other);
-	explicit WeeklySchedulerDTO(std::list<bool>&& values);
+CREATE_DTO_CLASS(WeeklySchedulerDTO)
 
-	WeeklySchedulerDTO& operator= (WeeklySchedulerDTO&&) = default;
-	WeeklySchedulerDTO& operator= (const WeeklySchedulerDTO&) = delete;
-	bool operator== (const WeeklySchedulerDTO& other) const;
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_INIT_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_INIT_VALUE_MOVE(CLASS, TYPE, NAME)
 
-	bool hasValues() const;
-	const std::list<bool>& getValues() const;
-	WeeklySchedulerDTO& setValues(std::list<bool>&& values);
+	WeeklySchedulerDTO(std::list<bool>&& Values) {
+		WEEKLY_SCHEDULER_DTO_MEMBERS;
+	}
 
-	friend std::ostream& operator<<(std::ostream& os, const WeeklySchedulerDTO& scheduler);
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_COPY_CTOR_MOVE(CLASS, TYPE, NAME)
+
+	IMPLEMENT_COPY_CTOR(WeeklySchedulerDTO, WEEKLY_SCHEDULER_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+
+	IMPLEMENT_EQUALS_OPERATOR(WeeklySchedulerDTO, WEEKLY_SCHEDULER_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_MOVE(CLASS, TYPE, NAME)
+
+	WEEKLY_SCHEDULER_DTO_MEMBERS;
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 };
+
+#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+
+IMPLEMENT_OSS_OPERATOR(WeeklySchedulerDTO, WEEKLY_SCHEDULER_DTO_MEMBERS);
+
+#undef DTO_MEMBER_INIT
+#undef DTO_MEMBER_COPY
+#undef DTO_MEMBER_MOVE

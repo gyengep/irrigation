@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
-#include <memory>
 #include <string>
+#include "ProgramDTO.h"
 #include "RunTimeDTO.h"
 #include "StartTimeDTO.h"
 #include "EveryDaySchedulerDTO.h"
@@ -9,42 +9,89 @@
 #include "PeriodicSchedulerDTO.h"
 #include "TemperatureDependentSchedulerDTO.h"
 #include "WeeklySchedulerDTO.h"
-#include "DTO.h"
+#include "DtoMacros.h"
 
 
-class ProgramDTO {
+#define PROGRAM_DTO_MEMBERS																			\
+	DTO_MEMBER_INIT(ProgramDTO, unsigned, Id);														\
+	DTO_MEMBER_COPY(ProgramDTO, bool, Disabled);													\
+	DTO_MEMBER_COPY(ProgramDTO, std::string, Name);													\
+	DTO_MEMBER_COPY(ProgramDTO, unsigned, Adjustment);												\
+	DTO_MEMBER_COPY(ProgramDTO, std::string, SchedulerType);										\
+	DTO_MEMBER_MOVE(ProgramDTO, EveryDaySchedulerDTO, EveryDayScheduler);							\
+	DTO_MEMBER_MOVE(ProgramDTO, HotWeatherSchedulerDTO, HotWeatherScheduler);						\
+	DTO_MEMBER_MOVE(ProgramDTO, PeriodicSchedulerDTO, PeriodicScheduler);							\
+	DTO_MEMBER_MOVE(ProgramDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler);	\
+	DTO_MEMBER_MOVE(ProgramDTO, WeeklySchedulerDTO, WeeklyScheduler);								\
+	DTO_MEMBER_MOVE(ProgramDTO, std::list<RunTimeDTO>, RunTimes);									\
+	DTO_MEMBER_MOVE(ProgramDTO, std::list<StartTimeDTO>, StartTimes)
 
-public:
-	ProgramDTO() = default;
-	ProgramDTO(ProgramDTO&& other) = default;
-	ProgramDTO(const ProgramDTO& other);
-	ProgramDTO(bool disabled, const std::string& name,
-			unsigned adjustment,
-			const std::string& schedulerType,
-			EveryDaySchedulerDTO&& everyDayScheduler,
-			HotWeatherSchedulerDTO&& hotWeatherScheduler,
-			PeriodicSchedulerDTO&& periodicScheduler,
-			TemperatureDependentSchedulerDTO&& temperatureDependentScheduler,
-			WeeklySchedulerDTO&& weeklyScheduler,
-			std::list<RunTimeDTO>&& runTimes,
-			std::list<StartTimeDTO>&& startTimes);
 
-	ProgramDTO& operator= (ProgramDTO&&) = default;
-	ProgramDTO& operator= (const ProgramDTO&) = delete;
-	bool operator== (const ProgramDTO& other) const;
+CREATE_DTO_CLASS(ProgramDTO)
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_INIT_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_INIT_VALUE_MOVE(CLASS, TYPE, NAME)
 
-	DECLARE_DTO_VALUE_COPY(ProgramDTO, unsigned, Id);
-	DECLARE_DTO_VALUE_COPY(ProgramDTO, bool, Disabled);
-	DECLARE_DTO_VALUE_COPY(ProgramDTO, std::string, Name);
-	DECLARE_DTO_VALUE_COPY(ProgramDTO, unsigned, Adjustment);
-	DECLARE_DTO_VALUE_COPY(ProgramDTO, std::string, SchedulerType);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, EveryDaySchedulerDTO, EveryDayScheduler);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, HotWeatherSchedulerDTO, HotWeatherScheduler);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, PeriodicSchedulerDTO, PeriodicScheduler);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, WeeklySchedulerDTO, WeeklyScheduler);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, std::list<RunTimeDTO>, RunTimes);
-	DECLARE_DTO_VALUE_MOVE(ProgramDTO, std::list<StartTimeDTO>, StartTimes);
+	ProgramDTO(bool Disabled, const std::string& Name,
+			unsigned Adjustment,
+			const std::string& SchedulerType,
+			EveryDaySchedulerDTO&& EveryDayScheduler,
+			HotWeatherSchedulerDTO&& HotWeatherScheduler,
+			PeriodicSchedulerDTO&& PeriodicScheduler,
+			TemperatureDependentSchedulerDTO&& TemperatureDependentScheduler,
+			WeeklySchedulerDTO&& WeeklyScheduler,
+			std::list<RunTimeDTO>&& RunTimes,
+			std::list<StartTimeDTO>&& StartTimes)
+	{
+		PROGRAM_DTO_MEMBERS;
+	}
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 
-	friend std::ostream& operator<<(std::ostream& os, const ProgramDTO& program);
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_COPY_CTOR_MOVE(CLASS, TYPE, NAME)
+
+	IMPLEMENT_COPY_CTOR(ProgramDTO, PROGRAM_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+
+	IMPLEMENT_EQUALS_OPERATOR(ProgramDTO, PROGRAM_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_MOVE(CLASS, TYPE, NAME)
+
+	PROGRAM_DTO_MEMBERS;
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 };
+
+#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+
+IMPLEMENT_OSS_OPERATOR(ProgramDTO, PROGRAM_DTO_MEMBERS);
+
+#undef DTO_MEMBER_INIT
+#undef DTO_MEMBER_COPY
+#undef DTO_MEMBER_MOVE

@@ -4,7 +4,6 @@ PROJECT_ROOT    = ..
 .PHONY: all
 all:
 	@$(MAKE) -C DocumentView all
-	@$(MAKE) -C DTO all
 	@$(MAKE) -C DtoReaderWriter all
 	@$(MAKE) -C Hardware/Temperature all
 	@$(MAKE) -C Hardware/Valves all
@@ -20,7 +19,6 @@ all:
 .PHONY: clean
 clean:
 	@$(MAKE) -C DocumentView clean
-	@$(MAKE) -C DTO clean
 	@$(MAKE) -C DtoReaderWriter clean
 	@$(MAKE) -C Hardware/Temperature clean
 	@$(MAKE) -C Hardware/Valves clean

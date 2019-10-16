@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
 #include "DTO/HotWeatherSchedulerDTO.h"
-#include "DtoTest.h"
+#include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
@@ -58,10 +58,12 @@ TEST(HotWeatherSchedulerDTOTest, moveConstructor) {
 	EXPECT_THAT(schedulerDTO.getMinTemperature(), Eq(expectedMinTemperature));
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
 CHECK_DTO_FUNCTIONS(HotWeatherSchedulerDTO, float, MinTemperature, 21.2f);
 CHECK_DTO_FUNCTIONS(HotWeatherSchedulerDTO, int, PeriodInSeconds, 15);
 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(HotWeatherSchedulerDTOTest, equalsOperator) {
 	HotWeatherSchedulerDTO dto1;
@@ -70,6 +72,6 @@ TEST(HotWeatherSchedulerDTOTest, equalsOperator) {
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);
 
-	CHECK_DTO_EQUALS(float, MinTemperature, 21.2f, 23.0f);
-	CHECK_DTO_EQUALS(int, PeriodInSeconds, 4, 5);
+	CHECK_DTO_EQUALS_COPY(float, MinTemperature, 21.2f, 23.0f);
+	CHECK_DTO_EQUALS_COPY(int, PeriodInSeconds, 4, 5);
 }

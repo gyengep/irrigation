@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
 #include "DTO/PeriodicSchedulerDTO.h"
+#include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
@@ -13,6 +14,11 @@ TEST(PeriodicSchedulerDTOTest, defaultConstructor) {
 	EXPECT_FALSE(schedulerDTO.hasPeriodStartYear());
 	EXPECT_FALSE(schedulerDTO.hasPeriodStartMonth());
 	EXPECT_FALSE(schedulerDTO.hasPeriodStartDay());
+
+	EXPECT_THROW(schedulerDTO.getValues(), logic_error);
+	EXPECT_THROW(schedulerDTO.getPeriodStartYear(), logic_error);
+	EXPECT_THROW(schedulerDTO.getPeriodStartMonth(), logic_error);
+	EXPECT_THROW(schedulerDTO.getPeriodStartDay(), logic_error);
 }
 
 TEST(PeriodicSchedulerDTOTest, parametrizedConstructor) {
@@ -39,10 +45,9 @@ TEST(PeriodicSchedulerDTOTest, copyConstructor) {
 	const unsigned expectedPeriodStartYear = 2018;
 	const unsigned expectedPeriodStartMon = 5;
 	const unsigned expectedPeriodStartDay = 15;
-	const PeriodicSchedulerDTO source(list<bool>(expectedValues),
-			expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
 
-	PeriodicSchedulerDTO schedulerDTO(source);
+	const PeriodicSchedulerDTO source(list<bool>(expectedValues), expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
+	const PeriodicSchedulerDTO schedulerDTO(source);
 
 	EXPECT_TRUE(schedulerDTO.hasValues());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartYear());
@@ -60,10 +65,9 @@ TEST(PeriodicSchedulerDTOTest, moveConstructor) {
 	const unsigned expectedPeriodStartYear = 2018;
 	const unsigned expectedPeriodStartMon = 5;
 	const unsigned expectedPeriodStartDay = 15;
-	PeriodicSchedulerDTO source(list<bool>(expectedValues),
-			expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
 
-	PeriodicSchedulerDTO schedulerDTO(move(source));
+	PeriodicSchedulerDTO source(list<bool>(expectedValues), expectedPeriodStartYear, expectedPeriodStartMon, expectedPeriodStartDay);
+	const PeriodicSchedulerDTO schedulerDTO(move(source));
 
 	EXPECT_TRUE(schedulerDTO.hasValues());
 	EXPECT_TRUE(schedulerDTO.hasPeriodStartYear());
@@ -76,150 +80,27 @@ TEST(PeriodicSchedulerDTOTest, moveConstructor) {
 	EXPECT_THAT(schedulerDTO.getPeriodStartDay(), Eq(expectedPeriodStartDay));
 }
 
-TEST(PeriodicSchedulerDTOTest, hasValues) {
-	PeriodicSchedulerDTO schedulerDTO;
+///////////////////////////////////////////////////////////////////////////////
 
-	EXPECT_FALSE(schedulerDTO.hasValues());
-	schedulerDTO.setValues(list<bool>());
-	EXPECT_TRUE(schedulerDTO.hasValues());
-}
+CHECK_DTO_FUNCTIONS(PeriodicSchedulerDTO, list<bool>, Values, list<bool>({ false, false, true }));
+CHECK_DTO_FUNCTIONS(PeriodicSchedulerDTO, unsigned, PeriodStartYear, 6);
+CHECK_DTO_FUNCTIONS(PeriodicSchedulerDTO, unsigned, PeriodStartMonth, 10);
+CHECK_DTO_FUNCTIONS(PeriodicSchedulerDTO, unsigned, PeriodStartDay, 21);
 
-TEST(PeriodicSchedulerDTOTest, getValues) {
-	const list<bool> expectedValues({ false, false, true });
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_THROW(schedulerDTO.getValues(), logic_error);
-	schedulerDTO.setValues(list<bool>(expectedValues));
-	ASSERT_NO_THROW(schedulerDTO.getValues());
-	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
-}
-
-TEST(PeriodicSchedulerDTOTest, hasPeriodStartYear) {
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_FALSE(schedulerDTO.hasPeriodStartYear());
-	schedulerDTO.setPeriodStartYear(6);
-	EXPECT_TRUE(schedulerDTO.hasPeriodStartYear());
-}
-
-TEST(PeriodicSchedulerDTOTest, getPeriodStartYear) {
-	const unsigned expectedPeriodStartYear = 100;
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_THROW(schedulerDTO.getPeriodStartYear(), logic_error);
-	schedulerDTO.setPeriodStartYear(expectedPeriodStartYear);
-	ASSERT_NO_THROW(schedulerDTO.getPeriodStartYear());
-	EXPECT_THAT(schedulerDTO.getPeriodStartYear(), Eq(expectedPeriodStartYear));
-}
-
-TEST(PeriodicSchedulerDTOTest, hasPeriodStartMonth) {
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_FALSE(schedulerDTO.hasPeriodStartMonth());
-	schedulerDTO.setPeriodStartMonth(10);
-	EXPECT_TRUE(schedulerDTO.hasPeriodStartMonth());
-}
-
-TEST(PeriodicSchedulerDTOTest, getPeriodStartMonth) {
-	const unsigned expectedPeriodStartMonth = 11;
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_THROW(schedulerDTO.getPeriodStartMonth(), logic_error);
-	schedulerDTO.setPeriodStartMonth(expectedPeriodStartMonth);
-	ASSERT_NO_THROW(schedulerDTO.getPeriodStartMonth());
-	EXPECT_THAT(schedulerDTO.getPeriodStartMonth(), Eq(expectedPeriodStartMonth));
-}
-
-TEST(PeriodicSchedulerDTOTest, hasPeriodStartDay) {
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_FALSE(schedulerDTO.hasPeriodStartDay());
-	schedulerDTO.setPeriodStartDay(25);
-	EXPECT_TRUE(schedulerDTO.hasPeriodStartDay());
-}
-
-TEST(PeriodicSchedulerDTOTest, getPeriodStartDay) {
-	const unsigned expectedPeriodStartDay = 21;
-	PeriodicSchedulerDTO schedulerDTO;
-
-	EXPECT_THROW(schedulerDTO.getPeriodStartDay(), logic_error);
-	schedulerDTO.setPeriodStartDay(expectedPeriodStartDay);
-	ASSERT_NO_THROW(schedulerDTO.getPeriodStartDay());
-	EXPECT_THAT(schedulerDTO.getPeriodStartDay(), Eq(expectedPeriodStartDay));
-}
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PeriodicSchedulerDTOTest, equalsOperator) {
-	PeriodicSchedulerDTO schedulerDTO1;
-	PeriodicSchedulerDTO schedulerDTO2;
+	PeriodicSchedulerDTO dto1;
+	PeriodicSchedulerDTO dto2;
 
-	EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-	EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
+	EXPECT_TRUE(dto1 == dto2);
+	EXPECT_TRUE(dto2 == dto1);
 
-	{
-		const list<bool> expectedValues1({ false, true });
-		const list<bool> expectedValues2({ false, true, true });
-
-		schedulerDTO1.setValues(list<bool>(expectedValues1));
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO2.setValues(list<bool>(expectedValues2));
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO1.setValues(list<bool>(expectedValues2));
-		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
-	}
-
-	{
-		const unsigned expectedPeriodStartYear1 = 1900;
-		const unsigned expectedPeriodStartYear2 = 2000;
-
-		schedulerDTO1.setPeriodStartYear(expectedPeriodStartYear1);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO2.setPeriodStartYear(expectedPeriodStartYear2);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO1.setPeriodStartYear(expectedPeriodStartYear2);
-		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
-	}
-
-	{
-		const unsigned expectedPeriodStartMonth1 = 1900;
-		const unsigned expectedPeriodStartMonth2 = 2000;
-
-		schedulerDTO1.setPeriodStartMonth(expectedPeriodStartMonth1);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO2.setPeriodStartMonth(expectedPeriodStartMonth2);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO1.setPeriodStartMonth(expectedPeriodStartMonth2);
-		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
-	}
-
-	{
-		const unsigned expectedPeriodStartDay1 = 1900;
-		const unsigned expectedPeriodStartDay2 = 2000;
-
-		schedulerDTO1.setPeriodStartDay(expectedPeriodStartDay1);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO2.setPeriodStartDay(expectedPeriodStartDay2);
-		EXPECT_FALSE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_FALSE(schedulerDTO2 == schedulerDTO1);
-
-		schedulerDTO1.setPeriodStartDay(expectedPeriodStartDay2);
-		EXPECT_TRUE(schedulerDTO1 == schedulerDTO2);
-		EXPECT_TRUE(schedulerDTO2 == schedulerDTO1);
-	}
+	CHECK_DTO_EQUALS_MOVE(list<bool>, Values,
+			list<bool>({ false, true }),
+			list<bool>({ false, true, true })
+		);
+	CHECK_DTO_EQUALS_COPY(unsigned, PeriodStartYear, 1900, 200);
+	CHECK_DTO_EQUALS_COPY(unsigned, PeriodStartMonth, 10, 11);
+	CHECK_DTO_EQUALS_COPY(unsigned, PeriodStartDay, 5, 20);
 }

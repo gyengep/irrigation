@@ -2,7 +2,6 @@
 .PHONY: all
 all: \
 	DocumentView-all \
-	DTO-all \
 	DtoReaderWriter-all \
 	Logger-all \
 	Logic-all \
@@ -18,7 +17,6 @@ all: \
 .PHONY: clean
 clean: \
 	DocumentView-clean \
-	DTO-clean \
 	DtoReaderWriter-clean \
 	Logger-clean \
 	Logic-clean \
@@ -38,14 +36,6 @@ DocumentView-all:
 .PHONY: DocumentView-clean
 DocumentView-clean:
 	@$(MAKE) -C DocumentView clean
-
-.PHONY: DTO-all
-DTO-all:
-	@$(MAKE) -C DTO all
-
-.PHONY: DTO-clean
-DTO-clean:
-	@$(MAKE) -C DTO clean
 
 .PHONY: DtoReaderWriter-all
 DtoReaderWriter-all:

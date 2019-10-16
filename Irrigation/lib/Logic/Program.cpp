@@ -270,9 +270,9 @@ ostream& operator<<(ostream& os, const Program& program) {
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
 			to_string(program.getEveryDayScheduler()) << ", " <<
-			((program.hotWeatherScheduler == nullptr) ? "NULL" : to_string(program.getHotWeatherScheduler())) << ", " <<
+			to_string(program.getHotWeatherScheduler()) << ", " <<
 			to_string(program.getPeriodicScheduler()) << ", " <<
-			((program.temperatureDependentScheduler == nullptr) ? "NULL" : to_string(program.getTemperatureDependentScheduler())) << ", " <<
+			to_string(program.getTemperatureDependentScheduler()) << ", " <<
 			to_string(program.getWeeklyScheduler()) << "], ";
 	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
 	os << "startTimes=" << to_string(program.getStartTimes());

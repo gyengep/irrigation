@@ -20,7 +20,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -lLogger -lModel -lDocumentView -lLogic -lSchedulers -lDTO -lTimerView -lValves -lRestView -lWebServer -lTemperature -lUtils -lDtoReaderWriter
+LOCAL_LIBS      = -lLogger -lModel -lDocumentView -lLogic -lSchedulers -lTimerView -lValves -lRestView -lWebServer -lTemperature -lUtils -lDtoReaderWriter
 INCLUDES	    = -I$(INCLUDE_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
 LIBS            = $(LOCAL_LIBS) -pthread -lpugixml -lmicrohttpd -lcurl -lssl -lcrypto -ldl

@@ -1,35 +1,70 @@
 #pragma once
-#include <memory>
-#include <ostream>
+#include "DtoMacros.h"
 
 
+#define RUNTIME_DTO_MEMBERS										\
+	DTO_MEMBER_INIT(RunTimeDTO, unsigned, Id);					\
+	DTO_MEMBER_COPY(RunTimeDTO, unsigned, Minutes);				\
+	DTO_MEMBER_COPY(RunTimeDTO, unsigned, Seconds)
 
-class RunTimeDTO {
-	std::unique_ptr<const unsigned> id;
-	std::unique_ptr<const unsigned> minutes;
-	std::unique_ptr<const unsigned> seconds;
 
-public:
-	RunTimeDTO() = default;
-	RunTimeDTO(RunTimeDTO&& other) = default;
-	RunTimeDTO(const RunTimeDTO& other);
-	RunTimeDTO(unsigned minutes, unsigned seconds);
+CREATE_DTO_CLASS(RunTimeDTO)
 
-	RunTimeDTO& operator= (RunTimeDTO&&) = default;
-	RunTimeDTO& operator= (const RunTimeDTO&);
-	bool operator== (const RunTimeDTO& other) const;
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_INIT_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_INIT_VALUE_MOVE(CLASS, TYPE, NAME)
 
-	bool hasId() const;
-	bool hasMinutes() const;
-	bool hasSeconds() const;
+	RunTimeDTO(unsigned Minutes, unsigned Seconds) {
+		RUNTIME_DTO_MEMBERS;
+	}
 
-	unsigned getId() const;
-	unsigned getMinutes() const;
-	unsigned getSeconds() const;
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 
-	RunTimeDTO& setId(unsigned id);
-	RunTimeDTO& setMinutes(unsigned minutes);
-	RunTimeDTO& setSeconds(unsigned seconds);
+	///////////////////////////////////////////////////////////////////////////////
 
-	friend std::ostream& operator<<(std::ostream& os, const RunTimeDTO& runTime);
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_COPY_CTOR_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_COPY_CTOR_MOVE(CLASS, TYPE, NAME)
+
+	IMPLEMENT_COPY_CTOR(RunTimeDTO, RUNTIME_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_EQUALS_OPERATOR(CLASS, TYPE, NAME)
+
+	IMPLEMENT_EQUALS_OPERATOR(RunTimeDTO, RUNTIME_DTO_MEMBERS);
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_COPY(CLASS, TYPE, NAME)
+	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_DECLARE_VALUE_MOVE(CLASS, TYPE, NAME)
+
+	RUNTIME_DTO_MEMBERS;
+
+	#undef DTO_MEMBER_INIT
+	#undef DTO_MEMBER_COPY
+	#undef DTO_MEMBER_MOVE
 };
+
+#define DTO_MEMBER_INIT(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_OSS_OPERATOR(CLASS, TYPE, NAME)
+
+IMPLEMENT_OSS_OPERATOR(RunTimeDTO, RUNTIME_DTO_MEMBERS);
+
+#undef DTO_MEMBER_INIT
+#undef DTO_MEMBER_COPY
+#undef DTO_MEMBER_MOVE
