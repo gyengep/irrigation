@@ -3,7 +3,6 @@
 #include "Logic/StartTime.h"
 
 
-
 class MockStartTime : public StartTime {
 public:
 	MockStartTime() {

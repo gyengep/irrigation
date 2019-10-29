@@ -199,7 +199,6 @@ TEST(ProgramTest, isScheduled1) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
 
 				bool expectedResult = false;
 				expectedResult |= (hour == 4 && min == 0 && sec == 0);
@@ -207,7 +206,8 @@ TEST(ProgramTest, isScheduled1) {
 				expectedResult |= (hour == 6 && min == 30 && sec == 0);
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, 0)));
+				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
+				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(expectedResult, 0)));
 			}
 		}
 	}
@@ -232,15 +232,14 @@ TEST(ProgramTest, isScheduled2) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-
 				bool expectedResult = false;
 				expectedResult |= (hour == 4 && min == 0 && sec == 0);
 				expectedResult |= (hour == 6 && min == 0 && sec == 0);
 				expectedResult |= (hour == 6 && min == 30 && sec == 0);
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 76 : 0)));
+				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
+				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 76 : 0)));
 			}
 		}
 	}
@@ -265,15 +264,14 @@ TEST(ProgramTest, isScheduled3) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-
 				bool expectedResult = false;
 				expectedResult |= (hour == 4 && min == 0 && sec == 0);
 				expectedResult |= (hour == 6 && min == 0 && sec == 0);
 				expectedResult |= (hour == 6 && min == 30 && sec == 0);
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
-				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
+				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
+				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
 			}
 		}
 	}
@@ -292,8 +290,8 @@ TEST(ProgramTest, isScheduled_disabled) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-				struct tm timeinfo = toCalendarTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(timelocal(&timeinfo)), Eq(pair<bool, unsigned>(false, 0)));
+				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
+				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(false, 0)));
 			}
 		}
 	}

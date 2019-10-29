@@ -3,7 +3,6 @@
 #include "Model/Application.h"
 
 
-
 class MockApplication : public Application {
 public:
 	MOCK_METHOD0(onInitialize, void());

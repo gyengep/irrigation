@@ -1,8 +1,6 @@
 #pragma once
 #include <gmock/gmock.h>
-#include <memory>
 #include <DtoReaderWriter/DtoReaderWriter.h>
-#include "DTO/DocumentDTO.h"
 
 
 class MockDtoReader : public DtoReader {

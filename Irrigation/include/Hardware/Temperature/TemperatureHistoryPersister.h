@@ -20,7 +20,6 @@ class TemperatureHistoryPersister : public TimerCallback {
 	std::unique_ptr<Timer> timer;
 
 	static std::string temperatureToString(float value);
-	static std::string timeToString(const std::time_t& time);
 	static std::shared_ptr<std::ostream> openFile(const std::string& fileName);
 
 public:

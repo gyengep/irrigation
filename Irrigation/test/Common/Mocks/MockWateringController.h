@@ -3,7 +3,6 @@
 #include "Logic/WateringController.h"
 
 
-
 class MockWateringController : public WateringController {
 public:
 	MOCK_CONST_METHOD0(isWateringActive, bool());

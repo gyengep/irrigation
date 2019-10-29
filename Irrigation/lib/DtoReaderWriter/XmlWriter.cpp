@@ -1,12 +1,6 @@
 #include "XmlWriter.h"
-#include <sstream>
 #include "pugixml.hpp"
-#include "DTO/DocumentDTO.h"
-#include "DTO/ProgramDTO.h"
-#include "DTO/RunTimeDTO.h"
-#include "DTO/StartTimeDTO.h"
-#include "DTO/WeeklySchedulerDTO.h"
-#include "DTO/EveryDaySchedulerDTO.h"
+#include <sstream>
 
 using namespace std;
 using namespace pugi;

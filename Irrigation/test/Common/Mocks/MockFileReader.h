@@ -1,8 +1,6 @@
 #pragma once
 #include <gmock/gmock.h>
-#include <memory>
 #include "Utils/FileReaderWriter.h"
-
 
 
 class MockFileReader : public FileReader {

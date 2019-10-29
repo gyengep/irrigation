@@ -1,17 +1,15 @@
 #pragma once
 #include <list>
-#include <memory>
 #include <string>
-
-class DocumentDTO;
-class ProgramDTO;
-class RunTimeDTO;
-class StartTimeDTO;
-class EveryDaySchedulerDTO;
-class HotWeatherSchedulerDTO;
-class PeriodicSchedulerDTO;
-class TemperatureDependentSchedulerDTO;
-class WeeklySchedulerDTO;
+#include "DTO/DocumentDTO.h"
+#include "DTO/ProgramDTO.h"
+#include "DTO/RunTimeDTO.h"
+#include "DTO/StartTimeDTO.h"
+#include "DTO/EveryDaySchedulerDTO.h"
+#include "DTO/HotWeatherSchedulerDTO.h"
+#include "DTO/PeriodicSchedulerDTO.h"
+#include "DTO/TemperatureDependentSchedulerDTO.h"
+#include "DTO/WeeklySchedulerDTO.h"
 
 
 class DtoReader {

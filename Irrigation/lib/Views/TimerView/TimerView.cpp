@@ -4,9 +4,7 @@
 #include "Logic/Program.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
-#include "Utils/ChronoTools.h"
-#include <iomanip>
-#include <sstream>
+#include "Utils/TimeConversion.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -95,13 +93,11 @@ bool TimerView::checkSystemTime(const system_clock::time_point& expectedSystemTi
 		const time_t previousTime = system_clock::to_time_t(expectedSystemTime);
 		const time_t currentTime = system_clock::to_time_t(system_clock::now());
 
-		struct tm timeinfo;
-		ostringstream o;
-		o << "Time is changed! ";
-		o << "from " << put_time(localtime_r(&previousTime, &timeinfo), "%Y.%m.%d %H:%M:%S") << " ";
-		o << "to " << put_time(localtime_r(&currentTime, &timeinfo), "%Y.%m.%d %H:%M:%S");
+		LOGGER.warning("Time is changed! from %s to %s",
+				toLocalTimeStr(previousTime, "%Y.%m.%d %H:%M:%S").c_str(),
+				toLocalTimeStr(currentTime, "%Y.%m.%d %H:%M:%S").c_str()
+			);
 
-		LOGGER.warning(o.str().c_str());
 		return false;
 	}
 

@@ -1,12 +1,6 @@
 #include "XmlReader.h"
-#include <sstream>
-#include <string.h>
 #include "pugixml.hpp"
-#include "DTO/DocumentDTO.h"
-#include "DTO/ProgramDTO.h"
-#include "DTO/RunTimeDTO.h"
-#include "DTO/StartTimeDTO.h"
-#include "DTO/WeeklySchedulerDTO.h"
+#include <cstring>
 
 using namespace std;
 using namespace pugi;

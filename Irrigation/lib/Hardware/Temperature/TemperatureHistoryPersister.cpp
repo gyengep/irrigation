@@ -3,7 +3,7 @@
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvWriterImpl.h"
-#include "Utils/TimePeriod.h"
+#include "Utils/TimeConversion.h"
 #include <fstream>
 
 using namespace std;
@@ -43,7 +43,7 @@ void TemperatureHistoryPersister::saveHistory(const time_t& from, const time_t& 
 		const auto statisticsValues = temperatureHistory->getHistoryValues(from, to);
 
 		const vector<string> historyTexts {
-			timeToString(from),
+			toLocalTimeStr(from, "%Y.%m.%d %H:%M"),
 			temperatureToString(statisticsValues.min),
 			temperatureToString(statisticsValues.max),
 			temperatureToString(statisticsValues.avg),
@@ -91,14 +91,6 @@ void TemperatureHistoryPersister::onTimer() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-string TemperatureHistoryPersister::timeToString(const time_t& rawTime) {
-	char buffer[32];
-	struct tm timeinfo;
-
-	strftime(buffer, 32, "%Y.%m.%d %H:%M", localtime_r(&rawTime, &timeinfo));
-	return string(buffer);
-}
 
 string TemperatureHistoryPersister::temperatureToString(float value) {
 	char buffer[32];

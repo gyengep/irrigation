@@ -97,10 +97,8 @@ time_t OpenWeatherMap::TemperatureForecastProvider::parseTimeString(const string
 		throw logic_error("TemperatureForecast::parseTimeString() dateMatch.size() != 7");
 	}
 
-	auto calendarTime = toCalendarTime(
+	return fromUtcTime(
 			stoi(dateMatch[1]), stoi(dateMatch[2]), stoi(dateMatch[3]),
 			stoi(dateMatch[4]), stoi(dateMatch[5]), stoi(dateMatch[6])
 		);
-
-	return timegm(&calendarTime);
 }

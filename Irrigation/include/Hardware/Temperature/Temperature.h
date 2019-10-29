@@ -38,8 +38,6 @@ class Temperature : public TimerCallback {
 	void logStoredPeriodForecast();
 	void logCurrentPeriodForecast(const std::time_t& rawTime);
 
-	static std::string toTimeStr(const std::time_t& rawTime);
-
 public:
 
 	virtual ~Temperature();

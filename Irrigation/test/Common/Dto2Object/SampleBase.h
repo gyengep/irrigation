@@ -12,9 +12,9 @@ namespace Dto2ObjectTest {
 
 	public:
 		ObjectSample(const OBJECT& object, const DTO& dto) : object(new OBJECT(object)), dto(dto) {}
-		ObjectSample(const std::shared_ptr<OBJECT> object, const DTO& dto) : object(object), dto(dto) {}
+		ObjectSample(const std::shared_ptr<OBJECT>& object, const DTO& dto) : object(object), dto(dto) {}
 
-		virtual ~ObjectSample() = default;
+		~ObjectSample() = default;
 
 		const std::shared_ptr<OBJECT> getObject() const { return object; }
 		const DTO& getDto() const { return dto; }

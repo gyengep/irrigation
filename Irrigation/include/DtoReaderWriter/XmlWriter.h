@@ -1,7 +1,4 @@
 #pragma once
-#include <list>
-#include <string>
-#include <memory>
 #include "DtoReaderWriter.h"
 
 

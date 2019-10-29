@@ -20,7 +20,7 @@ void checkDay(tm& timeinfo, Scheduler& scheduler, bool expectedResult) {
 				timeinfo.tm_min = min;
 				timeinfo.tm_sec = sec;
 
-				ASSERT_THAT(scheduler.process(timelocal(&timeinfo)), Eq(Scheduler::Result(expectedResult, false, 0)));
+				ASSERT_THAT(scheduler.process(mktime(&timeinfo)), Eq(Scheduler::Result(expectedResult, false, 0)));
 			}
 		}
 	}

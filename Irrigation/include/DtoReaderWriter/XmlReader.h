@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <memory>
 #include "DtoReaderWriter.h"
 #include "XMLParseException.h"
 

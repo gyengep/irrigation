@@ -11,7 +11,7 @@
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
-#include "Utils/TimePeriod.h"
+#include "Utils/TimeConversion.h"
 
 using namespace std;
 
@@ -123,8 +123,8 @@ void Temperature::logCurrentPeriodForecast(const time_t& rawTime) {
 		const auto currentPeriodFromTo = getCurrentPeriod(rawTime, period);
 		const auto forecastValues = forecast->getForecastValues(currentPeriodFromTo.first, currentPeriodFromTo.second);
 
-		storedForecastFrom = toTimeStr(currentPeriodFromTo.first);
-		storedForecastTo = toTimeStr(currentPeriodFromTo.second);
+		storedForecastFrom = toLocalTimeStr(currentPeriodFromTo.first, "%F %T");
+		storedForecastTo = toLocalTimeStr(currentPeriodFromTo.second, "%F %T");
 		storedForecastValues = unique_ptr<TemperatureForecast::Values>(new TemperatureForecast::Values(forecastValues));
 
 		logStoredPeriodForecast();
@@ -148,8 +148,8 @@ void Temperature::logStoredPeriodForecast() {
 void Temperature::logPreviousPeriodMeasured(const time_t& rawTime) {
 	try {
 		const auto previousPeriodFromTo = getPreviousPeriod(rawTime, period);
-		const string from = toTimeStr(previousPeriodFromTo.first);
-		const string to = toTimeStr(previousPeriodFromTo.second);
+		const string from = toLocalTimeStr(previousPeriodFromTo.first, "%F %T");
+		const string to = toLocalTimeStr(previousPeriodFromTo.second, "%F %T");
 		const auto temperatureValues = history->getHistoryValues(previousPeriodFromTo.first, previousPeriodFromTo.second);
 
 		LOGGER.trace("Measured temperature\n\tfrom: %s\n\tto:   %s\n\tmin: %.1f, max: %.1f, avg: %.1f",
@@ -185,12 +185,4 @@ std::shared_ptr<TemperatureForecastProvider> Temperature::createForecastProvider
 	const auto forecastProvider = make_shared<DarkSky::TemperatureForecastProvider>();
 	LOGGER.debug("DarkSky forecast provider is initialized");
 	return forecastProvider;
-}
-
-string Temperature::toTimeStr(const time_t& rawTime) {
-	char buffer [80];
-	struct tm timeinfo;
-
-	strftime(buffer, 80, "%F %T", localtime_r(&rawTime, &timeinfo));
-	return buffer;
 }

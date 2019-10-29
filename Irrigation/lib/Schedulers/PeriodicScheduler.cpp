@@ -64,8 +64,7 @@ bool PeriodicScheduler::isDayEnabled(size_t day) const {
 }
 
 void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsigned day) {
-	const struct tm timeinfo = toCalendarTime(year, month, day);
-	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(timeinfo);
+	elapsedDaysSinceEpochToPeriodStart = getElapsedDaysSinceEpoch(toCalendarTime(year, month, day));
 
 	periodStartYear = year;
 	periodStartMonth = month;
@@ -73,16 +72,13 @@ void PeriodicScheduler::setPeriodStartDate(unsigned year, unsigned month, unsign
 }
 
 bool PeriodicScheduler::onProcess(const time_t rawtime) const {
-	struct tm timeinfo;
-	localtime_r(&rawtime, &timeinfo);
-
 	const unsigned period = getPeriod();
 	if (0 == period) {
 		return false;
 	}
 
 	const unsigned offset = elapsedDaysSinceEpochToPeriodStart % period;
-	const unsigned index = (getElapsedDaysSinceEpoch(timeinfo) + period - offset) % period;
+	const unsigned index = (getElapsedDaysSinceEpoch(toLocalTime(rawtime)) + period - offset) % period;
 	return isDayEnabled(index);
 }
 

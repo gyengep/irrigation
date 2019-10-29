@@ -1,8 +1,6 @@
+#pragma once
 #include <gmock/gmock.h>
-#include <memory>
-#include <vector>
 #include "Logic/RunTime.h"
-
 
 
 class MockRunTime : public RunTime {

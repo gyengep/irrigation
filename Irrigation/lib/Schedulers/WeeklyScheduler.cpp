@@ -4,6 +4,7 @@
 #include <list>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
+#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 
 using namespace std;
@@ -45,8 +46,7 @@ bool WeeklyScheduler::isDayEnabled(size_t day) const {
 }
 
 bool WeeklyScheduler::onProcess(const time_t rawtime) const {
-	struct tm timeinfo;
-	const size_t weekDay = localtime_r(&rawtime, &timeinfo)->tm_wday;
+	const size_t weekDay = toLocalTime(rawtime).tm_wday;
 	checkIndex(weekDay);
 	return days[(weekDay + 6) % 7];
 }

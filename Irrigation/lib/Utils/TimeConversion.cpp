@@ -1,9 +1,29 @@
 #include "TimeConversion.h"
 #include <cstring>
 #include <stdexcept>
-#include <mutex>
 
 using namespace std;
+using namespace std::chrono;
+
+///////////////////////////////////////////////////////////////////////////////
+
+TimeConverter::TimeConverter(const milliseconds& ms) {
+	days = duration_cast<Days>(ms);
+	hours = duration_cast<chrono::hours>(ms - days);
+	minutes = duration_cast<chrono::minutes>(ms - days - hours);
+	seconds = duration_cast<chrono::seconds>(ms - days - hours - minutes);
+	millis = duration_cast<chrono::milliseconds>(ms - days - hours - minutes - seconds);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+seconds abs(const seconds& t) {
+	return seconds(abs(t.count()));
+}
+
+milliseconds abs(const milliseconds& t) {
+	return milliseconds(abs(t.count()));
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -39,9 +59,31 @@ tm toCalendarTime(int year, int month, int day, int hour, int min, int sec) {
 	return timeinfo;
 }
 
-tm toCalendarTime(int year, int month, int day) {
-	return toCalendarTime(year, month, day, 0, 0, 0);
+std::tm toLocalTime(const std::time_t& rawTime) {
+	struct tm timeinfo;
+	localtime_r(&rawTime, &timeinfo);
+	return timeinfo;
 }
+
+std::time_t fromUtcTime(int year, int month, int day, int hour, int min, int sec) {
+	struct tm calendarTime = toCalendarTime(year, month, day, hour, min, sec);
+	return timegm(&calendarTime);
+}
+
+std::time_t fromLocalTime(int year, int month, int day, int hour, int min, int sec) {
+	struct tm calendarTime = toCalendarTime(year, month, day, hour, min, sec);
+	return mktime(&calendarTime);
+}
+
+std::string toLocalTimeStr(const time_t& rawTime, const char* formatStr) {
+	char buffer[100];
+	struct tm timeinfo;
+
+	strftime(buffer, 100, formatStr, localtime_r(&rawTime, &timeinfo));
+	return string(buffer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 unsigned getElapsedDaysSinceEpoch(const tm& timeinfo) {
 	struct tm timeinfoCopy = timeinfo;
@@ -57,4 +99,24 @@ unsigned getElapsedDaysSinceEpoch(const tm& timeinfo) {
 	}
 
 	return rawtime / (60 * 60 * 24);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+pair<time_t, time_t> getPreviousPeriod(const time_t& rawTime, const seconds& periodLength) {
+	const time_t periodInSeconds = periodLength.count();
+
+	const time_t from = ((rawTime / periodInSeconds) - 1) * periodInSeconds;
+	const time_t to = (rawTime / periodInSeconds) * periodInSeconds - 1;
+
+	return make_pair(from, to);
+}
+
+pair<time_t, time_t> getCurrentPeriod(const time_t& rawTime, const seconds& periodLength) {
+	const time_t periodInSeconds = periodLength.count();
+
+	const time_t from = (rawTime / periodInSeconds) * periodInSeconds;
+	const time_t to = ((rawTime / periodInSeconds) + 1) * periodInSeconds - 1;
+
+	return make_pair(from, to);
 }

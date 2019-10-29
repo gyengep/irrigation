@@ -10,6 +10,7 @@
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
 #include "Hardware/Temperature/Temperature.h"
+#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <algorithm>
 #include <sstream>
@@ -148,8 +149,7 @@ pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
 	if (!disabled) {
 		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
-			struct tm timeinfo;
-			localtime_r(&rawtime, &timeinfo);
+			struct tm timeinfo = toLocalTime(rawtime);
 
 			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
 				const Scheduler::Result result = getCurrentScheduler().process(rawtime);

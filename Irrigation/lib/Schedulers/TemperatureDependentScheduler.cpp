@@ -87,18 +87,12 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 
 	LOGGER.trace(">>>>>>>>>>> TemperatureDependentScheduler::process() <<<<<<<<<<<");
 
-	struct tm timeinfo;
-
-	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(*localtime_r(&rawtime, &timeinfo));
-	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(*localtime_r(&lastRun, &timeinfo));
+	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(toLocalTime(rawtime));
+	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(toLocalTime(lastRun));
 
 	if (LOGGER.isLoggable(LogLevel::TRACE)) {
-		char buffer[80];
-		strftime(buffer, 80, "%F %T", localtime(&rawtime));
-		LOGGER.trace("%-30s%s", "current time", buffer);
-
-		strftime(buffer, 80, "%F %T", localtime(&lastRun));
-		LOGGER.trace("%-30s%s", "last run", buffer);
+		LOGGER.trace("%-30s%s", "current time", toLocalTimeStr(rawtime, "%F %T").c_str());
+		LOGGER.trace("%-30s%s", "last run", toLocalTimeStr(lastRun, "%F %T").c_str());
 	}
 
 	LOGGER.trace("%-30s%d%%", "remainingPercent from previous run: ", remainingPercent);

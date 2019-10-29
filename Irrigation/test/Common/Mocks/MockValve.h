@@ -1,9 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
-#include <memory>
 #include "Hardware/Valves/Valve.h"
 #include "Hardware/Valves/ZoneHandler.h"
-
 
 
 class MockValve : public Valve {
