@@ -1,18 +1,17 @@
 
-TARGET_NAME     = irrigation
+TARGET_NAME     = $(shell basename $(CURDIR))
 
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ..
+PROJECT_ROOT    = ../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/src
-OBJECT_DIR      = $(PROJECT_ROOT)/build/src
+SOURCE_DIR      = $(PROJECT_ROOT)/lib/$(TARGET_NAME)
+OBJECT_DIR      = $(PROJECT_ROOT)/build/lib/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
-TARGET_DIR      = $(PROJECT_ROOT)/bin
-LIBRARY_DIR     = $(PROJECT_ROOT)/build
+TARGET_DIR      = $(PROJECT_ROOT)/build
 
-TARGET          = $(TARGET_DIR)/$(TARGET_NAME)
+TARGET          = $(TARGET_DIR)/lib$(TARGET_NAME).a
 SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
 OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.o))
 DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.d))
@@ -20,23 +19,16 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -lLogger -lModel -lDocumentView -lLogic -lSchedulers -lTimerView -lValves -lRestView -lWebServer -lTemperature -lDtoReaderWriter -lDS18B20 -lUtils
-INCLUDES	    = -I$(INCLUDE_DIR)
-LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -pthread -lpugixml -lmicrohttpd -lcurl -lssl -lcrypto -ldl
+INCLUDES		= -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME) -I$(PROJECT_ROOT)/3p/pugixml -I$(PROJECT_ROOT)/3p/nlohmann
+ARFLAGS         = r 
 
-# Detect the Raspberry Pi from cpuinfo
-ifneq "$(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)" "0"
-LIBS          += -lwiringPi
-endif
-
-include ../common.mk
+include ../../common.mk
 
 .PHONY: all
 all: $(TARGET)
 
 .PHONY: clean
-clean: 
+clean:
 	rm -f $(OBJECTS)
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
@@ -51,14 +43,14 @@ print:
 	@echo OBJECTS: $(OBJECTS)
 	@echo DEPENDS: $(DEPENDS)
 	@echo TARGET: $(TARGET)
-	@echo LIBS: $(LIBS)
 
 -include $(DEPENDS)
-	
-$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
+
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 	
-$(TARGET):	$(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS)) $(OBJECTS)
+$(TARGET):	$(OBJECTS)
 	@mkdir -p $(TARGET_DIR)
-	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)
+	$(AR) $(ARFLAGS) $@ $(OBJECTS)
+	

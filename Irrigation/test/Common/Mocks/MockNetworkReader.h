@@ -1,6 +1,6 @@
 #pragma once
 #include <gmock/gmock.h>
-#include "Hardware/Temperature/NetworkReader.h"
+#include "Utils/NetworkReader.h"
 
 
 class MockNetworkReader : public NetworkReader {

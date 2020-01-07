@@ -4,9 +4,9 @@ TARGET_NAME     = $(shell basename $(CURDIR))
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ../..
+PROJECT_ROOT    = ../../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+SOURCE_DIR      = $(PROJECT_ROOT)/test/Hardware/$(TARGET_NAME)
 COMMON_DIR      = $(PROJECT_ROOT)/test/Common
 OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
@@ -21,10 +21,10 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -l$(TARGET_NAME) -lValves -lLogger -lTemperature -lSchedulers -lDS18B20 -lUtils
-INCLUDES	    = -isystem $(PROJECT_ROOT)/3p/gmock_gtest -I$(INCLUDE_DIR) -I$(COMMON_DIR) -I$(PROJECT_ROOT)/3p/nlohmann 
+LOCAL_LIBS      = -l$(TARGET_NAME) -lUtils -lLogger
+INCLUDES	    = -isystem $(PROJECT_ROOT)/3p/gmock_gtest -I$(INCLUDE_DIR) -I$(COMMON_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lcurl -lssl -lcrypto -ldl
+LIBS            = $(LOCAL_LIBS) -lgmock
 
 # Detect the Raspberry Pi from cpuinfo
 # Count the matches for BCMxxxx in cpuinfo
@@ -34,7 +34,7 @@ ifeq "$(RPI)" "1"
 LIBS          += -lwiringPi
 endif
 
-include ../../common.mk
+include ../../../common.mk
 
 .PHONY: all
 all: $(TARGET)

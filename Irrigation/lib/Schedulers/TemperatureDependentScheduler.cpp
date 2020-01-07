@@ -46,7 +46,7 @@ TemperatureDependentScheduler::~TemperatureDependentScheduler() {
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now) const {
-	const float temperature = temperatureForecast->getForecastValues(now, now + oneDayInSeconds - 1).max;
+	const float temperature = temperatureForecast->getTemperatureForecast(now, now + oneDayInSeconds - 1).max;
 	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	LOGGER.trace("TemperatureDependentScheduler temperature forecast:\n"
@@ -61,7 +61,7 @@ int TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now
 }
 
 int TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now) const {
-	const float temperature = temperatureHistory->getHistoryValues(now - oneDayInSeconds, now - 1).max;
+	const float temperature = temperatureHistory->getTemperatureHistory(now - oneDayInSeconds, now - 1).max;
 	const int result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	LOGGER.trace("TemperatureDependentScheduler temperature history:\n"

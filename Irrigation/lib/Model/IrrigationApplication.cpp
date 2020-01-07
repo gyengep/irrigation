@@ -5,7 +5,7 @@
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
-#include "Hardware/Temperature/Temperature.h"
+#include "Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
@@ -69,10 +69,10 @@ void IrrigationApplication::initGpio() {
 	}
 }
 
-void IrrigationApplication::initTemperatureSensor() {
+void IrrigationApplication::initTemperature() {
 	try {
 		Temperature::getInstance().init(
-			Configuration::getInstance().getTemperatureSensorUpdatePeriod(),
+			Configuration::getInstance().getCurrentTemperatureUpdatePeriod(),
 			Configuration::getInstance().getTemperatureCacheFileName(),
 			Configuration::getInstance().getTemperatureCacheLength(),
 			Configuration::getInstance().getTemperatureHistoryFileName(),
@@ -81,15 +81,15 @@ void IrrigationApplication::initTemperatureSensor() {
 		);
 
 	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't initialize temperature sensor"));
+		throw_with_nested(runtime_error("Can't initialize temperature module"));
 	}
 }
 
-void IrrigationApplication::uninitTemperatureSensor() {
+void IrrigationApplication::uninitTemperature() {
 	try {
 		Temperature::getInstance().uninit();
 	} catch (const exception& e) {
-		LOGGER.warning("An error during uninitialize temperature modul", e);
+		LOGGER.warning("An error during uninitialize temperature module", e);
 	}
 }
 
@@ -155,7 +155,7 @@ void IrrigationApplication::onInitialize() {
 	LOGGER.debug("Irrigation System starting ...");
 
 	initGpio();
-	initTemperatureSensor();
+	initTemperature();
 	initDocument();
 
 	LOGGER.info("Irrigation System started");
@@ -165,7 +165,7 @@ void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
 	uninitDocument();
-	uninitTemperatureSensor();
+	uninitTemperature();
 
 	LOGGER.info("Irrigation System stopped");
 }

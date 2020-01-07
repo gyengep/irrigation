@@ -6,8 +6,8 @@
 #include "json.hpp"
 #include "DTO/TemperatureDependentSchedulerDTO.h"
 #include "Schedulers/Scheduler.h"
-#include "Hardware/Temperature/TemperatureForecast.h"
-#include "Hardware/Temperature/TemperatureHistory.h"
+#include "Temperature/TemperatureForecast.h"
+#include "Temperature/TemperatureHistory.h"
 
 
 class TemperatureDependentScheduler : public Scheduler {

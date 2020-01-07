@@ -2,6 +2,7 @@
 .PHONY: all
 all: \
 	DocumentView-all \
+	DS18B20-all \
 	DtoReaderWriter-all \
 	Logger-all \
 	Logic-all \
@@ -17,6 +18,7 @@ all: \
 .PHONY: clean
 clean: \
 	DocumentView-clean \
+	DS18B20-clean \
 	DtoReaderWriter-clean \
 	Logger-clean \
 	Logic-clean \
@@ -36,6 +38,14 @@ DocumentView-all:
 .PHONY: DocumentView-clean
 DocumentView-clean:
 	@$(MAKE) -C DocumentView clean
+
+.PHONY: DS18B20-all
+DS18B20-all:
+	@$(MAKE) -C Hardware/DS18B20 all
+
+.PHONY: DS18B20-clean
+DS18B20-clean:
+	@$(MAKE) -C Hardware/DS18B20 clean
 
 .PHONY: DtoReaderWriter-all
 DtoReaderWriter-all:
@@ -87,11 +97,11 @@ Schedulers-clean:
 
 .PHONY: Temperature-all
 Temperature-all:
-	@$(MAKE) -C Hardware/Temperature all
+	@$(MAKE) -C Temperature all
 
 .PHONY: Temperature-clean
 Temperature-clean:
-	@$(MAKE) -C Hardware/Temperature clean
+	@$(MAKE) -C Temperature clean
 
 .PHONY: TimerView-all
 TimerView-all:
