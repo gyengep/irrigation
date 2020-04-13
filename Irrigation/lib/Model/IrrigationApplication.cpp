@@ -114,12 +114,6 @@ void IrrigationApplication::initDocument() {
 			setMyDefaults();
 		}
 
-		if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-			for (const auto& programWithId : irrigationDocument->getPrograms()) {
-				LOGGER.debug("Program[%s] is added: %s", to_string(programWithId.first).c_str(), to_string(*programWithId.second).c_str());
-			}
-		}
-
 		irrigationDocument->loadState();
 		documentSaver->startTimer();
 
