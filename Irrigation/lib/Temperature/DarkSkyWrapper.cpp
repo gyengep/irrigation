@@ -1,4 +1,4 @@
-#include "DarkSkyHandler.h"
+#include "DarkSkyWrapper.h"
 #include "Logger/Logger.h"
 #include "json.hpp"
 #include <sstream>
@@ -9,35 +9,35 @@ using namespace nlohmann;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const string DarkSkyHandler::url("https://api.darksky.net/forecast");
-const string DarkSkyHandler::lat("47.497912");
-const string DarkSkyHandler::lon("19.040235");
-const string DarkSkyHandler::apikey("e20cfc71fdcaa9b194ece54203a16752");
+const string DarkSkyWrapper::url("https://api.darksky.net/forecast");
+const string DarkSkyWrapper::lat("47.497912");
+const string DarkSkyWrapper::lon("19.040235");
+const string DarkSkyWrapper::apikey("e20cfc71fdcaa9b194ece54203a16752");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-DarkSkyHandler::DarkSkyHandler() :
-	DarkSkyHandler(make_shared<NetworkReader>())
+DarkSkyWrapper::DarkSkyWrapper() :
+	DarkSkyWrapper(make_shared<NetworkReader>())
 {
 }
 
-DarkSkyHandler::DarkSkyHandler(const std::shared_ptr<NetworkReader>& networkReader) :
+DarkSkyWrapper::DarkSkyWrapper(const std::shared_ptr<NetworkReader>& networkReader) :
 	networkReader(networkReader)
 {
 }
 
-DarkSkyHandler::~DarkSkyHandler() {
+DarkSkyWrapper::~DarkSkyWrapper() {
 }
 
-std::string DarkSkyHandler::getSensorName() const {
+std::string DarkSkyWrapper::getSensorName() const {
 	return "DarkSky virtual";
 }
 
-std::string DarkSkyHandler::getForecastProviderName() const {
+std::string DarkSkyWrapper::getForecastProviderName() const {
 	return "DarkSky";
 }
 
-float DarkSkyHandler::readCurrentTemperature() const {
+float DarkSkyWrapper::readCurrentTemperature() const {
 	ostringstream oss;
 	oss << url << "/" << apikey << "/" << lat << "," << lon << "?";
 	oss << "exclude=minutely,hourly,daily,alerts,flags" << "&";
@@ -50,7 +50,7 @@ float DarkSkyHandler::readCurrentTemperature() const {
 	}
 }
 
-list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyHandler::readTemperatureForecast() const {
+list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyWrapper::readTemperatureForecast() const {
 	ostringstream oss;
 	oss << url << "/" << apikey << "/" << lat << "," << lon << "?";
 	oss << "exclude=currently,minutely,daily,alerts,flags" << "&";
@@ -64,7 +64,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyHandler::readTemperatu
 }
 
 
-float DarkSkyHandler::parseCurrentTemperatureJson(const string& text) {
+float DarkSkyWrapper::parseCurrentTemperatureJson(const string& text) {
 	const auto json = json::parse(text);
 	const auto currentlyIt = json.find("currently");
 	if (json.end() == currentlyIt) {
@@ -79,7 +79,7 @@ float DarkSkyHandler::parseCurrentTemperatureJson(const string& text) {
 	return temperatureIt->get<float>();
 }
 
-list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyHandler::parseTemperatureForecastJson(const string& text) {
+list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyWrapper::parseTemperatureForecastJson(const string& text) {
 	const auto json = json::parse(text);
 
 	const auto hourlyIt = json.find("hourly");

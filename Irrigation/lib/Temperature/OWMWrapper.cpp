@@ -1,4 +1,4 @@
-#include "OWMHandler.h"
+#include "OWMWrapper.h"
 #include "Logger/Logger.h"
 #include "Utils/TimeConversion.h"
 #include "pugixml.hpp"
@@ -11,35 +11,35 @@ using namespace pugi;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const string OWMHandler::currentUrl("http://api.openweathermap.org/data/2.5/weather");
-const string OWMHandler::forecastUrl("http://api.openweathermap.org/data/2.5/forecast");
-const string OWMHandler::location("dunakeszi,hu");
-const string OWMHandler::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
+const string OWMWrapper::currentUrl("http://api.openweathermap.org/data/2.5/weather");
+const string OWMWrapper::forecastUrl("http://api.openweathermap.org/data/2.5/forecast");
+const string OWMWrapper::location("dunakeszi,hu");
+const string OWMWrapper::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-OWMHandler::OWMHandler() :
-		OWMHandler(make_shared<NetworkReader>())
+OWMWrapper::OWMWrapper() :
+		OWMWrapper(make_shared<NetworkReader>())
 {
 }
 
-OWMHandler::OWMHandler(const shared_ptr<NetworkReader>& networkReader) :
+OWMWrapper::OWMWrapper(const shared_ptr<NetworkReader>& networkReader) :
 	networkReader(networkReader)
 {
 }
 
-OWMHandler::~OWMHandler() {
+OWMWrapper::~OWMWrapper() {
 }
 
-std::string OWMHandler::getSensorName() const {
+std::string OWMWrapper::getSensorName() const {
 	return "OpenWeatherMap virtual";
 }
 
-std::string OWMHandler::getForecastProviderName() const {
+std::string OWMWrapper::getForecastProviderName() const {
 	return "OpenWeatherMap";
 }
 
-float OWMHandler::readCurrentTemperature() const {
+float OWMWrapper::readCurrentTemperature() const {
 	ostringstream oss;
 	oss << currentUrl << "?";
 	oss << "q=" << location << "&";
@@ -54,7 +54,7 @@ float OWMHandler::readCurrentTemperature() const {
 	}
 }
 
-list<TemperatureForecastProvider::ValuesWithTimes> OWMHandler::readTemperatureForecast() const {
+list<TemperatureForecastProvider::ValuesWithTimes> OWMWrapper::readTemperatureForecast() const {
 	ostringstream oss;
 	oss << forecastUrl << "?";
 	oss << "q=" << location << "&";
@@ -69,7 +69,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> OWMHandler::readTemperatureFo
 	}
 }
 
-float OWMHandler::parseCurrentTemperatureXml(const string& text) {
+float OWMWrapper::parseCurrentTemperatureXml(const string& text) {
 	static const pugi::xpath_query queryTemperature("/current/temperature");
 
 	xml_document doc;
@@ -88,7 +88,7 @@ float OWMHandler::parseCurrentTemperatureXml(const string& text) {
 	return temperatureNodeSet.first().node().attribute("max").as_float();
 }
 
-list<TemperatureForecastProvider::ValuesWithTimes> OWMHandler::parseTemperatureForecastXml(const string& text) {
+list<TemperatureForecastProvider::ValuesWithTimes> OWMWrapper::parseTemperatureForecastXml(const string& text) {
 	static const pugi::xpath_query queryTemperature("/weatherdata/forecast/time/temperature");
 
 	xml_document doc;
@@ -128,7 +128,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> OWMHandler::parseTemperatureF
 	return result;
 }
 
-time_t OWMHandler::parseTimeString(const string& text) {
+time_t OWMWrapper::parseTimeString(const string& text) {
 	const static regex dateRegex("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
 	smatch dateMatch;
 
@@ -137,7 +137,7 @@ time_t OWMHandler::parseTimeString(const string& text) {
 	}
 
 	if (dateMatch.size() != 7) {
-		throw logic_error("OWMHandler::parseTimeString() dateMatch.size() != 7");
+		throw logic_error("OWMWrapper::parseTimeString() dateMatch.size() != 7");
 	}
 
 	return fromUtcTime(

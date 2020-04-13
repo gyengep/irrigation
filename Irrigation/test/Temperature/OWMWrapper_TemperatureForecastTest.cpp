@@ -2,7 +2,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "Mocks/MockNetworkReader.h"
-#include "Temperature/OWMHandler.h"
+#include "Temperature/OWMWrapper.h"
 #include "Utils/TimeConversion.h"
 
 using namespace std;
@@ -11,19 +11,19 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(OWMHandler_TemperatureForecastTest, validateTimeString) {
-	EXPECT_NO_THROW(OWMHandler::parseTimeString("2019-06-18T15:53:00"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("2A19-06-17T18:00:00"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("219-06-17T18:00:00"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("A1c"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("1"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("456"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("ABC"));
-	EXPECT_ANY_THROW(OWMHandler::parseTimeString("abcd"));
+	EXPECT_NO_THROW(OWMWrapper::parseTimeString("2019-06-18T15:53:00"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("2A19-06-17T18:00:00"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("219-06-17T18:00:00"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("A1c"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("1"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("456"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("ABC"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTimeString("abcd"));
 }
 
 TEST(OWMHandler_TemperatureForecastTest, parseTimeString) {
-	EXPECT_THAT(OWMHandler::parseTimeString("2019-06-18T15:54:08"), Eq(1560873248));
-	EXPECT_THAT(OWMHandler::parseTimeString("2019-01-10T13:14:15"), Eq(1547126055));
+	EXPECT_THAT(OWMWrapper::parseTimeString("2019-06-18T15:54:08"), Eq(1560873248));
+	EXPECT_THAT(OWMWrapper::parseTimeString("2019-01-10T13:14:15"), Eq(1547126055));
 }
 
 TEST(OWMHandler_TemperatureForecastTest, parseTemperatureForecastXml) {
@@ -36,7 +36,7 @@ TEST(OWMHandler_TemperatureForecastTest, parseTemperatureForecastXml) {
 	EXPECT_THAT(fromUtcTime(2019, 6, 27, 21, 0, 0), Eq(1561669200));
 	EXPECT_THAT(fromUtcTime(2019, 6, 28, 0, 0, 0), Eq(1561680000));
 
-	EXPECT_THAT(OWMHandler::parseTemperatureForecastXml(string(inputData.data(), inputData.size())), ElementsAreArray({
+	EXPECT_THAT(OWMWrapper::parseTemperatureForecastXml(string(inputData.data(), inputData.size())), ElementsAreArray({
 			TemperatureForecastProvider::ValuesWithTimes(fromUtcTime(2019, 6, 27, 18, 0, 0), fromUtcTime(2019, 6, 27, 21, 0, 0), 18.25, 19.85),
 			TemperatureForecastProvider::ValuesWithTimes(fromUtcTime(2019, 6, 27, 21, 0, 0), fromUtcTime(2019, 6, 28, 0, 0, 0), 15.54, 16.74),
 			TemperatureForecastProvider::ValuesWithTimes(fromUtcTime(2019, 6, 28, 0, 0, 0), fromUtcTime(2019, 6, 28, 3, 0, 0), 13.47, 14.27),
@@ -81,11 +81,11 @@ TEST(OWMHandler_TemperatureForecastTest, parseTemperatureForecastXml) {
 }
 
 TEST(OWMHandler_TemperatureForecastTest, parseXmlInvalid) {
-	EXPECT_ANY_THROW(OWMHandler::parseTemperatureForecastXml("abc"));
+	EXPECT_ANY_THROW(OWMWrapper::parseTemperatureForecastXml("abc"));
 }
 
 TEST(OWMHandler_TemperatureForecastTest, parseXmlEmpty) {
-	EXPECT_THAT(OWMHandler::parseTemperatureForecastXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><weatherdata></weatherdata>"), IsEmpty());
+	EXPECT_THAT(OWMWrapper::parseTemperatureForecastXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><weatherdata></weatherdata>"), IsEmpty());
 }
 
 TEST(OWMHandler_TemperatureForecastTest, readTemperatureForecast) {
@@ -115,7 +115,7 @@ TEST(OWMHandler_TemperatureForecastTest, readTemperatureForecast) {
 	auto mockTemperatureForecastReader = make_shared<MockNetworkReader>();
 	EXPECT_CALL(*mockTemperatureForecastReader, read(_)).Times(1).WillOnce(Return(xml));
 
-	OWMHandler temperatureForecast(mockTemperatureForecastReader);
+	OWMWrapper temperatureForecast(mockTemperatureForecastReader);
 	EXPECT_THAT(temperatureForecast.readTemperatureForecast(), ContainerEq(expectedList));
 }
 
@@ -124,6 +124,6 @@ TEST(OWMHandler_TemperatureForecastTest, getForecastException) {
 	auto mockTemperatureForecastReader = make_shared<MockNetworkReader>();
 	EXPECT_CALL(*mockTemperatureForecastReader, read(_)).Times(1).WillOnce(Throw(exception()));
 
-	OWMHandler temperatureForecast(mockTemperatureForecastReader);
+	OWMWrapper temperatureForecast(mockTemperatureForecastReader);
 	EXPECT_THROW(temperatureForecast.readTemperatureForecast(), exception);
 }

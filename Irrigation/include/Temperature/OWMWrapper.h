@@ -6,7 +6,7 @@
 #include "Utils/NetworkReader.h"
 
 
-class OWMHandler : public TemperatureForecastProvider, public CurrentTemperatureProvider {
+class OWMWrapper : public TemperatureForecastProvider, public CurrentTemperatureProvider {
 	static const std::string currentUrl;
 	static const std::string forecastUrl;
 	static const std::string location;
@@ -15,9 +15,9 @@ class OWMHandler : public TemperatureForecastProvider, public CurrentTemperature
 	std::shared_ptr<NetworkReader> networkReader;
 
 public:
-	OWMHandler();
-	OWMHandler(const std::shared_ptr<NetworkReader>& networkReader);
-	virtual ~OWMHandler();
+	OWMWrapper();
+	OWMWrapper(const std::shared_ptr<NetworkReader>& networkReader);
+	virtual ~OWMWrapper();
 
 	virtual float readCurrentTemperature() const override;
 	virtual std::list<ValuesWithTimes> readTemperatureForecast() const override;

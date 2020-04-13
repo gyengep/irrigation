@@ -4,12 +4,12 @@
 #include "CurrentTemperatureProvider.h"
 
 
-class DS18B20Handler : public CurrentTemperatureProvider {
+class DS18B20Wrapper : public CurrentTemperatureProvider {
 	DS18B20TemperatureSensor ds18B20TemperatureSensor;
 
 public:
-	DS18B20Handler();
-	virtual ~DS18B20Handler();
+	DS18B20Wrapper();
+	virtual ~DS18B20Wrapper();
 
 	virtual float readCurrentTemperature() const override;
 	virtual std::string getSensorName() const override;

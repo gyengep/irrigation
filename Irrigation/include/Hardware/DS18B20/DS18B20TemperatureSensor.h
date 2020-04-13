@@ -17,7 +17,7 @@ public:
 	DS18B20TemperatureSensor(const std::shared_ptr<FileReader>& fileReader);
 	virtual ~DS18B20TemperatureSensor();
 
-	float read();
+	float read() const;
 
 	static float parseText(const std::string& text);
 };

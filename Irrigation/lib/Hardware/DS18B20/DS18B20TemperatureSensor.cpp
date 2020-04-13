@@ -58,7 +58,7 @@ DS18B20TemperatureSensor::DS18B20TemperatureSensor(const shared_ptr<FileReader>&
 DS18B20TemperatureSensor::~DS18B20TemperatureSensor() {
 }
 
-float DS18B20TemperatureSensor::read() {
+float DS18B20TemperatureSensor::read() const {
 	try {
 		return parseText(fileReader->read());
 	} catch (const exception& e) {

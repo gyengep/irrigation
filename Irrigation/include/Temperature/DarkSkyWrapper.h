@@ -6,7 +6,7 @@
 #include "Utils/NetworkReader.h"
 
 
-class DarkSkyHandler : public TemperatureForecastProvider, public CurrentTemperatureProvider {
+class DarkSkyWrapper : public TemperatureForecastProvider, public CurrentTemperatureProvider {
 	static const std::string url;
 	static const std::string lat, lon;
 	static const std::string apikey;
@@ -14,9 +14,9 @@ class DarkSkyHandler : public TemperatureForecastProvider, public CurrentTempera
 	std::shared_ptr<NetworkReader> networkReader;
 
 public:
-	DarkSkyHandler();
-	DarkSkyHandler(const std::shared_ptr<NetworkReader>& networkReader);
-	virtual ~DarkSkyHandler();
+	DarkSkyWrapper();
+	DarkSkyWrapper(const std::shared_ptr<NetworkReader>& networkReader);
+	virtual ~DarkSkyWrapper();
 
 	virtual float readCurrentTemperature() const override;
 	virtual std::list<ValuesWithTimes> readTemperatureForecast() const override;

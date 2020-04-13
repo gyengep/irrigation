@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <fstream>
 #include <stdexcept>
-#include "Temperature/OWMHandler.h"
+#include "Temperature/OWMWrapper.h"
 #include "Mocks/MockNetworkReader.h"
 
 using namespace std;
@@ -15,15 +15,15 @@ TEST(OWMHandler_CurrentTemperatureTest, parseTemperatureForecastXml) {
 	         (istreambuf_iterator<char>(input)),
 	         (istreambuf_iterator<char>()));
 
-	EXPECT_THAT(OWMHandler::parseCurrentTemperatureXml(string(inputData.data(), inputData.size())), Eq(22.22f));
+	EXPECT_THAT(OWMWrapper::parseCurrentTemperatureXml(string(inputData.data(), inputData.size())), Eq(22.22f));
 }
 
 TEST(OWMHandler_CurrentTemperatureTest, parseXmlInvalid) {
-	EXPECT_THROW(OWMHandler::parseCurrentTemperatureXml("asdfghjkl"), runtime_error);
+	EXPECT_THROW(OWMWrapper::parseCurrentTemperatureXml("asdfghjkl"), runtime_error);
 }
 
 TEST(OWMHandler_CurrentTemperatureTest, parseXmlEmpty) {
-	EXPECT_THROW(OWMHandler::parseCurrentTemperatureXml(""), runtime_error);
+	EXPECT_THROW(OWMWrapper::parseCurrentTemperatureXml(""), runtime_error);
 }
 
 TEST(OWMHandler_CurrentTemperatureTest, read) {
@@ -38,7 +38,7 @@ TEST(OWMHandler_CurrentTemperatureTest, read) {
 		Times(AnyNumber()).
 		WillRepeatedly(Return(string(inputData.data(), inputData.size())));
 
-	EXPECT_THAT(OWMHandler(mockNetworkReader).readCurrentTemperature(), Eq(22.22f));
+	EXPECT_THAT(OWMWrapper(mockNetworkReader).readCurrentTemperature(), Eq(22.22f));
 }
 
 TEST(OWMHandler_CurrentTemperatureTest, readException) {
@@ -48,5 +48,5 @@ TEST(OWMHandler_CurrentTemperatureTest, readException) {
 		Times(AnyNumber()).
 		WillRepeatedly(Throw(exception()));
 
-	EXPECT_THROW(OWMHandler(mockNetworkReader).readCurrentTemperature(), exception);
+	EXPECT_THROW(OWMWrapper(mockNetworkReader).readCurrentTemperature(), exception);
 }

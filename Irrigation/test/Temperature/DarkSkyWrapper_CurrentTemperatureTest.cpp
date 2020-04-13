@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <fstream>
-#include "Temperature/DarkSkyHandler.h"
+#include "Temperature/DarkSkyWrapper.h"
 #include "Mocks/MockNetworkReader.h"
 
 using namespace std;
@@ -14,15 +14,15 @@ TEST(DarkSkyHandler_CurrentTemperatureTest, parseJson) {
 	         (istreambuf_iterator<char>(input)),
 	         (istreambuf_iterator<char>()));
 
-	EXPECT_THAT(DarkSkyHandler::parseCurrentTemperatureJson(string(inputData.data(), inputData.size())), Eq(26.51f));
+	EXPECT_THAT(DarkSkyWrapper::parseCurrentTemperatureJson(string(inputData.data(), inputData.size())), Eq(26.51f));
 }
 
 TEST(DarkSkyHandler_CurrentTemperatureTest, parseJsonInvalid) {
-	EXPECT_THROW(DarkSkyHandler::parseCurrentTemperatureJson("asdfghjkl"), exception);
+	EXPECT_THROW(DarkSkyWrapper::parseCurrentTemperatureJson("asdfghjkl"), exception);
 }
 
 TEST(DarkSkyHandler_CurrentTemperatureTest, parseJsonEmpty) {
-	EXPECT_THROW(DarkSkyHandler::parseCurrentTemperatureJson("{}"), exception);
+	EXPECT_THROW(DarkSkyWrapper::parseCurrentTemperatureJson("{}"), exception);
 }
 
 TEST(DarkSkyHandler_CurrentTemperatureTest, readCurrentTemperature) {
@@ -37,7 +37,7 @@ TEST(DarkSkyHandler_CurrentTemperatureTest, readCurrentTemperature) {
 		Times(AnyNumber()).
 		WillRepeatedly(Return(string(inputData.data(), inputData.size())));
 
-	EXPECT_THAT(DarkSkyHandler(mockNetworkReader).readCurrentTemperature(), Eq(26.51f));
+	EXPECT_THAT(DarkSkyWrapper(mockNetworkReader).readCurrentTemperature(), Eq(26.51f));
 }
 
 TEST(DarkSkyHandler_CurrentTemperatureTest, readException) {
@@ -47,5 +47,5 @@ TEST(DarkSkyHandler_CurrentTemperatureTest, readException) {
 		Times(AnyNumber()).
 		WillRepeatedly(Throw(exception()));
 
-	EXPECT_THROW(DarkSkyHandler(mockNetworkReader).readCurrentTemperature(), exception);
+	EXPECT_THROW(DarkSkyWrapper(mockNetworkReader).readCurrentTemperature(), exception);
 }

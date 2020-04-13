@@ -1,17 +1,17 @@
-#include "DS18B20Handler.h"
+#include "DS18B20Wrapper.h"
 #include <stdexcept>
 
 
-DS18B20Handler::DS18B20Handler() {
+DS18B20Wrapper::DS18B20Wrapper() {
 }
 
-DS18B20Handler::~DS18B20Handler() {
+DS18B20Wrapper::~DS18B20Wrapper() {
 }
 
-float DS18B20Handler::readCurrentTemperature() const {
-	throw std::runtime_error("Method not implemented DS18B20Handler::readCurrentTemperature()");
+float DS18B20Wrapper::readCurrentTemperature() const {
+	return ds18B20TemperatureSensor.read();
 }
 
-std::string DS18B20Handler::getSensorName() const {
+std::string DS18B20Wrapper::getSensorName() const {
 	return "DS18B20";
 }

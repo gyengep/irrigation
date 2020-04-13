@@ -1,7 +1,6 @@
 #include "Temperature.h"
-#include "DS18B20Handler.h"
-#include "DarkSkyHandler.h"
-#include "OWMHandler.h"
+#include "DS18B20Wrapper.h"
+#include "DarkSkyWrapper.h"
 #include "CurrentTemperatureImpl.h"
 #include "TemperatureHistoryImpl.h"
 #include "TemperatureHistoryPersister.h"
@@ -41,7 +40,7 @@ void Temperature::init(
 		);
 
 	forecast = make_shared<TemperatureForecastImpl>(
-			make_shared<DarkSkyHandler>()
+			make_shared<DarkSkyWrapper>()
 		);
 
 	history = make_shared<TemperatureHistoryImpl>(
@@ -86,10 +85,10 @@ const shared_ptr<TemperatureForecast> Temperature::getTemperatureForecast() cons
 shared_ptr<CurrentTemperatureProvider> Temperature::createCurrentTemperatureProvider() {
 
 	try {
-		return make_shared<DS18B20Handler>();
+		return make_shared<DS18B20Wrapper>();
 	} catch (const exception& e) {
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
 
-	return make_shared<DarkSkyHandler>();
+	return make_shared<DarkSkyWrapper>();
 }

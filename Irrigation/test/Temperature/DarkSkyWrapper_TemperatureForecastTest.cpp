@@ -2,7 +2,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "Mocks/MockNetworkReader.h"
-#include "Temperature/DarkSkyHandler.h"
+#include "Temperature/DarkSkyWrapper.h"
 
 using namespace std;
 using namespace testing;
@@ -15,7 +15,7 @@ TEST(DarkSkyHandler_TemperatureForecastTest, parseJson) {
 	         (istreambuf_iterator<char>(input)),
 	         (istreambuf_iterator<char>()));
 
-	EXPECT_THAT(DarkSkyHandler::parseTemperatureForecastJson(string(inputData.data(), inputData.size())), ElementsAreArray({
+	EXPECT_THAT(DarkSkyWrapper::parseTemperatureForecastJson(string(inputData.data(), inputData.size())), ElementsAreArray({
 			TemperatureForecastProvider::ValuesWithTimes(1563278400, 1563282000, 26.48, 26.48),
 			TemperatureForecastProvider::ValuesWithTimes(1563282000, 1563285600, 27.20, 27.20),
 			TemperatureForecastProvider::ValuesWithTimes(1563285600, 1563289200, 28.39, 28.39),
@@ -69,11 +69,11 @@ TEST(DarkSkyHandler_TemperatureForecastTest, parseJson) {
 }
 
 TEST(DarkSkyHandler_TemperatureForecastTest, parseXmlInvalid) {
-	EXPECT_ANY_THROW(DarkSkyHandler::parseTemperatureForecastJson("abc"));
+	EXPECT_ANY_THROW(DarkSkyWrapper::parseTemperatureForecastJson("abc"));
 }
 
 TEST(DarkSkyHandler_TemperatureForecastTest, parseXmlEmpty) {
-	EXPECT_THAT(DarkSkyHandler::parseTemperatureForecastJson("{ \"hourly\": { \"data\": []}}"), IsEmpty());
+	EXPECT_THAT(DarkSkyWrapper::parseTemperatureForecastJson("{ \"hourly\": { \"data\": []}}"), IsEmpty());
 }
 
 TEST(DarkSkyHandler_TemperatureForecastTest, getForecast) {
@@ -97,7 +97,7 @@ TEST(DarkSkyHandler_TemperatureForecastTest, getForecast) {
 	auto mockNetworkReader = make_shared<MockNetworkReader>();
 	EXPECT_CALL(*mockNetworkReader, read(_)).Times(1).WillOnce(Return(json));
 
-	DarkSkyHandler temperatureForecast(mockNetworkReader);
+	DarkSkyWrapper temperatureForecast(mockNetworkReader);
 	EXPECT_THAT(temperatureForecast.readTemperatureForecast(), ContainerEq(expectedList));
 }
 
@@ -106,6 +106,6 @@ TEST(DarkSkyHandler_TemperatureForecastTest, getForecastException) {
 	auto mockNetworkReader = make_shared<MockNetworkReader>();
 	EXPECT_CALL(*mockNetworkReader, read(_)).Times(1).WillOnce(Throw(exception()));
 
-	DarkSkyHandler temperatureForecast(mockNetworkReader);
+	DarkSkyWrapper temperatureForecast(mockNetworkReader);
 	EXPECT_THROW(temperatureForecast.readTemperatureForecast(), exception);
 }
