@@ -9,6 +9,10 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 void TemperatureDependentSchedulerProcessTest::SetUp() {
+
+	LOGGER.setLevel(LogLevel::OFF);
+	LOGGER.setOutputStream(std::cout);
+
 	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
@@ -18,10 +22,10 @@ void TemperatureDependentSchedulerProcessTest::SetUp() {
 	scheduler->setMaxAdjustment(0);
 	scheduler->trimAdjustmentOver(0);
 
-	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
-		{ 15.0f, 25 },
-		{ 25.0f, 50 },
-		{ 35.0f, 100 }
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, unsigned>>{
+		{ 15.0f, 25U },
+		{ 25.0f, 50U },
+		{ 35.0f, 100U }
 	});
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 1, 4, 0, 0), fromLocalTime(2019, 8, 2, 3, 59, 59))).
@@ -449,7 +453,10 @@ TEST_F(TemperatureDependentSchedulerProcessTest, trim) {
 // Min adjustment / Remaining correction
 
 TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrection100) {
-	scheduler->setMinAdjustment(100);
+	LOGGER.setLevel(LogLevel::TRACE);
+	LOGGER.setOutputStream(std::cout);
+
+ 	scheduler->setMinAdjustment(100);
 	scheduler->setRemainingCorrection(1.0f);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 100)));	// 85 : 90

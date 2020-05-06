@@ -8,21 +8,21 @@ TemperatureToPercent& TemperatureToPercent::getInstance() {
 }
 
 TemperatureToPercent::TemperatureToPercent() {
-	temperatureAndPercents = vector<pair<float, int>>{
-		{ 15.0f, 25 },
-		{ 25.0f, 50 },
-		{ 35.0f, 100 }
+	temperatureAndPercents = vector<pair<float, unsigned>>{
+		{ 15.0f, 25U },
+		{ 25.0f, 50U },
+		{ 35.0f, 100U }
 	};
 }
 
 TemperatureToPercent::~TemperatureToPercent() {
 }
 
-void TemperatureToPercent::setTemperatureAndPercents(const vector<pair<float, int>>& temperatureAndPercents) {
+void TemperatureToPercent::setTemperatureAndPercents(const vector<pair<float, unsigned>>& temperatureAndPercents) {
 	this->temperatureAndPercents = temperatureAndPercents;
 }
 
-int TemperatureToPercent::getRequiredPercentFromTemperature(float temperature) const {
+unsigned TemperatureToPercent::getRequiredPercentFromTemperature(float temperature) const {
 	if (temperature < temperatureAndPercents.front().first) {
 		return 0;
 	}

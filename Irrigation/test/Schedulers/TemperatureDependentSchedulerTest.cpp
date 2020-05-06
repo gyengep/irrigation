@@ -17,10 +17,10 @@ void TemperatureDependentSchedulerTest::SetUp() {
 	scheduler->setMaxAdjustment(0);
 	scheduler->trimAdjustmentOver(0);
 
-	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
-		{ 15.0f, 25 },
-		{ 25.0f, 50 },
-		{ 35.0f, 100 }
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, unsigned>>{
+		{ 15.0f, 25U },
+		{ 25.0f, 50U },
+		{ 35.0f, 100U }
 	});
 }
 

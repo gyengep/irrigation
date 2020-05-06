@@ -3,15 +3,15 @@
 
 
 class TemperatureToPercent {
-	std::vector<std::pair<float, int>> temperatureAndPercents;
+	std::vector<std::pair<float, unsigned>> temperatureAndPercents;
 
 	TemperatureToPercent();
 
 public:
 	virtual ~TemperatureToPercent();
 
-	void setTemperatureAndPercents(const std::vector<std::pair<float, int>>& temperatureAndPercents);
-	int getRequiredPercentFromTemperature(float temperature) const;
+	void setTemperatureAndPercents(const std::vector<std::pair<float, unsigned>>& temperatureAndPercents);
+	unsigned getRequiredPercentFromTemperature(float temperature) const;
 
 	static TemperatureToPercent& getInstance();
 };

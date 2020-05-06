@@ -12,27 +12,40 @@
 
 class TemperatureDependentScheduler : public Scheduler {
 	static const std::time_t oneDayInSeconds = 24 * 60 * 60;
+	static const size_t logIndentation = 50;
 
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
-	int requiredAdjustmentForWholeDay;
+	enum class Day { YESTERDAY, TODAY, OTHER };
+	enum Day getLastRunDay(const time_t rawtime) const;
+	static std::string dayToString(enum Day day);
+
+
 	int remainingPercent;
+	unsigned requiredPercentForToday;
 	std::time_t lastRun;
 	float remainingCorrection;
-	int minAdjustment, maxAdjustment;
-	int trim;
+	std::unique_ptr<unsigned> minAdjustment;
+	std::unique_ptr<unsigned> maxAdjustment;
+	std::unique_ptr<unsigned> trim;
+
+	int calculateRemainingPercentOther(const int remainingPercent, std::ostringstream& oss) const;
+	int calculateRemainingPercentToday(const int remainingPercent, std::ostringstream& oss) const;
+	int calculateRemainingPercentYesterday(const int remainingPercent, const std::time_t rawtime, std::ostringstream& oss) const;
+	unsigned calculateRequiredPercentForToday(const int remainingPercent, const std::time_t rawtime, std::ostringstream& oss) const;
+	unsigned calculateAdjustment(const unsigned requiredPercentForToday, std::ostringstream& oss) const;
 
 public:
 	TemperatureDependentScheduler(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
 	TemperatureDependentScheduler(TemperatureDependentScheduler&&) = default;
-	TemperatureDependentScheduler(const TemperatureDependentScheduler&) = default;
+	TemperatureDependentScheduler(const TemperatureDependentScheduler& other);
 	TemperatureDependentScheduler(
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 			float remainingCorrection,
-			int minAdjustment, int maxAdjustment,
-			int trim
+			unsigned minAdjustment, unsigned maxAdjustment,
+			unsigned trim
 		);
 	virtual ~TemperatureDependentScheduler();
 
@@ -41,9 +54,9 @@ public:
 	void setMaxAdjustment(unsigned maxAdjustment);
 	void trimAdjustmentOver(unsigned percent);
 
-	int getRemainingPercent() const { return remainingPercent; }
-	int getRequiredPercentForNextDay(const std::time_t rawTime) const;
-	int getRequiredPercentForPreviousDay(const std::time_t rawTime) const;
+	unsigned getRemainingPercent() const { return remainingPercent; }
+	unsigned getRequiredPercentForNextDay(const std::time_t rawTime, float* temp = nullptr) const;
+	unsigned getRequiredPercentForPreviousDay(const std::time_t rawTime, float* temp = nullptr) const;
 
 	virtual Result process(const std::time_t rawtime) override;
 

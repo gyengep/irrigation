@@ -11,7 +11,7 @@ using namespace std;
 
 #define LOGGER_FUNCTION_VA(LEVEL)							\
 	if (isLoggable(LEVEL)) {								\
-		const size_t messageSize = 1000;					\
+		const size_t messageSize = 2048;					\
 		char message[messageSize + 1];						\
 		va_list args;										\
 		va_start(args, format);								\
