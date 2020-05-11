@@ -22,5 +22,5 @@ public:
 
 	virtual ~TemperatureForecastProvider() = default;
 	virtual std::list<ValuesWithTimes> readTemperatureForecast() const = 0;
-	virtual std::string getForecastProviderName() const;
+	virtual std::string getForecastProviderName() const = 0;
 };
