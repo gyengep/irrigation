@@ -3,7 +3,7 @@
 #include <memory>
 #include "json.hpp"
 #include "DTO/HotWeatherSchedulerDTO.h"
-#include "Hardware/Temperature/TemperatureHistory.h"
+#include "Temperature/TemperatureHistory.h"
 #include "Scheduler.h"
 
 

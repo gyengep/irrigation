@@ -9,7 +9,7 @@
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
-#include "Hardware/Temperature/Temperature.h"
+#include "Temperature/Temperature.h"
 #include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <algorithm>

@@ -9,6 +9,10 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 void TemperatureDependentSchedulerProcessTest::SetUp() {
+
+	LOGGER.setLevel(LogLevel::OFF);
+	LOGGER.setOutputStream(std::cout);
+
 	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
 	scheduler.reset(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
@@ -18,42 +22,42 @@ void TemperatureDependentSchedulerProcessTest::SetUp() {
 	scheduler->setMaxAdjustment(0);
 	scheduler->trimAdjustmentOver(0);
 
-	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, int>>{
-		{ 15.0f, 25 },
-		{ 25.0f, 50 },
-		{ 35.0f, 100 }
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, unsigned>>{
+		{ 15.0f, 25U },
+		{ 25.0f, 50U },
+		{ 35.0f, 100U }
 	});
 
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 1, 4, 0, 0), fromLocalTime(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 1, 4, 0, 0), fromLocalTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 32.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 2, 4, 0, 0), fromLocalTime(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 2, 4, 0, 0), fromLocalTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 3, 4, 0, 0), fromLocalTime(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 3, 4, 0, 0), fromLocalTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 34.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 4, 4, 0, 0), fromLocalTime(2019, 8, 5, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 4, 4, 0, 0), fromLocalTime(2019, 8, 5, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 27.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 5, 4, 0, 0), fromLocalTime(2019, 8, 6, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 5, 4, 0, 0), fromLocalTime(2019, 8, 6, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 28.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 6, 4, 0, 0), fromLocalTime(2019, 8, 7, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 6, 4, 0, 0), fromLocalTime(2019, 8, 7, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 14.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 7, 4, 0, 0), fromLocalTime(2019, 8, 8, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 7, 4, 0, 0), fromLocalTime(2019, 8, 8, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
-	EXPECT_CALL(*mockTemperatureForecast, getForecastValues(fromLocalTime(2019, 8, 8, 4, 0, 0), fromLocalTime(2019, 8, 9, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(fromLocalTime(2019, 8, 8, 4, 0, 0), fromLocalTime(2019, 8, 9, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 31.0f)));
 
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 1, 4, 0, 0), fromLocalTime(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 1, 4, 0, 0), fromLocalTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 2, 4, 0, 0), fromLocalTime(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 2, 4, 0, 0), fromLocalTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 3, 4, 0, 0), fromLocalTime(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 3, 4, 0, 0), fromLocalTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 37.0f, 0)));
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 4, 4, 0, 0), fromLocalTime(2019, 8, 5, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 4, 4, 0, 0), fromLocalTime(2019, 8, 5, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 25.0f, 0)));
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 5, 4, 0, 0), fromLocalTime(2019, 8, 6, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 5, 4, 0, 0), fromLocalTime(2019, 8, 6, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 23.0f, 0)));
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 6, 4, 0, 0), fromLocalTime(2019, 8, 7, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 6, 4, 0, 0), fromLocalTime(2019, 8, 7, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 10.0f, 0)));
-	EXPECT_CALL(*mockTemperatureHistory, getHistoryValues(fromLocalTime(2019, 8, 7, 4, 0, 0), fromLocalTime(2019, 8, 8, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(fromLocalTime(2019, 8, 7, 4, 0, 0), fromLocalTime(2019, 8, 8, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 29.0f, 0)));
 }
 
@@ -449,7 +453,10 @@ TEST_F(TemperatureDependentSchedulerProcessTest, trim) {
 // Min adjustment / Remaining correction
 
 TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrection100) {
-	scheduler->setMinAdjustment(100);
+	LOGGER.setLevel(LogLevel::TRACE);
+	LOGGER.setOutputStream(std::cout);
+
+ 	scheduler->setMinAdjustment(100);
 	scheduler->setRemainingCorrection(1.0f);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 100)));	// 85 : 90

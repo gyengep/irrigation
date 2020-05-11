@@ -34,7 +34,7 @@ void HotWeatherScheduler::setPeriod(const chrono::seconds& period) {
 
 Scheduler::Result HotWeatherScheduler::process(const std::time_t rawtime) {
 
-	const auto historyValues = temperatureHistory->getHistoryValues(rawtime - periodInSeconds, rawtime);
+	const auto historyValues = temperatureHistory->getTemperatureHistory(rawtime - periodInSeconds, rawtime);
 	const bool periodIsOk = (lastRun + periodInSeconds <= rawtime);
 	const bool temperatureIsOk = (historyValues.avg >= minTemperature);
 

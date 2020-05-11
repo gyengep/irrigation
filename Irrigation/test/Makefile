@@ -5,7 +5,7 @@ PROJECT_ROOT    = ..
 all:
 	@$(MAKE) -C DocumentView all
 	@$(MAKE) -C DtoReaderWriter all
-	@$(MAKE) -C Hardware/Temperature all
+	@$(MAKE) -C Hardware/DS18B20 all
 	@$(MAKE) -C Hardware/Valves all
 	@$(MAKE) -C Logger all
 	@$(MAKE) -C Logic all
@@ -20,7 +20,7 @@ all:
 clean:
 	@$(MAKE) -C DocumentView clean
 	@$(MAKE) -C DtoReaderWriter clean
-	@$(MAKE) -C Hardware/Temperature clean
+	@$(MAKE) -C Hardware/DS18B20 clean
 	@$(MAKE) -C Hardware/Valves clean
 	@$(MAKE) -C Logger clean
 	@$(MAKE) -C Logic clean
