@@ -22,7 +22,7 @@ void GpioValve::deactivate() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<Valve> GpioValveFactory::createValve(size_t id) {
+shared_ptr<Valve> GpioValveFactory::createValve(size_t id) {
 	static const array<int, VALVE_COUNT> pins {
 		VALVE0_PIN,
 		VALVE1_PIN,
@@ -39,5 +39,5 @@ unique_ptr<Valve> GpioValveFactory::createValve(size_t id) {
 				", while actual value is " + to_string(id));
 	}
 
-	return unique_ptr<Valve>(new GpioValve(pins[id]));
+	return make_shared<GpioValve>(pins[id]);
 }

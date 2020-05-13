@@ -15,12 +15,12 @@ public:
 template<class VALVE>
 class MockValveFactory : public ValveFactory {
 public:
-	VALVE* mockMasterValve;
-	std::vector<VALVE*> mockZoneValves;
+	std::shared_ptr<VALVE> mockMasterValve;
+	std::vector<std::shared_ptr<VALVE>> mockZoneValves;
 
 	MockValveFactory();
 
-	virtual std::unique_ptr<Valve> createValve(size_t id) override;
+	virtual std::shared_ptr<Valve> createValve(size_t id) override;
 };
 
 template<class VALVE>
@@ -28,18 +28,18 @@ MockValveFactory<VALVE>::MockValveFactory() {
 	mockZoneValves.resize(ZoneHandler::getZoneCount());
 
 	for (size_t i = 0; i < mockZoneValves.size(); i++) {
-		mockZoneValves[i] = new VALVE();
+		mockZoneValves[i] = std::shared_ptr<VALVE>(new VALVE());
 	}
 
-	mockMasterValve = new VALVE();
+	mockMasterValve = std::shared_ptr<VALVE>(new VALVE());
 }
 
 template<class VALVE>
-std::unique_ptr<Valve> MockValveFactory<VALVE>::createValve(size_t id) {
+std::shared_ptr<Valve> MockValveFactory<VALVE>::createValve(size_t id) {
 	if (id < mockZoneValves.size()) {
-		return std::unique_ptr<Valve>(mockZoneValves[id]);
+		return mockZoneValves[id];
 	} else if (id == mockZoneValves.size()) {
-		return std::unique_ptr<Valve>(mockMasterValve);
+		return mockMasterValve;
 	} else {
 		throw std::logic_error("MockValveFactory::createValve() id > mockZoneValves.size()");
 	}

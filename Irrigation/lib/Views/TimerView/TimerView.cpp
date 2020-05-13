@@ -61,7 +61,7 @@ void TimerView::onTimer(const time_t rawTime) {
 							program->getName().c_str(),
 							to_string(program->getSchedulerType()).c_str());
 
-					wateringController.start(rawTime, program->getRunTimes(), result.second);
+					wateringController.start(program->getRunTimes(), result.second);
 				}
 
 				irrigationDocument.saveState();
@@ -69,8 +69,6 @@ void TimerView::onTimer(const time_t rawTime) {
 			}
 		}
 	}
-
-	wateringController.on1SecTimer(rawTime);
 }
 
 void TimerView::onTimer() {

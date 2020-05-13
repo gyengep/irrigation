@@ -11,7 +11,7 @@ RunTime::RunTime() : RunTime(0) {
 }
 
 RunTime::RunTime(unsigned seconds) :
-	seconds(seconds)
+	milliSeconds(seconds * 1000)
 {
 }
 
@@ -19,11 +19,15 @@ RunTime::RunTime(const chrono::seconds& seconds) : RunTime(seconds.count()) {
 }
 
 bool RunTime::operator== (const RunTime& other) const {
-	return (seconds == other.seconds);
+	return (milliSeconds == other.milliSeconds);
 }
 
 unsigned RunTime::getSeconds() const {
-	return seconds;
+	return milliSeconds / 1000;
+}
+
+unsigned RunTime::getMilliSeconds() const {
+	return milliSeconds;
 }
 
 void RunTime::setSeconds(unsigned seconds) {
@@ -33,10 +37,21 @@ void RunTime::setSeconds(unsigned seconds) {
 				", while actual value is " + to_string(seconds));
 	}
 
-	this->seconds = seconds;
+	this->milliSeconds = seconds * 1000;
+}
+
+void RunTime::setMilliSeconds(unsigned milliSeconds) {
+	if (milliSeconds > maxSeconds * 1000) {
+		throw ValueOutOfBoundsException(
+				"RunTime value shall not be greater than " + to_string(maxSeconds * 1000) + " ms" +
+				", while actual value is " + to_string(milliSeconds));
+	}
+
+	this->milliSeconds = milliSeconds;
 }
 
 RunTimeDTO RunTime::toRunTimeDto() const {
+	const unsigned seconds = getSeconds();
 	return RunTimeDTO(seconds / 60, seconds % 60);
 }
 

@@ -1,8 +1,8 @@
 #pragma once
-#include <ctime>
+#include <condition_variable>
 #include <memory>
+#include <thread>
 #include <vector>
-#include "Program.h"
 #include "RunTime.h"
 #include "RunTimeContainer.h"
 #include "Hardware/Valves/ZoneHandler.h"
@@ -10,32 +10,30 @@
 
 class WateringController {
 
-	struct WateringProperties {
-		std::time_t zoneStartTime;
-		std::vector<RunTime> runTimes;
+	const std::shared_ptr<ZoneHandler> zoneHandler;
+	std::thread workerThread;
+	std::condition_variable condition;
+	mutable std::mutex mtx;
+	bool stopped;
+	bool active;
 
-		WateringProperties();
-	};
-
-	std::unique_ptr<WateringProperties> wateringProperties;
-	std::shared_ptr<ZoneHandler> zoneHandler;
-
-	void startNextRequiredZone(const std::time_t& rawTime);
+	void workerFunc(const std::vector<RunTime> runTimes);
 
 public:
 	WateringController();
 	WateringController(WateringController&&) = delete;
 	WateringController(const WateringController&) = delete;
-	WateringController(std::shared_ptr<ZoneHandler> zoneHandler);
-	virtual ~WateringController() = default;
+	WateringController(const std::shared_ptr<ZoneHandler>& zoneHandler);
+	virtual ~WateringController();
 
 	WateringController& operator= (WateringController&&) = delete;
 	WateringController& operator= (const WateringController&) = delete;
 
-	virtual void on1SecTimer(const std::time_t& rawTime);
-	virtual void start(const std::time_t& rawTime, const RunTimeContainer& runTimes, unsigned adjustmentPercent);
+	virtual void start(const RunTimeContainer& runTimes, unsigned adjustmentPercent);
 	virtual void stop();
 
 	virtual bool isWateringActive() const;
 	size_t getActiveZoneId() const;
+
+	static std::vector<RunTime> adjustRunTimes(const RunTimeContainer& runTimes, unsigned adjustmentPercent);
 };

@@ -1,32 +1,36 @@
 #pragma once
 #include <gmock/gmock.h>
+#include <chrono>
 #include <memory>
 #include <vector>
+#include "Mocks/MockZoneHandler.h"
 #include "Logic/WateringController.h"
 
-class FakeValve: public Valve {
-public:
-	virtual void activate() override {}
-	virtual void deactivate() override {}
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
-class FakeValveFactory : public ValveFactory {
-public:
-	virtual std::unique_ptr<Valve> createValve(size_t) override {
-		return std::unique_ptr<Valve>(new FakeValve());
-	}
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class WateringControllerTest : public ::testing::Test {
 protected:
 
-	std::unique_ptr<WateringController> wateringController;
+	void onZoneHandlerActivate(size_t zoneId);
+	void onZoneHandlerDeactivate();
 
-	void checkActiveZones(time_t t, const std::vector<size_t>& requiredZones);
+	std::shared_ptr<WateringController> wateringController;
+
+	virtual void SetUp();
+    virtual void TearDown();
+};
+
+class WateringControllerTimingTest : public ::testing::Test {
+protected:
+
+	std::vector<std::pair<std::chrono::steady_clock::time_point, size_t>> calls;
+
+	void onZoneHandlerActivate(size_t zoneId);
+	void onZoneHandlerDeactivate();
+
+	std::shared_ptr<testing::NiceMock<MockZoneHandler>> zoneHandler;
+	std::shared_ptr<WateringController> wateringController;
 
 	virtual void SetUp();
     virtual void TearDown();

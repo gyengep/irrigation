@@ -1,41 +1,17 @@
 #pragma once
 #include <memory>
-#include <vector>
-#include "Valve.h"
 
 
 class ZoneHandler {
 public:
-	class Builder;
-
 	static const size_t invalidZoneId;
 
-private:
-	std::unique_ptr<Valve> masterValve;
-	std::vector<std::unique_ptr<Valve>> zoneValves;
-	size_t activeZoneId;
+	virtual ~ZoneHandler() = default;
 
-	ZoneHandler(std::unique_ptr<ValveFactory>&& valveFactory);
-
-public:
-	~ZoneHandler();
-
-	void activate(size_t zoneId);
-	void deactivate();
-
-	size_t getActiveId() const;
+	virtual void activate(size_t zoneId) = 0;
+	virtual void deactivate() = 0;
+	virtual size_t getActiveId() const = 0;
 
 	static size_t getZoneCount();
 	static const std::shared_ptr<ZoneHandler> getInstancePtr();
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
-class ZoneHandler::Builder {
-	std::unique_ptr<ValveFactory> valveFactory;
-
-public:
-	Builder& setValveFactory(std::unique_ptr<ValveFactory>&& valveFactory);
-
-	std::shared_ptr<ZoneHandler> build();
 };

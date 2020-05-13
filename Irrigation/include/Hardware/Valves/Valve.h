@@ -14,5 +14,5 @@ public:
 class ValveFactory {
 public:
 	virtual ~ValveFactory() = default;
-	virtual std::unique_ptr<Valve> createValve(size_t id) = 0;
+	virtual std::shared_ptr<Valve> createValve(size_t id) = 0;
 };

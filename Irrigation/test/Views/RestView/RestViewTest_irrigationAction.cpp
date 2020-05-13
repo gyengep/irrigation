@@ -42,7 +42,7 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 				"</runtimes>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(_, expectedRunTimeContainer, expectedAdjustment));
+	EXPECT_CALL(*mockWateringController, start(expectedRunTimeContainer, expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
@@ -77,7 +77,7 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 				"</runtimes>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(_, expectedRunTimeContainer, expectedAdjustment));
+	EXPECT_CALL(*mockWateringController, start(expectedRunTimeContainer, expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
@@ -110,7 +110,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 				"</runtimes>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(_, expectedRunTimeContainer, 100));
+	EXPECT_CALL(*mockWateringController, start(expectedRunTimeContainer, 100));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
@@ -132,7 +132,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 				"<program-id>" + to_string(programListSample.getContainer()->begin()->first) + "</program-id>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(_, programListSample.getContainer()->begin()->second->getRunTimes(), expectedAdjustment));
+	EXPECT_CALL(*mockWateringController, start(programListSample.getContainer()->begin()->second->getRunTimes(), expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().
 			setProgramContainer(programListSample.getContainer()).
@@ -155,7 +155,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 				"<program-id>" + to_string(programListSample.getContainer()->begin()->first) + "</program-id>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(_,
+	EXPECT_CALL(*mockWateringController, start(
 			programListSample.getContainer()->begin()->second->getRunTimes(),
 			programListSample.getContainer()->begin()->second->getAdjustment()
 		));

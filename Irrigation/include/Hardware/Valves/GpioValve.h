@@ -17,5 +17,5 @@ public:
 
 class GpioValveFactory : public ValveFactory {
 public:
-	virtual std::unique_ptr<Valve> createValve(size_t id) override;
+	virtual std::shared_ptr<Valve> createValve(size_t id) override;
 };

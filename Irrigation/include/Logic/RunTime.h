@@ -7,7 +7,7 @@
 class RunTime {
 	static const unsigned maxSeconds = 60 * 60 * 24;
 
-	unsigned seconds;
+	unsigned milliSeconds;
 
 public:
 	RunTime();
@@ -22,7 +22,9 @@ public:
 	bool operator== (const RunTime& other) const;
 
 	unsigned getSeconds() const;
+	unsigned getMilliSeconds() const;
 	void setSeconds(unsigned seconds);
+	void setMilliSeconds(unsigned milliSeconds);
 
 	RunTimeDTO toRunTimeDto() const;
 	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO);
