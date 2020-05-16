@@ -4,6 +4,7 @@
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
+#include "Email/Email.h"
 #include "Exceptions/Exceptions.h"
 #include "Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"
@@ -59,6 +60,10 @@ IrrigationApplication& IrrigationApplication::getInstance() {
 
 string IrrigationApplication::getVersion() {
 	return version_string;
+}
+
+void IrrigationApplication::initEmail() {
+	EMAIL.enableTopic(EmailTopic::WATERING);
 }
 
 void IrrigationApplication::initGpio() {
@@ -148,6 +153,7 @@ void IrrigationApplication::onInitialize() {
 	LOGGER.info("Irrigation System %s", getVersion().c_str());
 	LOGGER.debug("Irrigation System starting ...");
 
+	initEmail();
 	initGpio();
 	initTemperature();
 	initDocument();

@@ -1,18 +1,19 @@
 
-TARGET_NAME     = irrigation
+TARGET_NAME     = $(shell basename $(CURDIR))
 
 ########################################################
 ########################################################
 
-PROJECT_ROOT    = ..
+PROJECT_ROOT    = ../..
 SRC_EXT         = cpp
-SOURCE_DIR      = $(PROJECT_ROOT)/src
-OBJECT_DIR      = $(PROJECT_ROOT)/build/src
+SOURCE_DIR      = $(PROJECT_ROOT)/test/$(TARGET_NAME)
+COMMON_DIR      = $(PROJECT_ROOT)/test/Common
+OBJECT_DIR      = $(PROJECT_ROOT)/build/test/$(TARGET_NAME)
 INCLUDE_DIR     = $(PROJECT_ROOT)/include
-TARGET_DIR      = $(PROJECT_ROOT)/bin
+TARGET_DIR      = $(PROJECT_ROOT)/build
 LIBRARY_DIR     = $(PROJECT_ROOT)/build
 
-TARGET          = $(TARGET_DIR)/$(TARGET_NAME)
+TARGET          = $(TARGET_DIR)/$(TARGET_NAME)_test
 SOURCES         = $(shell find $(SOURCE_DIR) -maxdepth 1 -type f -name '*.$(SRC_EXT)')
 OBJECTS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.o))
 DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EXT)=.d))
@@ -20,20 +21,19 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -lLogger -lModel -lDocumentView -lLogic -lSchedulers -lTimerView -lValves -lRestView -lWebServer -lTemperature -lDtoReaderWriter -lDS18B20 -lUtils -lEmail
-INCLUDES	    = -I$(INCLUDE_DIR)
+LOCAL_LIBS      = -l$(TARGET_NAME) -lLogger
+INCLUDES	    = -isystem $(PROJECT_ROOT)/3p/gmock_gtest -I$(INCLUDE_DIR) -I$(COMMON_DIR)
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
-LIBS            = $(LOCAL_LIBS) -pthread -lpugixml -lmicrohttpd -lcurl -lssl -lcrypto -ldl
+LIBS            = $(LOCAL_LIBS) -pthread -lgmock -lcurl -lssl -lcrypto -ldl 
 
-# Detect the Raspberry Pi from cpuinfo
-ifneq "$(shell cat /proc/cpuinfo | grep Hardware | grep -c BCM)" "0"
-LIBS          += -lwiringPi
-endif
-
-include ../common.mk
+include ../../common.mk
 
 .PHONY: all
 all: $(TARGET)
+	@echo 'Executing test: $(TARGET)'
+	@$(TARGET)
+	@echo 'Finished executing test: $(TARGET)'
+	@echo ' '
 
 .PHONY: clean
 clean: 
@@ -41,6 +41,26 @@ clean:
 	rm -f $(DEPENDS)
 	rm -f $(TARGET)
 
+.PHONY: all-with-libraries
+all-with-libraries: library-all all
+
+.PHONY: clean-with-libraries
+clean-with-libraries: library-clean clean
+		
+.PHONY: library-all
+library-all: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+
+.PHONY: library-clean
+library-clean: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+
+.PHONY: $(patsubst -l%,%-all,$(LOCAL_LIBS))
+$(patsubst -l%,%-all,$(LOCAL_LIBS)):
+	@$(MAKE) -C $(PROJECT_ROOT)/lib $@
+
+.PHONY: $(patsubst -l%,%-clean,$(LOCAL_LIBS))
+$(patsubst -l%,%-clean,$(LOCAL_LIBS)):
+	@$(MAKE) -C $(PROJECT_ROOT)/lib $@
+	
 .PHONY: print
 print:
 	@echo INCLUDE_DIR: $(INCLUDE_DIR)
@@ -55,10 +75,10 @@ print:
 
 -include $(DEPENDS)
 	
-$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT)
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
-	
+
 $(TARGET):	$(patsubst -l%,$(LIBRARY_DIR)/lib%.a,$(LOCAL_LIBS)) $(OBJECTS)
 	@mkdir -p $(TARGET_DIR)
 	$(CXX) $(LIBDIRS) -o $(TARGET) $(OBJECTS) $(LIBS)

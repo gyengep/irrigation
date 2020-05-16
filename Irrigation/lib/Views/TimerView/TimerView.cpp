@@ -1,10 +1,13 @@
 #include "TimerView.h"
+#include "Email/Email.h"
 #include "Logger/Logger.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/Program.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include "Utils/TimeConversion.h"
+#include "Utils/ToString.h"
+#include <string>
 
 using namespace std;
 using namespace std::chrono;
@@ -60,6 +63,14 @@ void TimerView::onTimer(const time_t rawTime) {
 							to_string(idType).c_str(),
 							program->getName().c_str(),
 							to_string(program->getSchedulerType()).c_str());
+
+					if (EMAIL.isTopicEnabled(EmailTopic::WATERING)) {
+						std::ostringstream oss;
+						oss << program->getName() << "is scheduled at " << toLocalTimeStr(rawTime, "%T") << std::endl;
+						oss << "adjustment: "<< result.second << "%%" << std::endl;
+						oss << "runTimes:   " << program->getRunTimes() << std::endl;
+						EMAIL.send(EmailTopic::WATERING, oss.str());
+					}
 
 					wateringController.start(program->getRunTimes(), result.second);
 				}

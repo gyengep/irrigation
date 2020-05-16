@@ -10,6 +10,7 @@ class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::unique_ptr<DocumentSaver> documentSaver;
 
+	void initEmail();
 	void initGpio();
 	void initTemperature();
 	void uninitTemperature();
