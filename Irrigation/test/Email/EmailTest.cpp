@@ -12,6 +12,7 @@ TEST(EmailTest, test) {
 	LOGGER.setOutputStream(std::cout);
 
 	LOGGER.trace("TEST(EmailTest, test) __BEGIN__");
-	EMAIL.send(EmailTopic::WATERING, "Message Body");
+	EMAIL.enableTopic(EmailTopic::TEST);
+	EMAIL.send(EmailTopic::TEST, "Message Body");
 	LOGGER.trace("TEST(EmailTest, test) __END__");
 }

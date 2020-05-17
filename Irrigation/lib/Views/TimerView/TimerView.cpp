@@ -64,12 +64,13 @@ void TimerView::onTimer(const time_t rawTime) {
 							program->getName().c_str(),
 							to_string(program->getSchedulerType()).c_str());
 
-					if (EMAIL.isTopicEnabled(EmailTopic::WATERING)) {
+					const EmailTopic topic = EmailTopic::WATERING;
+					if (EMAIL.isTopicEnabled(topic)) {
 						std::ostringstream oss;
-						oss << program->getName() << "is scheduled at " << toLocalTimeStr(rawTime, "%T") << std::endl;
+						oss << program->getName() << " is scheduled at " << toLocalTimeStr(rawTime, "%T") << std::endl;
 						oss << "adjustment: "<< result.second << "%%" << std::endl;
 						oss << "runTimes:   " << program->getRunTimes() << std::endl;
-						EMAIL.send(EmailTopic::WATERING, oss.str());
+						EMAIL.send(topic, oss.str());
 					}
 
 					wateringController.start(program->getRunTimes(), result.second);

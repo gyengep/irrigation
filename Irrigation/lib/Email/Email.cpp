@@ -25,6 +25,7 @@ Email::Email() :
 	toName("Gyenge Peter"),
 	toAddress("gyengep@gmail.com")
 {
+	topics[EmailTopic::TEST].reset(new TopicProperties("Test"));
 	topics[EmailTopic::WATERING].reset(new TopicProperties("Watering started"));
 }
 
