@@ -71,6 +71,7 @@ void EmailSender::send(const std::string& subject, const std::string& message) {
 	CurlStringReader curlStringReader(fullMessage);
 
 	struct curl_slist *recipients = NULL;
+	char errbuf[CURL_ERROR_SIZE] = {0};
 
 	for (const auto& recipient : to) {
 		recipients = curl_slist_append(recipients, recipient.address.c_str());
@@ -80,6 +81,7 @@ void EmailSender::send(const std::string& subject, const std::string& message) {
 		recipients = curl_slist_append(recipients, recipient.address.c_str());
 	}
 
+	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, errbuf);
 	curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl.get(), CURLOPT_USERNAME, username.c_str());
     curl_easy_setopt(curl.get(), CURLOPT_PASSWORD, password.c_str());
@@ -90,20 +92,20 @@ void EmailSender::send(const std::string& subject, const std::string& message) {
 	curl_easy_setopt(curl.get(), CURLOPT_UPLOAD, 1L);
 
 	LOGGER.trace("curl_easy_perform()");
-
-	/* Send the message */
-	CURLcode res = curl_easy_perform(curl.get());
-
-	LOGGER.trace("curl_easy_perform() result: %d", (int)res);
-
-	/* Check for errors */
-	if (res != CURLE_OK) {
-		LOGGER.warning("curl_easy_perform() failed: %s", curl_easy_strerror(res));
-	}
+	const CURLcode curlCode = curl_easy_perform(curl.get());
+	LOGGER.trace("curl_easy_perform() result: %d", (int)curlCode);
 
 	LOGGER.trace("curl_slist_free_all()");
-
 	curl_slist_free_all(recipients);
+
+	if (CURLE_OK != curlCode) {
+		const char* errorMessage = errbuf;
+		if (errorMessage[0] == '\0') {
+			errorMessage = curl_easy_strerror(curlCode);
+		}
+		LOGGER.warning("curl_easy_perform() failed: %s, %s", std::to_string(curlCode).c_str(), errorMessage);
+	}
+
 }
 
 std::string EmailSender::createFullMessage(const std::string& subject, const std::string& messageBody) {
