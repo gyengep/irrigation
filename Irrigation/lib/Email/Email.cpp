@@ -26,7 +26,8 @@ Email::Email() :
 	toAddress("gyengep@gmail.com")
 {
 	topics[EmailTopic::TEST].reset(new TopicProperties("Test"));
-	topics[EmailTopic::WATERING].reset(new TopicProperties("Watering started"));
+	topics[EmailTopic::WATERING_START].reset(new TopicProperties("Watering started"));
+	topics[EmailTopic::WATERING_SKIP].reset(new TopicProperties("Watering skipped"));
 }
 
 Email::~Email() {

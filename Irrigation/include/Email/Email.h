@@ -8,7 +8,8 @@
 
 enum class EmailTopic {
 	TEST,
-	WATERING
+	WATERING_START,
+	WATERING_SKIP
 };
 
 class Email {

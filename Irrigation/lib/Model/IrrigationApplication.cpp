@@ -63,7 +63,8 @@ string IrrigationApplication::getVersion() {
 }
 
 void IrrigationApplication::initEmail() {
-	EMAIL.enableTopic(EmailTopic::WATERING);
+	EMAIL.enableTopic(EmailTopic::WATERING_START);
+	EMAIL.enableTopic(EmailTopic::WATERING_SKIP);
 }
 
 void IrrigationApplication::initGpio() {
