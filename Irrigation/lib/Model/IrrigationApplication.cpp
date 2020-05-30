@@ -63,8 +63,18 @@ string IrrigationApplication::getVersion() {
 }
 
 void IrrigationApplication::initEmail() {
+	EMAIL.start();
 	EMAIL.enableTopic(EmailTopic::WATERING_START);
 	EMAIL.enableTopic(EmailTopic::WATERING_SKIP);
+	EMAIL.enableTopic(EmailTopic::SYSTEM_STARTED);
+	EMAIL.enableTopic(EmailTopic::SYSTEM_STOPPED);
+
+	EMAIL.send(EmailTopic::SYSTEM_STARTED, "System started");
+}
+
+void IrrigationApplication::uninitEmail() {
+	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "System stopped");
+	EMAIL.stop();
 }
 
 void IrrigationApplication::initGpio() {
@@ -167,6 +177,7 @@ void IrrigationApplication::onTerminate() {
 
 	uninitDocument();
 	uninitTemperature();
+	uninitEmail();
 
 	LOGGER.info("Irrigation System stopped");
 }

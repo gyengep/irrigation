@@ -14,6 +14,9 @@ EmailSender::Person::Person(const std::string& name, const std::string& address)
 	name(name),
 	address(address)
 {
+	if (address.empty()) {
+		throw std::runtime_error("The email address must not be empty");
+	}
 }
 
 std::string EmailSender::Person::toString() const {
@@ -29,6 +32,10 @@ std::string EmailSender::Person::toString() const {
 }
 
 std::string EmailSender::Person::toString(const std::list<Person>& persons) {
+	if (persons.empty()) {
+		throw std::runtime_error("The email list must not be empty");
+	}
+
 	std::ostringstream oss;
 
 	for (auto it = persons.begin(); it != persons.end(); ++it) {
@@ -52,6 +59,9 @@ EmailSender::EmailSender(const Person& from, const std::list<Person>& to, const 
 	to(to),
 	cc(cc)
 {
+	if (to.empty()) {
+		throw std::runtime_error("The email to list must not be empty");
+	}
 }
 
 EmailSender::~EmailSender() {
@@ -100,9 +110,11 @@ void EmailSender::send(const std::string& subject, const std::string& message) {
 
 	if (CURLE_OK != curlCode) {
 		const char* errorMessage = errbuf;
+
 		if (errorMessage[0] == '\0') {
 			errorMessage = curl_easy_strerror(curlCode);
 		}
+
 		LOGGER.warning("curl_easy_perform() failed: %s, %s", std::to_string(curlCode).c_str(), errorMessage);
 	}
 

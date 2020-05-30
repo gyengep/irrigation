@@ -13,8 +13,9 @@ class IrrigationApplication : public Application {
 	void initEmail();
 	void initGpio();
 	void initTemperature();
-	void uninitTemperature();
 	void initDocument();
+	void uninitEmail();
+	void uninitTemperature();
 	void uninitDocument();
 	void setMyDefaults();
 

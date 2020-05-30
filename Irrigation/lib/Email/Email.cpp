@@ -3,6 +3,9 @@
 #include "CurlStringReader.h"
 #include "Logger/Logger.h"
 
+
+#include <iostream>
+
 using namespace std;
 
 
@@ -19,19 +22,51 @@ Email& Email::getInstance() {
 	return instance;
 }
 
-Email::Email() :
+Email::Email() : Thread("Email"),
 	fromName("Irrigation System"),
 	fromAddress("irrigation.gyengep@gmail.com"),
 	toName("Gyenge Peter"),
 	toAddress("gyengep@gmail.com")
 {
-	topics[EmailTopic::TEST].reset(new TopicProperties("Test"));
 	topics[EmailTopic::WATERING_START].reset(new TopicProperties("Watering started"));
 	topics[EmailTopic::WATERING_SKIP].reset(new TopicProperties("Watering skipped"));
+	topics[EmailTopic::SYSTEM_STARTED].reset(new TopicProperties("System started"));
+	topics[EmailTopic::SYSTEM_STOPPED].reset(new TopicProperties("System stopped"));
+	topics[EmailTopic::TEST].reset(new TopicProperties("Test"));
+
+	LOGGER.setLevel(LogLevel::TRACE);
+	LOGGER.setOutputStream(cout);
 }
 
 Email::~Email() {
 }
+
+void Email::stop() {
+	messages.finish();
+	join();
+}
+
+void Email::send(EmailTopic topic, const std::string& message) {
+	unique_lock<mutex> lock(mtx);
+
+	const auto& topicProperties = getTopicProperties(topic);
+
+	if (topicProperties.enabled) {
+		messages.push(pair<string, string>(topicProperties.subject, message));
+	}
+}
+
+void Email::enableTopic(EmailTopic topic, bool enable) {
+	unique_lock<mutex> lock(mtx);
+	getTopicProperties(topic).enabled = enable;
+}
+
+bool Email::isTopicEnabled(EmailTopic topic) const {
+	unique_lock<mutex> lock(mtx);
+	return getTopicProperties(topic).enabled;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) {
 	const auto it = topics.find(topic);
@@ -53,23 +88,21 @@ const Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) const 
 	return *it->second;
 }
 
-void Email::send(EmailTopic topic, const std::string& message) {
-	const auto& topicProperties = getTopicProperties(topic);
+///////////////////////////////////////////////////////////////////////////////
 
-	if (topicProperties.enabled) {
-		const EmailSender::Person from(fromName, fromAddress);
-		const EmailSender::Person to(toName, toAddress);
+void Email::onExecute() {
+	LOGGER.trace("Email::onExecute() __BEGIN__");
 
-		EmailSender emailSender(from, std::list<EmailSender::Person>{ to }, std::list<EmailSender::Person>());
-		emailSender.send(topicProperties.subject, message);
+	const EmailSender::Person from(fromName, fromAddress);
+	const std::list<EmailSender::Person> to { EmailSender::Person(toName, toAddress) };
+	const std::list<EmailSender::Person> cc;
+
+	while (messages.waitForElement()) {
+		LOGGER.trace("Email::onExecute() hasNext()");
+		const auto& messageProperties = messages.front();
+		EmailSender(from, to, cc).send(messageProperties.first, messageProperties.second);
+		messages.pop();
 	}
-}
 
-void Email::enableTopic(EmailTopic topic, bool enable) {
-	getTopicProperties(topic).enabled = enable;
-}
-
-bool Email::isTopicEnabled(EmailTopic topic) const {
-	return getTopicProperties(topic).enabled;
-
+	LOGGER.trace("Email::onExecute() __END__");
 }
