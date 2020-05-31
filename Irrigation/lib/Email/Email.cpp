@@ -33,9 +33,6 @@ Email::Email() : Thread("Email"),
 	topics[EmailTopic::SYSTEM_STARTED].reset(new TopicProperties("System started"));
 	topics[EmailTopic::SYSTEM_STOPPED].reset(new TopicProperties("System stopped"));
 	topics[EmailTopic::TEST].reset(new TopicProperties("Test"));
-
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(cout);
 }
 
 Email::~Email() {
