@@ -1,0 +1,97 @@
+#pragma once
+#include <condition_variable>
+#include <mutex>
+#include <queue>
+
+
+template <typename T>
+class BlockingQueue {
+	mutable std::mutex mtx;
+	mutable std::condition_variable cv;
+
+	std::queue<T> container;
+	bool finished;
+
+public:
+	BlockingQueue();
+	~BlockingQueue() = default;
+
+	void push(const T& value);
+	void push(T&& value);
+	void pop();
+	const T& front() const;
+
+	bool waitForElement() const;
+	void finish();
+};
+
+
+template <typename T>
+BlockingQueue<T>::BlockingQueue() :
+	finished(false)
+{
+}
+
+template <typename T>
+void BlockingQueue<T>::push(const T& value) {
+	std::unique_lock<std::mutex> lock(mtx);
+
+	if (finished) {
+		throw std::logic_error("BlockingQueue<T>::push(const T& value) finished == true");
+	}
+
+	container.push(value);
+	cv.notify_all();
+}
+
+template <typename T>
+void BlockingQueue<T>::push(T&& value) {
+	std::unique_lock<std::mutex> lock(mtx);
+
+	if (finished) {
+		throw std::logic_error("BlockingQueue<T>::push(T&& value) finished == true");
+	}
+
+	container.push(value);
+	cv.notify_all();
+}
+
+template <typename T>
+const T& BlockingQueue<T>::front() const {
+	std::unique_lock<std::mutex> lock(mtx);
+
+	if (container.empty()) {
+		throw std::logic_error("BlockingQueue<T>::front() container.empty()");
+	}
+
+	return container.front();
+}
+
+template <typename T>
+void BlockingQueue<T>::pop() {
+	std::unique_lock<std::mutex> lock(mtx);
+
+	if (container.empty()) {
+		throw std::logic_error("BlockingQueue<T>::pop() container.empty()");
+	}
+
+	container.pop();
+}
+
+template <typename T>
+bool BlockingQueue<T>::waitForElement() const {
+	std::unique_lock<std::mutex> lock(mtx);
+
+	cv.wait(lock, [this] {
+		return (!container.empty() || finished);
+	});
+
+	return (false ==  container.empty());
+}
+
+template <typename T>
+void BlockingQueue<T>::finish() {
+	std::unique_lock<std::mutex> lock(mtx);
+	finished = true;
+	cv.notify_all();
+}
