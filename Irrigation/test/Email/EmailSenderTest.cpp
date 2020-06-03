@@ -5,79 +5,55 @@ using namespace std;
 using namespace testing;
 
 
-TEST(EmailSenderPersonTest, person) {
+TEST(ContactTest, contact) {
 	const std::string name("abcd");
 	const std::string address("123456");
 
-	EmailSender::Person person(name, address);
+	Contact contact(name, address);
 
-	EXPECT_THAT(person.name, Eq(name));
-	EXPECT_THAT(person.address, Eq(address));
+	EXPECT_THAT(contact.name, Eq(name));
+	EXPECT_THAT(contact.address, Eq(address));
 }
 
-TEST(EmailSenderPersonTest, personWithoutName) {
+TEST(ContactTest, contactWithoutName) {
 	const std::string name;
 	const std::string address("123456");
 
-	EmailSender::Person person(name, address);
+	Contact contact(name, address);
 
-	EXPECT_THAT(person.name, Eq(name));
-	EXPECT_THAT(person.address, Eq(address));
+	EXPECT_THAT(contact.name, Eq(name));
+	EXPECT_THAT(contact.address, Eq(address));
 }
 
-TEST(EmailSenderPersonTest, personWithoutAddress) {
+TEST(ContactTest, contactWithoutAddress) {
 	const std::string name("abcd");
 	const std::string address;
 
-	EXPECT_THROW(EmailSender::Person(name, address), std::runtime_error);
+	EXPECT_THROW(Contact(name, address), std::runtime_error);
 }
 
-TEST(EmailSenderPersonTest, personToString) {
-	EXPECT_THAT(EmailSender::Person("abcd", "123456").toString(), Eq("abcd <123456>"));
-	EXPECT_THAT(EmailSender::Person("", "123456").toString(), Eq("123456"));
+TEST(ContactTest, contactToString) {
+	EXPECT_THAT(Contact("abcd", "123456").toString(), Eq("abcd <123456>"));
+	EXPECT_THAT(Contact("", "123456").toString(), Eq("123456"));
 }
 
-TEST(EmailSenderPersonTest, personListToString) {
-	std::list<EmailSender::Person> persons {
-		EmailSender::Person("abcd", "123456"),
-		EmailSender::Person("xyz", "987")
+TEST(ContactTest, contactListToString) {
+	std::list<Contact> contacts {
+		Contact("abcd", "123456"),
+		Contact("xyz", "987")
 	};
 
-	EXPECT_THAT(EmailSender::Person::toString(persons), Eq("abcd <123456>, xyz <987>"));
+	EXPECT_THAT(Contact::toString(contacts), Eq("abcd <123456>, xyz <987>"));
 }
 
-TEST(EmailSenderPersonTest, emptyPersonListToString) {
-	EXPECT_THROW(EmailSender::Person::toString(std::list<EmailSender::Person>()), std::runtime_error);
+TEST(ContactTest, emptyPersonListToString) {
+	EXPECT_THROW(Contact::toString(std::list<Contact>()), std::runtime_error);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(EmailSenderTest, construct) {
+TEST(MessageTest, toString1) {
 
-	EmailSender::Person person1("qwert1", "1_9876543");
-	EmailSender::Person person2("qwert2", "2_9876543");
-	EmailSender::Person person3("qwert3", "3_9876543");
-
-	EXPECT_NO_THROW(EmailSender emailSender(
-			person1,
-			std::list<EmailSender::Person>{ person2 },
-			std::list<EmailSender::Person>{ person3 }
-		));
-
-	EXPECT_NO_THROW(EmailSender emailSender(
-			person1,
-			std::list<EmailSender::Person>{ person2 },
-			std::list<EmailSender::Person>()
-		));
-
-	EXPECT_THROW(EmailSender emailSender(
-			person1,
-			std::list<EmailSender::Person>(),
-			std::list<EmailSender::Person>{ person3 }
-		), std::runtime_error);
-}
-
-TEST(EmailSenderTest, createFullMessage1) {
 	const std::string expectedMessage =
 			"From: abcdef <12345678>\r\n"
 			"To: qwert <9876543>\r\n"
@@ -85,17 +61,17 @@ TEST(EmailSenderTest, createFullMessage1) {
 			"\r\n"
 			"MyMessage";
 
-	EmailSender::Person from("abcdef", "12345678");
-	std::list<EmailSender::Person> to {
-		EmailSender::Person("qwert", "9876543")
-	};
-	std::list<EmailSender::Person> cc;
+	::Message message;
 
-	EmailSender emailSender(from, to, cc);
-	EXPECT_THAT(emailSender.createFullMessage("MySubject", "MyMessage"), Eq(expectedMessage));
+	message.from = Contact("abcdef", "12345678");
+	message.to.push_back(Contact("qwert", "9876543"));
+	message.subject = "MySubject";
+	message.text = "MyMessage";
+
+	EXPECT_THAT(message.toString(), Eq(expectedMessage));
 }
 
-TEST(EmailSenderTest, createFullMessage2) {
+TEST(MessageTest, toString2) {
 	const std::string expectedMessage =
 			"From: abcdef <12345678>\r\n"
 			"To: qwert1 <1_9876543>, qwert2 <2_9876543>\r\n"
@@ -103,18 +79,18 @@ TEST(EmailSenderTest, createFullMessage2) {
 			"\r\n"
 			"MyMessage";
 
-	EmailSender::Person from("abcdef", "12345678");
-	std::list<EmailSender::Person> to {
-		EmailSender::Person("qwert1", "1_9876543"),
-		EmailSender::Person("qwert2", "2_9876543")
-	};
-	std::list<EmailSender::Person> cc;
+	::Message message;
 
-	EmailSender emailSender(from, to, cc);
-	EXPECT_THAT(emailSender.createFullMessage("MySubject", "MyMessage"), Eq(expectedMessage));
+	message.from = Contact("abcdef", "12345678");
+	message.to.push_back(Contact("qwert1", "1_9876543"));
+	message.to.push_back(Contact("qwert2", "2_9876543"));
+	message.subject = "MySubject";
+	message.text = "MyMessage";
+
+	EXPECT_THAT(message.toString(), Eq(expectedMessage));
 }
 
-TEST(EmailSenderTest, createFullMessage3) {
+TEST(MessageTest, toString3) {
 	const std::string expectedMessage =
 			"From: abcdef <12345678>\r\n"
 			"To: qwert1 <1_9876543>\r\n"
@@ -123,15 +99,13 @@ TEST(EmailSenderTest, createFullMessage3) {
 			"\r\n"
 			"MyMessage";
 
-	EmailSender::Person from("abcdef", "12345678");
-	std::list<EmailSender::Person> to {
-		EmailSender::Person("qwert1", "1_9876543")
-	};
-	std::list<EmailSender::Person> cc {
-		EmailSender::Person("qwert2", "2_9876543")
-	};
+	::Message message;
 
-	EmailSender emailSender(from, to, cc);
-	EXPECT_THAT(emailSender.createFullMessage("MySubject", "MyMessage"), Eq(expectedMessage));
+	message.from = Contact("abcdef", "12345678");
+	message.to.push_back(Contact("qwert1", "1_9876543"));
+	message.cc.push_back(Contact("qwert2", "2_9876543"));
+	message.subject = "MySubject";
+	message.text = "MyMessage";
+
+	EXPECT_THAT(message.toString(), Eq(expectedMessage));
 }
-

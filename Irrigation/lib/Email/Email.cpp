@@ -1,5 +1,5 @@
 #include "Email.h"
-#include "EmailSender.h"
+#include "CurlEmailSender.h"
 #include "CurlStringReader.h"
 #include "Logger/Logger.h"
 
@@ -23,10 +23,8 @@ Email& Email::getInstance() {
 }
 
 Email::Email() : Thread("Email"),
-	fromName("Irrigation System"),
-	fromAddress("irrigation.gyengep@gmail.com"),
-	toName("Gyenge Peter"),
-	toAddress("gyengep@gmail.com")
+	from("Irrigation System", "irrigation.gyengep@gmail.com"),
+	to("Gyenge Peter", "gyengep@gmail.com")
 {
 	topics[EmailTopic::WATERING_START].reset(new TopicProperties("Watering started"));
 	topics[EmailTopic::WATERING_SKIP].reset(new TopicProperties("Watering skipped"));
@@ -43,13 +41,20 @@ void Email::stop() {
 	join();
 }
 
-void Email::send(EmailTopic topic, const std::string& message) {
+void Email::send(EmailTopic topic, const std::string& messageText) {
 	unique_lock<mutex> lock(mtx);
 
 	const auto& topicProperties = getTopicProperties(topic);
 
 	if (topicProperties.enabled) {
-		messages.push(pair<string, string>(topicProperties.subject, message));
+
+		auto message = unique_ptr<Message>(new Message());
+		message->from = from;
+		message->to.push_back(to);
+		message->subject = topicProperties.subject;
+		message->text = messageText;
+
+		messages.push(move(message));
 	}
 }
 
@@ -90,14 +95,9 @@ const Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) const 
 void Email::onExecute() {
 	LOGGER.trace("Email::onExecute() __BEGIN__");
 
-	const EmailSender::Person from(fromName, fromAddress);
-	const std::list<EmailSender::Person> to { EmailSender::Person(toName, toAddress) };
-	const std::list<EmailSender::Person> cc;
-
 	while (messages.waitForElement()) {
 		LOGGER.trace("Email::onExecute() hasNext()");
-		const auto& messageProperties = messages.front();
-		EmailSender(from, to, cc).send(messageProperties.first, messageProperties.second);
+		CurlEmailSender().send(*messages.front());
 		messages.pop();
 	}
 

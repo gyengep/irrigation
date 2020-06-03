@@ -1,11 +1,10 @@
 #pragma once
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
-#include <utility>
 #include "Utils/BlockingQueue.h"
 #include "Utils/Thread.h"
+#include "EmailSender.h"
 
 #define EMAIL Email::getInstance()
 
@@ -27,25 +26,24 @@ class Email : public Thread {
 		TopicProperties(const std::string& subject);
 	};
 
-	const std::string fromName;
-	const std::string fromAddress;
-	const std::string toName;
-	const std::string toAddress;
+	const Contact from;
+	const Contact to;
 
 	mutable std::mutex mtx;
-	BlockingQueue<std::pair<std::string, std::string>> messages;
+	std::map<EmailTopic, std::unique_ptr<TopicProperties>> topics;
+
+	BlockingQueue<std::unique_ptr<Message>> messages;
 
 	virtual void onExecute() override;
 
 	TopicProperties& getTopicProperties(EmailTopic topic);
 	const TopicProperties& getTopicProperties(EmailTopic topic) const ;
-	std::map<EmailTopic, std::unique_ptr<TopicProperties>> topics;
 
 public:
 	Email();
 	virtual ~Email();
 
-	void send(EmailTopic topic, const std::string& message);
+	void send(EmailTopic topic, const std::string& messageText);
 	void stop();
 
 	void enableTopic(EmailTopic topic, bool enable = true);

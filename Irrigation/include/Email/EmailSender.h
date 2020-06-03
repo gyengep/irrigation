@@ -3,31 +3,35 @@
 #include <string>
 
 
+struct Contact {
+	std::string name;
+	std::string address;
+
+	Contact() = default;
+	Contact(const std::string& name, const std::string& address);
+
+	std::string toString() const;
+	static std::string toString(const std::list<Contact>& contacts);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+struct Message {
+	Contact from;
+	std::list<Contact> to;
+	std::list<Contact> cc;
+	std::string subject;
+	std::string text;
+
+	Message() = default;
+
+	std::string toString() const;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 class EmailSender {
 public:
-	struct Person {
-		std::string name;
-		std::string address;
-
-		Person(const std::string& name, const std::string& address);
-
-		std::string toString() const;
-		static std::string toString(const std::list<Person>& persons);
-	};
-
-private:
-	const std::string url;
-	const std::string username;
-	const std::string password;
-
-	const Person from;
-	const std::list<Person> to;
-	const std::list<Person> cc;
-
-public:
-	EmailSender(const Person& from, const std::list<Person>& to, const std::list<Person>& cc);
-	virtual ~EmailSender();
-
-	void send(const std::string& subject, const std::string& message);
-	std::string createFullMessage(const std::string& subject, const std::string& messageBody);
+	virtual ~EmailSender() = default;
+	virtual void send(const Message& message) = 0;
 };
