@@ -16,15 +16,29 @@ Email::TopicProperties::TopicProperties(const std::string& subject) :
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Email& Email::getInstance() {
-	static Email instance;
-	return instance;
+std::unique_ptr<Email> Email::instance;
+
+void Email::init(const std::shared_ptr<EmailSender>& emailSender) {
+	instance.reset(new Email(emailSender));
 }
 
-Email::Email() : Thread("Email"),
+Email& Email::getInstance() {
+	if (nullptr == instance) {
+		init(make_shared<CurlEmailSender>());
+	}
+
+	return *instance;
+}
+
+Email::Email(const std::shared_ptr<EmailSender>& emailSender) : Thread("Email"),
 	from("Irrigation System", "irrigation.gyengep@gmail.com"),
-	to("Gyenge Peter", "gyengep@gmail.com")
+	to("Gyenge Peter", "gyengep@gmail.com"),
+	emailSender(emailSender)
 {
+	if (nullptr == emailSender) {
+		throw invalid_argument("Email::Email() nullptr == emailSender");
+	}
+
 	topics[EmailTopic::WATERING_START].reset(new TopicProperties("Watering started"));
 	topics[EmailTopic::WATERING_SKIP].reset(new TopicProperties("Watering skipped"));
 	topics[EmailTopic::SYSTEM_STARTED].reset(new TopicProperties("System started"));
@@ -93,7 +107,7 @@ const Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) const 
 
 void Email::onExecute() {
 	while (messages.waitForElement()) {
-		CurlEmailSender().send(*messages.front());
+		emailSender->send(*messages.front());
 		messages.pop();
 	}
 }
