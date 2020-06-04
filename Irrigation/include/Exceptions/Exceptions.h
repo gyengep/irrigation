@@ -3,6 +3,7 @@
 #include "FileNotFoundException.h"
 #include "IllegalArgumentException.h"
 #include "IndexOutOfBoundsException.h"
+#include "InterruptedException.h"
 #include "IOException.h"
 #include "NoSuchElementException.h"
 #include "ParserException.h"

@@ -5,6 +5,7 @@ PROJECT_ROOT    = ..
 all:
 	@$(MAKE) -C DocumentView all
 	@$(MAKE) -C DtoReaderWriter all
+	@$(MAKE) -C Email all
 	@$(MAKE) -C Hardware/DS18B20 all
 	@$(MAKE) -C Hardware/Valves all
 	@$(MAKE) -C Logger all
@@ -20,6 +21,7 @@ all:
 clean:
 	@$(MAKE) -C DocumentView clean
 	@$(MAKE) -C DtoReaderWriter clean
+	@$(MAKE) -C Email clean
 	@$(MAKE) -C Hardware/DS18B20 clean
 	@$(MAKE) -C Hardware/Valves clean
 	@$(MAKE) -C Logger clean

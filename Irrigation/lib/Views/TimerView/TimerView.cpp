@@ -1,10 +1,13 @@
 #include "TimerView.h"
+#include "Email/Email.h"
 #include "Logger/Logger.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/Program.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include "Utils/TimeConversion.h"
+#include "Utils/ToString.h"
+#include <string>
 
 using namespace std;
 using namespace std::chrono;
@@ -61,7 +64,23 @@ void TimerView::onTimer(const time_t rawTime) {
 							program->getName().c_str(),
 							to_string(program->getSchedulerType()).c_str());
 
+					const EmailTopic topic = EmailTopic::WATERING_START;
+					if (EMAIL.isTopicEnabled(topic)) {
+						std::ostringstream oss;
+						oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << toLocalTimeStr(rawTime, "%T") << std::endl;
+						oss << "adjustment: "<< result.second << "%%" << std::endl;
+						oss << "runTimes:   " << program->getRunTimes() << std::endl;
+						EMAIL.send(topic, oss.str());
+					}
+
 					wateringController.start(program->getRunTimes(), result.second);
+				} else {
+					const EmailTopic topic = EmailTopic::WATERING_SKIP;
+					if (EMAIL.isTopicEnabled(topic)) {
+						std::ostringstream oss;
+						oss << "The " << program->getName() << " is skipped by the " << to_string(program->getSchedulerType()) << " scheduler at " << toLocalTimeStr(rawTime, "%T") << std::endl;
+						EMAIL.send(topic, oss.str());
+					}
 				}
 
 				irrigationDocument.saveState();

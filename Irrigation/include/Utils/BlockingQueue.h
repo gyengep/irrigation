@@ -52,7 +52,7 @@ void BlockingQueue<T>::push(T&& value) {
 		throw std::logic_error("BlockingQueue<T>::push(T&& value) finished == true");
 	}
 
-	container.push(value);
+	container.push(std::move(value));
 	cv.notify_all();
 }
 

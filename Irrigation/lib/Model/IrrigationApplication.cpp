@@ -4,6 +4,7 @@
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
+#include "Email/Email.h"
 #include "Exceptions/Exceptions.h"
 #include "Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"
@@ -59,6 +60,21 @@ IrrigationApplication& IrrigationApplication::getInstance() {
 
 string IrrigationApplication::getVersion() {
 	return version_string;
+}
+
+void IrrigationApplication::initEmail() {
+	EMAIL.start();
+	EMAIL.enableTopic(EmailTopic::WATERING_START);
+	EMAIL.enableTopic(EmailTopic::WATERING_SKIP);
+	EMAIL.enableTopic(EmailTopic::SYSTEM_STARTED);
+	EMAIL.enableTopic(EmailTopic::SYSTEM_STOPPED);
+
+	EMAIL.send(EmailTopic::SYSTEM_STARTED, "System started");
+}
+
+void IrrigationApplication::uninitEmail() {
+	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "System stopped");
+	EMAIL.stop();
 }
 
 void IrrigationApplication::initGpio() {
@@ -148,6 +164,7 @@ void IrrigationApplication::onInitialize() {
 	LOGGER.info("Irrigation System %s", getVersion().c_str());
 	LOGGER.debug("Irrigation System starting ...");
 
+	initEmail();
 	initGpio();
 	initTemperature();
 	initDocument();
@@ -160,6 +177,7 @@ void IrrigationApplication::onTerminate() {
 
 	uninitDocument();
 	uninitTemperature();
+	uninitEmail();
 
 	LOGGER.info("Irrigation System stopped");
 }

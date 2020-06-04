@@ -4,6 +4,7 @@ all: \
 	DocumentView-all \
 	DS18B20-all \
 	DtoReaderWriter-all \
+	Email-all \
 	Logger-all \
 	Logic-all \
 	Model-all \
@@ -20,6 +21,7 @@ clean: \
 	DocumentView-clean \
 	DS18B20-clean \
 	DtoReaderWriter-clean \
+	Email-clean \
 	Logger-clean \
 	Logic-clean \
 	Model-clean \
@@ -54,6 +56,14 @@ DtoReaderWriter-all:
 .PHONY: DtoReaderWriter-clean
 DtoReaderWriter-clean:
 	@$(MAKE) -C DtoReaderWriter clean
+
+.PHONY: Email-all
+Email-all:
+	@$(MAKE) -C Email all
+
+.PHONY: Email-clean
+Email-clean:
+	@$(MAKE) -C Email clean
 
 .PHONY: Logger-all
 Logger-all:
