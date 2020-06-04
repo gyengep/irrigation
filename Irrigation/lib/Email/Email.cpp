@@ -1,6 +1,5 @@
 #include "Email.h"
 #include "CurlEmailSender.h"
-#include "CurlStringReader.h"
 #include "Logger/Logger.h"
 
 
@@ -93,13 +92,8 @@ const Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) const 
 ///////////////////////////////////////////////////////////////////////////////
 
 void Email::onExecute() {
-	LOGGER.trace("Email::onExecute() __BEGIN__");
-
 	while (messages.waitForElement()) {
-		LOGGER.trace("Email::onExecute() hasNext()");
 		CurlEmailSender().send(*messages.front());
 		messages.pop();
 	}
-
-	LOGGER.trace("Email::onExecute() __END__");
 }

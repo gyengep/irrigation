@@ -1,6 +1,6 @@
 #include "CurlEmailSender.h"
-#include "CurlStringReader.h"
 #include "Logger/Logger.h"
+#include "Utils/CurlStringReader.h"
 #include <curl/curl.h>
 #include <memory>
 #include <stdio.h>
@@ -26,16 +26,13 @@ void CurlEmailSender::send(const Message& message) {
 		throw std::runtime_error("The email to list must not be empty");
 	}
 
-	LOGGER.trace("curl_easy_init()");
 	unique_ptr<CURL, void (*)(CURL*)> curl(curl_easy_init(), curl_easy_cleanup);
 
 	if (curl.get() == nullptr) {
 		throw logic_error("NetworkReader::read()  curl == nullptr");
 	}
 
-	const std::string fullMessage = message.toString();
-	LOGGER.trace("message:\n%s", fullMessage.c_str());
-	CurlStringReader curlStringReader(fullMessage);
+	CurlStringReader curlStringReader(message.toString());
 
 	struct curl_slist *recipients = NULL;
 	char errbuf[CURL_ERROR_SIZE] = {0};
@@ -58,11 +55,8 @@ void CurlEmailSender::send(const Message& message) {
 	curl_easy_setopt(curl.get(), CURLOPT_READDATA, &curlStringReader);
 	curl_easy_setopt(curl.get(), CURLOPT_UPLOAD, 1L);
 
-	LOGGER.trace("curl_easy_perform()");
 	const CURLcode curlCode = curl_easy_perform(curl.get());
-	LOGGER.trace("curl_easy_perform() result: %d", (int)curlCode);
 
-	LOGGER.trace("curl_slist_free_all()");
 	curl_slist_free_all(recipients);
 
 	if (CURLE_OK != curlCode) {

@@ -8,6 +8,8 @@ using namespace std;
 
 
 TEST(EmailTest, test) {
+	LOGGER.setLevel(LogLevel::TRACE);
+	LOGGER.setOutputStream(cout);
 	EMAIL.start();
 	EMAIL.enableTopic(EmailTopic::TEST);
 	EMAIL.send(EmailTopic::TEST, "Message Body");
