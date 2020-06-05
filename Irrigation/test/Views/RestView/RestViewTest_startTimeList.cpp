@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postStartTimeList) {
 	const IdType startTimeId = irrigationDocument->getPrograms().at(programId)->getStartTimes().begin()->first;
 
 	checkResponseWithoutBody(response, 201);
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId) + "\r\n"));
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId) + "\r\n"));
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
@@ -64,7 +64,7 @@ void RestViewTest::testGetStartTimeList(const Dto2ObjectTest::StartTimeListSampl
 	const Response response = executeRequest("GET", createStartTimeListUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeListSample.getDtoList())));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(startTimeListSample.getDtoList())));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 

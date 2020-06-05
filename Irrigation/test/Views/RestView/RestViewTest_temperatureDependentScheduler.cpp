@@ -35,7 +35,7 @@ void RestViewTest::testGetTemperatureDependentScheduler(const TemperatureDepende
 	const Response response = executeRequest("GET", createTemperatureDependentSchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(temperatureDependentSchedulerSample.getDto())));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(temperatureDependentSchedulerSample.getDto())));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 

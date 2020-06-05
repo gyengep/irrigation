@@ -31,7 +31,7 @@ void RestViewTest::testGetRunTimeList(const RunTimeListSample& runTimeListSample
 	const Response response = executeRequest("GET", createRunTimeListUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(runTimeListSample.getDtoList())));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(runTimeListSample.getDtoList())));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 

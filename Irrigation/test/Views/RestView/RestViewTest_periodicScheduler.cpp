@@ -35,7 +35,7 @@ void RestViewTest::testGetPeriodicScheduler(const PeriodicSchedulerSample& perio
 	const Response response = executeRequest("GET", createPeriodicSchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(periodicSchedulerSample.getDto())));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(periodicSchedulerSample.getDto())));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 

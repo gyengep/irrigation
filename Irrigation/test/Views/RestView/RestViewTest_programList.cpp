@@ -31,7 +31,7 @@ TEST_F(RestViewTest, postProgramList) {
 	const IdType programId = irrigationDocument->getPrograms().begin()->first;
 
 	checkResponseWithoutBody(response, 201);
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Location: /programs/" + to_string(programId) + "\r\n"));
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + to_string(programId) + "\r\n"));
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
@@ -54,7 +54,7 @@ void RestViewTest::testGetProgramList(const ProgramListSample& programListSample
 	const Response response = executeRequest("GET", createProgramListUrl(requestParameters));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programListSample.getDtoList(), includeContainers)));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(programListSample.getDtoList(), includeContainers)));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 

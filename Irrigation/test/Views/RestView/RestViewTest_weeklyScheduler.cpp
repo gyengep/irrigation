@@ -35,7 +35,7 @@ void RestViewTest::testGetWeeklyScheduler(const WeeklySchedulerSample& weeklySch
 	const Response response = executeRequest("GET", createWeeklySchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(weeklySchedulerSample.getDto())));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(weeklySchedulerSample.getDto())));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 

@@ -1,5 +1,6 @@
 #include "RestServerTest.h"
-#include "CurlCallbacks/CurlCallbacks.h"
+#include "TestCommon/CreateUrl.h"
+#include "Utils/CurlStringReader.h"
 #include "WebServer/KeyValue.h"
 #include <curl/curl.h>
 #include <functional>
@@ -37,13 +38,13 @@ TEST_F(RestServerTest, callbackWithoutParameter) {
 	ASSERT_THAT(curl, NotNull());
 	EXPECT_CALL(*this, onCreateProgram(_, KeyValue())).Times(1);
 
-	ReadCallbackData readCallbackData("");
+	CurlStringReader curlStringReader("");
 
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_PUT, 1);
 	curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
-	curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
+	curl_easy_setopt(curl, CURLOPT_READFUNCTION, CurlStringReader::readFunction);
+	curl_easy_setopt(curl, CURLOPT_READDATA, &curlStringReader);
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 }

@@ -3,9 +3,6 @@
 
 
 class NetworkReader {
-
-	static size_t writeCallback(char* buffer, size_t size, size_t nmemb, void* ctxt);
-
 public:
 	NetworkReader();
 	virtual ~NetworkReader();

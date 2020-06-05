@@ -1,5 +1,6 @@
 #include "RestViewTest.h"
 #include "Model/IrrigationDocument.h"
+#include "Utils/CurlStringReader.h"
 #include "Views/RestView/RestView.h"
 #include <curl/curl.h>
 
@@ -45,7 +46,7 @@ RestViewTest::Response RestViewTest::__executeRequest__(const string& method, co
 
 	CURL *curl = curl_easy_init();
 	curl_slist *header = NULL;
-	ReadCallbackData readCallbackData(body);
+	CurlStringReader curlStringReader(body);
 
 	if (curl == nullptr) {
 		throw logic_error("RestViewTest::executeRequest()  curl == nullptr");
@@ -53,10 +54,10 @@ RestViewTest::Response RestViewTest::__executeRequest__(const string& method, co
 
 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.writeCallbackData);
-	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, headerCallback);
-	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.headerCallbackData);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlStringWriter::writeFunction);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.curlStringWriter);
+	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, CurlHeaderWriter::headerFunction);
+	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.curlHeaderWriter);
 
 	if (!headerField.empty()) {
 		header = curl_slist_append(header, headerField.c_str());
@@ -65,8 +66,8 @@ RestViewTest::Response RestViewTest::__executeRequest__(const string& method, co
 
 	if (!body.empty()) {
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
-		curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, CurlStringReader::readFunction);
+		curl_easy_setopt(curl, CURLOPT_READDATA, &curlStringReader);
 	}
 
 	curl_easy_perform(curl);
@@ -91,14 +92,14 @@ RestViewTest::Response RestViewTest::executeRequest(const string& method, const 
 
 void RestViewTest::checkResponseWithoutBody(const RestViewTest::Response& response, long statusCode) {
 	EXPECT_THAT(response.responseCode, Eq(statusCode));
-	EXPECT_THAT(response.writeCallbackData.text, IsEmpty());
-	EXPECT_THAT(response.headerCallbackData.headers, Not(Contains(HasSubstr("Content-Type:"))));
+	EXPECT_THAT(response.curlStringWriter.getText(), IsEmpty());
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Not(Contains(HasSubstr("Content-Type:"))));
 }
 
 void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response, long statusCode, const string& contentType) {
 	EXPECT_THAT(response.responseCode, Eq(statusCode));
-	EXPECT_THAT(response.writeCallbackData.text, Not(IsEmpty()));
-	EXPECT_THAT(response.headerCallbackData.headers, Contains("Content-Type: " + contentType + "\r\n"));
+	EXPECT_THAT(response.curlStringWriter.getText(), Not(IsEmpty()));
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Content-Type: " + contentType + "\r\n"));
 }
 
 void RestViewTest::checkErrorResponse(const RestViewTest::Response& response, long statusCode, const string& contentType) {

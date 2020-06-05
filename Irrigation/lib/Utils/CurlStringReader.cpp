@@ -12,36 +12,36 @@ CurlStringReader::CurlStringReader(const std::string& text) :
 CurlStringReader::~CurlStringReader() {
 }
 
-size_t CurlStringReader::readNextPart(void *ptr, size_t size, size_t nmemb) {
+size_t CurlStringReader::readNextPart(void *buffer, size_t itemSize, size_t itemCount) {
 
-	if (nullptr == ptr) {
-		throw IllegalArgumentException("CurlStringReader::readNextPart() nullptr == ptr");
+	if (nullptr == buffer) {
+		throw IllegalArgumentException("CurlStringReader::readNextPart() nullptr == buffer");
 	}
 
-	if ((size == 0) || (nmemb == 0)) {
+	if ((itemSize == 0) || (itemCount == 0)) {
 		return 0;
 	}
 
 	const size_t remainingSize = text.size() - pos;
-	size_t readedBytes = size * nmemb;
+	size_t bytes = itemSize * itemCount;
 
-	if (readedBytes > remainingSize) {
-		nmemb = remainingSize / size;
-		readedBytes = size * nmemb;
+	if (bytes > remainingSize) {
+		itemCount = remainingSize / itemSize;
+		bytes = itemSize * itemCount;
 	}
 
-	if (readedBytes > 0) {
-		std::memcpy(ptr, text.data() + pos, readedBytes);
-		pos += readedBytes;
+	if (bytes > 0) {
+		std::memcpy(buffer, text.data() + pos, bytes);
+		pos += bytes;
 	}
 
-	return nmemb;
+	return itemCount;
 }
 
-size_t CurlStringReader::readFunction(void *ptr, size_t size, size_t nmemb, void *userp) {
-	if (nullptr == userp) {
-		throw IllegalArgumentException("CurlStringReader::readFunction() nullptr == userp");
+size_t CurlStringReader::readFunction(void *buffer, size_t itemSize, size_t itemCount, void *context) {
+	if (nullptr == context) {
+		throw IllegalArgumentException("CurlStringReader::readFunction() nullptr == context");
 	}
 
-	return static_cast<CurlStringReader*>(userp)->readNextPart(ptr, size, nmemb);
+	return static_cast<CurlStringReader*>(context)->readNextPart(buffer, itemSize, itemCount);
 }

@@ -1,5 +1,4 @@
 #include "CurlEmailSender.h"
-#include "Logger/Logger.h"
 #include "Utils/CurlStringReader.h"
 #include <curl/curl.h>
 #include <memory>
@@ -32,10 +31,7 @@ void CurlEmailSender::send(const Message& message) {
 		throw logic_error("NetworkReader::read()  curl == nullptr");
 	}
 
-	CurlStringReader curlStringReader(message.toString());
-
 	struct curl_slist *recipients = NULL;
-	char errbuf[CURL_ERROR_SIZE] = {0};
 
 	for (const auto& recipient : message.to) {
 		recipients = curl_slist_append(recipients, recipient.address.c_str());
@@ -44,6 +40,9 @@ void CurlEmailSender::send(const Message& message) {
 	for (const auto& recipient : message.cc) {
 		recipients = curl_slist_append(recipients, recipient.address.c_str());
 	}
+
+	CurlStringReader curlStringReader(message.toString());
+	char errbuf[CURL_ERROR_SIZE] = {0};
 
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, errbuf);
 	curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
@@ -66,6 +65,6 @@ void CurlEmailSender::send(const Message& message) {
 			errorMessage = curl_easy_strerror(curlCode);
 		}
 
-		LOGGER.warning("curl_easy_perform() failed: %s, %s", std::to_string(curlCode).c_str(), errorMessage);
+		throw runtime_error("curl_easy_perform() failed: " + to_string(curlCode) + ", " + errorMessage);
 	}
 }

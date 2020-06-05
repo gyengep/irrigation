@@ -33,7 +33,7 @@ void RestViewTest::testGetStartTime(const StartTimeListSample& startTimeListSamp
 		const Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeWithId.first));
 		checkResponseWithBody(response, 200, "application/xml");
 
-		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(startTimeWithId.second->toStartTimeDto())));
+		EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(startTimeWithId.second->toStartTimeDto())));
 		EXPECT_FALSE(irrigationDocument->isModified());
 	}
 }

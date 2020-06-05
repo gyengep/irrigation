@@ -1,5 +1,8 @@
 #include "WebServerTest.h"
-#include "CurlCallbacks/CurlCallbacks.h"
+#include "TestCommon/CreateUrl.h"
+#include "Utils/CurlHeaderWriter.h"
+#include "Utils/CurlStringReader.h"
+#include "Utils/CurlStringWriter.h"
 #include <curl/curl.h>
 
 using namespace std;
@@ -130,19 +133,19 @@ TEST_F(WebServerTest, resultOK) {
 	ASSERT_THAT(curl, NotNull());
 
     long actualHttpCode = 0;
-    WriteCallbackData writeCallbackData;
+    CurlStringWriter curlStringWriter;
 
     if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &writeCallbackData);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlStringWriter::writeFunction);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &curlStringWriter);
         curl_easy_perform(curl);
 	    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &actualHttpCode);
 		curl_easy_cleanup(curl);
 	}
 
 	EXPECT_THAT(actualHttpCode, Eq(expectedHttpResponseCode));
-	EXPECT_THAT(writeCallbackData.text, Eq(expectedHttpResponse));
+	EXPECT_THAT(curlStringWriter.getText(), Eq(expectedHttpResponse));
 }
 
 TEST_F(WebServerTest, result404) {
@@ -159,19 +162,19 @@ TEST_F(WebServerTest, result404) {
 	ASSERT_THAT(curl, NotNull());
 
     long actualHttpCode = 0;
-    WriteCallbackData writeCallbackData;
+    CurlStringWriter curlStringWriter;
 
     if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &writeCallbackData);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlStringWriter::writeFunction);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &curlStringWriter);
         curl_easy_perform(curl);
 	    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &actualHttpCode);
 		curl_easy_cleanup(curl);
 	}
 
 	EXPECT_THAT(actualHttpCode, Eq(expectedHttpResponseCode));
-	EXPECT_THAT(writeCallbackData.text, Eq(expectedHttpResponse));
+	EXPECT_THAT(curlStringWriter.getText(), Eq(expectedHttpResponse));
 }
 
 TEST_F(WebServerTest, requestParameters) {
@@ -235,14 +238,14 @@ TEST_F(WebServerTest, uploadDataPATCH) {
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
 
-	ReadCallbackData readCallbackData(uploadData);
+	CurlStringReader curlStringReader(uploadData);
 
     if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, readCallback);
-		curl_easy_setopt(curl, CURLOPT_READDATA, &readCallbackData);
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, CurlStringReader::readFunction);
+		curl_easy_setopt(curl, CURLOPT_READDATA, &curlStringReader);
         curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 	}
@@ -295,19 +298,19 @@ TEST_F(WebServerTest, responseHeader) {
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
 
-    HeaderCallbackData headerCallbackData;
+    CurlHeaderWriter curlHeaderWriter;
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, headerCallback);
-		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headerCallbackData);
+		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, CurlHeaderWriter::headerFunction);
+		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &curlHeaderWriter);
 
         curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 	}
 
 	EXPECT_THAT(
-		headerCallbackData.headers,
+		curlHeaderWriter.getHeaders(),
 		AllOf(
 			Contains(h1.first + ": " + h1.second + "\r\n"),
 			Contains(h2.first + ": " + h2.second + "\r\n"),

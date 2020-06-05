@@ -1,7 +1,8 @@
 #pragma once
 #include <memory>
 #include <gmock/gmock.h>
-#include "CurlCallbacks/CurlCallbacks.h"
+#include "Utils/CurlHeaderWriter.h"
+#include "Utils/CurlStringWriter.h"
 #include "Dto2Object/ProgramListSamples.h"
 
 class IrrigationDocument;
@@ -12,8 +13,8 @@ class RestViewTest : public  testing::Test {
 protected:
 	struct Response {
 		long responseCode;
-	    WriteCallbackData writeCallbackData;
-	    HeaderCallbackData headerCallbackData;
+	    CurlStringWriter curlStringWriter;
+	    CurlHeaderWriter curlHeaderWriter;
 	};
 
 

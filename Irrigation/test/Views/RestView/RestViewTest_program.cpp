@@ -35,7 +35,7 @@ void RestViewTest::testGetProgram(const ProgramListSample& programListSample, co
 		const Response response = executeRequest("GET", createProgramUrl(programWithId.first, requestParameters));
 		checkResponseWithBody(response, 200, "application/xml");
 
-		EXPECT_THAT(response.writeCallbackData.text, Eq(XmlWriter().save(programWithId.second->toProgramDto(), includeContainers)));
+		EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(programWithId.second->toProgramDto(), includeContainers)));
 		EXPECT_FALSE(irrigationDocument->isModified());
 	}
 }
@@ -163,7 +163,7 @@ TEST_F(RestViewTest, deleteProgram) {
 
 	Response response = executeRequest("DELETE", createProgramUrl(programId));
 	checkResponseWithoutBody(response, 200);
-	EXPECT_THAT(response.writeCallbackData.text, IsEmpty());
+	EXPECT_THAT(response.curlStringWriter.getText(), IsEmpty());
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
