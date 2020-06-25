@@ -1,6 +1,9 @@
 #pragma once
 #include <chrono>
+#include <memory>
 #include "DocumentView/View.h"
+#include "Logic/IdType.h"
+#include "Logic/Program.h"
 #include "Utils/Timer.h"
 
 #ifndef FRIEND_TEST
@@ -25,6 +28,7 @@ class TimerView : public View, public TimerCallback {
 	std::unique_ptr<Timer> timer;
 
 	void onTimer(const time_t rawTime);
+	bool processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const time_t rawTime);
 
 	static bool checkSystemTime(const std::chrono::system_clock::time_point& expectedSystemTime);
 
