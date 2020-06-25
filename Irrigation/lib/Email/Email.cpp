@@ -1,6 +1,5 @@
 #include "Email.h"
 #include "CurlEmailSender.h"
-#include "Logger/Logger.h"
 
 
 #include <iostream>
