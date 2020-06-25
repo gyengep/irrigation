@@ -21,7 +21,7 @@ TEST(EmailTest, send) {
 }
 
 TEST(EmailTest, enable) {
-	EMAIL.init(make_shared<MockEmailSender>());
+	Email::init(make_shared<MockEmailSender>());
 
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_START));
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_SKIP));
@@ -44,6 +44,8 @@ TEST(EmailTest, enable) {
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STARTED));
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STOPPED));
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::TEST));
+
+	Email::uninit();
 }
 
 TEST(EmailTest, topicEnabled) {
@@ -51,7 +53,7 @@ TEST(EmailTest, topicEnabled) {
 
 	EXPECT_CALL(*mockEmailSender, send(_)).Times(1);
 
-	EMAIL.init(mockEmailSender);
+	Email::init(mockEmailSender);
 	EMAIL.start();
 	EMAIL.enableTopic(EmailTopic::TEST);
 	EMAIL.send(EmailTopic::WATERING_START, "Message Body");
@@ -60,4 +62,5 @@ TEST(EmailTest, topicEnabled) {
 	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "Message Body");
 	EMAIL.send(EmailTopic::TEST, "Message Body");
 	EMAIL.stop();
+	Email::uninit();
 }

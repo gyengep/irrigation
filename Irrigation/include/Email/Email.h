@@ -53,7 +53,7 @@ public:
 	void enableTopic(EmailTopic topic, bool enable = true);
 	bool isTopicEnabled(EmailTopic topic) const;
 
-	static void init();
 	static void init(const std::shared_ptr<EmailSender>& emailSender);
+	static void uninit();
 	static Email& getInstance();
 };

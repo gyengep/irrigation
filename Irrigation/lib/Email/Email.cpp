@@ -21,6 +21,10 @@ void Email::init(const std::shared_ptr<EmailSender>& emailSender) {
 	instance.reset(new Email(emailSender));
 }
 
+void Email::uninit() {
+	instance.reset();
+}
+
 Email& Email::getInstance() {
 	if (nullptr == instance) {
 		init(make_shared<CurlEmailSender>());
