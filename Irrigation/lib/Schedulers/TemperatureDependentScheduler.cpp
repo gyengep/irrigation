@@ -274,7 +274,7 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	oss << "\t" << std::setw(logIndentation) << "remainingPercent: " << toPercent(remainingPercent) << std::endl;
 	oss << "\t" << std::setw(logIndentation) << "requiredPercentForToday: " << toPercent(requiredPercentForToday) << std::endl;
 
-	LOGGER.trace(oss.str().c_str());
+	//LOGGER.trace(oss.str().c_str());
 
 	return Scheduler::Result(adjustment);
 }
