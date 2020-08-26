@@ -1,13 +1,11 @@
-#include "Email.h"
+#include "Emailer.h"
 #include "CurlEmailSender.h"
-
-
-#include <iostream>
+#include "Logger/Logger.h"
 
 using namespace std;
 
 
-Email::TopicProperties::TopicProperties(const std::string& subject) :
+Emailer::TopicProperties::TopicProperties(const std::string& subject) :
 	enabled(false),
 	subject(subject)
 {
@@ -15,17 +13,17 @@ Email::TopicProperties::TopicProperties(const std::string& subject) :
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<Email> Email::instance;
+std::unique_ptr<Emailer> Emailer::instance;
 
-void Email::init(const std::shared_ptr<EmailSender>& emailSender) {
-	instance.reset(new Email(emailSender));
+void Emailer::init(const std::shared_ptr<EmailSender>& emailSender) {
+	instance.reset(new Emailer(emailSender));
 }
 
-void Email::uninit() {
+void Emailer::uninit() {
 	instance.reset();
 }
 
-Email& Email::getInstance() {
+Emailer& Emailer::getInstance() {
 	if (nullptr == instance) {
 		init(make_shared<CurlEmailSender>());
 	}
@@ -33,13 +31,13 @@ Email& Email::getInstance() {
 	return *instance;
 }
 
-Email::Email(const std::shared_ptr<EmailSender>& emailSender) : Thread("Email"),
+Emailer::Emailer(const std::shared_ptr<EmailSender>& emailSender) : Thread("Emailer"),
 	from("Irrigation System", "irrigation.gyengep@gmail.com"),
 	to("Gyenge Peter", "gyengep@gmail.com"),
 	emailSender(emailSender)
 {
 	if (nullptr == emailSender) {
-		throw invalid_argument("Email::Email() nullptr == emailSender");
+		throw invalid_argument("Emailer::Emailer() nullptr == emailSender");
 	}
 
 	topics[EmailTopic::WATERING_START].reset(new TopicProperties("Watering started"));
@@ -49,15 +47,16 @@ Email::Email(const std::shared_ptr<EmailSender>& emailSender) : Thread("Email"),
 	topics[EmailTopic::TEST].reset(new TopicProperties("Test"));
 }
 
-Email::~Email() {
+Emailer::~Emailer() {
 }
 
-void Email::stop() {
+void Emailer::stop() {
 	messages.finish();
+	wait.finish();
 	join();
 }
 
-void Email::send(EmailTopic topic, const std::string& messageText) {
+void Emailer::send(EmailTopic topic, const std::string& messageText) {
 	unique_lock<mutex> lock(mtx);
 
 	const auto& topicProperties = getTopicProperties(topic);
@@ -74,33 +73,33 @@ void Email::send(EmailTopic topic, const std::string& messageText) {
 	}
 }
 
-void Email::enableTopic(EmailTopic topic, bool enable) {
+void Emailer::enableTopic(EmailTopic topic, bool enable) {
 	unique_lock<mutex> lock(mtx);
 	getTopicProperties(topic).enabled = enable;
 }
 
-bool Email::isTopicEnabled(EmailTopic topic) const {
+bool Emailer::isTopicEnabled(EmailTopic topic) const {
 	unique_lock<mutex> lock(mtx);
 	return getTopicProperties(topic).enabled;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) {
+Emailer::TopicProperties& Emailer::getTopicProperties(EmailTopic topic) {
 	const auto it = topics.find(topic);
 
 	if (topics.end() == it) {
-		throw std::logic_error("Email::send() topics.end() == it");
+		throw std::logic_error("Emailer::send() topics.end() == it");
 	}
 
 	return *it->second;
 }
 
-const Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) const {
+const Emailer::TopicProperties& Emailer::getTopicProperties(EmailTopic topic) const {
 	const auto it = topics.find(topic);
 
 	if (topics.end() == it) {
-		throw std::logic_error("Email::send() topics.end() == it");
+		throw std::logic_error("Emailer::send() topics.end() == it");
 	}
 
 	return *it->second;
@@ -108,9 +107,29 @@ const Email::TopicProperties& Email::getTopicProperties(EmailTopic topic) const 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Email::onExecute() {
+void Emailer::onExecute() {
+	bool error = false;
+
 	while (messages.waitForElement()) {
-		emailSender->send(*messages.front());
-		messages.pop();
+		try {
+			emailSender->send(*messages.front());
+			messages.pop();
+
+			if (true == error) {
+				LOGGER.info("Email sending restored");
+			}
+
+			error = false;
+		}
+		catch (const std::exception& e) {
+			LOGGER.warning("Email sending failed", e);
+
+			if (wait.wait_for(std::chrono::minutes(1))) {
+				LOGGER.warning("Can not send all off the emails because email sender is finished");
+				break;
+			}
+
+			error = true;
+		}
 	}
 }
