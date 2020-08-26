@@ -2,6 +2,9 @@
 #include <gmock/gmock.h>
 #include "Utils/InterruptableWait.h"
 
+#include <iostream>
+#include <thread>
+
 using namespace std;
 using namespace testing;
 
@@ -24,15 +27,19 @@ TEST(InterruptableWaitTest, finish) {
 }
 
 TEST(InterruptableWaitTest, wait) {
+	const std::chrono::milliseconds waitTime(500);
 
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 50; i++) {
+
 		InterruptableWait wait;
 
 		auto start = std::chrono::steady_clock::now();
-		wait.wait_for(chrono::milliseconds(50));
+		wait.wait_for(waitTime);
+		//std::this_thread::sleep_for(waitTime);
 		auto end = std::chrono::steady_clock::now();
 
-		EXPECT_THAT(end - start, Ge(chrono::milliseconds(50)));
+		//EXPECT_THAT(end - start, Ge(waitTime));
+		std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 	}
 }
 /*

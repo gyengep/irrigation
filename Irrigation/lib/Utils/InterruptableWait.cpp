@@ -1,5 +1,11 @@
 #include "InterruptableWait.h"
 
+
+#include <thread>
+
+
+
+
 using namespace std;
 
 
@@ -10,6 +16,7 @@ InterruptableWait::InterruptableWait() :
 
 void InterruptableWait::wait_for(const std::chrono::milliseconds& ms) {
 	unique_lock<mutex> lock(mtx);
+	//std::this_thread::sleep_for(ms);
 
 	cv.wait_for(lock, ms, [this] {
 		return finished;
