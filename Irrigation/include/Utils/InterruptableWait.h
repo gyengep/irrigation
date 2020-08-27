@@ -7,11 +7,11 @@
 class InterruptableWait {
 	std::mutex mtx;
 	std::condition_variable cv;
-	bool finished;
+	bool interrupted;
 
 public:
 	InterruptableWait();
 
 	void wait_for(const std::chrono::milliseconds& ms);
-	void finish();
+	void interrupt();
 };

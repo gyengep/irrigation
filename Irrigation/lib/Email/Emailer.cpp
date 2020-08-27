@@ -1,5 +1,6 @@
 #include "Emailer.h"
 #include "CurlEmailSender.h"
+#include "Exceptions/InterruptedException.h"
 #include "Logger/Logger.h"
 
 using namespace std;
@@ -34,7 +35,11 @@ Emailer& Emailer::getInstance() {
 Emailer::Emailer(const std::shared_ptr<EmailSender>& emailSender) : Thread("Emailer"),
 	from("Irrigation System", "irrigation.gyengep@gmail.com"),
 	to("Gyenge Peter", "gyengep@gmail.com"),
-	emailSender(emailSender)
+	emailSender(emailSender),
+	wait(vector<chrono::milliseconds>({
+		chrono::minutes(1), chrono::minutes(2), chrono::minutes(5),
+		chrono::minutes(15), chrono::minutes(30), chrono::minutes(60)
+	}))
 {
 	if (nullptr == emailSender) {
 		throw invalid_argument("Emailer::Emailer() nullptr == emailSender");
@@ -52,7 +57,7 @@ Emailer::~Emailer() {
 
 void Emailer::stop() {
 	messages.finish();
-	wait.finish();
+	wait.interrupt();
 	join();
 }
 
@@ -68,6 +73,7 @@ void Emailer::send(EmailTopic topic, const std::string& messageText) {
 		message->to.push_back(to);
 		message->subject = topicProperties.subject;
 		message->text = messageText;
+		message->date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 		messages.push(move(message));
 	}
@@ -110,26 +116,28 @@ const Emailer::TopicProperties& Emailer::getTopicProperties(EmailTopic topic) co
 void Emailer::onExecute() {
 	bool error = false;
 
-	while (messages.waitForElement()) {
-		try {
-			emailSender->send(*messages.front());
-			messages.pop();
+	try {
 
-			if (true == error) {
-				LOGGER.info("Email sending restored");
+		while (messages.waitForElement()) {
+			try {
+				emailSender->send(*messages.front());
+				messages.pop();
+				wait.resetWaitTime();
+
+				if (true == error) {
+					LOGGER.info("Email sending works well again");
+				}
+
+				error = false;
+			} catch (const std::exception& e) {
+				LOGGER.warning("Email sending failed", e);
+				wait.wait();
+				wait.incrementWaitTime();
+				error = true;
 			}
-
-			error = false;
 		}
-		catch (const std::exception& e) {
-			LOGGER.warning("Email sending failed", e);
 
-			if (wait.wait_for(std::chrono::minutes(1))) {
-				LOGGER.warning("Can not send all off the emails because email sender is finished");
-				break;
-			}
-
-			error = true;
-		}
+	} catch (const InterruptedException& e) {
+		LOGGER.warning("There are some unsent email in the queue");
 	}
 }

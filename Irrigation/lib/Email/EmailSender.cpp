@@ -1,5 +1,6 @@
 #include "EmailSender.h"
 #include <sstream>
+#include <time.h>
 
 using namespace std;
 
@@ -59,8 +60,20 @@ std::string Message::toString() const {
 	}
 
 	oss << "Subject: " << subject << "\r\n";
+	oss << "Date: " << dateToString(date) << "\r\n";
 	oss << "\r\n";
 	oss << text;
 
 	return oss.str();
+}
+
+std::string Message::dateToString(const std::time_t& rawTime) {
+	const int BufferSize = 100;
+	char buffer[BufferSize];
+
+	tm timeinfo;
+	localtime_r(&rawTime, &timeinfo);
+
+	strftime(buffer, BufferSize, "%a, %d %b %G %H:%M:%S %z", &timeinfo);
+	return buffer;
 }

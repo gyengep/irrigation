@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include "Utils/BlockingQueue.h"
-#include "Utils/InterruptableWait.h"
+#include "Utils/IncrementalWait.h"
 #include "Utils/Thread.h"
 #include "EmailSender.h"
 
@@ -37,7 +37,7 @@ class Emailer : public Thread {
 	std::shared_ptr<EmailSender> emailSender;
 
 	BlockingQueue<std::unique_ptr<Message>> messages;
-	InterruptableWait wait;
+	IncrementalWait wait;
 
 	virtual void onExecute() override;
 

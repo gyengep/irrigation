@@ -58,6 +58,7 @@ TEST(MessageTest, toString1) {
 			"From: abcdef <12345678>\r\n"
 			"To: qwert <9876543>\r\n"
 			"Subject: MySubject\r\n"
+			"Date: Mon, 25 Nov 2019 08:08:09 +0100\r\n"
 			"\r\n"
 			"MyMessage";
 
@@ -67,6 +68,7 @@ TEST(MessageTest, toString1) {
 	message.to.push_back(Contact("qwert", "9876543"));
 	message.subject = "MySubject";
 	message.text = "MyMessage";
+	message.date = 1574665689;
 
 	EXPECT_THAT(message.toString(), Eq(expectedMessage));
 }
@@ -76,6 +78,7 @@ TEST(MessageTest, toString2) {
 			"From: abcdef <12345678>\r\n"
 			"To: qwert1 <1_9876543>, qwert2 <2_9876543>\r\n"
 			"Subject: MySubject\r\n"
+			"Date: Fri, 17 Jan 2020 17:37:48 +0100\r\n"
 			"\r\n"
 			"MyMessage";
 
@@ -86,6 +89,7 @@ TEST(MessageTest, toString2) {
 	message.to.push_back(Contact("qwert2", "2_9876543"));
 	message.subject = "MySubject";
 	message.text = "MyMessage";
+	message.date = 1579279068;
 
 	EXPECT_THAT(message.toString(), Eq(expectedMessage));
 }
@@ -96,6 +100,7 @@ TEST(MessageTest, toString3) {
 			"To: qwert1 <1_9876543>\r\n"
 			"Cc: qwert2 <2_9876543>\r\n"
 			"Subject: MySubject\r\n"
+			"Date: Wed, 26 Aug 2020 22:34:53 +0200\r\n"
 			"\r\n"
 			"MyMessage";
 
@@ -106,6 +111,25 @@ TEST(MessageTest, toString3) {
 	message.cc.push_back(Contact("qwert2", "2_9876543"));
 	message.subject = "MySubject";
 	message.text = "MyMessage";
+	message.date = 1598474093;
 
 	EXPECT_THAT(message.toString(), Eq(expectedMessage));
 }
+
+TEST(MessageTest, dateToString1) {
+	//1598474093:  2020-08-26T20:34:53+00:00
+	EXPECT_THAT(::Message::dateToString(1598474093), Eq("Wed, 26 Aug 2020 22:34:53 +0200"));
+}
+
+TEST(MessageTest, dateToString2) {
+	//1579279068:  2020-01-17T16:37:48+00:00
+	EXPECT_THAT(::Message::dateToString(1579279068), Eq("Fri, 17 Jan 2020 17:37:48 +0100"));
+}
+
+TEST(MessageTest, dateToString3) {
+	//1574665689:  2019-11-25T07:08:09+00:00
+	EXPECT_THAT(::Message::dateToString(1574665689), Eq("Mon, 25 Nov 2019 08:08:09 +0100"));
+}
+
+
+

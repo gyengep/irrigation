@@ -4,7 +4,7 @@
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
-#include "Email/Email.h"
+#include "Email/Emailer.h"
 #include "Exceptions/Exceptions.h"
 #include "Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"

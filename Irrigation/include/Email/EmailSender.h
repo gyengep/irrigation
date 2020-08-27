@@ -1,4 +1,5 @@
 #pragma once
+#include <ctime>
 #include <list>
 #include <string>
 
@@ -22,10 +23,12 @@ struct Message {
 	std::list<Contact> cc;
 	std::string subject;
 	std::string text;
+	std::time_t date;
 
 	Message() = default;
 
 	std::string toString() const;
+	static std::string dateToString(const std::time_t& rawTime);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
