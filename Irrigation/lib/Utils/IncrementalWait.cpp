@@ -1,10 +1,14 @@
 #include "IncrementalWait.h"
+#include "Exceptions/IllegalArgumentException.h"
 
 
 IncrementalWait::IncrementalWait(const std::vector<std::chrono::milliseconds>& waitTimes) :
 	waitTimes(waitTimes),
 	waitTimeIdx(0)
 {
+	if (waitTimes.empty()) {
+		throw IllegalArgumentException("WaitTimes has to be at least one element");
+	}
 }
 
 void IncrementalWait::resetWaitTime() {
