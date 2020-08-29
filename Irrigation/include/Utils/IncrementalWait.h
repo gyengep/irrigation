@@ -17,4 +17,6 @@ public:
 	void incrementWaitTime();
 	void wait();
 	void interrupt();
+
+	std::chrono::milliseconds getWaitTime() const;
 };

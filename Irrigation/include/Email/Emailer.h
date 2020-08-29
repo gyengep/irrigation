@@ -2,9 +2,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "Utils/BlockingQueue.h"
-#include "Utils/IncrementalWait.h"
-#include "Utils/Thread.h"
+#include <vector>
+#include "Utils/BlockingQueueThread.h"
 #include "EmailSender.h"
 
 #define EMAIL Emailer::getInstance()
@@ -18,7 +17,7 @@ enum class EmailTopic {
 	TEST
 };
 
-class Emailer : public Thread {
+class Emailer : public BlockingQueueThread<std::unique_ptr<Message>> {
 
 	struct TopicProperties {
 		bool enabled;
@@ -27,6 +26,7 @@ class Emailer : public Thread {
 		TopicProperties(const std::string& subject);
 	};
 
+	const static std::vector<std::chrono::milliseconds> waitTimes;
 	static std::unique_ptr<Emailer> instance;
 
 	const Contact from;
@@ -36,10 +36,9 @@ class Emailer : public Thread {
 	std::map<EmailTopic, std::unique_ptr<TopicProperties>> topics;
 	std::shared_ptr<EmailSender> emailSender;
 
-	BlockingQueue<std::unique_ptr<Message>> messages;
-	IncrementalWait wait;
+	bool sendingError;
 
-	virtual void onExecute() override;
+	virtual void onItemAvailable(const std::unique_ptr<Message>& value) override;
 
 	TopicProperties& getTopicProperties(EmailTopic topic);
 	const TopicProperties& getTopicProperties(EmailTopic topic) const ;
@@ -50,7 +49,6 @@ public:
 	virtual ~Emailer();
 
 	void send(EmailTopic topic, const std::string& messageText);
-	void stop();
 
 	void enableTopic(EmailTopic topic, bool enable = true);
 	bool isTopicEnabled(EmailTopic topic) const;

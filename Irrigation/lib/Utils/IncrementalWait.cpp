@@ -21,6 +21,10 @@ void IncrementalWait::incrementWaitTime() {
 	}
 }
 
+std::chrono::milliseconds IncrementalWait::getWaitTime() const {
+	return waitTimes[waitTimeIdx];
+}
+
 void IncrementalWait::wait() {
 	interruptableWait.wait_for(waitTimes[waitTimeIdx]);
 }
