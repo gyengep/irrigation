@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <fstream>
 #include "Exceptions/Exceptions.h"
-#include "Email/Email.h"
+#include "Email/Emailer.h"
 
 using namespace std;
 using ::testing::_;
@@ -15,13 +15,13 @@ public:
 
 TEST(EmailTest, send) {
 	EMAIL.start();
-	//EMAIL.enableTopic(EmailTopic::TEST);
+	EMAIL.enableTopic(EmailTopic::TEST);
 	EMAIL.send(EmailTopic::TEST, "Message Body");
 	EMAIL.stop();
 }
 
 TEST(EmailTest, enable) {
-	Email::init(make_shared<MockEmailSender>());
+	Emailer::init(make_shared<MockEmailSender>());
 
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_START));
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_SKIP));
@@ -45,7 +45,7 @@ TEST(EmailTest, enable) {
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STOPPED));
 	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::TEST));
 
-	Email::uninit();
+	Emailer::uninit();
 }
 
 TEST(EmailTest, topicEnabled) {
@@ -53,7 +53,7 @@ TEST(EmailTest, topicEnabled) {
 
 	EXPECT_CALL(*mockEmailSender, send(_)).Times(1);
 
-	Email::init(mockEmailSender);
+	Emailer::init(mockEmailSender);
 	EMAIL.start();
 	EMAIL.enableTopic(EmailTopic::TEST);
 	EMAIL.send(EmailTopic::WATERING_START, "Message Body");
@@ -62,5 +62,5 @@ TEST(EmailTest, topicEnabled) {
 	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "Message Body");
 	EMAIL.send(EmailTopic::TEST, "Message Body");
 	EMAIL.stop();
-	Email::uninit();
+	Emailer::uninit();
 }

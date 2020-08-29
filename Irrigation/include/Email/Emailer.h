@@ -3,10 +3,11 @@
 #include <memory>
 #include <string>
 #include "Utils/BlockingQueue.h"
+#include "Utils/IncrementalWait.h"
 #include "Utils/Thread.h"
 #include "EmailSender.h"
 
-#define EMAIL Email::getInstance()
+#define EMAIL Emailer::getInstance()
 
 
 enum class EmailTopic {
@@ -17,7 +18,7 @@ enum class EmailTopic {
 	TEST
 };
 
-class Email : public Thread {
+class Emailer : public Thread {
 
 	struct TopicProperties {
 		bool enabled;
@@ -26,7 +27,7 @@ class Email : public Thread {
 		TopicProperties(const std::string& subject);
 	};
 
-	static std::unique_ptr<Email> instance;
+	static std::unique_ptr<Emailer> instance;
 
 	const Contact from;
 	const Contact to;
@@ -36,16 +37,17 @@ class Email : public Thread {
 	std::shared_ptr<EmailSender> emailSender;
 
 	BlockingQueue<std::unique_ptr<Message>> messages;
+	IncrementalWait wait;
 
 	virtual void onExecute() override;
 
 	TopicProperties& getTopicProperties(EmailTopic topic);
 	const TopicProperties& getTopicProperties(EmailTopic topic) const ;
 
-	Email(const std::shared_ptr<EmailSender>& emailSender);
+	Emailer(const std::shared_ptr<EmailSender>& emailSender);
 
 public:
-	virtual ~Email();
+	virtual ~Emailer();
 
 	void send(EmailTopic topic, const std::string& messageText);
 	void stop();
@@ -55,5 +57,5 @@ public:
 
 	static void init(const std::shared_ptr<EmailSender>& emailSender);
 	static void uninit();
-	static Email& getInstance();
+	static Emailer& getInstance();
 };
