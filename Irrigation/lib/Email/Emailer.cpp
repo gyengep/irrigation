@@ -125,7 +125,7 @@ void Emailer::onExecute() {
 				wait.resetWaitTime();
 
 				if (true == error) {
-					LOGGER.info("Email sending works well again");
+					LOGGER.info("Email sending resumed");
 				}
 
 				error = false;
