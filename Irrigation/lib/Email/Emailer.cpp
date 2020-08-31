@@ -2,6 +2,8 @@
 #include "CurlEmailSender.h"
 #include "Exceptions/InterruptedException.h"
 #include "Logger/Logger.h"
+#include "Utils/IncrementalWait.h"
+#include "Utils/TimeConversion.h"
 
 using namespace std;
 
@@ -40,8 +42,7 @@ Emailer& Emailer::getInstance() {
 Emailer::Emailer(const std::shared_ptr<EmailSender>& emailSender) : BlockingQueueThread<std::unique_ptr<Message>>("Emailer", waitTimes),
 	from("Irrigation System", "irrigation.gyengep@gmail.com"),
 	to("Gyenge Peter", "gyengep@gmail.com"),
-	emailSender(emailSender),
-	sendingError(false)
+	emailSender(emailSender)
 {
 	if (nullptr == emailSender) {
 		throw invalid_argument("Emailer::Emailer() nullptr == emailSender");
@@ -110,24 +111,17 @@ const Emailer::TopicProperties& Emailer::getTopicProperties(EmailTopic topic) co
 ///////////////////////////////////////////////////////////////////////////////
 
 void Emailer::onItemAvailable(const std::unique_ptr<Message>& message) {
-	try {
-		emailSender->send(*message);
+	emailSender->send(*message);
+}
 
-		if (true == sendingError) {
-			sendingError = false;
-			LOGGER.info("Email sending resumed");
-		}
+void Emailer::onResumed() {
+	LOGGER.info("Email sending resumed");
+}
 
-	} catch (const std::exception& e) {
-
-		if (LOGGER.isLoggable(LogLevel::WARNING)) {
-			const auto nextTryTime = std::chrono::system_clock::now() + getWaitTime();
-			const std::string nextTryTimeStr = toLocalTimeStr(std::chrono::system_clock::to_time_t(nextTryTime), "%T");
-			const std::string message = "Email sending failed, next try at " + nextTryTimeStr;
-			LOGGER.warning(message.c_str(), e);
-		}
-
-		sendingError = true;
-		throw;
+void Emailer::onError(size_t errorCount, const std::chrono::milliseconds& waitTime) {
+	if (LOGGER.isLoggable(LogLevel::WARNING)) {
+		const auto nextTryTime = std::chrono::system_clock::now() + waitTime;
+		const std::string nextTryTimeStr = toLocalTimeStr(std::chrono::system_clock::to_time_t(nextTryTime), "%T");
+		LOGGER.warning("Email sending failed on try %u, next try at %s", errorCount, nextTryTimeStr.c_str());
 	}
 }

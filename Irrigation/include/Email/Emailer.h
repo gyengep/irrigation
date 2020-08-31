@@ -36,9 +36,9 @@ class Emailer : public BlockingQueueThread<std::unique_ptr<Message>> {
 	std::map<EmailTopic, std::unique_ptr<TopicProperties>> topics;
 	std::shared_ptr<EmailSender> emailSender;
 
-	bool sendingError;
-
 	virtual void onItemAvailable(const std::unique_ptr<Message>& value) override;
+	virtual void onResumed();
+	virtual void onError(size_t errorCount, const std::chrono::milliseconds& waitTime);
 
 	TopicProperties& getTopicProperties(EmailTopic topic);
 	const TopicProperties& getTopicProperties(EmailTopic topic) const ;

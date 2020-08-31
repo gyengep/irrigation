@@ -1,26 +1,23 @@
 #pragma once
-#include <ctime>
-#include <memory>
 #include "Exceptions/InterruptedException.h"
 #include "BlockingQueue.h"
 #include "IncrementalWait.h"
-#include "TimeConversion.h"
 #include "Thread.h"
 
 
 template <typename T>
 class BlockingQueueThread : public Thread {
 	BlockingQueue<T> queue;
-	const std::unique_ptr<IncrementalWait> wait;
+	IncrementalWait incrementalWait;
+
+	void itemAvailable(const T& value);
 
 	virtual void onExecute() override;
 	virtual void onItemAvailable(const T& value) = 0;
-
-protected:
-	std::chrono::milliseconds getWaitTime() const;
+	virtual void onResumed() {}
+	virtual void onError(size_t errorCount, const std::chrono::milliseconds&) {}
 
 public:
-	BlockingQueueThread(const std::string& name = "");
 	BlockingQueueThread(const std::string& name, const std::vector<std::chrono::milliseconds>& waitTimes);
 	virtual ~BlockingQueueThread() = default;
 
@@ -31,25 +28,9 @@ public:
 };
 
 template <typename T>
-BlockingQueueThread<T>::BlockingQueueThread(const std::string& name) : Thread(name),
-	wait()
+BlockingQueueThread<T>::BlockingQueueThread(const std::string& name, const std::vector<std::chrono::milliseconds>& waitTimes) : Thread(name),
+	incrementalWait(waitTimes)
 {
-}
-
-template <typename T>
-BlockingQueueThread<T>::BlockingQueueThread(const std::string& name, const std::vector<std::chrono::milliseconds>& waitTimes) :
-	Thread(name),
-	wait(new IncrementalWait(waitTimes))
-{
-}
-
-template <typename T>
-std::chrono::milliseconds BlockingQueueThread<T>::getWaitTime() const {
-	if (!wait) {
-		return std::chrono::milliseconds(0);
-	}
-
-	return wait->getWaitTime();
 }
 
 template <typename T>
@@ -65,11 +46,7 @@ void BlockingQueueThread<T>::push(T&& value) {
 template <typename T>
 void BlockingQueueThread<T>::stop() {
 	queue.finish();
-
-	if (wait) {
-		wait->interrupt();
-	}
-
+	incrementalWait.interrupt();
 	join();
 }
 
@@ -78,21 +55,35 @@ void BlockingQueueThread<T>::onExecute() {
 	try {
 
 		while (queue.waitForElement()) {
-			try {
-				onItemAvailable(queue.front());
-				queue.pop();
-
-				if (wait) {
-					wait->resetWaitTime();
-				}
-			} catch (const std::exception& e) {
-				if (wait) {
-					wait->wait();
-					wait->incrementWaitTime();
-				}
-			}
+			itemAvailable(queue.front());
+			queue.pop();
 		}
 
 	} catch (const InterruptedException& e) {
 	}
+}
+
+template <typename T>
+void BlockingQueueThread<T>::itemAvailable(const T& value) {
+	size_t errorCount = 0;
+
+	while (true) {
+		try {
+			onItemAvailable(value);
+
+			if (0 < errorCount) {
+				errorCount = 0;
+				incrementalWait.resetWaitTime();
+				onResumed();
+			}
+
+			return;
+
+		} catch (const std::exception& e) {
+			errorCount++;
+			onError(errorCount, incrementalWait.getWaitTime());
+			incrementalWait.wait();
+		}
+	}
+
 }

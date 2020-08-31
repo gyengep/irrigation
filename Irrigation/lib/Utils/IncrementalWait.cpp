@@ -15,18 +15,17 @@ void IncrementalWait::resetWaitTime() {
 	waitTimeIdx = 0;
 }
 
-void IncrementalWait::incrementWaitTime() {
-	if (waitTimeIdx + 1 < waitTimes.size()) {
-		waitTimeIdx += 1;
-	}
-}
-
 std::chrono::milliseconds IncrementalWait::getWaitTime() const {
 	return waitTimes[waitTimeIdx];
 }
 
+
 void IncrementalWait::wait() {
 	interruptableWait.wait_for(waitTimes[waitTimeIdx]);
+
+	if (waitTimeIdx + 1 < waitTimes.size()) {
+		waitTimeIdx += 1;
+	}
 }
 
 void IncrementalWait::interrupt() {
