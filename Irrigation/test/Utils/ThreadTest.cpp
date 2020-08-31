@@ -1,14 +1,9 @@
 #include <gmock/gmock.h>
+#include "Mocks/MockThread.h"
 #include "Utils/Thread.h"
 
 using namespace std;
 using namespace testing;
-
-
-class MockThread : public Thread {
-public:
-	MOCK_METHOD0(onExecute, void());
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 

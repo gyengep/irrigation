@@ -1,14 +1,9 @@
-#include <ostream>
 #include <thread>
+#include "TestCommon/cout.h"
 #include "TimerTest.h"
 
 using namespace std;
 using namespace testing;
-
-ostream& operator<<(ostream& os, const chrono::steady_clock::time_point& timePoint) {
-	os << chrono::duration_cast<chrono::milliseconds>(timePoint.time_since_epoch()).count();
-	return os;
-}
 
 void TimerTest::saveCallTime() {
 	callTimes.push_back(chrono::steady_clock::now());

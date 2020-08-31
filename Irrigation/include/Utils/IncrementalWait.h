@@ -14,7 +14,8 @@ public:
 	IncrementalWait(const std::vector<std::chrono::milliseconds>& waitTimes);
 
 	void resetWaitTime();
-	void incrementWaitTime();
 	void wait();
 	void interrupt();
+
+	std::chrono::milliseconds getWaitTime() const;
 };

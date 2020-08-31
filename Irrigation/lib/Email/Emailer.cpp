@@ -2,6 +2,8 @@
 #include "CurlEmailSender.h"
 #include "Exceptions/InterruptedException.h"
 #include "Logger/Logger.h"
+#include "Utils/IncrementalWait.h"
+#include "Utils/TimeConversion.h"
 
 using namespace std;
 
@@ -15,6 +17,11 @@ Emailer::TopicProperties::TopicProperties(const std::string& subject) :
 ///////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<Emailer> Emailer::instance;
+const std::vector<std::chrono::milliseconds> Emailer::waitTimes {
+	chrono::minutes(1), chrono::minutes(2), chrono::minutes(5),
+	chrono::minutes(15), chrono::minutes(30), chrono::minutes(60)
+};
+
 
 void Emailer::init(const std::shared_ptr<EmailSender>& emailSender) {
 	instance.reset(new Emailer(emailSender));
@@ -32,14 +39,10 @@ Emailer& Emailer::getInstance() {
 	return *instance;
 }
 
-Emailer::Emailer(const std::shared_ptr<EmailSender>& emailSender) : Thread("Emailer"),
+Emailer::Emailer(const std::shared_ptr<EmailSender>& emailSender) : BlockingQueueThread<std::unique_ptr<Message>>("Emailer", waitTimes),
 	from("Irrigation System", "irrigation.gyengep@gmail.com"),
 	to("Gyenge Peter", "gyengep@gmail.com"),
-	emailSender(emailSender),
-	wait(vector<chrono::milliseconds>({
-		chrono::minutes(1), chrono::minutes(2), chrono::minutes(5),
-		chrono::minutes(15), chrono::minutes(30), chrono::minutes(60)
-	}))
+	emailSender(emailSender)
 {
 	if (nullptr == emailSender) {
 		throw invalid_argument("Emailer::Emailer() nullptr == emailSender");
@@ -53,12 +56,6 @@ Emailer::Emailer(const std::shared_ptr<EmailSender>& emailSender) : Thread("Emai
 }
 
 Emailer::~Emailer() {
-}
-
-void Emailer::stop() {
-	messages.finish();
-	wait.interrupt();
-	join();
 }
 
 void Emailer::send(EmailTopic topic, const std::string& messageText) {
@@ -75,7 +72,7 @@ void Emailer::send(EmailTopic topic, const std::string& messageText) {
 		message->text = messageText;
 		message->date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-		messages.push(move(message));
+		push(move(message));
 	}
 }
 
@@ -113,31 +110,18 @@ const Emailer::TopicProperties& Emailer::getTopicProperties(EmailTopic topic) co
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Emailer::onExecute() {
-	bool error = false;
+void Emailer::onItemAvailable(const std::unique_ptr<Message>& message) {
+	emailSender->send(*message);
+}
 
-	try {
+void Emailer::onResumed() {
+	LOGGER.info("Email sending resumed");
+}
 
-		while (messages.waitForElement()) {
-			try {
-				emailSender->send(*messages.front());
-				messages.pop();
-				wait.resetWaitTime();
-
-				if (true == error) {
-					LOGGER.info("Email sending resumed");
-				}
-
-				error = false;
-			} catch (const std::exception& e) {
-				LOGGER.warning("Email sending failed", e);
-				wait.wait();
-				wait.incrementWaitTime();
-				error = true;
-			}
-		}
-
-	} catch (const InterruptedException& e) {
-		LOGGER.warning("There are some unsent email in the queue");
+void Emailer::onError(size_t errorCount, const std::chrono::milliseconds& waitTime) {
+	if (LOGGER.isLoggable(LogLevel::WARNING)) {
+		const auto nextTryTime = std::chrono::system_clock::now() + waitTime;
+		const std::string nextTryTimeStr = toLocalTimeStr(std::chrono::system_clock::to_time_t(nextTryTime), "%T");
+		LOGGER.warning("Email sending failed on try %u, next try at %s", errorCount, nextTryTimeStr.c_str());
 	}
 }

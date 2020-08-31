@@ -38,17 +38,16 @@ TEST(InterruptableWaitTest, wait) {
 }
 
 
-
-void waitAndInterrupt(InterruptableWait& interruptableWait, const chrono::milliseconds& waitTime) {
-	FixedWait::wait_for(waitTime);
-	interruptableWait.interrupt();
-}
-
 TEST(InterruptableWaitTest, waitAndInterrupt) {
 	const chrono::milliseconds interruptTime(10);
 	const chrono::milliseconds waitTime(50);
 
 	InterruptableWait wait;
+
+	auto waitAndInterrupt = [] (InterruptableWait& interruptableWait, const chrono::milliseconds& waitTime) {
+		WAIT_FOR(waitTime);
+		interruptableWait.interrupt();
+	};
 
 	thread waitAndInterruptThread(waitAndInterrupt, ref(wait), interruptTime);
 
