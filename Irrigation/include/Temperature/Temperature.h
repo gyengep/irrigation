@@ -1,44 +1,73 @@
 #pragma once
 #include <chrono>
 #include <memory>
+#include <vector>
+#include "Utils/FixedDelaySchedulerThread.h"
 #include "TemperatureException.h"
-#include "TemperatureHistory.h"
-#include "TemperatureForecast.h"
 
 class CurrentTemperatureProvider;
+class TemperatureForecast;
+class TemperatureHistory;
 class CurrentTemperatureImpl;
-class TemperatureHistoryImpl;
-class TemperatureHistoryPersister;
 class TemperatureForecastImpl;
-class TemperatureForecastProvider;
+class TemperatureHistoryImpl;
+class TemperatureHistoryLogger;
 
 
 class Temperature {
-
 	std::shared_ptr<CurrentTemperatureImpl> current;
 	std::shared_ptr<TemperatureForecastImpl> forecast;
 	std::shared_ptr<TemperatureHistoryImpl> history;
-	std::shared_ptr<TemperatureHistoryPersister> historyPersister;
+	std::shared_ptr<TemperatureHistoryLogger> historyLogger;
 
-
-	Temperature();
+	std::unique_ptr<FixedDelaySchedulerThread> currentThread;
+	std::unique_ptr<FixedDelaySchedulerThread> forecastThread;
+	std::unique_ptr<EveryHourSchedulerThread> historyLoggerThread;
 
 	std::shared_ptr<CurrentTemperatureProvider> createCurrentTemperatureProvider();
 
+	Temperature();
+
 public:
 
-	virtual ~Temperature();
+	struct CurrentTemperatureProperties {
+		std::chrono::milliseconds updatePeriod;
+		std::vector<std::chrono::milliseconds> delayOnFailed;
+
+		CurrentTemperatureProperties(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed);
+	};
+
+	struct TemperatureForecastProperties {
+		std::chrono::milliseconds updatePeriod;
+		std::vector<std::chrono::milliseconds> delayOnFailed;
+
+		TemperatureForecastProperties(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed);
+	};
+
+	struct TemperatureHistoryProperties {
+		std::chrono::seconds length;
+		std::string fileName;
+
+		TemperatureHistoryProperties(const std::chrono::seconds& length, const std::string& fileName);
+	};
+
+	struct TemperatureHistoryLoggerProperties {
+		std::chrono::milliseconds period;
+		std::string fileName;
+
+		TemperatureHistoryLoggerProperties(const std::chrono::milliseconds& period, const std::string& fileName);
+	};
+
+	~Temperature();
 
 	const std::shared_ptr<TemperatureHistory> getTemperatureHistory() const;
 	const std::shared_ptr<TemperatureForecast> getTemperatureForecast() const;
 
 	void init(
-			const std::chrono::duration<int64_t>& currentTemperatureUpdatePeriod,
-			const std::string& temperatureHistoryFileName,
-			const std::chrono::duration<int64_t>& temperatureHistoryLength,
-			const std::string& temperatureHistoryPersisterFileName,
-			const std::chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
-			const std::chrono::duration<int64_t>& forecastUpdatePeriod
+			const CurrentTemperatureProperties& currentTemperatureProperties,
+			const TemperatureForecastProperties& temperatureForecastProperties,
+			const TemperatureHistoryProperties& temperatureHistoryProperties,
+			const TemperatureHistoryLoggerProperties& temperatureHistoryLoggerProperties
 		);
 	void uninit();
 

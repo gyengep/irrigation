@@ -1,19 +1,21 @@
 #pragma once
 #include <ctime>
+#include <ostream>
 
 
 class TemperatureHistory {
 public:
 
 	struct Values {
-		float min, max, avg;
+		const float min;
+		const float max;
+		const float avg;
 
-		Values(float min, float max, float avg) :
-			min(min),
-			max(max),
-			avg(avg)
-		{
-		}
+		Values(float min, float max, float avg);
+
+		// for testing
+		bool operator== (const Values& other) const;
+		friend std::ostream& operator<<(std::ostream& os, const Values& values);
 	};
 
 	virtual ~TemperatureHistory() = default;

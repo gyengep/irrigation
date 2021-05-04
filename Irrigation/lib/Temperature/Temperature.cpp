@@ -2,15 +2,45 @@
 #include "DS18B20Wrapper.h"
 #include "DarkSkyWrapper.h"
 #include "CurrentTemperatureImpl.h"
-#include "TemperatureHistoryImpl.h"
-#include "TemperatureHistoryPersister.h"
 #include "TemperatureForecastImpl.h"
+#include "TemperatureHistoryImpl.h"
+#include "TemperatureHistoryLogger.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
+#include "Utils/RepeatUntilSuccessRunnable.h"
+#include "Utils/FixedDelaySchedulerThread.h"
 #include "Utils/TimeConversion.h"
 
+#include "CsvTemperatureHistoryPersister.h"
+
 using namespace std;
+
+///////////////////////////////////////////////////////////////////////////////
+
+Temperature::CurrentTemperatureProperties::CurrentTemperatureProperties(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed) :
+	updatePeriod(updatePeriod),
+	delayOnFailed(delayOnFailed)
+{
+}
+
+Temperature::TemperatureForecastProperties::TemperatureForecastProperties(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed) :
+	updatePeriod(updatePeriod),
+	delayOnFailed(delayOnFailed)
+{
+}
+
+Temperature::TemperatureHistoryProperties::TemperatureHistoryProperties(const std::chrono::seconds& length, const std::string& fileName) :
+	length(length),
+	fileName(fileName)
+{
+}
+
+Temperature::TemperatureHistoryLoggerProperties::TemperatureHistoryLoggerProperties(const std::chrono::milliseconds& period, const std::string& fileName) :
+	period(period),
+	fileName(fileName)
+{
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -28,13 +58,12 @@ Temperature::~Temperature() {
 }
 
 void Temperature::init(
-		const chrono::duration<int64_t>& currentTemperatureUpdatePeriod,
-		const string& temperatureHistoryFileName,
-		const chrono::duration<int64_t>& temperatureHistoryLength,
-		const string& temperatureHistoryPersisterFileName,
-		const chrono::duration<int64_t>& temperatureHistoryPersisterPeriod,
-		const chrono::duration<int64_t>& forecastUpdatePeriod
-) {
+		const CurrentTemperatureProperties& currentTemperatureProperties,
+		const TemperatureForecastProperties& temperatureForecastProperties,
+		const TemperatureHistoryProperties& temperatureHistoryProperties,
+		const TemperatureHistoryLoggerProperties& temperatureHistoryLoggerProperties
+	)
+{
 	current = make_shared<CurrentTemperatureImpl>(
 			createCurrentTemperatureProvider()
 		);
@@ -45,33 +74,74 @@ void Temperature::init(
 
 	history = make_shared<TemperatureHistoryImpl>(
 			current,
-			temperatureHistoryLength,
-			temperatureHistoryFileName,
-			make_shared<CsvReaderImplFactory>(),
-			make_shared<CsvWriterImplFactory>()
+			std::make_shared<CsvTemperatureHistoryPersister>(
+					make_shared<CsvReaderFactoryImpl>(temperatureHistoryProperties.fileName),
+					make_shared<CsvWriterFactoryImpl>(temperatureHistoryProperties.fileName)
+				),
+			temperatureHistoryProperties.length
 		);
 
-	historyPersister = make_shared<TemperatureHistoryPersister>(
+	historyLogger = make_shared<TemperatureHistoryLogger>(
 			history,
-			make_shared<CsvWriterImplFactory>(),
-			temperatureHistoryPersisterFileName
+			make_shared<CsvWriterFactoryImpl>(temperatureHistoryLoggerProperties.fileName)
 		);
 
-	current->updateCache();
-	history->updateCache();
-	forecast->updateCache();
+	bool currentUpdated = false;
+	bool forecastUpdated = false;
 
-	current->startTimer(currentTemperatureUpdatePeriod);
-	history->startTimer();
-	historyPersister->startTimer(temperatureHistoryPersisterPeriod);
-	forecast->startTimer(forecastUpdatePeriod);
+	try {
+		current->updateCache();
+		currentUpdated = true;
+	} catch (const std::exception& e) {
+		LOGGER.warning("Current temperature update failed", e);
+	}
+
+	try {
+		forecast->updateCache();
+		forecastUpdated = true;
+	} catch (const std::exception& e) {
+		LOGGER.warning("Temperature forecast update failed", e);
+	}
+
+	currentThread = std::unique_ptr<FixedDelaySchedulerThread>(new FixedDelaySchedulerThread(
+			std::make_shared<RepeatUntilSuccessRunnable>(
+					current,
+					currentTemperatureProperties.delayOnFailed,
+					"Current temperature update"
+				),
+			currentUpdated ? currentTemperatureProperties.updatePeriod : std::chrono::milliseconds(100),
+			currentTemperatureProperties.updatePeriod,
+			"CurrentTemperatureImpl"
+		));
+
+
+	forecastThread = std::unique_ptr<FixedDelaySchedulerThread>(new FixedDelaySchedulerThread(
+			std::make_shared<RepeatUntilSuccessRunnable>(
+					forecast,
+					temperatureForecastProperties.delayOnFailed,
+					"Temperature forecast update"
+				),
+			forecastUpdated ? temperatureForecastProperties.updatePeriod : std::chrono::milliseconds(100),
+			temperatureForecastProperties.updatePeriod,
+			"TemperatureForecastImpl"
+		));
+
+	historyLoggerThread = std::unique_ptr<EveryHourSchedulerThread>(new EveryHourSchedulerThread(
+			historyLogger,
+			"TemperatureHistoryLogger"
+		));
+
+	currentThread->start();
+	forecastThread->start();
+	history->registerToListener();
+	historyLoggerThread->start();
 }
 
 void Temperature::uninit() {
-	forecast->stopTimer();
-	historyPersister->stopTimer();
-	history->stopTimer();
-	current->stopTimer();
+	historyLoggerThread->stop();
+	history->unregisterFromListener();
+	forecastThread->stop();
+	currentThread->stop();
 }
 
 const shared_ptr<TemperatureHistory> Temperature::getTemperatureHistory() const {

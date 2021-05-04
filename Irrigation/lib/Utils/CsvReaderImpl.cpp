@@ -1,4 +1,6 @@
 #include "CsvReaderImpl.h"
+#include "Exceptions/IOException.h"
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
@@ -35,9 +37,20 @@ unique_ptr<vector<string>> CsvReaderImpl::read() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CsvReaderImplFactory::~CsvReaderImplFactory() {
+CsvReaderFactoryImpl::CsvReaderFactoryImpl(const std::string& fileName) :
+	fileName(fileName)
+{
 }
 
-shared_ptr<CsvReader> CsvReaderImplFactory::create(const shared_ptr<istream>& input) {
-	return make_shared<CsvReaderImpl>(input);
+CsvReaderFactoryImpl::~CsvReaderFactoryImpl() {
+}
+
+shared_ptr<CsvReader> CsvReaderFactoryImpl::create() {
+	auto ifs = std::make_shared<std::ifstream>(fileName, std::ofstream::in);
+
+	if (ifs->fail()) {
+		throw IOException(errno);
+	}
+
+	return make_shared<CsvReaderImpl>(ifs);
 }

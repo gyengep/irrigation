@@ -1,4 +1,5 @@
 #pragma once
+#include <istream>
 #include "CsvReader.h"
 
 
@@ -10,12 +11,17 @@ class CsvReaderImpl : public CsvReader {
 public:
 	CsvReaderImpl(const std::shared_ptr<std::istream>& input);
 	virtual ~CsvReaderImpl();
+
 	virtual std::unique_ptr<std::vector<std::string>> read() override;
 };
 
 
-class CsvReaderImplFactory : public CsvReaderFactory {
+class CsvReaderFactoryImpl : public CsvReaderFactory {
+	const std::string fileName;
+
 public:
-	virtual ~CsvReaderImplFactory();
-	virtual std::shared_ptr<CsvReader> create(const std::shared_ptr<std::istream>& input) override;
+	CsvReaderFactoryImpl(const std::string& fileName);
+
+	virtual ~CsvReaderFactoryImpl();
+	virtual std::shared_ptr<CsvReader> create() override;
 };

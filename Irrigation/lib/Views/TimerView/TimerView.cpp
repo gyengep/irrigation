@@ -1,5 +1,5 @@
 #include "TimerView.h"
-#include "Email/Emailer.h"
+#include "Email/EmailHandler.h"
 #include "Logger/Logger.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"

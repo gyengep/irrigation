@@ -1,5 +1,4 @@
 #pragma once
-#include <istream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,5 +14,5 @@ public:
 class CsvReaderFactory {
 public:
 	virtual ~CsvReaderFactory() = default;
-	virtual std::shared_ptr<CsvReader> create(const std::shared_ptr<std::istream>& input) = 0;
+	virtual std::shared_ptr<CsvReader> create() = 0;
 };

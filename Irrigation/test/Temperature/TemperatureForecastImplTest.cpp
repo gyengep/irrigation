@@ -1,18 +1,11 @@
 #include <gmock/gmock.h>
 #include "Temperature/TemperatureException.h"
 #include "Temperature/TemperatureForecastImpl.h"
+#include "Mocks/MockTemperatureForecastProvider.h"
 
 using namespace std;
 using namespace chrono;
 using namespace testing;
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockTemperatureForecastProvider : public TemperatureForecastProvider {
-public:
-	MOCK_CONST_METHOD0(readTemperatureForecast, list<ValuesWithTimes>());
-	MOCK_CONST_METHOD0(getForecastProviderName, std::string());
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -51,33 +44,43 @@ TEST(TemperatureForecastImplTest, checkValueListInvalid) {
 }
 
 TEST(TemperatureForecastImplTest, updateCache) {
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(1).
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
+
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(1).
 			WillOnce(Return(valueList1));
 
-	TemperatureForecastImpl temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
 
 	temperatureForecast.updateCache();
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
 }
 
 TEST(TemperatureForecastImplTest, updateCacheInvalid) {
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(1).WillOnce(Return(invalidList1));
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
 
-	TemperatureForecastImpl temperatureForecast(mockProvider);
-	temperatureForecast.updateCache();
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(1).
+			WillOnce(Return(invalidList1));
 
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
+
+	EXPECT_THROW(temperatureForecast.updateCache(), std::runtime_error);
 	EXPECT_THAT(temperatureForecast.getContainer(), IsEmpty());
 }
 
 TEST(TemperatureForecastImplTest, updateCacheTwoTimes) {
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(2).
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
+
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(2).
 			WillOnce(Return(valueList1)).
 			WillOnce(Return(valueList2));
 
-	TemperatureForecastImpl temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
 
 	temperatureForecast.updateCache();
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
@@ -87,18 +90,25 @@ TEST(TemperatureForecastImplTest, updateCacheTwoTimes) {
 }
 
 TEST(TemperatureForecastImplTest, updateCacheTwoTimesInvalid) {
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(2).
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
+
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(3).
 			WillOnce(Return(valueList1)).
-			WillOnce(Return(invalidList1));
+			WillOnce(Return(invalidList1)).
+			WillOnce(Return(valueList2));
 
-	TemperatureForecastImpl temperatureForecast(mockProvider);
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
 
-	temperatureForecast.updateCache();
+	EXPECT_NO_THROW(temperatureForecast.updateCache());
 	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
 
-	temperatureForecast.updateCache();
-	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
+	EXPECT_THROW(temperatureForecast.updateCache(), std::runtime_error);
+	EXPECT_THAT(temperatureForecast.getContainer(), IsEmpty());
+
+	EXPECT_NO_THROW(temperatureForecast.updateCache());
+	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList2));
 }
 
 TEST(TemperatureForecastImplTest, getTemperatureForecast) {
@@ -110,10 +120,14 @@ TEST(TemperatureForecastImplTest, getTemperatureForecast) {
 		TemperatureForecastProvider::ValuesWithTimes(50, 60, 28, 30)
 	};
 
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(1).WillOnce(Return(expectedList));
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
 
-	TemperatureForecastImpl temperatureForecast(mockProvider);
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(1).
+			WillOnce(Return(expectedList));
+
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
 	temperatureForecast.updateCache();
 
 	EXPECT_THAT(temperatureForecast.getTemperatureForecast(20, 40), TemperatureForecast::Values(16, 22));
@@ -131,23 +145,16 @@ TEST(TemperatureForecastImplTest, getForecastOutOfBounds) {
 		TemperatureForecastProvider::ValuesWithTimes(50, 60, 28, 30)
 	};
 
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(1).WillOnce(Return(expectedList));
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
 
-	TemperatureForecastImpl temperatureForecast(mockProvider);
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(1).
+			WillOnce(Return(expectedList));
+
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
 	temperatureForecast.updateCache();
 
 	EXPECT_THROW(temperatureForecast.getTemperatureForecast(60, 70), TemperatureException);
 	EXPECT_THROW(temperatureForecast.getTemperatureForecast(5, 10), TemperatureException);
-}
-
-TEST(TemperatureForecastImplTest, onTimer) {
-	auto mockProvider = make_shared<MockTemperatureForecastProvider>();
-
-	EXPECT_CALL(*mockProvider, readTemperatureForecast()).Times(1).
-			WillOnce(Return(valueList1));
-
-	TemperatureForecastImpl temperatureForecast(mockProvider);
-
-	EXPECT_NO_THROW(temperatureForecast.onTimer());
 }

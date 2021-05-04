@@ -1,6 +1,8 @@
 #include <gmock/gmock.h>
+#include <cstdio>
+#include <fstream>
+#include "Exceptions/IOException.h"
 #include "Utils/CsvReaderImpl.h"
-#include "Utils/CsvWriterImpl.h"
 
 using namespace std;
 using namespace testing;
@@ -24,24 +26,31 @@ TEST(CsvReaderImplTest, readMoreLine) {
 	EXPECT_THAT(csvReader.read(), IsNull());
 }
 
-TEST(CsvReaderImplTest, readerWriter) {
-	const vector<string> line1 { "1", "2", "3" };
-	const vector<string> line2 { "abc", "DEFG", "12345" };
-	const vector<string> line3 { "Asdf", "Yxcvbn", "Rrtzu" };
-
-	auto output = make_shared<ostringstream>();
+TEST(CsvReaderFactoryTest, read) {
+	char filename[L_tmpnam];
+	tmpnam(filename);
 
 	{
-		CsvWriterImpl csvWriter(output);
-		csvWriter.append(line1);
-		csvWriter.append(line2);
-		csvWriter.append(line3);
+		std::ofstream ofs(filename);
+		ofs << "1,2,3,4" << std::endl;
+		ofs << "5,6,7" << std::endl;
+		ofs.close();
 	}
 
-	CsvReaderImpl csvReader(make_shared<istringstream>(output->str()));
+	CsvReaderFactoryImpl csvReaderFactory(filename);
+	auto csvReader = csvReaderFactory.create();
 
-	EXPECT_THAT(csvReader.read(), Pointee(line1));
-	EXPECT_THAT(csvReader.read(), Pointee(line2));
-	EXPECT_THAT(csvReader.read(), Pointee(line3));
-	EXPECT_THAT(csvReader.read(), IsNull());
+	ASSERT_THAT(csvReader, Not(IsNull()));
+	EXPECT_THAT(csvReader->read(), Pointee(std::vector<std::string>{ "1", "2", "3", "4"}));
+	EXPECT_THAT(csvReader->read(), Pointee(std::vector<std::string>{ "5", "6", "7"}));
+	EXPECT_THAT(csvReader->read(), IsNull());
+}
+
+TEST(CsvReaderFactoryTest, readInvalid) {
+	char filename[L_tmpnam];
+	tmpnam(filename);
+
+	CsvReaderFactoryImpl csvReaderFactory(filename);
+
+	EXPECT_THROW(csvReaderFactory.create(), IOException);
 }

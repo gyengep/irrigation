@@ -5,6 +5,7 @@
 
 class TemperatureForecast {
 public:
+
 	struct Values {
 		const float min;
 		const float max;

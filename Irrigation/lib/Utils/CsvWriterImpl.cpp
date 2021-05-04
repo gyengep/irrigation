@@ -1,4 +1,6 @@
 #include "CsvWriterImpl.h"
+#include "Exceptions/IOException.h"
+#include <fstream>
 #include <stdexcept>
 
 using namespace std;
@@ -24,15 +26,22 @@ void CsvWriterImpl::append(const vector<string>& values) {
 	*output << endl;
 }
 
-const shared_ptr<ostream>& CsvWriterImpl::stream() const {
-	return output;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
-CsvWriterImplFactory::~CsvWriterImplFactory() {
+CsvWriterFactoryImpl::CsvWriterFactoryImpl(const std::string& fileName) :
+	fileName(fileName)
+{
 }
 
-shared_ptr<CsvWriter> CsvWriterImplFactory::create(const shared_ptr<ostream>& output) {
-	return make_shared<CsvWriterImpl>(output);
+CsvWriterFactoryImpl::~CsvWriterFactoryImpl() {
+}
+
+shared_ptr<CsvWriter> CsvWriterFactoryImpl::create() {
+	auto ofs = std::make_shared<std::ofstream>(fileName, ofstream::out | ofstream::app);
+
+	if (ofs->fail()) {
+		throw IOException(errno);
+	}
+
+	return make_shared<CsvWriterImpl>(ofs);
 }

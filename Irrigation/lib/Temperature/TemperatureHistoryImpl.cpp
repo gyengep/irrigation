@@ -1,182 +1,82 @@
 #include "TemperatureHistoryImpl.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
-#include "Utils/CsvReader.h"
-#include "Utils/CsvWriter.h"
-#include <algorithm>
+#include "Utils/TimeConversion.h"
+#include <iomanip>
 #include <limits>
-#include <fstream>
+#include <sstream>
 
 using namespace std;
 
 
-TemperatureHistoryImpl::TemperatureSample::TemperatureSample(const time_t& sampleTime, float value) :
-	sampleTime(sampleTime),
-	value(value)
-{
-}
-
-bool TemperatureHistoryImpl::TemperatureSample::operator== (const TemperatureHistoryImpl::TemperatureSample& other) const {
-	return (sampleTime == other.sampleTime && value == other.value);
-}
-
-ostream& operator<<(ostream& os, const TemperatureHistoryImpl::TemperatureSample& temperatureSample) {
-	os << "TemperatureSample{";
-	os << "time: " << temperatureSample.sampleTime << ", ";
-	os << "value: " << temperatureSample.value;
-	os << "}";
-	return os;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 TemperatureHistoryImpl::TemperatureHistoryImpl(
-		const shared_ptr<CurrentTemperature>& sensor,
-		const chrono::seconds& storePeriod,
-		const string& fileName,
-		const shared_ptr<CsvReaderFactory>& csvReaderFactory,
-		const shared_ptr<CsvWriterFactory>& csvWriterFactory) :
-
-	sensor(sensor),
-	storedPeriod(storePeriod),
-	fileName(fileName),
-	csvReaderFactory(csvReaderFactory),
-	csvWriterFactory(csvWriterFactory)
+	const std::shared_ptr<CurrentTemperature>& currentTemperature,
+	const std::shared_ptr<TemperatureHistoryPersister>& temperatureHistoryPersister,
+	const std::chrono::seconds& historyLength
+) :
+	currentTemperature(currentTemperature),
+	temperatureHistoryPersister(temperatureHistoryPersister),
+	historyLength(historyLength)
 {
-	load();
+	if (nullptr == currentTemperature) {
+		throw std::invalid_argument("TemperatureHistoryImpl::TemperatureHistoryImpl() nullptr == currentTemperature");
+	}
+
+	if (nullptr == temperatureHistoryPersister) {
+		throw std::invalid_argument("TemperatureHistoryImpl::TemperatureHistoryImpl() nullptr == temperatureHistoryPersister");
+	}
 }
 
 TemperatureHistoryImpl::~TemperatureHistoryImpl() {
-	save();
 }
 
-void TemperatureHistoryImpl::load() {
-	if (!fileName.empty()) {
-		auto ifs = make_shared<ifstream>(fileName);
-		if (ifs->is_open()) {
-			try {
-				auto csvReader = csvReaderFactory->create(ifs);
-				unique_ptr<vector<string>> result;
-
-				while ((result = csvReader->read()) != nullptr) {
-					if (result->size() != 2) {
-						throw exception();
-					}
-
-					addTemperature(stoul(result->at(0)), stof(result->at(1)));
-				}
-
-				LOGGER.debug("Temperature history cache file is successfully loaded. %zu items are added", samples.size());
-
-			} catch (const exception& e) {
-				LOGGER.warning("Invalid temperature sample file");
-				samples.clear();
-			}
-		} else {
-			LOGGER.debug("Temperature history cache file not found");
-		}
-	}
+void TemperatureHistoryImpl::registerToListener() {
+	currentTemperature->addListener(this);
 }
 
-void TemperatureHistoryImpl::save() {
-	if (!fileName.empty()) {
-		auto ofs = make_shared<ofstream>(fileName);
-		if (ofs->is_open()) {
-			auto csvWriter = csvWriterFactory->create(ofs);
-
-			for (const auto& sample : samples) {
-				csvWriter->append(vector<string>{
-					to_string(sample.sampleTime),
-					temperatureToString(sample.value)
-				});
-			}
-
-			LOGGER.debug("Temperature history cache file is successfully saved");
-		}
-	}
-}
-
-void TemperatureHistoryImpl::addTemperature(const time_t& rawTime, float temperature) {
-	lock_guard<mutex> lock(mtx);
-	removeOlder(rawTime - storedPeriod.count());
-	removeNewer(rawTime);
-	samples.push_back(TemperatureSample(rawTime, temperature));
-}
-
-void TemperatureHistoryImpl::removeNewer(const time_t& rawTime) {
-	while(!samples.empty() && samples.back().sampleTime >= rawTime) {
-		samples.pop_back();
-	}
-}
-
-void TemperatureHistoryImpl::removeOlder(const time_t& rawTime) {
-	auto predicate = [rawTime](const TemperatureSample& sample) {
-		return sample.sampleTime > rawTime;
-	};
-
-	auto it = find_if(samples.begin(), samples.end(), predicate);
-	samples.erase(samples.begin(), it);
-}
-
-const deque<TemperatureHistoryImpl::TemperatureSample> TemperatureHistoryImpl::getContainer() const {
-	lock_guard<mutex> lock(mtx);
-	return samples;
+void TemperatureHistoryImpl::unregisterFromListener() {
+	currentTemperature->removeListener(this);
 }
 
 TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(const time_t& from, const time_t& to) const {
 	lock_guard<mutex> lock(mtx);
 
-	float minValue = numeric_limits<float>::max();
-	float maxValue = numeric_limits<float>::min();
-	float sum = 0;
-	size_t count = 0;
+	const auto samples = temperatureHistoryPersister->getBetween(from, to);
 
-	for (const auto& sample : samples) {
-		if (from <= sample.sampleTime && sample.sampleTime <= to) {
-			minValue = min(minValue, sample.value);
-			maxValue = max(maxValue, sample.value);
-			sum += sample.value;
-			count++;
-		}
-	}
-
-	if (0 == count) {
+	if (samples.empty()) {
 		throw TemperatureException("Temperature history not found with specified criteria");
 	}
 
-	return Values(minValue, maxValue, sum / count);
-}
+	float minValue = std::numeric_limits<float>::max();
+	float maxValue = std::numeric_limits<float>::min();
+	float sum = 0;
 
-void TemperatureHistoryImpl::updateCache(const time_t& rawTime) {
-	try {
-		addTemperature(rawTime, sensor->getCurrentTemperature());
-	} catch (const exception& e) {
-		LOGGER.warning("Can not read temperature for history", e);
+	for (const auto& sample : samples) {
+		minValue = std::min(minValue, sample.temperature);
+		maxValue = std::max(maxValue, sample.temperature);
+		sum += sample.temperature;
 	}
+
+	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+		std::ostringstream oss;
+
+		oss << "Querying temperature history: ";
+		oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ". ";
+		oss << "Result: [" << std::fixed << std::setw(2) << std::setprecision(1) << minValue << "-";
+		oss << std::fixed << std::setw(2) << std::setprecision(1) << maxValue << "]";
+
+		LOGGER.debug(oss.str().c_str());
+	}
+
+	return Values(minValue, maxValue, sum / samples.size());
 }
 
-void TemperatureHistoryImpl::updateCache() {
-	updateCache(time(nullptr));
-}
+void TemperatureHistoryImpl::onTemperatureUpdated(const time_t& rawTime, float temperature) {
+	lock_guard<mutex> lock(mtx);
 
-void TemperatureHistoryImpl::startTimer() {
-	sensor->addListener(this);
-}
+	LOGGER.debug("Temperature history is updated with new value: %.1fC", temperature);
 
-void TemperatureHistoryImpl::stopTimer() {
-	sensor->removeListener(this);
-}
-
-void TemperatureHistoryImpl::onTimer() {
-#ifdef ONTIMER_TRACE_LOG
-	LOGGER.trace("TemperatureHistoryImpl::onTimer()");
-#endif
-
-	updateCache();
-}
-
-string TemperatureHistoryImpl::temperatureToString(float value) {
-	char buffer[32];
-	sprintf(buffer, "%.1f", value);
-	return string(buffer);
+	temperatureHistoryPersister->add(TemperatureHistoryPersister::Sample(rawTime, temperature));
+	temperatureHistoryPersister->removeOlder(rawTime - std::chrono::duration_cast<std::chrono::seconds>(historyLength).count());
+	temperatureHistoryPersister->removeNewer(rawTime);
 }

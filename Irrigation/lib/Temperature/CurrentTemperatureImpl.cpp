@@ -2,67 +2,73 @@
 #include "CurrentTemperatureProvider.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
+#include <algorithm>
 
 using namespace std;
 
 
-CurrentTemperatureImpl::CurrentTemperatureImpl(const shared_ptr<CurrentTemperatureProvider>& provider) :
-	provider(provider)
+CurrentTemperatureImpl::CurrentTemperatureImpl(const std::shared_ptr<CurrentTemperatureProvider>& provider) :
+	provider(provider),
+	value(0.0f),
+	valid(false)
 {
+	if (nullptr == provider) {
+		throw std::invalid_argument("CurrentTemperatureImpl::CurrentTemperatureImpl() nullptr == provider");
+	}
+
 	LOGGER.debug("%s temperature sensor is initialized", provider->getSensorName().c_str());
 }
 
 CurrentTemperatureImpl::~CurrentTemperatureImpl() {
 }
 
+void CurrentTemperatureImpl::updateCache() {
+	try {
+		setValue(provider->readCurrentTemperature());
+	} catch(const std::runtime_error& e) {
+		invalidateValue();
+		throw;
+	}
+}
+
+void CurrentTemperatureImpl::setValue(float value) {
+	unique_lock<mutex> lock1(mtx, std::defer_lock);
+	unique_lock<mutex> lock2(listenerMutex, std::defer_lock);
+	std::lock(lock1, lock2);
+
+	this->value = value;
+	this->valid = true;
+
+	LOGGER.debug("Current temperature successfully updated: %.1fC", value);
+
+	const time_t currentTime = time(nullptr);
+	auto onUpdateSuccses = [this, &currentTime](CurrentTemperatureListener* currentTemperatureListener) {
+		currentTemperatureListener->onTemperatureUpdated(currentTime, this->value);
+	};
+	std::for_each(listeners.begin(), listeners.end(), onUpdateSuccses);
+}
+
+void CurrentTemperatureImpl::invalidateValue() {
+	unique_lock<mutex> lock1(mtx);
+	this->valid = false;
+}
+
 float CurrentTemperatureImpl::getCurrentTemperature() const {
 	lock_guard<mutex> lock(mtx);
 
-	if (value.get() == nullptr) {
+	if (false == valid) {
 		throw TemperatureException("Temperature is not available");
 	}
 
-	return *value;
+	return value;
 }
 
-void CurrentTemperatureImpl::updateCache() {
-	try {
-		const float newValue = provider->readCurrentTemperature();
-
-		lock_guard<mutex> lock(mtx);
-		value.reset(new float(newValue));
-
-	} catch(const exception& e) {
-		LOGGER.warning("Can not read temperature sensor", e);
-
-		lock_guard<mutex> lock(mtx);
-		value.reset();
-	}
+void CurrentTemperatureImpl::addListener(CurrentTemperatureListener* currentTemperatureListener) {
+	lock_guard<mutex> lock(listenerMutex);
+	listeners.push_back(currentTemperatureListener);
 }
 
-void CurrentTemperatureImpl::startTimer(const chrono::seconds& period) {
-	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_DELAY, "CurrentTemperatureImpl"));
-	timer->add(this);
-	timer->start();
-}
-
-void CurrentTemperatureImpl::stopTimer() {
-	timer->stop();
-	timer.reset();
-}
-
-void CurrentTemperatureImpl::onTimer() {
-#ifdef ONTIMER_TRACE_LOG
-	LOGGER.trace("CurrentTemperatureProvider::onTimer()");
-#endif
-
-	updateCache();
-}
-
-void CurrentTemperatureImpl::addListener(TimerCallback* timerCallback) {
-	timer->add(timerCallback);
-}
-
-void CurrentTemperatureImpl::removeListener(TimerCallback* timerCallback) {
-	timer->remove(timerCallback);
+void CurrentTemperatureImpl::removeListener(CurrentTemperatureListener* currentTemperatureListener) {
+	lock_guard<mutex> lock(listenerMutex);
+	listeners.remove(currentTemperatureListener);
 }

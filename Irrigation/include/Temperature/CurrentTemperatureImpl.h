@@ -1,29 +1,35 @@
 #pragma once
+#include <list>
 #include <memory>
-#include "Utils/Timer.h"
+#include <mutex>
+#include "Utils/Runnable.h"
 #include "CurrentTemperature.h"
 
 class CurrentTemperatureProvider;
 
 
-class CurrentTemperatureImpl : public CurrentTemperature, public TimerCallback {
+class CurrentTemperatureImpl : public CurrentTemperature, public Runnable {
 	const std::shared_ptr<CurrentTemperatureProvider> provider;
 
+	std::mutex listenerMutex;
+	std::list<CurrentTemperatureListener*> listeners;
+
 	mutable std::mutex mtx;
-	std::unique_ptr<Timer> timer;
-	std::unique_ptr<float> value;
+	float value;
+	bool valid;
+
+	void setValue(float value);
+	void invalidateValue();
 
 public:
 	CurrentTemperatureImpl(const std::shared_ptr<CurrentTemperatureProvider>& provider);
 	virtual ~CurrentTemperatureImpl();
 
-	virtual float getCurrentTemperature() const override;
 	void updateCache();
 
-	void startTimer(const std::chrono::seconds& period);
-	void stopTimer();
-	virtual void onTimer() override;
+	virtual void run() override { return updateCache(); }
 
-	virtual void addListener(TimerCallback* timerCallback) override;
-	virtual void removeListener(TimerCallback* timerCallback) override;
+	virtual float getCurrentTemperature() const override;
+	virtual void addListener(CurrentTemperatureListener* currentTemperatureListener) override;
+	virtual void removeListener(CurrentTemperatureListener* currentTemperatureListener) override;
 };
