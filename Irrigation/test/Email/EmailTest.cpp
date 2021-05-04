@@ -1,66 +1,136 @@
 #include <gmock/gmock.h>
-#include <fstream>
-#include "Exceptions/Exceptions.h"
-#include "Email/Emailer.h"
+#include "Email/Email.h"
 
 using namespace std;
-using ::testing::_;
+using namespace testing;
 
 
-class MockEmailSender : public EmailSender {
-public:
-	MOCK_METHOD1(send, void(const Message& message));
-};
+TEST(EmailTest, contact) {
+	const std::string name("abcd");
+	const std::string address("123456");
 
+	Email::Contact contact(name, address);
 
-TEST(EmailTest, send) {
-	EMAIL.start();
-	EMAIL.enableTopic(EmailTopic::TEST);
-	EMAIL.send(EmailTopic::TEST, "Message Body");
-	EMAIL.stop();
+	EXPECT_THAT(contact.name, Eq(name));
+	EXPECT_THAT(contact.address, Eq(address));
 }
 
-TEST(EmailTest, enable) {
-	Emailer::init(make_shared<MockEmailSender>());
+TEST(EmailTest, contactWithoutName) {
+	const std::string name;
+	const std::string address("123456");
 
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_START));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_SKIP));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STARTED));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STOPPED));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::TEST));
+	Email::Contact contact(name, address);
 
-	EMAIL.enableTopic(EmailTopic::WATERING_START);
-
-	EXPECT_TRUE(EMAIL.isTopicEnabled(EmailTopic::WATERING_START));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_SKIP));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STARTED));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STOPPED));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::TEST));
-
-	EMAIL.enableTopic(EmailTopic::WATERING_START, false);
-
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_START));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::WATERING_SKIP));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STARTED));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::SYSTEM_STOPPED));
-	EXPECT_FALSE(EMAIL.isTopicEnabled(EmailTopic::TEST));
-
-	Emailer::uninit();
+	EXPECT_THAT(contact.name, Eq(name));
+	EXPECT_THAT(contact.address, Eq(address));
 }
 
-TEST(EmailTest, topicEnabled) {
-	auto mockEmailSender = make_shared<MockEmailSender>();
+TEST(EmailTest, contactWithoutAddress) {
+	const std::string name("abcd");
+	const std::string address;
 
-	EXPECT_CALL(*mockEmailSender, send(_)).Times(1);
-
-	Emailer::init(mockEmailSender);
-	EMAIL.start();
-	EMAIL.enableTopic(EmailTopic::TEST);
-	EMAIL.send(EmailTopic::WATERING_START, "Message Body");
-	EMAIL.send(EmailTopic::WATERING_SKIP, "Message Body");
-	EMAIL.send(EmailTopic::SYSTEM_STARTED, "Message Body");
-	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "Message Body");
-	EMAIL.send(EmailTopic::TEST, "Message Body");
-	EMAIL.stop();
-	Emailer::uninit();
+	EXPECT_THROW(Email::Contact(name, address), std::runtime_error);
 }
+
+TEST(EmailTest, contactToString) {
+	EXPECT_THAT(Email::Contact("abcd", "123456").toString(), Eq("abcd <123456>"));
+	EXPECT_THAT(Email::Contact("", "123456").toString(), Eq("123456"));
+}
+
+TEST(EmailTest, contactListToString) {
+	std::list<Email::Contact> contacts {
+		Email::Contact("abcd", "123456"),
+		Email::Contact("xyz", "987")
+	};
+
+	EXPECT_THAT(Email::Contact::toString(contacts), Eq("abcd <123456>, xyz <987>"));
+}
+
+TEST(EmailTest, emptyPersonListToString) {
+	EXPECT_THROW(Email::Contact::toString(std::list<Email::Contact>()), std::runtime_error);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(EmailTest, toString1) {
+
+	const std::string expectedMessage =
+			"From: abcdef <12345678>\r\n"
+			"To: qwert <9876543>\r\n"
+			"Subject: MySubject\r\n"
+			"Date: Mon, 25 Nov 2019 08:08:09 +0100\r\n"
+			"\r\n"
+			"MyMessage";
+
+	Email email(
+			Email::Contact("abcdef", "12345678"),
+			std::list<Email::Contact>{Email::Contact("qwert", "9876543")},
+			std::list<Email::Contact>(),
+			"MySubject",
+			"MyMessage",
+			1574665689
+		);
+
+	EXPECT_THAT(email.toString(), Eq(expectedMessage));
+}
+
+TEST(EmailTest, toString2) {
+	const std::string expectedMessage =
+			"From: abcdef <12345678>\r\n"
+			"To: qwert1 <1_9876543>, qwert2 <2_9876543>\r\n"
+			"Subject: MySubject\r\n"
+			"Date: Fri, 17 Jan 2020 17:37:48 +0100\r\n"
+			"\r\n"
+			"MyMessage";
+
+	Email email(
+			Email::Contact("abcdef", "12345678"),
+			std::list<Email::Contact>{Email::Contact("qwert1", "1_9876543"), Email::Contact("qwert2", "2_9876543")},
+			std::list<Email::Contact>(),
+			"MySubject",
+			"MyMessage",
+			1579279068
+		);
+
+	EXPECT_THAT(email.toString(), Eq(expectedMessage));
+}
+
+TEST(EmailTest, toString3) {
+	const std::string expectedMessage =
+			"From: abcdef <12345678>\r\n"
+			"To: qwert1 <1_9876543>\r\n"
+			"Cc: qwert2 <2_9876543>\r\n"
+			"Subject: MySubject\r\n"
+			"Date: Wed, 26 Aug 2020 22:34:53 +0200\r\n"
+			"\r\n"
+			"MyMessage";
+
+	Email email(
+			Email::Contact("abcdef", "12345678"),
+			std::list<Email::Contact>{Email::Contact("qwert1", "1_9876543")},
+			std::list<Email::Contact>{Email::Contact("qwert2", "2_9876543")},
+			"MySubject",
+			"MyMessage",
+			1598474093
+		);
+
+	EXPECT_THAT(email.toString(), Eq(expectedMessage));
+}
+
+TEST(EmailTest, dateToString1) {
+	//1598474093:  2020-08-26T20:34:53+00:00
+	EXPECT_THAT(Email::dateToString(1598474093), Eq("Wed, 26 Aug 2020 22:34:53 +0200"));
+}
+
+TEST(EmailTest, dateToString2) {
+	//1579279068:  2020-01-17T16:37:48+00:00
+	EXPECT_THAT(Email::dateToString(1579279068), Eq("Fri, 17 Jan 2020 17:37:48 +0100"));
+}
+
+TEST(EmailTest, dateToString3) {
+	//1574665689:  2019-11-25T07:08:09+00:00
+	EXPECT_THAT(Email::dateToString(1574665689), Eq("Mon, 25 Nov 2019 08:08:09 +0100"));
+}
+
+
+

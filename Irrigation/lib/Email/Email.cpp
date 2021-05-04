@@ -1,11 +1,10 @@
-#include "EmailSender.h"
+#include "Email.h"
 #include <sstream>
-#include <time.h>
 
 using namespace std;
 
 
-Contact::Contact(const std::string& name, const std::string& address) :
+Email::Contact::Contact(const std::string& name, const std::string& address) :
 	name(name),
 	address(address)
 {
@@ -14,7 +13,14 @@ Contact::Contact(const std::string& name, const std::string& address) :
 	}
 }
 
-std::string Contact::toString() const {
+bool Email::Contact::operator==(const Email::Contact& other) const {
+	return (
+		other.name == name &&
+		other.address == address
+	);
+}
+
+std::string Email::Contact::toString() const {
 	std::ostringstream oss;
 
 	if (name.empty()) {
@@ -26,9 +32,9 @@ std::string Contact::toString() const {
 	return oss.str();
 }
 
-std::string Contact::toString(const std::list<Contact>& persons) {
+std::string Email::Contact::toString(const std::list<Contact>& persons) {
 	if (persons.empty()) {
-		throw std::runtime_error("The email list must not be empty");
+		throw std::runtime_error("The email contact list must not be empty");
 	}
 
 	std::ostringstream oss;
@@ -46,7 +52,35 @@ std::string Contact::toString(const std::list<Contact>& persons) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Message::toString() const {
+Email::Email(
+	const Contact& from,
+	const std::list<Contact>& to,
+	const std::list<Contact>& cc,
+	const std::string& subject,
+	const std::string& text,
+	const std::time_t& date
+) :
+	from(from),
+	to(to),
+	cc(cc),
+	subject(subject),
+	text(text),
+	date(date)
+{
+}
+
+bool Email::operator==(const Email& other) const {
+	return (
+		other.from == from &&
+		other.to == to &&
+		other.cc == cc &&
+		other.subject == subject &&
+		other.text == text &&
+		other.date == date
+	);
+}
+
+std::string Email::toString() const {
 	std::ostringstream oss;
 
 	oss << "From: " << from.toString() << "\r\n";
@@ -67,7 +101,7 @@ std::string Message::toString() const {
 	return oss.str();
 }
 
-std::string Message::dateToString(const std::time_t& rawTime) {
+std::string Email::dateToString(const std::time_t& rawTime) {
 	const int BufferSize = 100;
 	char buffer[BufferSize];
 

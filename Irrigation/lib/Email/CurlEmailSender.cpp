@@ -9,20 +9,33 @@
 using namespace std;
 
 
-CurlEmailSender::CurlEmailSender() :
-	url("smtps://smtp.gmail.com:465"),
-	username("irrigation.gyengep"),
-	password("hFlTL4931c")
+EmailSender::Properties::Properties(const std::string& url, const std::string& username, const std::string& password) :
+	url(url),
+	username(username),
+	password(password)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::shared_ptr<EmailSender> EmailSender::create(const Properties& properties) {
+	return std::make_shared<CurlEmailSender>(properties);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+CurlEmailSender::CurlEmailSender(const EmailSender::Properties& properties) :
+	properties(properties)
 {
 }
 
 CurlEmailSender::~CurlEmailSender() {
 }
 
-void CurlEmailSender::send(const Message& message) {
+void CurlEmailSender::send(const Email& email) {
 
-	if (message.to.empty()) {
-		throw std::runtime_error("The email to list must not be empty");
+	if (email.to.empty()) {
+		throw std::runtime_error("The emailTo list must not be empty");
 	}
 
 	unique_ptr<CURL, void (*)(CURL*)> curl(curl_easy_init(), curl_easy_cleanup);
@@ -33,22 +46,22 @@ void CurlEmailSender::send(const Message& message) {
 
 	struct curl_slist *recipients = NULL;
 
-	for (const auto& recipient : message.to) {
+	for (const auto& recipient : email.to) {
 		recipients = curl_slist_append(recipients, recipient.address.c_str());
 	}
 
-	for (const auto& recipient : message.cc) {
+	for (const auto& recipient : email.cc) {
 		recipients = curl_slist_append(recipients, recipient.address.c_str());
 	}
 
-	CurlStringReader curlStringReader(message.toString());
+	CurlStringReader curlStringReader(email.toString());
 	char errbuf[CURL_ERROR_SIZE] = {0};
 
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, errbuf);
-	curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl.get(), CURLOPT_USERNAME, username.c_str());
-    curl_easy_setopt(curl.get(), CURLOPT_PASSWORD, password.c_str());
-	curl_easy_setopt(curl.get(), CURLOPT_MAIL_FROM, message.from.address.c_str());
+	curl_easy_setopt(curl.get(), CURLOPT_URL, properties.url.c_str());
+    curl_easy_setopt(curl.get(), CURLOPT_USERNAME, properties.username.c_str());
+    curl_easy_setopt(curl.get(), CURLOPT_PASSWORD, properties.password.c_str());
+	curl_easy_setopt(curl.get(), CURLOPT_MAIL_FROM, email.from.address.c_str());
 	curl_easy_setopt(curl.get(), CURLOPT_MAIL_RCPT, recipients);
 	curl_easy_setopt(curl.get(), CURLOPT_READFUNCTION, CurlStringReader::readFunction);
 	curl_easy_setopt(curl.get(), CURLOPT_READDATA, &curlStringReader);

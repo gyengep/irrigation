@@ -4,9 +4,8 @@
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
-#include "Email/Emailer.h"
+#include "Email/EmailHandler.h"
 #include "Exceptions/Exceptions.h"
-#include "Temperature/Temperature.h"
 #include "Hardware/Valves/GpioHandler.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
@@ -63,7 +62,21 @@ string IrrigationApplication::getVersion() {
 }
 
 void IrrigationApplication::initEmail() {
-	EMAIL.start();
+
+	const Email::Contact from("Irrigation System", "irrigation.gyengep@gmail.com");
+	const Email::Contact to("Gyenge Peter", "gyengep@gmail.com");
+	const EmailSender::Properties senderProperties("smtps://smtp.gmail.com:465", "irrigation.gyengep", "hFlTL4931c");
+
+	EmailHandler::init(
+			Email::Contact("Irrigation System", "irrigation.gyengep@gmail.com"),
+			Email::Contact("Gyenge Peter", "gyengep@gmail.com"),
+			EmailSender::create(EmailSender::Properties("smtps://smtp.gmail.com:465", "irrigation.gyengep", "hFlTL4931c")),
+			std::vector<std::chrono::milliseconds> {
+					chrono::minutes(1), chrono::minutes(2), chrono::minutes(5),
+					chrono::minutes(15), chrono::minutes(30), chrono::minutes(60)
+				}
+		);
+
 	EMAIL.enableTopic(EmailTopic::WATERING_START);
 	EMAIL.enableTopic(EmailTopic::WATERING_SKIP);
 	EMAIL.enableTopic(EmailTopic::SYSTEM_STARTED);
@@ -74,7 +87,7 @@ void IrrigationApplication::initEmail() {
 
 void IrrigationApplication::uninitEmail() {
 	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "System stopped");
-	EMAIL.stop();
+	EmailHandler::uninit();
 }
 
 void IrrigationApplication::initGpio() {
@@ -88,13 +101,29 @@ void IrrigationApplication::initGpio() {
 void IrrigationApplication::initTemperature() {
 	try {
 		Temperature::getInstance().init(
-			Configuration::getInstance().getCurrentTemperatureUpdatePeriod(),
-			Configuration::getInstance().getTemperatureCacheFileName(),
-			Configuration::getInstance().getTemperatureCacheLength(),
-			Configuration::getInstance().getTemperatureHistoryFileName(),
-			Configuration::getInstance().getTemperatureHistoryPeriod(),
-			Configuration::getInstance().getTemperatureForecastUpdatePeriod()
-		);
+				Temperature::CurrentTemperatureProperties(
+						Configuration::getInstance().getCurrentTemperatureUpdatePeriod(),
+						std::vector<std::chrono::milliseconds> {
+							std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
+							std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
+						}
+					),
+				Temperature::TemperatureForecastProperties(
+						Configuration::getInstance().getTemperatureForecastUpdatePeriod(),
+						std::vector<std::chrono::milliseconds> {
+							std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
+							std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
+						}
+					),
+				Temperature::TemperatureHistoryProperties(
+						Configuration::getInstance().getTemperatureCacheLength(),
+						Configuration::getInstance().getTemperatureCacheFileName()
+					),
+				Temperature::TemperatureHistoryLoggerProperties(
+						Configuration::getInstance().getTemperatureHistoryPeriod(),
+						Configuration::getInstance().getTemperatureHistoryFileName()
+					)
+			);
 
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize temperature module"));

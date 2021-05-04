@@ -1,16 +1,13 @@
 #pragma once
-#include <string>
 #include "EmailSender.h"
 
 
 class CurlEmailSender : public EmailSender {
-	const std::string url;
-	const std::string username;
-	const std::string password;
+	const EmailSender::Properties properties;
 
 public:
-	CurlEmailSender();
+	CurlEmailSender(const EmailSender::Properties& properties);
 	virtual ~CurlEmailSender();
 
-	virtual void send(const Message& message) override;
+	virtual void send(const Email& email) override;
 };

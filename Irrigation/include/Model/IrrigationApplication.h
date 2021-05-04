@@ -1,6 +1,7 @@
 #pragma once
 #include "Application.h"
 #include "DTO/DocumentDTO.h"
+#include "Temperature/Temperature.h"
 
 class IrrigationDocument;
 class DocumentSaver;
@@ -8,6 +9,7 @@ class DocumentSaver;
 
 class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
+	//std::shared_ptr<Temperature> temperature;
 	std::unique_ptr<DocumentSaver> documentSaver;
 
 	void initEmail();
