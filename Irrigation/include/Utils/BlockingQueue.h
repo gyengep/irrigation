@@ -8,11 +8,12 @@ template <typename T>
 class BlockingQueue {
 	mutable std::mutex mtx;
 	mutable std::condition_variable cv;
+	bool interrupted;
 
 	std::queue<T> container;
-	bool finished;
 
 public:
+
 	BlockingQueue();
 	~BlockingQueue() = default;
 
@@ -21,39 +22,47 @@ public:
 	void pop();
 	const T& front() const;
 
+	size_t size() const;
+
 	bool waitForElement() const;
-	void finish();
+	void interrupt();
 };
 
 
 template <typename T>
 BlockingQueue<T>::BlockingQueue() :
-	finished(false)
+	interrupted(false)
 {
+}
+
+template <typename T>
+size_t BlockingQueue<T>::size() const {
+	std::unique_lock<std::mutex> lock(mtx);
+	return container.size();
 }
 
 template <typename T>
 void BlockingQueue<T>::push(const T& value) {
 	std::unique_lock<std::mutex> lock(mtx);
 
-	if (finished) {
+	if (interrupted) {
 		throw std::logic_error("BlockingQueue<T>::push(const T& value) finished == true");
 	}
 
 	container.push(value);
-	cv.notify_all();
+	cv.notify_one();
 }
 
 template <typename T>
 void BlockingQueue<T>::push(T&& value) {
 	std::unique_lock<std::mutex> lock(mtx);
 
-	if (finished) {
+	if (interrupted) {
 		throw std::logic_error("BlockingQueue<T>::push(T&& value) finished == true");
 	}
 
 	container.push(std::move(value));
-	cv.notify_all();
+	cv.notify_one();
 }
 
 template <typename T>
@@ -83,15 +92,15 @@ bool BlockingQueue<T>::waitForElement() const {
 	std::unique_lock<std::mutex> lock(mtx);
 
 	cv.wait(lock, [this] {
-		return (!container.empty() || finished);
+		return (!container.empty() || interrupted);
 	});
 
 	return (false ==  container.empty());
 }
 
 template <typename T>
-void BlockingQueue<T>::finish() {
+void BlockingQueue<T>::interrupt() {
 	std::unique_lock<std::mutex> lock(mtx);
-	finished = true;
-	cv.notify_all();
+	interrupted = true;
+	cv.notify_one();
 }

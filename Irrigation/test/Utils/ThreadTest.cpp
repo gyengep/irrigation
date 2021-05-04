@@ -1,28 +1,41 @@
 #include <gmock/gmock.h>
+#include "Mocks/MockRunnable.h"
 #include "Mocks/MockThread.h"
+#include "Exceptions/InterruptedException.h"
+#include "Utils/Runnable.h"
 #include "Utils/Thread.h"
 
 using namespace std;
 using namespace testing;
 
-///////////////////////////////////////////////////////////////////////////////
 
 TEST(ThreadTest, threadNotStarted) {
-	MockThread mockThread;
-	EXPECT_CALL(mockThread, onExecute()).Times(0);
+	auto mockRunnable = make_shared<MockRunnable>();
+	Thread thread(mockRunnable, "");
+
+	EXPECT_CALL(*mockRunnable, run()).Times(0);
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(0);
 }
 
 TEST(ThreadTest, onStarted) {
-	MockThread mockThread;
-	EXPECT_CALL(mockThread, onExecute()).Times(1);
+	auto mockRunnable = make_shared<MockRunnable>();
+	Thread thread(mockRunnable, "");
 
-	mockThread.start();
-	mockThread.join();
+	EXPECT_CALL(*mockRunnable, run()).Times(1);
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
+
+	thread.start();
+	thread.stop();
 }
 
-TEST(ThreadTest, joinWithoutStart) {
-	MockThread mockThread;
-	EXPECT_THROW(mockThread.join(), logic_error);
+TEST(ThreadTest, stopWithoutStart) {
+	auto mockRunnable = make_shared<MockRunnable>();
+	Thread thread(mockRunnable, "");
+
+	EXPECT_CALL(*mockRunnable, run()).Times(0);
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(0);
+
+	EXPECT_THROW(thread.stop(), logic_error);
 }
 
 TEST(ThreadTest, onExecuteCalledWithDelay) {
@@ -40,11 +53,59 @@ TEST(ThreadTest, onExecuteCalledWithDelay) {
 		status = Status::Finished;
 	};
 
-	MockThread mockThread;
-	EXPECT_CALL(mockThread, onExecute()).Times(1).WillRepeatedly(Invoke(wait));
+	auto mockRunnable = make_shared<MockRunnable>();
+	Thread thread(mockRunnable, "");
+
+	EXPECT_CALL(*mockRunnable, run()).Times(1).WillOnce(Invoke(wait));
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
 
 	status = Status::Started;
-	mockThread.start();
-	mockThread.join();
+	thread.start();
+	thread.stop();
 	EXPECT_THAT(status, Eq(Status::Finished));
+}
+
+TEST(ThreadTest, threadStopsWorkingOnException) {
+	auto mockRunnable = make_shared<MockRunnable>();
+	MockThread mockThread(mockRunnable);
+
+	EXPECT_CALL(*mockRunnable, run()).Times(1).WillOnce(Throw(std::runtime_error("")));
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
+
+	mockThread.start();
+	mockThread.stop();
+}
+
+TEST(ThreadTest, threadStopsWorkingOnInterruptedException) {
+	auto mockRunnable = make_shared<MockRunnable>();
+	MockThread mockThread(mockRunnable);
+
+	EXPECT_CALL(*mockRunnable, run()).Times(1).WillOnce(Throw(InterruptedException("")));
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
+
+	mockThread.start();
+	mockThread.stop();
+}
+
+TEST(ThreadTest, mockThreadWithoutRunnable) {
+	MockThread mockThread;
+
+	EXPECT_CALL(mockThread, run()).Times(1);
+	EXPECT_CALL(mockThread, interrupt()).Times(1);
+
+	mockThread.start();
+	mockThread.stop();
+}
+
+TEST(ThreadTest, mockThreadWithRunnable) {
+	auto mockRunnable = make_shared<MockRunnable>();
+	MockThread mockThread(mockRunnable);
+
+	EXPECT_CALL(mockThread, run()).Times(0);
+	EXPECT_CALL(mockThread, interrupt()).Times(0);
+	EXPECT_CALL(*mockRunnable, run()).Times(1);
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
+
+	mockThread.start();
+	mockThread.stop();
 }

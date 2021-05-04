@@ -54,23 +54,23 @@ TEST(BlockinQueueTest, pushAndWaitForElement) {
 	EXPECT_TRUE(queue.waitForElement());
 }
 
-TEST(BlockinQueueTest, finishAndWaitForElement) {
+TEST(BlockinQueueTest, interruptAndWaitForElement) {
 	BlockingQueue<int> queue;
-	queue.finish();
+	queue.interrupt();
 	EXPECT_FALSE(queue.waitForElement());
 }
 
-TEST(BlockinQueueTest, finishAndPush) {
+TEST(BlockinQueueTest, interruptAndPush) {
 	BlockingQueue<int> queue;
-	queue.finish();
+	queue.interrupt();
 	EXPECT_THROW(queue.push(80), std::logic_error);
 }
 
-TEST(BlockinQueueTest, pushFinishWaitForElement) {
+TEST(BlockinQueueTest, pushInterruptWaitForElement) {
 	BlockingQueue<int> queue;
 
 	queue.push(5);
-	queue.finish();
+	queue.interrupt();
 	EXPECT_TRUE(queue.waitForElement());
 	EXPECT_THAT(queue.front(), Eq(5));
 }
@@ -99,26 +99,26 @@ TEST(BlockinQueueTest, waitForElementAdd) {
 	waitAndAddThread.join();
 }
 
-TEST(BlockinQueueTest, waitForElementFinish) {
+TEST(BlockinQueueTest, waitForElementInterrupt) {
 	enum class Status {
 		Init,
-		Finished
+		Interrupted
 	};
 
 	Status status = Status::Init;
 	BlockingQueue<int> queue;
 
-	auto waitAndFinish = [&queue, &status]() {
+	auto waitAndInterrupt = [&queue, &status]() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		EXPECT_THAT(status, Eq(Status::Init));
-		status = Status::Finished;
-		queue.finish();
+		status = Status::Interrupted;
+		queue.interrupt();
 	};
 
-	thread waitAndFinishThread(waitAndFinish);
+	thread waitAndInterruptThread(waitAndInterrupt);
 
 	EXPECT_FALSE(queue.waitForElement());
-	EXPECT_THAT(status, Eq(Status::Finished));
+	EXPECT_THAT(status, Eq(Status::Interrupted));
 
-	waitAndFinishThread.join();
+	waitAndInterruptThread.join();
 }

@@ -4,7 +4,7 @@
 
 using namespace std;
 using namespace testing;
-
+/*
 void TimerTest::saveCallTime() {
 	callTimes.push_back(chrono::steady_clock::now());
 	this_thread::sleep_for(chrono::milliseconds(50));
@@ -144,3 +144,4 @@ TEST_F(TimerTest, removeAll) {
 	this_thread::sleep_for(chrono::milliseconds(150));
 	timer.stop();
 }
+*/
