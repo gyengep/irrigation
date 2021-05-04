@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "Utils/Thread.h"
 #include "EmailConsumer.h"
 #include "EmailProducer.h"
 

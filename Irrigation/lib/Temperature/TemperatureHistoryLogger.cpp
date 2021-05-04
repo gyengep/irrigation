@@ -1,8 +1,9 @@
 #include "TemperatureHistoryLogger.h"
-#include "TemperatureHistory.h"
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Utils/CsvWriter.h"
+#include "Utils/FixedDelaySchedulerRunnable.h"
+#include "Utils/FunctionRunnable.h"
 #include "Utils/TimeConversion.h"
 #include <fstream>
 #include <iomanip>
@@ -19,13 +20,6 @@ TemperatureHistoryLogger::TemperatureHistoryLogger(
 	csvWriterFactory(csvWriterFactory),
 	lastUpdateTime(time(nullptr))
 {
-/*
-	if (csvWriter->stream()->tellp() == 0) {
-		csvWriter->append(vector<string>{"Date", "MinTemperature", "MaxTemperature", "AvgTemperature"});
-	}
-
-	csvWriter->stream()->flush();
-*/
 }
 
 TemperatureHistoryLogger::~TemperatureHistoryLogger() {
@@ -59,33 +53,33 @@ void TemperatureHistoryLogger::saveLog(const time_t& from, const time_t& to) {
 	}
 }
 
-void TemperatureHistoryLogger::run() {
-	const auto now = time(nullptr);
-	const auto period = getPreviousPeriod(now, std::chrono::hours(1));
-	return saveLog(period.first, period.second);
+void TemperatureHistoryLogger::start() {
+
+	auto func = [this] {
+		const auto now = time(nullptr);
+		const auto period = getPreviousPeriod(now, std::chrono::hours(1));
+		saveLog(period.first, period.second);
+	};
+
+	auto functionRunnbale = std::make_shared<FunctionRunnable>(func);
+	auto everyHourSchedulerRunnable = std::make_shared<EveryHourSchedulerRunnable>(
+			functionRunnbale,
+			"TemperatureHistoryLogger"
+		);
+
+	workerThread = std::unique_ptr<Thread>(new Thread(
+			everyHourSchedulerRunnable,
+			"TemperatureHistoryLogger"
+		));
+
+	workerThread->start();
 }
 
-/*
-void TemperatureHistoryLogger::onTimer() {
-	const auto currentTime = time(nullptr);
-	const auto periodInSeconds = chrono::duration_cast<chrono::seconds>(period).count();
-
-	if ((lastUpdateTime / periodInSeconds) != (currentTime / periodInSeconds)) {
-		lastUpdateTime = currentTime;
-
-		#ifdef ONTIMER_TRACE_LOG
-		LOGGER.trace("TemperatureHistoryLogger::onTimer()");
-		#endif
-
-		const auto periodFromTo = getPreviousPeriod(currentTime, period);
-		saveLog(periodFromTo.first, periodFromTo.second);
-	} else {
-		#ifdef ONTIMER_TRACE_LOG
-		LOGGER.trace("TemperatureHistoryLogger::onTimer() SKIPPED");
-		#endif
-	}
+void TemperatureHistoryLogger::stop() {
+	workerThread->stop();
+	workerThread.reset();
 }
-*/
+
 ///////////////////////////////////////////////////////////////////////////////
 
 string TemperatureHistoryLogger::temperatureToString(float value) {

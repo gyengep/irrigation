@@ -1,16 +1,18 @@
 #pragma once
+#include <chrono>
 #include <list>
 #include <memory>
 #include <mutex>
-#include "Utils/Runnable.h"
+#include <vector>
+#include "Utils/Thread.h"
 #include "CurrentTemperature.h"
+#include "CurrentTemperatureProvider.h"
 
-class CurrentTemperatureProvider;
 
-
-class CurrentTemperatureImpl : public CurrentTemperature, public Runnable {
+class CurrentTemperatureImpl : public CurrentTemperature {
 	const std::shared_ptr<CurrentTemperatureProvider> provider;
 
+	std::unique_ptr<Thread> workerThread;
 	std::mutex listenerMutex;
 	std::list<CurrentTemperatureListener*> listeners;
 
@@ -27,7 +29,8 @@ public:
 
 	void updateCache();
 
-	virtual void run() override { return updateCache(); }
+	void start(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed);
+	void stop();
 
 	virtual float getCurrentTemperature() const override;
 	virtual void addListener(CurrentTemperatureListener* currentTemperatureListener) override;

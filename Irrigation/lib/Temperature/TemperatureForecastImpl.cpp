@@ -1,6 +1,9 @@
 #include "TemperatureForecastImpl.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
+#include "Utils/FixedDelaySchedulerRunnable.h"
+#include "Utils/FunctionRunnable.h"
+#include "Utils/RepeatUntilSuccessRunnable.h"
 #include "Utils/TimeConversion.h"
 #include <iomanip>
 #include <sstream>
@@ -33,6 +36,48 @@ void TemperatureForecastImpl::updateCache() {
 		invalidateValues();
 		throw;
 	}
+}
+
+void TemperatureForecastImpl::start(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed) {
+	std::chrono::milliseconds firstDelay;
+
+	try {
+		updateCache();
+		firstDelay = updatePeriod;
+	} catch (const std::exception& e) {
+		LOGGER.warning("Temperature forecast update failed", e);
+		firstDelay = std::chrono::milliseconds(100);
+	}
+
+	auto func = [this] {
+		updateCache();
+	};
+
+	auto functionRunnbale = std::make_shared<FunctionRunnable>(func);
+	auto repeatUntilSuccessRunnable = std::make_shared<RepeatUntilSuccessRunnable>(
+			functionRunnbale,
+			delayOnFailed,
+			"Temperature forecast update"
+		);
+
+	auto fixedDelaySchedulerRunnable = std::make_shared<FixedDelaySchedulerRunnable>(
+			repeatUntilSuccessRunnable,
+			firstDelay,
+			updatePeriod,
+			"TemperatureForecastImpl"
+		);
+
+	workerThread = std::unique_ptr<Thread>(new Thread(
+			fixedDelaySchedulerRunnable,
+			"TemperatureForecastImpl"
+		));
+
+	workerThread->start();
+}
+
+void TemperatureForecastImpl::stop() {
+	workerThread->stop();
+	workerThread.reset();
 }
 
 void TemperatureForecastImpl::setValues(std::list<TemperatureForecastProvider::ValuesWithTimes>&& values) {

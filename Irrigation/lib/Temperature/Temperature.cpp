@@ -8,9 +8,6 @@
 #include "Logger/Logger.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"
-#include "Utils/RepeatUntilSuccessRunnable.h"
-#include "Utils/FixedDelaySchedulerThread.h"
-#include "Utils/TimeConversion.h"
 
 #include "CsvTemperatureHistoryPersister.h"
 
@@ -86,62 +83,17 @@ void Temperature::init(
 			make_shared<CsvWriterFactoryImpl>(temperatureHistoryLoggerProperties.fileName)
 		);
 
-	bool currentUpdated = false;
-	bool forecastUpdated = false;
-
-	try {
-		current->updateCache();
-		currentUpdated = true;
-	} catch (const std::exception& e) {
-		LOGGER.warning("Current temperature update failed", e);
-	}
-
-	try {
-		forecast->updateCache();
-		forecastUpdated = true;
-	} catch (const std::exception& e) {
-		LOGGER.warning("Temperature forecast update failed", e);
-	}
-
-	currentThread = std::unique_ptr<FixedDelaySchedulerThread>(new FixedDelaySchedulerThread(
-			std::make_shared<RepeatUntilSuccessRunnable>(
-					current,
-					currentTemperatureProperties.delayOnFailed,
-					"Current temperature update"
-				),
-			currentUpdated ? currentTemperatureProperties.updatePeriod : std::chrono::milliseconds(100),
-			currentTemperatureProperties.updatePeriod,
-			"CurrentTemperatureImpl"
-		));
-
-
-	forecastThread = std::unique_ptr<FixedDelaySchedulerThread>(new FixedDelaySchedulerThread(
-			std::make_shared<RepeatUntilSuccessRunnable>(
-					forecast,
-					temperatureForecastProperties.delayOnFailed,
-					"Temperature forecast update"
-				),
-			forecastUpdated ? temperatureForecastProperties.updatePeriod : std::chrono::milliseconds(100),
-			temperatureForecastProperties.updatePeriod,
-			"TemperatureForecastImpl"
-		));
-
-	historyLoggerThread = std::unique_ptr<EveryHourSchedulerThread>(new EveryHourSchedulerThread(
-			historyLogger,
-			"TemperatureHistoryLogger"
-		));
-
-	currentThread->start();
-	forecastThread->start();
+	current->start(currentTemperatureProperties.updatePeriod, currentTemperatureProperties.delayOnFailed);
+	forecast->start(temperatureForecastProperties.updatePeriod, temperatureForecastProperties.delayOnFailed);
 	history->registerToListener();
-	historyLoggerThread->start();
+	historyLogger->start();
 }
 
 void Temperature::uninit() {
-	historyLoggerThread->stop();
+	historyLogger->stop();
 	history->unregisterFromListener();
-	forecastThread->stop();
-	currentThread->stop();
+	forecast->stop();
+	current->stop();
 }
 
 const shared_ptr<TemperatureHistory> Temperature::getTemperatureHistory() const {

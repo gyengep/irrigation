@@ -4,16 +4,17 @@
 #include <memory>
 #include <string>
 #include <ostream>
-#include "Utils/Runnable.h"
+#include "Utils/Thread.h"
+#include "TemperatureHistory.h"
 
 class CsvWriterFactory;
-class TemperatureHistory;
 
 
-class TemperatureHistoryLogger : public Runnable {
+class TemperatureHistoryLogger {
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 	const std::shared_ptr<CsvWriterFactory> csvWriterFactory;
 
+	std::unique_ptr<Thread> workerThread;
 	std::time_t lastUpdateTime;
 	std::chrono::seconds period;
 
@@ -30,5 +31,6 @@ public:
 
 	void saveLog(const std::time_t& from, const std::time_t& to);
 
-	virtual void run() override;
+	void start();
+	void stop();
 };

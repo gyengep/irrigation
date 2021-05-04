@@ -1,15 +1,18 @@
 #pragma once
+#include <chrono>
 #include <list>
 #include <memory>
 #include <mutex>
-#include "Utils/Runnable.h"
+#include <vector>
+#include "Utils/Thread.h"
 #include "TemperatureForecast.h"
 #include "TemperatureForecastProvider.h"
 
 
-class TemperatureForecastImpl : public TemperatureForecast, public Runnable {
+class TemperatureForecastImpl : public TemperatureForecast {
 	const std::shared_ptr<TemperatureForecastProvider> provider;
 
+	std::unique_ptr<Thread> workerThread;
 	mutable std::mutex mtx;
 	std::list<TemperatureForecastProvider::ValuesWithTimes> values;
 	bool valid;
@@ -23,7 +26,9 @@ public:
 
 	void updateCache();
 
-	virtual void run() override { return updateCache(); }
+	void start(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed);
+	void stop();
+
 	virtual Values getTemperatureForecast(const std::time_t& from, const std::time_t& to) const override;
 
 	static void checkValueList(const std::list<TemperatureForecastProvider::ValuesWithTimes>& temperatures);

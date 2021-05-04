@@ -4,48 +4,26 @@
 using namespace std;
 
 
-Thread::Thread(const string& name) :
-	runnable(),
-	name(name)
-{
-}
-
 Thread::Thread(const std::shared_ptr<Runnable>& runnable, const string& name) :
 	runnable(runnable),
-	name(name)
+	name(name),
+	runnablePtr(runnable.get())
 {
 	if (nullptr == runnable) {
 		throw std::logic_error("Thread::Thread() runnable can not be null");
 	}
 }
 
+Thread::Thread(Runnable& runnable, const std::string& name) :
+	name(name),
+	runnablePtr(&runnable)
+{
+}
+
 Thread::~Thread() {
 	if (workerThread.joinable()) {
 		LOGGER.warning("Thread [%s] is not stopped", name.c_str());
 	}
-}
-
-Runnable& Thread::getRunnable() {
-	Runnable* runnablePtr;
-
-	if (runnable) {
-		runnablePtr = runnable.get();
-	} else {
-		runnablePtr = this;
-	}
-
-	return *runnablePtr;
-}
-
-void Thread::run() {
-}
-
-void Thread::onRun() {
-	getRunnable().run();
-}
-
-void Thread::onStop() {
-	getRunnable().interrupt();
 }
 
 void Thread::start() {
@@ -61,7 +39,7 @@ void Thread::stop() {
 		throw logic_error("Thread::stop() !workerThread.joinable()");
 	}
 
-	onStop();
+	runnablePtr->interrupt();
 	workerThread.join();
 }
 
@@ -69,14 +47,10 @@ void Thread::workerFunction() {
 	LOGGER.debug("Thread [%s] is started", name.c_str());
 
 	try {
-		onRun();
+		runnablePtr->run();
 	} catch (const exception& e) {
 		LOGGER.warning(string("Unhandled exception is caught in Thread [" + name + "]").c_str(), e);
 	}
 
 	LOGGER.debug("Thread [%s] is finished", name.c_str());
-}
-
-const string& Thread::getName() const {
-	return name;
 }

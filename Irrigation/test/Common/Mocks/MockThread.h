@@ -6,7 +6,7 @@
 class MockThread : public Thread {
 public:
 	MockThread(const std::shared_ptr<Runnable>& runnable) : Thread(runnable, "") {}
-	MockThread() : Thread("") {}
+	MockThread(Runnable& runnable) : Thread(runnable, "") {}
 
 	MOCK_METHOD0(run, void());
 	MOCK_METHOD0(interrupt, void());

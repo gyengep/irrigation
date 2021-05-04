@@ -2,6 +2,7 @@
 #include <memory>
 #include "Utils/BlockingQueue.h"
 #include "Utils/RepeatUntilSuccessRunnable.h"
+#include "Utils/Runnable.h"
 #include "Utils/SynchronizationObject.h"
 #include "Utils/Thread.h"
 #include "EmailSender.h"
@@ -11,13 +12,16 @@ typedef std::shared_ptr<Email> EmailPtr;
 typedef BlockingQueue<EmailPtr> EmailQueue;
 
 
-class EmailConsumer : public Thread {
+class EmailConsumer : public Runnable {
 	const std::vector<std::chrono::milliseconds> delayOnFailed;
 	const std::shared_ptr<EmailQueue> emailQueue;
 	const std::shared_ptr<EmailSender> emailSender;
 
+	bool interrupted;
+
 	std::shared_ptr<RepeatUntilSuccessRunnable> repeatUntilSuccessRunnable;
 
+	std::unique_ptr<Thread> workerThread;
 	SynchronizationObject synchronizationObject;
 
 	virtual void run() override;
@@ -32,4 +36,7 @@ public:
 			const std::vector<std::chrono::milliseconds>& delayOnFailed
 		);
 	virtual ~EmailConsumer();
+
+	void start();
+	void stop();
 };

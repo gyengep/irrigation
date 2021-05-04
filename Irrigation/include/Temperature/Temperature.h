@@ -2,7 +2,6 @@
 #include <chrono>
 #include <memory>
 #include <vector>
-#include "Utils/FixedDelaySchedulerThread.h"
 #include "TemperatureException.h"
 
 class CurrentTemperatureProvider;
@@ -19,10 +18,6 @@ class Temperature {
 	std::shared_ptr<TemperatureForecastImpl> forecast;
 	std::shared_ptr<TemperatureHistoryImpl> history;
 	std::shared_ptr<TemperatureHistoryLogger> historyLogger;
-
-	std::unique_ptr<FixedDelaySchedulerThread> currentThread;
-	std::unique_ptr<FixedDelaySchedulerThread> forecastThread;
-	std::unique_ptr<EveryHourSchedulerThread> historyLoggerThread;
 
 	std::shared_ptr<CurrentTemperatureProvider> createCurrentTemperatureProvider();
 

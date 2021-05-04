@@ -3,12 +3,12 @@
 #include <chrono>
 #include <memory>
 #include <vector>
-#include "Utils/FixedDelaySchedulerThread.h"
+#include "Utils/FixedDelaySchedulerRunnable.h"
 #include "Mocks/MockRunnable.h"
 #include "Mocks/MockWaitObserver.h"
 
 
-class FixedDelaySchedulerThreadTest : public ::testing::Test  {
+class FixedDelaySchedulerRunnableTest : public ::testing::Test  {
 public:
 
 	std::shared_ptr<MockWaitObserver> mockWaitObserver;

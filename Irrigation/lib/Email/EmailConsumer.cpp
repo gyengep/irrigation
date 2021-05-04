@@ -13,10 +13,10 @@ EmailConsumer::EmailConsumer(
 		const std::vector<std::chrono::milliseconds>& delayOnFailed
 	)
 :
-	Thread("EmailConsumer"),
 	delayOnFailed(delayOnFailed),
 	emailQueue(emailQueue),
 	emailSender(emailSender),
+	interrupted(false),
 	synchronizationObject()
 {
 	if (nullptr == emailQueue) {
@@ -49,6 +49,7 @@ void EmailConsumer::run() {
 void EmailConsumer::interrupt() {
 	auto lock = synchronizationObject.synchronize();
 
+	interrupted = true;
 	emailQueue->interrupt();
 
 	if (repeatUntilSuccessRunnable) {
@@ -69,6 +70,10 @@ void EmailConsumer::safeSend(const EmailPtr& email) {
 			"Email sending"
 		);
 
+	if (interrupted) {
+		repeatUntilSuccessRunnable->interrupt();
+	}
+
 	repeatUntilSuccessRunnable->setSynchronizationObjectName("EmailConsumerSync");
 	lock->unlock();
 
@@ -86,4 +91,14 @@ void EmailConsumer::safeSend(const EmailPtr& email) {
 
 	lock->lock();
 	repeatUntilSuccessRunnable.reset();
+}
+
+void EmailConsumer::start() {
+	workerThread = std::unique_ptr<Thread>(new Thread(*this, "EmailConsumer"));
+	workerThread->start();
+}
+
+void EmailConsumer::stop() {
+	workerThread->stop();
+	workerThread.reset();
 }
