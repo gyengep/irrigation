@@ -3,6 +3,8 @@
 #include "DtoReaderWriter/DtoReaderWriter.h"
 #include "Logger/Logger.h"
 #include "Utils/FileReaderWriter.h"
+#include "Utils/FixedDelaySchedulerRunnable.h"
+#include "Utils/ReferenceRunnable.h"
 
 using namespace std;
 
@@ -22,17 +24,24 @@ DocumentSaver::~DocumentSaver() {
 }
 
 void DocumentSaver::startTimer() {
-	timer.reset(new Timer(chrono::minutes(1), Timer::ScheduleType::FIXED_DELAY, "DocumentSaver"));
-	timer->add(this);
-	timer->start();
+	auto referenceRunnbale = std::make_shared<ReferenceRunnable>(*this);
+	auto fixedDelaySchedulerRunnable = std::make_shared<FixedDelaySchedulerRunnable>(
+			referenceRunnbale,
+			chrono::minutes(1),
+			chrono::minutes(1),
+			"DocumentSaver"
+		);
+
+	timerThread = std::unique_ptr<Thread>(new Thread(fixedDelaySchedulerRunnable, "DocumentSaver"));
+	timerThread->start();
 }
 
 void DocumentSaver::stopTimer() {
-	timer->stop();
-	timer.reset();
+	timerThread->stop();
+	timerThread.reset();
 }
 
-void DocumentSaver::onTimer() {
+void DocumentSaver::run() {
 #ifdef ONTIMER_TRACE_LOG
 	LOGGER.trace("DocumentSaver::onTimer()");
 #endif

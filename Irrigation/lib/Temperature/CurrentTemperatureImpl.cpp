@@ -4,6 +4,7 @@
 #include "Utils/FixedDelaySchedulerRunnable.h"
 #include "Utils/FunctionRunnable.h"
 #include "Utils/RepeatUntilSuccessRunnable.h"
+#include "Utils/ToString.h"
 #include <algorithm>
 
 using namespace std;
@@ -83,7 +84,7 @@ void CurrentTemperatureImpl::setValue(float value) {
 	this->value = value;
 	this->valid = true;
 
-	LOGGER.debug("Current temperature successfully updated: %.1fC", value);
+	LOGGER.debug("Current temperature successfully updated: %s", toCelsius(value).c_str());
 
 	const time_t currentTime = time(nullptr);
 	auto onUpdateSuccses = [this, &currentTime](CurrentTemperatureListener* currentTemperatureListener) {

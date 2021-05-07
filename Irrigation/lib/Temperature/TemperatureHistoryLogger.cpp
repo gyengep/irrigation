@@ -34,7 +34,7 @@ void TemperatureHistoryLogger::saveLog(const time_t& from, const time_t& to) {
 
 			oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ": ";
 			oss << "[" << std::fixed << std::setw(2) << std::setprecision(1) << statisticsValues.min << "-";
-			oss << std::fixed << std::setw(2) << std::setprecision(1) << statisticsValues.max << "]";
+			oss << std::fixed << std::setw(2) << std::setprecision(1) << statisticsValues.max << " C]";
 
 			LOGGER.debug("Saving temperature history: %s", oss.str().c_str());
 		}

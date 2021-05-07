@@ -86,29 +86,3 @@ TEST(ThreadTest, threadStopsWorkingOnInterruptedException) {
 	mockThread.start();
 	mockThread.stop();
 }
-
-TEST(ThreadTest, mockThreadWithRunnableReference) {
-	MockRunnable mockRunnable;
-	MockThread mockThread(mockRunnable);
-
-	EXPECT_CALL(mockThread, run()).Times(0);
-	EXPECT_CALL(mockThread, interrupt()).Times(0);
-	EXPECT_CALL(mockRunnable, run()).Times(1);
-	EXPECT_CALL(mockRunnable, interrupt()).Times(1);
-
-	mockThread.start();
-	mockThread.stop();
-}
-
-TEST(ThreadTest, mockThreadWithRunnablePtr) {
-	auto mockRunnable = make_shared<MockRunnable>();
-	MockThread mockThread(mockRunnable);
-
-	EXPECT_CALL(mockThread, run()).Times(0);
-	EXPECT_CALL(mockThread, interrupt()).Times(0);
-	EXPECT_CALL(*mockRunnable, run()).Times(1);
-	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
-
-	mockThread.start();
-	mockThread.stop();
-}

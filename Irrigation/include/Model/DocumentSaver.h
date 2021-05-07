@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
-#include "Utils/Timer.h"
+#include "Utils/Runnable.h"
+#include "Utils/Thread.h"
 
 class DocumentDTO;
 class DtoReader;
@@ -10,13 +11,13 @@ class FileWriter;
 class IrrigationDocument;
 
 
-class DocumentSaver : public TimerCallback {
+class DocumentSaver : public Runnable {
 public:
 	class DtoWriterFactory;
 	class FileWriterFactory;
 
 private:
-	std::unique_ptr<Timer> timer;
+	std::unique_ptr<Thread> timerThread;
 
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<DtoWriterFactory> dtoWriterFactory;
@@ -35,7 +36,8 @@ public:
 
 	void startTimer();
 	void stopTimer();
-	virtual void onTimer() override;
+
+	virtual void run() override;
 };
 
 class DocumentSaver::DtoWriterFactory {

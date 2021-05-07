@@ -92,7 +92,7 @@ void TemperatureForecastImpl::setValues(std::list<TemperatureForecastProvider::V
 
 			oss << toLocalTimeStr(value.from, "%F %T") << "-" << toLocalTimeStr(value.to, "%F %T") << ": ";
 			oss << "[" << std::fixed << std::setw(2) << std::setprecision(1) << value.min << "-";
-			oss << std::fixed << std::setw(2) << std::setprecision(1) << value.max << "]";
+			oss << std::fixed << std::setw(2) << std::setprecision(1) << value.max << " C]";
 
 			LOGGER.trace(oss.str().c_str());
 		}

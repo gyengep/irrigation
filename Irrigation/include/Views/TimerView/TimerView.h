@@ -4,7 +4,7 @@
 #include "DocumentView/View.h"
 #include "Logic/IdType.h"
 #include "Logic/Program.h"
-#include "Utils/Timer.h"
+#include "Utils/Thread.h"
 
 #ifndef FRIEND_TEST
 #define FRIEND_TEST(a, b)
@@ -14,7 +14,7 @@ class IrrigationDocument;
 class TimerViewTest;
 
 
-class TimerView : public View, public TimerCallback {
+class TimerView : public View, public Runnable {
 	FRIEND_TEST(TimerViewTest, notActiveNotScheduled);
 	FRIEND_TEST(TimerViewTest, notActiveScheduledFirst);
 	FRIEND_TEST(TimerViewTest, notActiveScheduledSecond);
@@ -25,9 +25,9 @@ class TimerView : public View, public TimerCallback {
 	std::chrono::system_clock::time_point expectedSystemTime;
 
 	IrrigationDocument& irrigationDocument;
-	std::unique_ptr<Timer> timer;
+	std::unique_ptr<Thread> timerThread;
 
-	void onTimer(const time_t rawTime);
+	void checkProgramScheduled(const time_t rawTime);
 	bool processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const time_t rawTime);
 
 	static bool checkSystemTime(const std::chrono::system_clock::time_point& expectedSystemTime);
@@ -39,5 +39,5 @@ public:
 	virtual void initialize() override;
 	virtual void terminate() override;
 
-	virtual void onTimer() override;
+	virtual void run() override;
 };

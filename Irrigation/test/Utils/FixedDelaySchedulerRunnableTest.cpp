@@ -13,7 +13,7 @@ void FixedDelaySchedulerRunnableTest::SetUp() {
 	mockWaitObserver = std::make_shared<MockWaitObserver>();
 	mockRunnable = std::make_shared<MockRunnable>();
 
-	WaitObserverStore::getInstance().insert("TestFixedDelaySchedulerThreadSync", mockWaitObserver);
+	WaitObserverStore::getInstance().insert("FixedDelaySchedulerRunnableTestSync", mockWaitObserver);
 }
 
 void FixedDelaySchedulerRunnableTest::TearDown() {
@@ -30,7 +30,7 @@ TEST_F(FixedDelaySchedulerRunnableTest, schedulerThreadNotStarted) {
 			""
 	);
 
-	fixedDelaySchedulerRunnable.setSynchronizationObjectName("TestFixedDelaySchedulerThreadSync");
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
 
 	EXPECT_CALL(*mockRunnable, run()).Times(0);
 	EXPECT_CALL(*mockRunnable, interrupt()).Times(0);
@@ -49,7 +49,7 @@ TEST_F(FixedDelaySchedulerRunnableTest, run_0_times_TIMING) {
 			""
 	);
 
-	fixedDelaySchedulerRunnable.setSynchronizationObjectName("TestFixedDelaySchedulerThreadSync");
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
 
 	EXPECT_CALL(*mockRunnable, run()).Times(0);
 	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
@@ -76,7 +76,7 @@ TEST_F(FixedDelaySchedulerRunnableTest, run_1_times_TIMING) {
 			""
 	);
 
-	fixedDelaySchedulerRunnable.setSynchronizationObjectName("TestFixedDelaySchedulerThreadSync");
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
 
 	EXPECT_CALL(*mockRunnable, run()).Times(1);
 	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
@@ -104,7 +104,7 @@ TEST_F(FixedDelaySchedulerRunnableTest, run_more_times_TIMING) {
 			""
 	);
 
-	fixedDelaySchedulerRunnable.setSynchronizationObjectName("TestFixedDelaySchedulerThreadSync");
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
 
 	EXPECT_CALL(*mockRunnable, run()).Times(AtLeast(3));
 	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
@@ -132,7 +132,7 @@ TEST_F(FixedDelaySchedulerRunnableTest, threadStopsWorkingOnException_TIMING) {
 			""
 	);
 
-	fixedDelaySchedulerRunnable.setSynchronizationObjectName("TestFixedDelaySchedulerThreadSync");
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
 
 	EXPECT_CALL(*mockRunnable, run()).Times(1).WillRepeatedly(Throw(std::runtime_error("")));
 	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
@@ -159,7 +159,7 @@ TEST_F(FixedDelaySchedulerRunnableTest, threadStopsWorkingOnInterruptedException
 			""
 	);
 
-	fixedDelaySchedulerRunnable.setSynchronizationObjectName("TestFixedDelaySchedulerThreadSync");
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
 
 	EXPECT_CALL(*mockRunnable, run()).Times(1).WillRepeatedly(Throw(InterruptedException("")));
 	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
@@ -175,5 +175,39 @@ TEST_F(FixedDelaySchedulerRunnableTest, threadStopsWorkingOnInterruptedException
 	});
 
 	EXPECT_NO_THROW(fixedDelaySchedulerRunnable.run());
+	thread.join();
+}
+
+TEST_F(FixedDelaySchedulerRunnableTest, fixedRate_TIMING) {
+	FixedDelaySchedulerRunnable fixedDelaySchedulerRunnable(
+			mockRunnable,
+			std::chrono::milliseconds(200),
+			std::chrono::milliseconds(200),
+			""
+	);
+
+	fixedDelaySchedulerRunnable.setSynchronizationObjectName("FixedDelaySchedulerRunnableTestSync");
+
+	auto wait100 = [] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	};
+
+	EXPECT_CALL(*mockRunnable, run()).
+			Times(2).
+			WillRepeatedly(DoAll(InvokeWithoutArgs(wait100), Return()));
+
+	EXPECT_CALL(*mockRunnable, interrupt()).Times(1);
+
+	EXPECT_CALL(*mockWaitObserver, wait()).Times(0);
+	EXPECT_CALL(*mockWaitObserver, wait_for(_)).Times(0);
+	EXPECT_CALL(*mockWaitObserver, wait_pred()).Times(0);
+	EXPECT_CALL(*mockWaitObserver, wait_for_pred(_)).Times(3);
+
+	std::thread thread([&fixedDelaySchedulerRunnable] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(700));
+		fixedDelaySchedulerRunnable.interrupt();
+	});
+
+	fixedDelaySchedulerRunnable.run();
 	thread.join();
 }

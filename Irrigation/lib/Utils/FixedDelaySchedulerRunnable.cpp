@@ -45,7 +45,7 @@ void FixedDelaySchedulerRunnable::run() {
 			if (!skipRun()) {
 				runnable->run();
 			} else {
-				LOGGER.trace("FixedDelaySchedulerRunnable [%s] run skipped", name.c_str());
+				//LOGGER.trace("FixedDelaySchedulerRunnable [%s] run skipped", name.c_str());
 			}
 
 			wait(delay);

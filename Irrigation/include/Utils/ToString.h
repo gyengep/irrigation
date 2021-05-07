@@ -29,3 +29,7 @@ std::string to_string(const InputIterator&  first, const InputIterator&  last) {
 	o << "]";
 	return o.str();
 }
+
+std::string toCelsius(float temperature);
+std::string toPercent(unsigned value);
+std::string toPercent(int value);

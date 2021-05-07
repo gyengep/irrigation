@@ -4,20 +4,27 @@
 #include "SynchronizationObject.h"
 #include "Thread.h"
 
-/*
-class FixedRateScheduler : public Thread {
+
+class FixedRateSchedulerRunnable : public Runnable {
+	const std::shared_ptr<Runnable> runnable;
 	const std::chrono::milliseconds period;
+	const std::string name;
 	SynchronizationObject synchronizationObject;
 
-	bool stopped;
+	bool interrupted;
 
-	void wait(const std::chrono::milliseconds& waitTime);
+	std::chrono::system_clock::time_point nextScheduleTime;
 
-	virtual void onRun() override;
-	virtual void onStop() override;
+	bool checkWaitTime(const std::chrono::milliseconds& waitTime) const;
 
 public:
-	FixedRateScheduler(const std::shared_ptr<Runnable>& runnable, const std::chrono::milliseconds& period, const std::string& name);
-	virtual ~FixedRateScheduler();
+	FixedRateSchedulerRunnable(const std::shared_ptr<Runnable>& runnable, const std::chrono::milliseconds& period, const std::string& name);
+	virtual ~FixedRateSchedulerRunnable();
+
+	void setSynchronizationObjectName(const std::string& syncName);
+
+	virtual void run() override;
+	virtual void interrupt() override;
+
+	static std::string periodText(const std::chrono::milliseconds& t);
 };
-*/

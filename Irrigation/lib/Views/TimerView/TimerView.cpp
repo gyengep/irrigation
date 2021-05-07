@@ -4,6 +4,8 @@
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
+#include "Utils/FixedRateSchedulerRunnable.h"
+#include "Utils/ReferenceRunnable.h"
 #include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <string>
@@ -28,9 +30,15 @@ void TimerView::initialize() {
 
 	expectedSystemTime = system_clock::now() + period;
 
-	timer.reset(new Timer(period, Timer::ScheduleType::FIXED_RATE, "TimerView"));
-	timer->add(this);
-	timer->start(Timer::Priority::HIGH);
+	auto referenceRunnbale = std::make_shared<ReferenceRunnable>(*this);
+	auto fixedRateSchedulerRunnable = std::make_shared<FixedRateSchedulerRunnable>(
+			referenceRunnbale,
+			period,
+			"TimerView"
+		);
+
+	timerThread = std::unique_ptr<Thread>(new Thread(fixedRateSchedulerRunnable, "TimerView"));
+	timerThread->start(Thread::Priority::HIGH);
 
 	LOGGER.debug("TimerView initialized");
 }
@@ -38,26 +46,26 @@ void TimerView::initialize() {
 void TimerView::terminate() {
 	LOGGER.debug("TimerView terminating...");
 
-	timer->stop();
-	timer.reset();
+	timerThread->stop();
+	timerThread.reset();
 
 	LOGGER.debug("TimerView terminated");
 }
 
-void TimerView::onTimer() {
+void TimerView::run() {
 #ifdef ONTIMER_TRACE_LOG
-	LOGGER.trace("TimerView::onTimer()");
+	LOGGER.trace("TimerView::run()");
 #endif
 
 	if (!checkSystemTime(expectedSystemTime)) {
 		expectedSystemTime = system_clock::now();
 	}
 
-	onTimer(system_clock::to_time_t(expectedSystemTime));
+	checkProgramScheduled(system_clock::to_time_t(expectedSystemTime));
 	expectedSystemTime += period;
 }
 
-void TimerView::onTimer(const time_t rawTime) {
+void TimerView::checkProgramScheduled(const time_t rawTime) {
 	lock_guard<IrrigationDocument> lock(irrigationDocument);
 
 	const ProgramContainer& programs = irrigationDocument.getPrograms();

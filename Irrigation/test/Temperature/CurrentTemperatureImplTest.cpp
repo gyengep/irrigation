@@ -122,3 +122,58 @@ TEST(CurrentTemperatureImplTest, listenerUpdateFailed) {
 	temperatureSensor.removeListener(&mockCurrentTemperatureListener);
 }
 
+TEST(CurrentTemperatureImplTest, readTemperatureDuringStart) {
+	const float expectedTemperature = 35.646;
+
+	auto mockSensorReader = make_shared<MockCurrentTemperatureProvider>();
+
+	EXPECT_CALL(*mockSensorReader, getSensorName()).Times(AnyNumber());
+	EXPECT_CALL(*mockSensorReader, readCurrentTemperature()).
+			Times(1).
+			WillRepeatedly(Return(expectedTemperature));
+
+	CurrentTemperatureImpl temperatureSensor(mockSensorReader);
+
+	temperatureSensor.start(std::chrono::milliseconds(1000), std::vector<std::chrono::milliseconds>{ std::chrono::milliseconds(10) });
+	EXPECT_THAT(temperatureSensor.getCurrentTemperature(), Eq(expectedTemperature));
+	temperatureSensor.stop();
+}
+
+TEST(CurrentTemperatureImplTest, readTemperaturePeriodically_TIMING) {
+	const float expectedTemperature = 35.646;
+
+	auto mockSensorReader = make_shared<MockCurrentTemperatureProvider>();
+
+	EXPECT_CALL(*mockSensorReader, getSensorName()).Times(AnyNumber());
+	EXPECT_CALL(*mockSensorReader, readCurrentTemperature()).
+			Times(AtLeast(3)).
+			WillRepeatedly(Return(expectedTemperature));
+
+	CurrentTemperatureImpl temperatureSensor(mockSensorReader);
+
+	temperatureSensor.start(std::chrono::milliseconds(100), std::vector<std::chrono::milliseconds>{ std::chrono::milliseconds(10) });
+	EXPECT_THAT(temperatureSensor.getCurrentTemperature(), Eq(expectedTemperature));
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	EXPECT_THAT(temperatureSensor.getCurrentTemperature(), Eq(expectedTemperature));
+	temperatureSensor.stop();
+}
+
+TEST(CurrentTemperatureImplTest, readTemperaturePeriodicallyOnFailed_TIMING) {
+	const float expectedTemperature = 35.646;
+
+	auto mockSensorReader = make_shared<MockCurrentTemperatureProvider>();
+
+	EXPECT_CALL(*mockSensorReader, getSensorName()).Times(AnyNumber());
+	EXPECT_CALL(*mockSensorReader, readCurrentTemperature()).
+			Times(2).
+			WillOnce(Throw(std::runtime_error(""))).
+			WillOnce(Return(expectedTemperature));
+
+	CurrentTemperatureImpl temperatureSensor(mockSensorReader);
+
+	temperatureSensor.start(std::chrono::milliseconds(1000), std::vector<std::chrono::milliseconds>{ std::chrono::milliseconds(10) });
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	EXPECT_THAT(temperatureSensor.getCurrentTemperature(), Eq(expectedTemperature));
+	temperatureSensor.stop();
+}
+

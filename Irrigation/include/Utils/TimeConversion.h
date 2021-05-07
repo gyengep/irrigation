@@ -25,11 +25,11 @@ class TimeConverter {
 public:
 	TimeConverter(const std::chrono::milliseconds& ms);
 
-	size_t getDays() const { return days.count(); }
-	size_t getHours() const { return hours.count(); }
-	size_t getMinutes() const { return minutes.count(); }
-	size_t getSeconds() const { return seconds.count(); }
-	size_t getMillis() const { return millis.count(); }
+	int64_t getDays() const { return days.count(); }
+	int64_t getHours() const { return hours.count(); }
+	int64_t getMinutes() const { return minutes.count(); }
+	int64_t getSeconds() const { return seconds.count(); }
+	int64_t getMillis() const { return millis.count(); }
 };
 
 

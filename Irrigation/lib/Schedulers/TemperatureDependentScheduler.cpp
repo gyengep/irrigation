@@ -2,6 +2,7 @@
 #include "TemperatureToPercent.h"
 #include "Logger/Logger.h"
 #include "Utils/TimeConversion.h"
+#include "Utils/ToString.h"
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
@@ -79,26 +80,12 @@ unsigned TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const t
 	return result;
 }
 
-std::string toCelsius(float temperature) {
-	std::ostringstream oss;
-	oss << std::fixed << std::setprecision(1) << temperature << "°C";
-	return oss.str();
-}
-
-std::string toPercent(unsigned value) {
-	return std::to_string(value) + "%%";
-}
-
-std::string toPercent(int value) {
-	return std::to_string(value) + "%%";
-}
-
 std::string optionalToString(const std::unique_ptr<unsigned>& value) {
 	if (nullptr == value) {
 		return "disabled";
 	}
 
-	return std::to_string(*value) + "%%";
+	return std::to_string(*value) + "%";
 }
 
 enum TemperatureDependentScheduler::Day TemperatureDependentScheduler::getLastRunDay(const time_t rawtime) const {

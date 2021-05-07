@@ -2,6 +2,7 @@
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
 #include "Utils/TimeConversion.h"
+#include "Utils/ToString.h"
 #include <iomanip>
 #include <sstream>
 
@@ -62,7 +63,7 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 		oss << "Querying temperature history: ";
 		oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ". ";
 		oss << "Result: [" << std::fixed << std::setw(2) << std::setprecision(1) << minValue << "-";
-		oss << std::fixed << std::setw(2) << std::setprecision(1) << maxValue << "]";
+		oss << std::fixed << std::setw(2) << std::setprecision(1) << maxValue << " C]";
 
 		LOGGER.debug(oss.str().c_str());
 	}
@@ -73,7 +74,7 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 void TemperatureHistoryImpl::onTemperatureUpdated(const time_t& rawTime, float temperature) {
 	lock_guard<mutex> lock(mtx);
 
-	LOGGER.debug("Temperature history is updated with new value: %.1fC", temperature);
+	LOGGER.debug("Temperature history is updated with new value: %s", toCelsius(temperature).c_str());
 
 	temperatureHistoryPersister->add(TemperatureHistoryPersister::Sample(rawTime, temperature));
 	temperatureHistoryPersister->removeOlder(rawTime - std::chrono::duration_cast<std::chrono::seconds>(historyLength).count());

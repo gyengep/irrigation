@@ -2,6 +2,7 @@
 #include "Exceptions/InterruptedException.h"
 #include "Logger/Logger.h"
 #include "Utils/FunctionRunnable.h"
+#include "Utils/ReferenceRunnable.h"
 #include "Utils/TimeContainer.h"
 #include "Utils/TimeConversion.h"
 #include <sstream>
@@ -94,7 +95,8 @@ void EmailConsumer::safeSend(const EmailPtr& email) {
 }
 
 void EmailConsumer::start() {
-	workerThread = std::unique_ptr<Thread>(new Thread(*this, "EmailConsumer"));
+	auto referenceRunnable = std::make_shared<ReferenceRunnable>(*this);
+	workerThread = std::unique_ptr<Thread>(new Thread(referenceRunnable, "EmailConsumer"));
 	workerThread->start();
 }
 
