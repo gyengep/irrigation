@@ -4,6 +4,7 @@ PROJECT_ROOT    = ..
 .PHONY: all
 all:
 	@$(MAKE) -C DocumentView all
+	@$(MAKE) -C DTO all
 	@$(MAKE) -C DtoReaderWriter all
 	@$(MAKE) -C Email all
 	@$(MAKE) -C Hardware/DS18B20 all
@@ -12,6 +13,7 @@ all:
 	@$(MAKE) -C Logic all
 	@$(MAKE) -C Model all
 	@$(MAKE) -C Schedulers all
+	@$(MAKE) -C Temperature all
 	@$(MAKE) -C Utils all
 	@$(MAKE) -C Views/RestView all
 	@$(MAKE) -C Views/TimerView all
@@ -20,6 +22,7 @@ all:
 .PHONY: clean
 clean:
 	@$(MAKE) -C DocumentView clean
+	@$(MAKE) -C DTO clean
 	@$(MAKE) -C DtoReaderWriter clean
 	@$(MAKE) -C Email clean
 	@$(MAKE) -C Hardware/DS18B20 clean
@@ -28,6 +31,7 @@ clean:
 	@$(MAKE) -C Logic clean
 	@$(MAKE) -C Model clean
 	@$(MAKE) -C Schedulers clean
+	@$(MAKE) -C Temperature clean
 	@$(MAKE) -C Utils clean
 	@$(MAKE) -C Views/RestView clean
 	@$(MAKE) -C Views/TimerView clean
