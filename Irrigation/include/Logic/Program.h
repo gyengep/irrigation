@@ -38,7 +38,7 @@ public:
 	Program();
 	Program(Program&&) = default;
 	Program(const Program&);
-	Program(bool disabled, const std::string& name,
+	Program(bool enabled, const std::string& name,
 		unsigned adjustment,
 		SchedulerType schedulerType,
 		const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
