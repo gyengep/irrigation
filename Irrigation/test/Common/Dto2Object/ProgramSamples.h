@@ -19,7 +19,7 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample1() : ProgramSample(
 				Program::Builder().
-					setDisabled(true).
+					setEnabled(false).
 					setName("name1").
 					setAdjustment(54).
 					setSchedulerType(SchedulerType::PERIODIC).
@@ -31,7 +31,7 @@ namespace Dto2ObjectTest {
 					setStartTimeContainer(StartTimeListSample1().getContainer()).
 					build(),
 				ProgramDTO(
-					true, "name1", 54, to_string(SchedulerType::PERIODIC),
+					false, "name1", 54, to_string(SchedulerType::PERIODIC),
 					EveryDaySchedulerDTO(),
 					HotWeatherSchedulerDTO(HotWeatherSchedulerSample1().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample1().getDto()),
@@ -48,7 +48,7 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample2() : ProgramSample(
 				Program::Builder().
-					setDisabled(false).
+					setEnabled(true).
 					setName("name2").
 					setAdjustment(61).
 					setSchedulerType(SchedulerType::WEEKLY).
@@ -59,7 +59,7 @@ namespace Dto2ObjectTest {
 					setRunTimeContainer(RunTimeListSample2().getContainer()).
 					setStartTimeContainer(StartTimeListSample2().getContainer()).
 					build(),
-				ProgramDTO(false, "name2", 61, to_string(SchedulerType::WEEKLY),
+				ProgramDTO(true, "name2", 61, to_string(SchedulerType::WEEKLY),
 					EveryDaySchedulerDTO(),
 					HotWeatherSchedulerDTO(HotWeatherSchedulerSample2().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample2().getDto()),
@@ -76,7 +76,7 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample3() : ProgramSample(
 				Program::Builder().
-					setDisabled(true).
+					setEnabled(false).
 					setName("name3").
 					setAdjustment(159).
 					setSchedulerType(SchedulerType::PERIODIC).
@@ -88,7 +88,7 @@ namespace Dto2ObjectTest {
 					setStartTimeContainer(StartTimeListSample3().getContainer()).
 					build(),
 				ProgramDTO(
-					true, "name3", 159, to_string(SchedulerType::PERIODIC),
+					false, "name3", 159, to_string(SchedulerType::PERIODIC),
 					EveryDaySchedulerDTO(),
 					HotWeatherSchedulerDTO(HotWeatherSchedulerSample3().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample3().getDto()),
@@ -105,7 +105,7 @@ namespace Dto2ObjectTest {
 	public:
 		ProgramSample4() : ProgramSample(
 				Program::Builder().
-					setDisabled(false).
+					setEnabled(true).
 					setName("name4").
 					setAdjustment(238).
 					setSchedulerType(SchedulerType::WEEKLY).
@@ -117,7 +117,7 @@ namespace Dto2ObjectTest {
 					setStartTimeContainer(StartTimeListSample4().getContainer()).
 					build(),
 				ProgramDTO(
-					false, "name4", 238, to_string(SchedulerType::WEEKLY),
+					true, "name4", 238, to_string(SchedulerType::WEEKLY),
 					EveryDaySchedulerDTO(),
 					HotWeatherSchedulerDTO(HotWeatherSchedulerSample4().getDto()),
 					PeriodicSchedulerDTO(PeriodicSchedulerSample4().getDto()),

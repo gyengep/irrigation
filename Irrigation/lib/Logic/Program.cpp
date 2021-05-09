@@ -19,7 +19,7 @@ using namespace std;
 
 
 Program::Program() :
-	Program(false, "", 100, SchedulerType::WEEKLY,
+	Program(true, "", 100, SchedulerType::WEEKLY,
 		make_shared<EveryDayScheduler>(),
 		make_shared<HotWeatherScheduler>(
 				Temperature::getInstance().getTemperatureHistory()
@@ -37,7 +37,7 @@ Program::Program() :
 }
 
 Program::Program(const Program& other) :
-	Program(other.isDisabled(), other.getName(),
+	Program(other.isEnabled(), other.getName(),
 		other.getAdjustment(),
 		other.getSchedulerType(),
 		make_shared<EveryDayScheduler>(other.getEveryDayScheduler()),
@@ -51,7 +51,7 @@ Program::Program(const Program& other) :
 {
 }
 
-Program::Program(bool disabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
+Program::Program(bool enabled, const string& name, unsigned adjustment, SchedulerType schedulerType,
 		const shared_ptr<EveryDayScheduler>& everyDayScheduler,
 		const shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
 		const shared_ptr<PeriodicScheduler>& periodicScheduler,
@@ -59,7 +59,7 @@ Program::Program(bool disabled, const string& name, unsigned adjustment, Schedul
 		const shared_ptr<WeeklyScheduler>& weeklyScheduler,
 		const shared_ptr<RunTimeContainer>& runTimes,
 		const shared_ptr<StartTimeContainer>& startTimes) :
-	disabled(disabled),
+	enabled(enabled),
 	name(name),
 	adjustment(adjustment),
 	everyDayScheduler(everyDayScheduler),
@@ -81,7 +81,7 @@ Program::~Program() {
 }
 
 bool Program::operator== (const Program& other) const {
-	return (isDisabled() == other.isDisabled() &&
+	return (isEnabled() == other.isEnabled() &&
 			getName() == other.getName() &&
 			getAdjustment() == other.getAdjustment() &&
 			getSchedulerType() == other.getSchedulerType() &&
@@ -92,12 +92,12 @@ bool Program::operator== (const Program& other) const {
 			getStartTimes() == other.getStartTimes());
 }
 
-void Program::setDisabled(bool disabled) {
-	this->disabled = disabled;
+void Program::setEnabled(bool enabled) {
+	this->enabled = enabled;
 }
 
-bool Program::isDisabled() const {
-	return disabled;
+bool Program::isEnabled() const {
+	return enabled;
 }
 
 const string& Program::getName() const {
@@ -146,7 +146,7 @@ SchedulerType Program::getSchedulerType(void) const {
 }
 
 pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
-	if (!disabled) {
+	if (enabled) {
 		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
 			struct tm timeinfo = toLocalTime(rawtime);
@@ -181,7 +181,7 @@ pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
 }
 
 ProgramDTO Program::toProgramDto() const {
-	return ProgramDTO(disabled, name, adjustment,
+	return ProgramDTO(enabled, name, adjustment,
 			to_string(getSchedulerType()),
 			getEveryDayScheduler().toEveryDaySchedulerDto(),
 			getHotWeatherScheduler().toHotWeatherSchedulerDto(),
@@ -193,8 +193,8 @@ ProgramDTO Program::toProgramDto() const {
 }
 
 void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
-	if (programDTO.hasDisabled()) {
-		setDisabled(programDTO.getDisabled());
+	if (programDTO.hasEnabled()) {
+		setEnabled(programDTO.getEnabled());
 	}
 
 	if (programDTO.hasName()) {
@@ -265,7 +265,7 @@ string to_string(const Program& program) {
 ostream& operator<<(ostream& os, const Program& program) {
 	os << "Program{";
 	os << "name=\"" << program.getName() << "\", ";
-	os << "disabled=" << to_string(program.isDisabled()) << ", ";
+	os << "enabled=" << to_string(program.isEnabled()) << ", ";
 	os << "adjustment=\"" << program.getAdjustment() << "\", ";
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
@@ -283,7 +283,7 @@ ostream& operator<<(ostream& os, const Program& program) {
 ///////////////////////////////////////////////////////////////////////////////
 
 Program::Builder::Builder() :
-	disabled(false),
+	enabled(true),
 	adjustment(100),
 	schedulerType(SchedulerType::WEEKLY)
 {
@@ -292,8 +292,8 @@ Program::Builder::Builder() :
 Program::Builder::~Builder() {
 }
 
-Program::Builder& Program::Builder::setDisabled(bool disabled) {
-	this->disabled = disabled;
+Program::Builder& Program::Builder::setEnabled(bool enabled) {
+	this->enabled = enabled;
 	return *this;
 }
 
@@ -383,7 +383,7 @@ shared_ptr<Program> Program::Builder::build() {
 	}
 
 	return shared_ptr<Program>(new Program(
-			disabled, 
+			enabled,
 			name,
 			adjustment,
 			schedulerType,

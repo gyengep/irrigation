@@ -216,7 +216,7 @@ void IrrigationApplication::setMyDefaults() {
 		IdType(),
 		Program::Builder().
 			setName("fulocsolas").
-			setDisabled(false).
+			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
@@ -244,7 +244,7 @@ void IrrigationApplication::setMyDefaults() {
 		IdType(),
 		Program::Builder().
 			setName("buxus").
-			setDisabled(false).
+			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
@@ -272,7 +272,7 @@ void IrrigationApplication::setMyDefaults() {
 		IdType(),
 		Program::Builder().
 			setName("kanikula").
-			setDisabled(false).
+			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::HOT_WEATHER).
 			setHotWeatherScheduler(make_shared<HotWeatherScheduler>(
@@ -302,7 +302,7 @@ void IrrigationApplication::setMyDefaults() {
 		IdType(),
 		Program::Builder().
 			setName("paradicsom").
-			setDisabled(false).
+			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
@@ -331,7 +331,7 @@ void IrrigationApplication::setMyDefaults() {
 		IdType(),
 		Program::Builder().
 			setName("virag").
-			setDisabled(false).
+			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(

@@ -14,7 +14,7 @@
 
 #define PROGRAM_DTO_MEMBERS																			\
 	DTO_MEMBER_INIT(ProgramDTO, unsigned, Id);														\
-	DTO_MEMBER_COPY(ProgramDTO, bool, Disabled);													\
+	DTO_MEMBER_COPY(ProgramDTO, bool, Enabled);													\
 	DTO_MEMBER_COPY(ProgramDTO, std::string, Name);													\
 	DTO_MEMBER_COPY(ProgramDTO, unsigned, Adjustment);												\
 	DTO_MEMBER_COPY(ProgramDTO, std::string, SchedulerType);										\
@@ -32,7 +32,7 @@ CREATE_DTO_CLASS(ProgramDTO)
 	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_INIT_VALUE_COPY(CLASS, TYPE, NAME)
 	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_INIT_VALUE_MOVE(CLASS, TYPE, NAME)
 
-	ProgramDTO(bool Disabled, const std::string& Name,
+	ProgramDTO(bool Enabled, const std::string& Name,
 			unsigned Adjustment,
 			const std::string& SchedulerType,
 			EveryDaySchedulerDTO&& EveryDayScheduler,

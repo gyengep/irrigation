@@ -21,7 +21,7 @@ public:
 	class Builder;
 
 protected:
-	bool disabled;
+	bool enabled;
 	std::string name;
 	unsigned adjustment;
 	SchedulerType schedulerType;
@@ -56,8 +56,8 @@ public:
 	Program& operator= (const Program&) = delete;
 	bool operator== (const Program&) const;
 
-	void setDisabled(bool disabled);
-	bool isDisabled() const;
+	void setEnabled(bool enabled);
+	bool isEnabled() const;
 
 	void setName(const std::string& name);
 	const std::string& getName() const;
@@ -99,7 +99,7 @@ public:
 };
 
 class Program::Builder {
-	bool disabled;
+	bool enabled;
 	std::string name;
 	unsigned adjustment;
 	SchedulerType schedulerType;
@@ -115,7 +115,7 @@ public:
 	Builder();
 	~Builder();
 
-	Builder& setDisabled(bool disabled);
+	Builder& setEnabled(bool enabled);
 	Builder& setName(const std::string& name);
 	Builder& setAdjustment(unsigned adjustment);
 	Builder& setSchedulerType(SchedulerType schedulerType);

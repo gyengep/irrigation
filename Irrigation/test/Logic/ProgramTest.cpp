@@ -281,7 +281,7 @@ TEST(ProgramTest, isScheduled_disabled) {
 	MockProgram program;
 	MockScheduler scheduler;
 
-	program.setDisabled(true);
+	program.setEnabled(false);
 	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
 	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
 	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
@@ -359,7 +359,7 @@ TEST(ProgramTest, partialUpdateFromProgramDto_empty) {
 
 unique_ptr<Program::Builder> createBuilder(const Program& program) {
 	unique_ptr<Program::Builder> builder(new Program::Builder());
-	builder->setDisabled(program.isDisabled());
+	builder->setEnabled(program.isEnabled());
 	builder->setName(program.getName());
 	builder->setAdjustment(program.getAdjustment());
 	builder->setSchedulerType(program.getSchedulerType());

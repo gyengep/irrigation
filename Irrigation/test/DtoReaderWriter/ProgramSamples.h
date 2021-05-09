@@ -35,7 +35,7 @@ typedef std::pair<std::string, ProgramDTO> ProgramSample;
 const ProgramSample programSample_all(
 		"<program id=\"123\">"
 			"<name>abcdefg</name>"
-			"<disabled>true</disabled>"
+			"<enabled>false</enabled>"
 			"<adjustment>183</adjustment>"
 			"<schedulertype>weekly</schedulertype>"
 			"<schedulers>" +
@@ -50,7 +50,7 @@ const ProgramSample programSample_all(
 		"</program>",
 		ProgramDTO()
 		.setId(123)
-		.setDisabled(true)
+		.setEnabled(false)
 		.setName("abcdefg")
 		.setAdjustment(183)
 		.setSchedulerType("weekly")
@@ -66,9 +66,9 @@ const ProgramSample programSample_all(
 
 const ProgramSample programSample_disabled(
 		"<program>"
-			"<disabled>true</disabled>"
+			"<enabled>false</enabled>"
 		"</program>",
-		ProgramDTO().setDisabled(true)
+		ProgramDTO().setEnabled(false)
 		);
 
 const ProgramSample programSample_name(
