@@ -18,6 +18,25 @@
 using namespace std;
 
 
+ScheduledResult::ScheduledResult(bool scheduled, unsigned adjustment) :
+	scheduled(scheduled),
+	adjustment(adjustment)
+{
+}
+
+bool ScheduledResult::isScheduled() const {
+	return scheduled;
+}
+
+unsigned ScheduledResult::getAdjustment() const {
+	return adjustment;
+}
+
+bool ScheduledResult::operator==(const ScheduledResult& other) const {
+	return ((adjustment == other.adjustment) && (scheduled == other.scheduled));
+}
+
+
 Program::Program() :
 	Program(true, "", 100, SchedulerType::WEEKLY,
 		make_shared<EveryDayScheduler>(),
@@ -145,7 +164,7 @@ SchedulerType Program::getSchedulerType(void) const {
 	return schedulerType;
 }
 
-pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
+std::unique_ptr<ScheduledResult> Program::isScheduled(const std::time_t rawtime) {
 	if (enabled) {
 		for (const auto& startTimeAndIdPair : getStartTimes()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
@@ -172,12 +191,12 @@ pair<bool, unsigned> Program::isScheduled(const std::time_t rawtime) {
 					}
 				}
 
-				return make_pair(true, adjustment);
+				return std::unique_ptr<ScheduledResult>(new ScheduledResult(true, adjustment));
 			}
 		}
 	}
 
-	return make_pair(false, 0);
+	return std::unique_ptr<ScheduledResult>(new ScheduledResult(false, 0));
 }
 
 ProgramDTO Program::toProgramDto() const {

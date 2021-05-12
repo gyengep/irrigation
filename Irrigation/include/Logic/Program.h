@@ -15,6 +15,19 @@ class WeeklyScheduler;
 class RunTimeContainer;
 class StartTimeContainer;
 
+class ScheduledResult {
+	const bool scheduled;
+	const unsigned adjustment;
+
+public:
+	ScheduledResult(bool scheduled, unsigned adjustment);
+
+	bool isScheduled() const;
+	unsigned getAdjustment() const;
+
+	bool operator==(const ScheduledResult& other) const;
+};
+
 
 class Program {
 public:
@@ -68,7 +81,7 @@ public:
 	void setSchedulerType(SchedulerType schedulerType);
 	SchedulerType getSchedulerType() const;
 
-	virtual std::pair<bool, unsigned> isScheduled(const std::time_t rawtime);
+	virtual std::unique_ptr<ScheduledResult> isScheduled(const std::time_t rawtime);
 //	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
 	virtual Scheduler& getCurrentScheduler() { return *currentScheduler; }
 

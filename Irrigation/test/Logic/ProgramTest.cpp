@@ -207,7 +207,7 @@ TEST(ProgramTest, isScheduled1) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(expectedResult, 0)));
+				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, 0)));
 			}
 		}
 	}
@@ -239,7 +239,7 @@ TEST(ProgramTest, isScheduled2) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 76 : 0)));
+				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, expectedResult ? 76 : 0)));
 			}
 		}
 	}
@@ -271,7 +271,7 @@ TEST(ProgramTest, isScheduled3) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
+				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
 			}
 		}
 	}
@@ -291,7 +291,7 @@ TEST(ProgramTest, isScheduled_disabled) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Eq(pair<bool, unsigned>(false, 0)));
+				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(false, 0)));
 			}
 		}
 	}

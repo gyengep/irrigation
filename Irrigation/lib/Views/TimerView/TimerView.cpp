@@ -73,10 +73,10 @@ void TimerView::checkProgramScheduled(const time_t rawTime) {
 	if (!irrigationDocument.getWateringController().isWateringActive()) {
 		for (const auto& programAndIdPair : programs) {
 
-			const IdType& idType = programAndIdPair.first;
-			const shared_ptr<Program>& program = programAndIdPair.second;
+			const auto& id = programAndIdPair.first;
+			const auto& program = programAndIdPair.second;
 
-			if (processProgramScheduled(idType, program, rawTime)) {
+			if (processProgramScheduled(id, program, rawTime)) {
 				break;
 			}
 		}
@@ -85,9 +85,9 @@ void TimerView::checkProgramScheduled(const time_t rawTime) {
 
 bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const time_t rawTime) {
 	try {
-		const auto result = program->isScheduled(rawTime);
-		if (result.first) {
-			if (0 < result.second) {
+		const auto scheduledResult = program->isScheduled(rawTime);
+		if (scheduledResult->isScheduled()) {
+			if (0 < scheduledResult->getAdjustment()) {
 				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
 						to_string(idType).c_str(),
 						program->getName().c_str(),
@@ -97,12 +97,12 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 				if (EMAIL.isTopicEnabled(topic)) {
 					std::ostringstream oss;
 					oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << toLocalTimeStr(rawTime, "%T") << std::endl;
-					oss << "adjustment: "<< result.second << "%%" << std::endl;
+					oss << "adjustment: "<< scheduledResult->getAdjustment() << "%" << std::endl;
 					oss << "runTimes:   " << program->getRunTimes() << std::endl;
 					EMAIL.send(topic, oss.str());
 				}
 
-				irrigationDocument.getWateringController().start(program->getRunTimes(), result.second);
+				irrigationDocument.getWateringController().start(program->getRunTimes(), scheduledResult->getAdjustment());
 			} else {
 				const EmailTopic topic = EmailTopic::WATERING_SKIP;
 				if (EMAIL.isTopicEnabled(topic)) {
