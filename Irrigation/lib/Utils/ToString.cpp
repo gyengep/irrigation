@@ -8,6 +8,13 @@ std::string toCelsius(float temperature) {
 	return oss.str();
 }
 
+std::string toCelsiusRange(float fromTemperature, float toTemperature) {
+	std::ostringstream oss;
+	oss << std::fixed << /*std::setw(2) << */std::setprecision(1) << fromTemperature << "-";
+	oss << std::fixed << /*std::setw(2) << */std::setprecision(1) << toTemperature << " C";
+	return oss.str();
+}
+
 std::string toPercent(unsigned value) {
 	return std::to_string(value) + "%";
 }

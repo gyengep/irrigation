@@ -59,9 +59,11 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 		std::ostringstream oss;
+
 		oss << "Querying temperature history: ";
 		oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ". ";
 		oss << "Result: [" << toCelsiusRange(minValue, maxValue) << "]";
+
 		LOGGER.debug(oss.str().c_str());
 	}
 

@@ -90,8 +90,10 @@ void TemperatureForecastImpl::setValues(std::list<TemperatureForecastProvider::V
 
 		for (const auto& value : values) {
 			std::ostringstream oss;
+
 			oss << toLocalTimeStr(value.from, "%F %T") << "-" << toLocalTimeStr(value.to, "%F %T") << ": ";
 			oss << "[" << toCelsiusRange(value.min, value.max) << "]";
+
 			LOGGER.trace(oss.str().c_str());
 		}
 	} else {

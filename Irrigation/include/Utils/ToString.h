@@ -31,5 +31,6 @@ std::string to_string(const InputIterator&  first, const InputIterator&  last) {
 }
 
 std::string toCelsius(float temperature);
+std::string toCelsiusRange(float fromTemperature, float toTemperature);
 std::string toPercent(unsigned value);
 std::string toPercent(int value);

@@ -68,9 +68,9 @@ void TimerView::run() {
 void TimerView::checkProgramScheduled(const time_t rawTime) {
 	lock_guard<IrrigationDocument> lock(irrigationDocument);
 
-	const ProgramContainer& programs = irrigationDocument.getPrograms();
-
 	if (!irrigationDocument.getWateringController().isWateringActive()) {
+		const ProgramContainer& programs = irrigationDocument.getPrograms();
+
 		for (const auto& programAndIdPair : programs) {
 
 			const auto& id = programAndIdPair.first;
@@ -86,6 +86,7 @@ void TimerView::checkProgramScheduled(const time_t rawTime) {
 bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const time_t rawTime) {
 	try {
 		const auto scheduledResult = program->isScheduled(rawTime);
+
 		if (scheduledResult->isScheduled()) {
 			if (0 < scheduledResult->getAdjustment()) {
 				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
