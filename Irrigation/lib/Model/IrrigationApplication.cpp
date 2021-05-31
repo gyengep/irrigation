@@ -62,11 +62,6 @@ string IrrigationApplication::getVersion() {
 }
 
 void IrrigationApplication::initEmail() {
-
-	const Email::Contact from("Irrigation System", "irrigation.gyengep@gmail.com");
-	const Email::Contact to("Gyenge Peter", "gyengep@gmail.com");
-	const EmailSender::Properties senderProperties("smtps://smtp.gmail.com:465", "irrigation.gyengep", "hFlTL4931c");
-
 	EmailHandler::init(
 			Email::Contact("Irrigation System", "irrigation.gyengep@gmail.com"),
 			Email::Contact("Gyenge Peter", "gyengep@gmail.com"),
