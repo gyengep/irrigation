@@ -1,6 +1,7 @@
 #include "RestView.h"
 #include "RestService.h"
 #include "RestServiceException.h"
+#include "XmlTemperatureWriter.h"
 #include "XmlErrorWriter.h"
 #include "XmlLogWriter.h"
 #include "DtoReaderWriter/XmlReader.h"
@@ -18,16 +19,36 @@
 using namespace std;
 
 
-RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
+RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
+		const std::shared_ptr<CurrentTemperature>& currentTemperature,
+		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+		const std::shared_ptr<TemperatureHistory>& temperatureHistory
+) :
 	View(irrigationDocument),
 	port(port),
+	currentTemperature(currentTemperature),
+	temperatureForecast(temperatureForecast),
+	temperatureHistory(temperatureHistory),
 	irrigationDocument(irrigationDocument)
 {
+	if (nullptr == currentTemperature) {
+		throw std::invalid_argument("RestView::RestView() nullptr == currentTemperature");
+	}
+
+	if (nullptr == temperatureForecast) {
+		throw std::invalid_argument("RestView::RestView() nullptr == temperatureForecast");
+	}
+
+	if (nullptr == temperatureHistory) {
+		throw std::invalid_argument("RestView::RestView() nullptr == temperatureHistory");
+	}
+
 	restService.reset(new RestService());
 	webServer.reset(new WebServer(restService, port));
 	dtoReader.reset(new XmlReader());
 	dtoWriter.reset(new XmlWriter());
 	logWriter.reset(new XmlLogWriter());
+	temperatureWriter.reset(new XmlTemperatureWriter());
 
 	using namespace placeholders;
 
@@ -53,6 +74,9 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port) :
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/logs", bind(&RestView::onGetLogs, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature", bind(&RestView::onGetTemperature, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/forecast", bind(&RestView::onGetTemperatureForecast, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/historical", bind(&RestView::onGetTemperatureHistory, this, _1, _2));
 }
 
 RestView::~RestView() {

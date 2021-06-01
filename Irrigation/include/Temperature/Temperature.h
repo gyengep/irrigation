@@ -5,6 +5,7 @@
 #include "TemperatureException.h"
 
 class CurrentTemperatureProvider;
+class CurrentTemperature;
 class TemperatureForecast;
 class TemperatureHistory;
 class CurrentTemperatureImpl;
@@ -55,6 +56,7 @@ public:
 
 	~Temperature();
 
+	const std::shared_ptr<CurrentTemperature> getCurrentTemperature() const;
 	const std::shared_ptr<TemperatureHistory> getTemperatureHistory() const;
 	const std::shared_ptr<TemperatureForecast> getTemperatureForecast() const;
 

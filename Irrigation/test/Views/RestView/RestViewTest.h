@@ -4,6 +4,9 @@
 #include "Utils/CurlHeaderWriter.h"
 #include "Utils/CurlStringWriter.h"
 #include "Dto2Object/ProgramListSamples.h"
+#include "Mocks/MockCurrentTemperature.h"
+#include "Mocks/MockTemperatureHistory.h"
+#include "Mocks/MockTemperatureForecast.h"
 
 class IrrigationDocument;
 class RestView;
@@ -23,6 +26,10 @@ private:
 
 protected:
 	static const uint16_t port = 8080;
+
+	std::shared_ptr<MockCurrentTemperature> mockCurrentTemperature;
+	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
+	std::shared_ptr<MockTemperatureForecast> mockTemperatureForecast;
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 
     virtual void SetUp();
@@ -46,6 +53,7 @@ protected:
     static void checkErrorResponse(const Response& response, long statusCode, const std::string& contentType);
     static void checkResponseWithoutBody(const Response& response, long statusCode);
     static void checkResponseWithBody(const Response& response, long statusCode, const std::string& contentType);
+    static void checkResponseWithBody(const Response& response, long statusCode, const std::string& contentType, const std::string& body);
 
     static std::string createUrl(const std::string& path);
     static std::string createProgramUrl(IdType programId, const std::string& requestParameters = "");
@@ -58,4 +66,7 @@ protected:
     static std::string createTemperatureDependentSchedulerUrl(IdType programId);
     static std::string createWeeklySchedulerUrl(IdType programId);
     static std::string createIrrigationActionUrl();
+    static std::string createTemperatureUrl();
+    static std::string createTemperatureForecastUrl(const std::string& requestParameters = "");
+    static std::string createTemperatureHistoryUrl(const std::string& requestParameters = "");
 };

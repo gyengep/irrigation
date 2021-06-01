@@ -168,7 +168,11 @@ void IrrigationApplication::initDocument() {
 	}
 
 	irrigationDocument->addView(unique_ptr<View>(new TimerView(*irrigationDocument)));
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, Configuration::getInstance().getRestPort())));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, Configuration::getInstance().getRestPort(),
+			Temperature::getInstance().getCurrentTemperature(),
+			Temperature::getInstance().getTemperatureForecast(),
+			Temperature::getInstance().getTemperatureHistory()
+		)));
 }
 
 void IrrigationApplication::uninitDocument() {

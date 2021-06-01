@@ -1,6 +1,14 @@
 #include "DateTime.h"
+#include <stdexcept>
 
 
+std::time_t DefaultTimefunc::getTime() const {
+	return std::time(nullptr);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::shared_ptr<Timefunc> DateTime::timefunc = std::make_shared<DefaultTimefunc>();
 
 DateTime::DateTime(const DateTime& other) :
 	rawtime(other.rawtime)
@@ -33,9 +41,20 @@ const std::time_t& DateTime::toRawtime() const {
 }
 
 DateTime DateTime::now() {
-	return DateTime(std::time(nullptr));
+	return DateTime(timefunc->getTime());
 }
 
+void DateTime::setTimefunc(const std::shared_ptr<Timefunc>& timefunc) {
+	if (nullptr == timefunc) {
+		throw std::invalid_argument("DateTime::setTimefunc() nullptr == timefunc");
+	}
+
+	DateTime::timefunc = timefunc;
+}
+
+void DateTime::resetTimefunc() {
+	timefunc = std::make_shared<DefaultTimefunc>();
+}
 
 
 

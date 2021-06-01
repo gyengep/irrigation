@@ -16,18 +16,27 @@ class HttpRequest;
 class DtoReader;
 class DtoWriter;
 class LogWriter;
+class TemperatureWriter;
 class IrrigationDocument;
+class CurrentTemperature;
+class TemperatureForecast;
+class TemperatureHistory;
 
 
 class RestView : public View {
 	const uint16_t port;
+	const std::shared_ptr<CurrentTemperature> currentTemperature;
+	const std::shared_ptr<TemperatureForecast> temperatureForecast;
+	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
 	IrrigationDocument& irrigationDocument;
+
 	std::shared_ptr<RestService> restService;
 	std::unique_ptr<WebServer> webServer;
 	std::shared_ptr<DtoReader> dtoReader;
 	std::shared_ptr<DtoWriter> dtoWriter;
 	std::shared_ptr<LogWriter> logWriter;
+	std::shared_ptr<TemperatureWriter> temperatureWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters);
@@ -51,6 +60,9 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperature(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperatureForecast(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperatureHistory(const HttpRequest& request, const KeyValue& pathParameters);
 
 	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);
@@ -64,7 +76,11 @@ class RestView : public View {
 	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 
 public:
-	RestView(IrrigationDocument& irrigationDocument, uint16_t port);
+	RestView(IrrigationDocument& irrigationDocument, uint16_t port,
+			const std::shared_ptr<CurrentTemperature>& currentTemperature,
+			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory
+		);
 	virtual ~RestView();
 
 	virtual void initialize() override;

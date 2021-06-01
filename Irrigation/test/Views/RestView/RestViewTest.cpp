@@ -1,5 +1,6 @@
 #include "RestViewTest.h"
 #include "Model/IrrigationDocument.h"
+#include "Utils/DateTime.h"
 #include "Utils/CurlStringReader.h"
 #include "Views/RestView/RestView.h"
 #include <curl/curl.h>
@@ -9,11 +10,20 @@ using namespace testing;
 
 
 void RestViewTest::SetUp() {
+	mockCurrentTemperature = std::make_shared<MockCurrentTemperature>();
+	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
+	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
+
 	irrigationDocument = IrrigationDocument::Builder().build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 }
 
 void RestViewTest::TearDown() {
+	DateTime::resetTimefunc();
 }
 
 string RestViewTest::createUrl(const string& path) {
@@ -100,6 +110,12 @@ void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response,
 	EXPECT_THAT(response.responseCode, Eq(statusCode));
 	EXPECT_THAT(response.curlStringWriter.getText(), Not(IsEmpty()));
 	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Content-Type: " + contentType + "\r\n"));
+}
+
+void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response, long expectedStatusCode, const string& expectedContentType, const std::string& expectedBody) {
+	EXPECT_THAT(response.responseCode, Eq(expectedStatusCode));
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(expectedBody));
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Content-Type: " + expectedContentType + "\r\n"));
 }
 
 void RestViewTest::checkErrorResponse(const RestViewTest::Response& response, long statusCode, const string& contentType) {

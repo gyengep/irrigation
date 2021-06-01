@@ -29,7 +29,11 @@ TEST_F(RestViewTest, postProgram) {
 
 void RestViewTest::testGetProgram(const ProgramListSample& programListSample, const string& requestParameters, bool includeContainers) {
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	for (const auto& programWithId : *programListSample.getContainer()) {
 		const Response response = executeRequest("GET", createProgramUrl(programWithId.first, requestParameters));
@@ -158,7 +162,11 @@ TEST_F(RestViewTest, deleteProgram) {
 	EXPECT_CALL(*programContainer, insert(_, _)).Times(AnyNumber());
 
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programContainer).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 
 	Response response = executeRequest("DELETE", createProgramUrl(programId));

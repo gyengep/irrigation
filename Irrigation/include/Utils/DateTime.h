@@ -5,7 +5,24 @@
 #include <string>
 
 
+class Timefunc {
+public:
+	virtual ~Timefunc() = default;
+	virtual std::time_t getTime() const = 0;
+};
+
+
+class DefaultTimefunc : public Timefunc {
+public:
+	virtual ~DefaultTimefunc() = default;
+	virtual std::time_t getTime() const override;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 class DateTime {
+	static std::shared_ptr<Timefunc> timefunc;
+
 protected:
 	const std::time_t rawtime;
 
@@ -23,6 +40,8 @@ public:
 	const std::time_t& toRawtime() const;
 
 	static DateTime now();
+	static void setTimefunc(const std::shared_ptr<Timefunc>& timefunc);
+	static void resetTimefunc();
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,6 +67,7 @@ public:
 
 	std::string toString(const char* format) const;
 
+	static ZonedDateTime now();
 	static ZonedDateTime create(int year, int month, int day, int hour, int minute, int second);
 	static void checkDate(int year, int month, int day);
 	static void checkTime(int hour, int minute, int second);
@@ -82,6 +102,11 @@ template <class T>
 ZonedDateTime<T>::ZonedDateTime(const DateTime& other) :
 	DateTime(other)
 {
+}
+
+template <class T>
+ZonedDateTime<T> ZonedDateTime<T>::now() {
+	return ZonedDateTime(DateTime::now());
 }
 
 template <class T>

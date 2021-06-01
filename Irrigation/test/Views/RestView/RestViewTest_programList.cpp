@@ -25,7 +25,11 @@ TEST_F(RestViewTest, postProgramList) {
 	EXPECT_CALL(*mockProgramContainer, insert(_, Pointee(*ProgramSample1().getObject())));
 
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(mockProgramContainer).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
 	const IdType programId = irrigationDocument->getPrograms().begin()->first;
@@ -49,7 +53,11 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 
 void RestViewTest::testGetProgramList(const ProgramListSample& programListSample, const string& requestParameters, bool includeContainers) {
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	const Response response = executeRequest("GET", createProgramListUrl(requestParameters));
 	checkResponseWithBody(response, 200, "application/xml");

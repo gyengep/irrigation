@@ -96,6 +96,10 @@ void Temperature::uninit() {
 	current->stop();
 }
 
+const shared_ptr<CurrentTemperature> Temperature::getCurrentTemperature() const {
+	return current;
+}
+
 const shared_ptr<TemperatureHistory> Temperature::getTemperatureHistory() const {
 	return history;
 }

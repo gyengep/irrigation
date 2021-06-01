@@ -45,7 +45,11 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 	EXPECT_CALL(*mockWateringController, start(expectedRunTimeContainer, expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -80,7 +84,11 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 	EXPECT_CALL(*mockWateringController, start(expectedRunTimeContainer, expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -113,7 +121,11 @@ TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 	EXPECT_CALL(*mockWateringController, start(expectedRunTimeContainer, 100));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -139,7 +151,11 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 			setWateringController(mockWateringController).
 			build();
 
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -165,7 +181,11 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 			setWateringController(mockWateringController).
 			build();
 
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);
@@ -184,7 +204,11 @@ TEST_F(RestViewTest, patchIrrigationActionStop) {
 	EXPECT_CALL(*mockWateringController, stop());
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port)));
+	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+			mockCurrentTemperature,
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
 	checkResponseWithoutBody(response, 200);

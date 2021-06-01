@@ -4,14 +4,14 @@
 
 std::string toCelsius(float temperature) {
 	std::ostringstream oss;
-	oss << std::fixed << std::setprecision(1) << temperature << " C";
+	oss << std::fixed << std::setprecision(1) << temperature << " C"/*" \u2103"*/;
 	return oss.str();
 }
 
 std::string toCelsiusRange(float fromTemperature, float toTemperature) {
 	std::ostringstream oss;
-	oss << std::fixed << /*std::setw(2) << */std::setprecision(1) << fromTemperature << "-";
-	oss << std::fixed << /*std::setw(2) << */std::setprecision(1) << toTemperature << " C";
+	oss << std::fixed << std::setprecision(1) << fromTemperature << "-";
+	oss << std::fixed << std::setprecision(1) << toTemperature << " C"/*" \u2103"*/;
 	return oss.str();
 }
 
