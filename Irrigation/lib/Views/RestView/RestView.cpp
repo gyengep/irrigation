@@ -15,6 +15,7 @@
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include <ctime>
+#include <cstring>
 
 using namespace std;
 
@@ -77,6 +78,8 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature", bind(&RestView::onGetTemperature, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/forecast", bind(&RestView::onGetTemperatureForecast, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/historical", bind(&RestView::onGetTemperatureHistory, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -200,3 +203,28 @@ void RestView::onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActio
 	irrigationDocument.getWateringController().stop();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+std::unique_ptr<HttpResponse> RestView::onPatchReboot(const HttpRequest& request, const KeyValue& pathParameters) {
+	const int systemExitCode = std::system("shutdown --reboot now");
+	if (0 != systemExitCode) {
+		const int processExitCode = (systemExitCode & 0xFF00) >> 8;
+		throw RestInternalServerError(restService->getErrorWriter(), "Can not execute reboot. Error: " + std::to_string(processExitCode));
+	}
+
+	return HttpResponse::Builder().
+			setStatus(200, "OK").
+			build();
+}
+
+std::unique_ptr<HttpResponse> RestView::onPatchPoweroff(const HttpRequest& request, const KeyValue& pathParameters) {
+	const int systemExitCode = std::system("shutdown --poweroff now");
+	if (0 != systemExitCode) {
+		const int processExitCode = (systemExitCode & 0xFF00) >> 8;
+		throw RestInternalServerError(restService->getErrorWriter(), "Can not execute power off. Error: " + std::to_string(processExitCode));
+	}
+
+	return HttpResponse::Builder().
+			setStatus(200, "OK").
+			build();
+}

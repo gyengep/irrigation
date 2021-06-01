@@ -59,6 +59,8 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchTemperatureDependentScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onPatchReboot(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onPatchPoweroff(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperature(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureForecast(const HttpRequest& request, const KeyValue& pathParameters);
