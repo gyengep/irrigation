@@ -50,6 +50,6 @@ TEST(CsvWriterFactoryTest, write) {
 }
 
 TEST(CsvWriterFactoryTest, writeInvalid) {
-	CsvWriterFactoryImpl csvWriterFactory("asa:\\fadzfauxuax");
+	CsvWriterFactoryImpl csvWriterFactory("fadzfauxuax/123/456/45132/63/5");
 	EXPECT_THROW(csvWriterFactory.create(), IOException);
 }
