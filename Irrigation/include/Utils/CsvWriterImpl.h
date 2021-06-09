@@ -18,9 +18,10 @@ public:
 
 class CsvWriterFactoryImpl : public CsvWriterFactory {
 	const std::string fileName;
+	const bool append;
 
 public:
-	CsvWriterFactoryImpl(const std::string& fileName);
+	CsvWriterFactoryImpl(const std::string& fileName, bool append);
 
 	virtual ~CsvWriterFactoryImpl();
 	virtual std::shared_ptr<CsvWriter> create() override;

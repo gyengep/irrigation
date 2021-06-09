@@ -28,8 +28,9 @@ void CsvWriterImpl::append(const vector<string>& values) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CsvWriterFactoryImpl::CsvWriterFactoryImpl(const std::string& fileName) :
-	fileName(fileName)
+CsvWriterFactoryImpl::CsvWriterFactoryImpl(const std::string& fileName, bool append) :
+	fileName(fileName),
+	append(append)
 {
 }
 
@@ -37,7 +38,16 @@ CsvWriterFactoryImpl::~CsvWriterFactoryImpl() {
 }
 
 shared_ptr<CsvWriter> CsvWriterFactoryImpl::create() {
-	auto ofs = std::make_shared<std::ofstream>(fileName, ofstream::out | ofstream::app);
+	std::ios_base::openmode fileOpenMode;
+
+	if (append) {
+		fileOpenMode = ofstream::out | ofstream::app;
+	} else {
+		fileOpenMode = ofstream::out;
+
+	}
+
+	auto ofs = std::make_shared<std::ofstream>(fileName, fileOpenMode);
 
 	if (ofs->fail()) {
 		throw IOException(errno);

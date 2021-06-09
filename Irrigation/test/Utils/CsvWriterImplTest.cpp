@@ -32,7 +32,7 @@ TEST(CsvWriterFactoryTest, write) {
 	char filename[L_tmpnam];
 	tmpnam(filename);
 
-	CsvWriterFactoryImpl csvWriterFactory(filename);
+	CsvWriterFactoryImpl csvWriterFactory(filename, false);
 	auto csvWriter = csvWriterFactory.create();
 
 	ASSERT_THAT(csvWriter, Not(IsNull()));
@@ -49,7 +49,71 @@ TEST(CsvWriterFactoryTest, write) {
 	}
 }
 
+TEST(CsvWriterFactoryTest, writeOpenAppend) {
+	char filename[L_tmpnam];
+	tmpnam(filename);
+
+	{
+		CsvWriterFactoryImpl csvWriterFactory(filename, true);
+		auto csvWriter = csvWriterFactory.create();
+
+		ASSERT_THAT(csvWriter, Not(IsNull()));
+
+		csvWriter->append(std::vector<std::string>{ "1", "2", "3", "4"});
+		csvWriter->append(std::vector<std::string>{ "5", "6", "7"});
+	}
+
+	{
+		CsvWriterFactoryImpl csvWriterFactory(filename, true);
+		auto csvWriter = csvWriterFactory.create();
+
+		ASSERT_THAT(csvWriter, Not(IsNull()));
+
+		csvWriter->append(std::vector<std::string>{ "8", "9", "10"});
+	}
+
+	{
+		std::ifstream t(filename);
+		std::string str((std::istreambuf_iterator<char>(t)),
+		                 std::istreambuf_iterator<char>());
+
+		EXPECT_THAT(str, Eq("1,2,3,4\n5,6,7\n8,9,10\n"));
+	}
+}
+
+TEST(CsvWriterFactoryTest, writeOpenTruncate) {
+	char filename[L_tmpnam];
+	tmpnam(filename);
+
+	{
+		CsvWriterFactoryImpl csvWriterFactory(filename, false);
+		auto csvWriter = csvWriterFactory.create();
+
+		ASSERT_THAT(csvWriter, Not(IsNull()));
+
+		csvWriter->append(std::vector<std::string>{ "1", "2", "3", "4"});
+		csvWriter->append(std::vector<std::string>{ "5", "6", "7"});
+	}
+
+	{
+		CsvWriterFactoryImpl csvWriterFactory(filename, false);
+		auto csvWriter = csvWriterFactory.create();
+
+		ASSERT_THAT(csvWriter, Not(IsNull()));
+
+		csvWriter->append(std::vector<std::string>{ "8", "9", "10"});
+	}
+
+	{
+		std::ifstream t(filename);
+		std::string str((std::istreambuf_iterator<char>(t)),
+		                 std::istreambuf_iterator<char>());
+
+		EXPECT_THAT(str, Eq("8,9,10\n"));
+	}
+}
+
 TEST(CsvWriterFactoryTest, writeInvalid) {
-	CsvWriterFactoryImpl csvWriterFactory("fadzfauxuax/123/456/45132/63/5");
+	CsvWriterFactoryImpl csvWriterFactory("fadzfauxuax/123/456/45132/63/5", false);
 	EXPECT_THROW(csvWriterFactory.create(), IOException);
 }

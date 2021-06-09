@@ -73,14 +73,14 @@ void Temperature::init(
 			current,
 			std::make_shared<CsvTemperatureHistoryPersister>(
 					make_shared<CsvReaderFactoryImpl>(temperatureHistoryProperties.fileName),
-					make_shared<CsvWriterFactoryImpl>(temperatureHistoryProperties.fileName)
+					make_shared<CsvWriterFactoryImpl>(temperatureHistoryProperties.fileName, false)
 				),
 			temperatureHistoryProperties.length
 		);
 
 	historyLogger = make_shared<TemperatureHistoryLogger>(
 			history,
-			make_shared<CsvWriterFactoryImpl>(temperatureHistoryLoggerProperties.fileName)
+			make_shared<CsvWriterFactoryImpl>(temperatureHistoryLoggerProperties.fileName, true)
 		);
 
 	current->start(currentTemperatureProperties.updatePeriod, currentTemperatureProperties.delayOnFailed);
