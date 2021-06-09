@@ -131,6 +131,14 @@ TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(
 		throw TemperatureException("Temperature forecast not available with specified criteria");
 	}
 
+	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+		std::ostringstream oss;
+		oss << "Querying temperature forecast: ";
+		oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ". ";
+		oss << "Result: [" << toCelsiusRange(minValue, maxValue) << "]";
+		LOGGER.debug(oss.str().c_str());
+	}
+
 	return Values(minValue, maxValue);
 }
 

@@ -105,6 +105,13 @@ float CurrentTemperatureImpl::getCurrentTemperature() const {
 		throw TemperatureException("Temperature is not available");
 	}
 
+	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+		std::ostringstream oss;
+		oss << "Querying current temperature: ";
+		oss << "Result: [" << toCelsius(value) << "]";
+		LOGGER.debug(oss.str().c_str());
+	}
+
 	return value;
 }
 
