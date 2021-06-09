@@ -2,19 +2,19 @@
 
 
 
-TemperatureHistoryPersister::Sample::Sample(const std::time_t& rawTime, float temperature) :
-	rawTime(rawTime),
+TemperatureHistoryPersister::Sample::Sample(const DateTime& dateTime, float temperature) :
+	dateTime(dateTime),
 	temperature(temperature)
 {
 }
 
 bool TemperatureHistoryPersister::Sample::operator== (const TemperatureHistoryPersister::Sample& other) const {
-	return (rawTime == other.rawTime && temperature == other.temperature);
+	return (dateTime == other.dateTime && temperature == other.temperature);
 }
 
 std::ostream& operator<<(std::ostream& os, const TemperatureHistoryPersister::Sample& temperatureSample) {
 	os << "TemperatureSample{";
-	os << "time: " << temperatureSample.rawTime << ", ";
+	os << "time: " << LocalDateTime(temperatureSample.dateTime).toString() << ", ";
 	os << "value: " << temperatureSample.temperature;
 	os << "}";
 	return os;

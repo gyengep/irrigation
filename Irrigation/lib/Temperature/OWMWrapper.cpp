@@ -1,6 +1,6 @@
 #include "OWMWrapper.h"
 #include "Logger/Logger.h"
-#include "Utils/TimeConversion.h"
+#include "Utils/DateTime.h"
 #include "pugixml.hpp"
 #include <regex>
 #include <sstream>
@@ -103,24 +103,22 @@ list<TemperatureForecastProvider::ValuesWithTimes> OWMWrapper::parseTemperatureF
 
 	for (const auto& temperatureNode : temperatureNodeSet) {
 		const string unit = temperatureNode.node().attribute("unit").value();
-		const string from = temperatureNode.parent().attribute("from").value();
-		const string to = temperatureNode.parent().attribute("to").value();
+		const string fromText = temperatureNode.parent().attribute("from").value();
+		const string toText = temperatureNode.parent().attribute("to").value();
 		const float value = temperatureNode.node().attribute("value").as_float();
 		const float min = temperatureNode.node().attribute("min").as_float();
 		const float max = temperatureNode.node().attribute("max").as_float();
 
-		result.push_back(TemperatureForecastProvider::ValuesWithTimes(
-				parseTimeString(from),
-				parseTimeString(to),
-				min,
-				max
-			));
+		const UtcDateTime from = parseTimeString(fromText);
+		const UtcDateTime to = parseTimeString(toText);
+
+		result.push_back(TemperatureForecastProvider::ValuesWithTimes(from, to, min, max));
 
 		if (false && LOGGER.isLoggable(LogLevel::TRACE)) {
 			LOGGER.trace("unit:  %s", unit.c_str());
 			LOGGER.trace("value: %f", value);
-			LOGGER.trace("from:  %s %lld", from.c_str(), (int64_t)parseTimeString(from));
-			LOGGER.trace("to:    %s %lld", to.c_str(), (int64_t)parseTimeString(to));
+			LOGGER.trace("from:  %s %s", fromText.c_str(), from.toString().c_str());
+			LOGGER.trace("to:    %s %s", toText.c_str(), to.toString().c_str());
 			LOGGER.trace("*********************");
 		}
 	}
@@ -128,7 +126,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> OWMWrapper::parseTemperatureF
 	return result;
 }
 
-time_t OWMWrapper::parseTimeString(const string& text) {
+DateTime OWMWrapper::parseTimeString(const string& text) {
 	const static regex dateRegex("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
 	smatch dateMatch;
 
@@ -140,7 +138,7 @@ time_t OWMWrapper::parseTimeString(const string& text) {
 		throw logic_error("OWMWrapper::parseTimeString() dateMatch.size() != 7");
 	}
 
-	return fromUtcTime(
+	return UtcDateTime::create(
 			stoi(dateMatch[1]), stoi(dateMatch[2]), stoi(dateMatch[3]),
 			stoi(dateMatch[4]), stoi(dateMatch[5]), stoi(dateMatch[6])
 		);

@@ -27,9 +27,9 @@ public:
 		);
 	virtual ~CsvTemperatureHistoryPersister();
 
-	virtual void removeOlder(const std::time_t& rawTime) override;
-	virtual void removeNewer(const std::time_t& rawTime) override;
+	virtual void removeOlder(const DateTime& dateTime) override;
+	virtual void removeNewer(const DateTime& dateTime) override;
 	virtual void add(const Sample& sample) override;
-	virtual std::list<Sample> getBetween(const std::time_t& from, const std::time_t& to) const override;
+	virtual std::list<Sample> getBetween(const DateTime& from, const DateTime& to) const override;
 	virtual std::list<Sample> getAll() const override;
 };

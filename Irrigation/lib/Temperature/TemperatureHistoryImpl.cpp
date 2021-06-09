@@ -38,7 +38,7 @@ void TemperatureHistoryImpl::unregisterFromListener() {
 	currentTemperature->removeListener(this);
 }
 
-TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(const time_t& from, const time_t& to) const {
+TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(const DateTime& from, const DateTime& to) const {
 	lock_guard<mutex> lock(mtx);
 
 	const auto samples = temperatureHistoryPersister->getBetween(from, to);
@@ -60,7 +60,7 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 		std::ostringstream oss;
 		oss << "Querying temperature history: ";
-		oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ". ";
+		oss << LocalDateTime(from).toString() << "-" << LocalDateTime(to).toString() << ". ";
 		oss << "Result: [" << toCelsiusRange(minValue, maxValue) << "]";
 		LOGGER.debug(oss.str().c_str());
 	}
@@ -68,12 +68,12 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 	return Values(minValue, maxValue, sum / samples.size());
 }
 
-void TemperatureHistoryImpl::onTemperatureUpdated(const time_t& rawTime, float temperature) {
+void TemperatureHistoryImpl::onTemperatureUpdated(const DateTime& dateTime, float temperature) {
 	lock_guard<mutex> lock(mtx);
 
 	LOGGER.debug("Temperature history is updated with new value: %s", toCelsius(temperature).c_str());
 
-	temperatureHistoryPersister->add(TemperatureHistoryPersister::Sample(rawTime, temperature));
-	temperatureHistoryPersister->removeOlder(rawTime - std::chrono::duration_cast<std::chrono::seconds>(historyLength).count());
-	temperatureHistoryPersister->removeNewer(rawTime);
+	temperatureHistoryPersister->add(TemperatureHistoryPersister::Sample(dateTime, temperature));
+	temperatureHistoryPersister->removeOlder(dateTime.add(-historyLength));
+	temperatureHistoryPersister->removeNewer(dateTime);
 }

@@ -48,7 +48,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureForecast(const HttpReque
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(daysToAdd);
 		const LocalDateTime from = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
 		const LocalDateTime to = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
-		const auto forecastValues = temperatureForecast->getTemperatureForecast(from.toRawtime(), to.toRawtime());
+		const auto forecastValues = temperatureForecast->getTemperatureForecast(from, to);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -85,7 +85,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureHistory(const HttpReques
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(daysToAdd);
 		const LocalDateTime from = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
 		const LocalDateTime to = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
-		const auto historyValues = temperatureHistory->getTemperatureHistory(from.toRawtime(), to.toRawtime());
+		const auto historyValues = temperatureHistory->getTemperatureHistory(from, to);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").

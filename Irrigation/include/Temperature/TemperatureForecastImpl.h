@@ -29,7 +29,7 @@ public:
 	void start(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed);
 	void stop();
 
-	virtual Values getTemperatureForecast(const std::time_t& from, const std::time_t& to) const override;
+	virtual Values getTemperatureForecast(const DateTime& from, const DateTime& to) const override;
 
 	static void checkValueList(const std::list<TemperatureForecastProvider::ValuesWithTimes>& temperatures);
 

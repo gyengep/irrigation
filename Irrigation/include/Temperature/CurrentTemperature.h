@@ -1,11 +1,11 @@
 #pragma once
-#include <ctime>
+#include "Utils/DateTime.h"
 
 
 class CurrentTemperatureListener {
 public:
 	virtual ~CurrentTemperatureListener() = default;
-	virtual void onTemperatureUpdated(const time_t& rawTime, float temperature) = 0;
+	virtual void onTemperatureUpdated(const DateTime& dateTime, float temperature) = 0;
 };
 
 

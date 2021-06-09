@@ -86,9 +86,9 @@ void CurrentTemperatureImpl::setValue(float value) {
 
 	LOGGER.debug("Current temperature successfully updated: %s", toCelsius(value).c_str());
 
-	const time_t currentTime = time(nullptr);
-	auto onUpdateSuccses = [this, &currentTime](CurrentTemperatureListener* currentTemperatureListener) {
-		currentTemperatureListener->onTemperatureUpdated(currentTime, this->value);
+	const auto now = DateTime::now();
+	auto onUpdateSuccses = [this, &now](CurrentTemperatureListener* currentTemperatureListener) {
+		currentTemperatureListener->onTemperatureUpdated(now, this->value);
 	};
 	std::for_each(listeners.begin(), listeners.end(), onUpdateSuccses);
 }

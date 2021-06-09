@@ -3,7 +3,7 @@
 using namespace std;
 
 
-TemperatureForecastProvider::ValuesWithTimes::ValuesWithTimes(const time_t from, const time_t to, float min, float max) :
+TemperatureForecastProvider::ValuesWithTimes::ValuesWithTimes(const DateTime& from, const DateTime& to, float min, float max) :
 	from(from),
 	to(to),
 	min(min),
@@ -17,8 +17,8 @@ bool TemperatureForecastProvider::ValuesWithTimes::operator== (const ValuesWithT
 
 ostream& operator<<(ostream& os, const TemperatureForecastProvider::ValuesWithTimes& valuesWithTimes) {
 	os << "ValuesWithTimes{";
-	os << "from: " << valuesWithTimes.from << ", ";
-	os << "to: " << valuesWithTimes.to << ", ";
+	os << "from: " << LocalDateTime(valuesWithTimes.from).toString() << ", ";
+	os << "to: " << LocalDateTime(valuesWithTimes.to).toString() << ", ";
 	os << "min: " << valuesWithTimes.min << ", ";
 	os << "max: " << valuesWithTimes.max;
 	os << "}";

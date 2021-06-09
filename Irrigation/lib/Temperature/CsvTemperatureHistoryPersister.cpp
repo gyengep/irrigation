@@ -25,7 +25,7 @@ void CsvTemperatureHistoryPersister::load() {
 
 		while ((result = csvReader->read()) != nullptr) {
 			if (result->size() == 2) {
-				add(CsvTemperatureHistoryPersister::Sample(stoul(result->at(0)), stof(result->at(1))));
+				add(CsvTemperatureHistoryPersister::Sample(DateTime(stoul(result->at(0))), stof(result->at(1))));
 			} else {
 				LOGGER.warning("TemperatureHistoryPersister loaded invalid line");
 			}
@@ -45,7 +45,7 @@ void CsvTemperatureHistoryPersister::save() {
 
 		for (const auto& sample : samples) {
 			csvWriter->append(std::vector<std::string>{
-				std::to_string(sample.rawTime),
+				std::to_string(sample.dateTime.toRawtime()),
 				temperatureToString(sample.temperature)
 			});
 		}
@@ -56,21 +56,21 @@ void CsvTemperatureHistoryPersister::save() {
 	}
 }
 
-void CsvTemperatureHistoryPersister::removeOlder(const std::time_t& rawTime) {
+void CsvTemperatureHistoryPersister::removeOlder(const DateTime& dateTime) {
 	std::lock_guard<std::mutex> lock(mtx);
 
-	auto removeIfTimeIsOlder = [&rawTime](const Sample& value) {
-		return (rawTime > value.rawTime);
+	auto removeIfTimeIsOlder = [&dateTime](const Sample& value) {
+		return (dateTime > value.dateTime);
 	};
 
 	samples.remove_if(removeIfTimeIsOlder);
 }
 
-void CsvTemperatureHistoryPersister::removeNewer(const std::time_t& rawTime) {
+void CsvTemperatureHistoryPersister::removeNewer(const DateTime& dateTime) {
 	std::lock_guard<std::mutex> lock(mtx);
 
-	auto removeIfTimeIsNewer = [&rawTime](const Sample& value) {
-		return (rawTime < value.rawTime);
+	auto removeIfTimeIsNewer = [&dateTime](const Sample& value) {
+		return (dateTime < value.dateTime);
 	};
 
 	samples.remove_if(removeIfTimeIsNewer);
@@ -80,7 +80,7 @@ void CsvTemperatureHistoryPersister::add(const Sample& sample) {
 	std::lock_guard<std::mutex> lock(mtx);
 
 	auto removeIfTimeIsSame = [&sample](const Sample& value) {
-		return (sample.rawTime == value.rawTime);
+		return (sample.dateTime == value.dateTime);
 	};
 
 	samples.remove_if(removeIfTimeIsSame);
@@ -92,11 +92,11 @@ std::list<CsvTemperatureHistoryPersister::Sample> CsvTemperatureHistoryPersister
 	return samples;
 }
 
-std::list<CsvTemperatureHistoryPersister::Sample> CsvTemperatureHistoryPersister::getBetween(const std::time_t& from, const std::time_t& to) const {
+std::list<CsvTemperatureHistoryPersister::Sample> CsvTemperatureHistoryPersister::getBetween(const DateTime& from, const DateTime& to) const {
 	std::lock_guard<std::mutex> lock(mtx);
 
 	auto findIfTimeIsBetween = [&from, &to](const Sample& value) {
-		return (from <= value.rawTime && value.rawTime <= to);
+		return (from <= value.dateTime && value.dateTime <= to);
 	};
 
 	std::list<CsvTemperatureHistoryPersister::Sample> matches;

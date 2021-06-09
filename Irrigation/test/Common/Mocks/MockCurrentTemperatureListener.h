@@ -5,5 +5,5 @@
 
 class MockCurrentTemperatureListener : public CurrentTemperatureListener {
 public:
-	MOCK_METHOD2(onTemperatureUpdated, void(const time_t&, float));
+	MOCK_METHOD2(onTemperatureUpdated, void(const DateTime&, float));
 };

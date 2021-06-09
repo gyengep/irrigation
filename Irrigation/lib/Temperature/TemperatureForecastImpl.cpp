@@ -90,7 +90,7 @@ void TemperatureForecastImpl::setValues(std::list<TemperatureForecastProvider::V
 
 		for (const auto& value : values) {
 			std::ostringstream oss;
-			oss << toLocalTimeStr(value.from, "%F %T") << "-" << toLocalTimeStr(value.to, "%F %T") << ": ";
+			oss << LocalDateTime(value.from).toString() << "-" << LocalDateTime(value.to).toString() << ": ";
 			oss << "[" << toCelsiusRange(value.min, value.max) << "]";
 			LOGGER.trace(oss.str().c_str());
 		}
@@ -108,7 +108,7 @@ void TemperatureForecastImpl::invalidateValues() {
 	valid = false;
 }
 
-TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(const time_t& from, const time_t& to) const {
+TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(const DateTime& from, const DateTime& to) const {
 	lock_guard<mutex> lock(mtx);
 
 	if (false == valid) {
@@ -134,7 +134,7 @@ TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 		std::ostringstream oss;
 		oss << "Querying temperature forecast: ";
-		oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ". ";
+		oss << LocalDateTime(from).toString()  << "-" << LocalDateTime(to).toString() << ". ";
 		oss << "Result: [" << toCelsiusRange(minValue, maxValue) << "]";
 		LOGGER.debug(oss.str().c_str());
 	}

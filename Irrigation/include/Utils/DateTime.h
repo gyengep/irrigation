@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <ctime>
 #include <memory>
 #include <stdexcept>
@@ -38,6 +39,7 @@ public:
 	bool operator<(const DateTime& other) const;
 	bool operator>(const DateTime& other) const;
 
+	DateTime add(const std::chrono::seconds& second) const;
 	DateTime addHours(int hour) const;
 	DateTime addMinutes(int minute) const;
 	DateTime addSeconds(int second) const;
@@ -73,6 +75,7 @@ public:
 	int getMinutes() const;
 	int getSeconds() const;
 
+	std::string toString() const;
 	std::string toString(const char* format) const;
 
 	static ZonedDateTime now();
@@ -152,6 +155,11 @@ std::tm* ZonedDateTime<T>::getTimeinfo() const {
 }
 
 template <class T>
+std::string ZonedDateTime<T>::toString() const {
+	return toString("%F %T");
+}
+
+template <class T>
 std::string ZonedDateTime<T>::toString(const char* format) const {
 	static const int bufferSize = 100;
 	char buffer[bufferSize];
@@ -160,7 +168,6 @@ std::string ZonedDateTime<T>::toString(const char* format) const {
 
 	return std::string(buffer);
 }
-
 
 template <class T>
 int ZonedDateTime<T>::getYears() const {

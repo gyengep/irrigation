@@ -661,3 +661,117 @@ TEST(LocalDateTimeTest, addSeconds) {
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
+
+TEST(UtcDateTimeTest, add) {
+	{
+		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::seconds());
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+
+	{
+		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::seconds(10));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(38));
+	}
+
+	{
+		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::seconds(-10));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(18));
+	}
+
+	{
+		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::minutes(15));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(48));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+
+	{
+		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::hours(25));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(19));
+		EXPECT_THAT(dateTime.getHours(), Eq(9));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+}
+
+TEST(LocalDateTimeTest, add) {
+	{
+		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::seconds());
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+
+	{
+		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::seconds(10));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(38));
+	}
+
+	{
+		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::seconds(-10));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(18));
+	}
+
+	{
+		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::minutes(15));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(48));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+
+	{
+		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::hours(25));
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(19));
+		EXPECT_THAT(dateTime.getHours(), Eq(11));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+}

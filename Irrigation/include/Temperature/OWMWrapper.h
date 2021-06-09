@@ -27,5 +27,5 @@ public:
 
 	static float parseCurrentTemperatureXml(const std::string& text);
 	static std::list<ValuesWithTimes> parseTemperatureForecastXml(const std::string& text);
-	static std::time_t parseTimeString(const std::string& text);
+	static DateTime parseTimeString(const std::string& text);
 };

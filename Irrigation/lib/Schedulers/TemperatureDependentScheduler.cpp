@@ -1,6 +1,7 @@
 #include "TemperatureDependentScheduler.h"
 #include "TemperatureToPercent.h"
 #include "Logger/Logger.h"
+#include "Utils/DateTime.h"
 #include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <algorithm>
@@ -59,7 +60,9 @@ TemperatureDependentScheduler::~TemperatureDependentScheduler() {
 }
 
 unsigned TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_t now, float* temp) const {
-	const float temperature = temperatureForecast->getTemperatureForecast(now, now + oneDayInSeconds - 1).max;
+	const DateTime dateTime(now);
+
+	const float temperature = temperatureForecast->getTemperatureForecast(dateTime, dateTime.addSeconds(oneDayInSeconds - 1)).max;
 	const unsigned result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	if (nullptr != temp) {
@@ -70,7 +73,9 @@ unsigned TemperatureDependentScheduler::getRequiredPercentForNextDay(const time_
 }
 
 unsigned TemperatureDependentScheduler::getRequiredPercentForPreviousDay(const time_t now, float* temp) const {
-	const float temperature = temperatureHistory->getTemperatureHistory(now - oneDayInSeconds, now - 1).max;
+	const DateTime dateTime(now);
+
+	const float temperature = temperatureHistory->getTemperatureHistory(dateTime.addSeconds(-oneDayInSeconds), dateTime.addSeconds(-1)).max;
 	const unsigned result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	if (nullptr != temp) {
@@ -261,7 +266,7 @@ Scheduler::Result TemperatureDependentScheduler::process(const time_t rawtime) {
 	oss << "\t" << std::setw(logIndentation) << "remainingPercent: " << toPercent(remainingPercent) << std::endl;
 	oss << "\t" << std::setw(logIndentation) << "requiredPercentForToday: " << toPercent(requiredPercentForToday) << std::endl;
 
-	//LOGGER.trace(oss.str().c_str());
+	LOGGER.trace(oss.str().c_str());
 
 	return Scheduler::Result(adjustment);
 }

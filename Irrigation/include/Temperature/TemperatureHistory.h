@@ -1,6 +1,6 @@
 #pragma once
-#include <ctime>
 #include <ostream>
+#include "Utils/DateTime.h"
 
 
 class TemperatureHistory {
@@ -19,5 +19,5 @@ public:
 	};
 
 	virtual ~TemperatureHistory() = default;
-	virtual Values getTemperatureHistory(const std::time_t& from, const std::time_t& to) const = 0;
+	virtual Values getTemperatureHistory(const DateTime& from, const DateTime& to) const = 0;
 };

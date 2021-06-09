@@ -18,27 +18,26 @@ TemperatureHistoryLogger::TemperatureHistoryLogger(
 		const shared_ptr<CsvWriterFactory>& csvWriterFactory
 	) :
 	temperatureHistory(temperatureHistory),
-	csvWriterFactory(csvWriterFactory),
-	lastUpdateTime(time(nullptr))
+	csvWriterFactory(csvWriterFactory)
 {
 }
 
 TemperatureHistoryLogger::~TemperatureHistoryLogger() {
 }
 
-void TemperatureHistoryLogger::saveLog(const time_t& from, const time_t& to) {
+void TemperatureHistoryLogger::saveLog(const DateTime& from, const DateTime& to) {
 	try {
 		const auto statisticsValues = temperatureHistory->getTemperatureHistory(from, to);
 
 		if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 			std::ostringstream oss;
-			oss << toLocalTimeStr(from, "%F %T") << "-" << toLocalTimeStr(to, "%F %T") << ": ";
+			oss << LocalDateTime(from).toString() << "-" << LocalDateTime(to).toString() << ": ";
 			oss << "[" << toCelsiusRange(statisticsValues.min, statisticsValues.max) << "]";
 			LOGGER.debug("Saving temperature history: %s", oss.str().c_str());
 		}
 
 		const vector<string> historyTexts {
-			toLocalTimeStr(from, "%Y.%m.%d %H:%M"),
+			LocalDateTime(from).toString("%Y.%m.%d %H:%M"),
 			temperatureToString(statisticsValues.min),
 			temperatureToString(statisticsValues.max),
 			temperatureToString(statisticsValues.avg),
@@ -54,9 +53,18 @@ void TemperatureHistoryLogger::saveLog(const time_t& from, const time_t& to) {
 void TemperatureHistoryLogger::start() {
 
 	auto func = [this] {
-		const auto now = time(nullptr);
-		const auto period = getPreviousPeriod(now, std::chrono::hours(1));
-		saveLog(period.first, period.second);
+		const LocalDateTime oneHourEarlier = LocalDateTime::now().addHours(-1);
+		const auto from = LocalDateTime::create(
+				oneHourEarlier.getYears(), oneHourEarlier.getMonths(), oneHourEarlier.getDays(),
+				oneHourEarlier.getHours(), 0, 0
+			);
+
+		const auto to = LocalDateTime::create(
+				oneHourEarlier.getYears(), oneHourEarlier.getMonths(), oneHourEarlier.getDays(),
+				oneHourEarlier.getHours(), 59, 59
+			);
+
+		saveLog(from, to);
 	};
 
 	auto functionRunnbale = std::make_shared<FunctionRunnable>(func);

@@ -73,8 +73,8 @@ TEST_F(RestViewTest, getTemperatureForecast) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -93,8 +93,8 @@ TEST_F(RestViewTest, getTemperatureForecastToday) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -113,8 +113,8 @@ TEST_F(RestViewTest, getTemperatureForecastTomorrow) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -140,8 +140,8 @@ TEST_F(RestViewTest, getTemperatureForecastAcceptable) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -159,8 +159,8 @@ TEST_F(RestViewTest, getTemperatureForecastNotFound) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Throw(TemperatureException("")));
 
@@ -185,8 +185,8 @@ TEST_F(RestViewTest, getTemperatureHistory) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(20, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -205,8 +205,8 @@ TEST_F(RestViewTest, getTemperatureHistoryToday) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(20, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -225,8 +225,8 @@ TEST_F(RestViewTest, getTemperatureHistoryYesterday) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(20, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -252,8 +252,8 @@ TEST_F(RestViewTest, getTemperatureHistoryAcceptable) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(20, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -272,8 +272,8 @@ TEST_F(RestViewTest, getTemperatureHistoryNotFound) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0).toRawtime();
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59).toRawtime();
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Throw(TemperatureException("")));
 

@@ -1,11 +1,11 @@
 #pragma once
-#include <ctime>
 #include <chrono>
 #include <memory>
 #include <mutex>
 #include "CurrentTemperature.h"
 #include "TemperatureHistory.h"
 #include "TemperatureHistoryPersister.h"
+#include "Utils/DateTime.h"
 
 
 class TemperatureHistoryImpl : public TemperatureHistory, public CurrentTemperatureListener {
@@ -27,7 +27,7 @@ public:
 	void registerToListener();
 	void unregisterFromListener();
 
-	virtual Values getTemperatureHistory(const std::time_t& from, const std::time_t& to) const override;
+	virtual Values getTemperatureHistory(const DateTime& from, const DateTime& to) const override;
 
-	virtual void onTemperatureUpdated(const time_t& rawTime, float temperature) override;
+	virtual void onTemperatureUpdated(const DateTime& dateTime, float temperature) override;
 };

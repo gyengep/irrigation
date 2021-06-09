@@ -1,9 +1,9 @@
 #pragma once
-#include <ctime>
 #include <chrono>
 #include <memory>
 #include <string>
 #include <ostream>
+#include "Utils/DateTime.h"
 #include "Utils/Thread.h"
 #include "TemperatureHistory.h"
 
@@ -15,7 +15,6 @@ class TemperatureHistoryLogger {
 	const std::shared_ptr<CsvWriterFactory> csvWriterFactory;
 
 	std::unique_ptr<Thread> workerThread;
-	std::time_t lastUpdateTime;
 	std::chrono::seconds period;
 
 	static std::string temperatureToString(float value);
@@ -29,7 +28,7 @@ public:
 
 	~TemperatureHistoryLogger();
 
-	void saveLog(const std::time_t& from, const std::time_t& to);
+	void saveLog(const DateTime& from, const DateTime& to);
 
 	void start();
 	void stop();

@@ -23,13 +23,13 @@ TEST(CsvTemperatureHistoryPersisterTest, add) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(2, 20.f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(5, 50.f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.f));
 
 	EXPECT_THAT(temperatureHistoryPersister.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(2, 20.0f),
-			TemperatureHistoryPersister::Sample(5, 50.0f)
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.0f)
 		)
 	);
 }
@@ -46,14 +46,14 @@ TEST(CsvTemperatureHistoryPersisterTest, addExisting) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(2, 20.f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(5, 50.f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(2, 30.f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 30.f));
 
 	EXPECT_THAT(temperatureHistoryPersister.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(2, 30.0f),
-			TemperatureHistoryPersister::Sample(5, 50.0f)
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 30.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.0f)
 		)
 	);
 }
@@ -70,18 +70,18 @@ TEST(CsvTemperatureHistoryPersisterTest, removeNewer) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(2, 20.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(3, 30.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(4, 25.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(5, 35.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(3, 12.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 30.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 4), 25.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 35.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 12.0f));
 
-	temperatureHistoryPersister.removeNewer(3);
+	temperatureHistoryPersister.removeNewer(LocalDateTime::create(2021, 6, 1, 22, 33, 3));
 
 	EXPECT_THAT(temperatureHistoryPersister.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(2, 20.0f),
-			TemperatureHistoryPersister::Sample(3, 12.0f)
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 12.0f)
 		)
 	);
 }
@@ -98,18 +98,18 @@ TEST(CsvTemperatureHistoryPersisterTest, removeOlder) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(5,  124.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(6,  105.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(25, 85.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(24, 65.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(65, 45.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5),  124.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 6),  105.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 25), 85.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 24), 65.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 34, 5), 45.0f));
 
-	temperatureHistoryPersister.removeOlder(25);
+	temperatureHistoryPersister.removeOlder(LocalDateTime::create(2021, 6, 1, 22, 33, 25));
 
 	EXPECT_THAT(temperatureHistoryPersister.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(25, 85.0f),
-			TemperatureHistoryPersister::Sample(65, 45.0f)
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 25), 85.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 34, 5), 45.0f)
 		)
 	);
 }
@@ -126,22 +126,25 @@ TEST(CsvTemperatureHistoryPersisterTest, getBetween) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(1, 10.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(2, 20.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(3, 30.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(7, 70.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(8, 80.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(9, 90.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(13, 130.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(14, 140.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(15, 150.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 1), 10.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 30.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 7), 70.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 8), 80.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 9), 90.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 13), 130.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 14), 140.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 15), 150.0f));
 
-	EXPECT_THAT(temperatureHistoryPersister.getBetween(8, 14),
+	EXPECT_THAT(
+		temperatureHistoryPersister.getBetween(
+				LocalDateTime::create(2021, 6, 1, 22, 33, 8),
+				LocalDateTime::create(2021, 6, 1, 22, 33, 14)),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(8, 80.0f),
-			TemperatureHistoryPersister::Sample(9, 90.0f),
-			TemperatureHistoryPersister::Sample(13, 130.0f),
-			TemperatureHistoryPersister::Sample(14, 140.0f)
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 8), 80.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 9), 90.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 13), 130.0f),
+			TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 14), 140.0f)
 		)
 	);
 }
@@ -158,22 +161,27 @@ TEST(CsvTemperatureHistoryPersisterTest, getBetweenNotExisting) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(1, 10.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(2, 20.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(3, 30.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(13, 130.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(14, 140.0f));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(15, 150.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 1), 10.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 30.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 13), 130.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 14), 140.0f));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 15), 150.0f));
 
-	EXPECT_THAT(temperatureHistoryPersister.getBetween(5, 10), IsEmpty());
+	EXPECT_THAT(
+			temperatureHistoryPersister.getBetween(
+					LocalDateTime::create(2021, 6, 1, 22, 33, 5),
+					LocalDateTime::create(2021, 6, 1, 22, 33, 10)),
+			IsEmpty()
+		);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CsvTemperatureHistoryPersisterTest, load) {
-	const auto line1 = std::vector<std::string>{ "123", "25" };
-	const auto line2 = std::vector<std::string>{ "124", "30" };
-	const auto line3 = std::vector<std::string>{ "125", "35" };
+	const auto line1 = std::vector<std::string>{ "1622580963", "25" };
+	const auto line2 = std::vector<std::string>{ "1622580964", "30" };
+	const auto line3 = std::vector<std::string>{ "1622580965", "35" };
 
 	auto mockCsvReader = std::make_shared<MockCsvReader>();
 	auto mockCsvWriter = std::make_shared<MockCsvWriter>();
@@ -193,17 +201,17 @@ TEST(CsvTemperatureHistoryPersisterTest, load) {
 
 	EXPECT_THAT(temperatureHistoryPersister.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(123, 25.0f),
-			TemperatureHistoryPersister::Sample(124, 30.0f),
-			TemperatureHistoryPersister::Sample(125, 35.0f)
+			TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 3), 25.0f),
+			TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 4), 30.0f),
+			TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 5), 35.0f)
 		)
 	);
 }
 
 TEST(CsvTemperatureHistoryPersisterTest, loadInvalid) {
 	const auto line1 = std::vector<std::string>{ "abc" };
-	const auto line2 = std::vector<std::string>{ "124", "30", "1234" };
-	const auto line3 = std::vector<std::string>{ "125", "35" };
+	const auto line2 = std::vector<std::string>{ "1622580962", "30", "1234" };
+	const auto line3 = std::vector<std::string>{ "1622580963", "35" };
 
 	auto mockCsvReader = std::make_shared<MockCsvReader>();
 	auto mockCsvWriter = std::make_shared<MockCsvWriter>();
@@ -223,15 +231,15 @@ TEST(CsvTemperatureHistoryPersisterTest, loadInvalid) {
 
 	EXPECT_THAT(temperatureHistoryPersister.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryPersister::Sample(125, 35.0f)
+			TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 3), 35.0f)
 		)
 	);
 }
 
 TEST(CsvTemperatureHistoryPersisterTest, save) {
-	const auto line1 = std::vector<std::string>{ "123", "25.0" };
-	const auto line2 = std::vector<std::string>{ "124", "30.0" };
-	const auto line3 = std::vector<std::string>{ "125", "35.0" };
+	const auto line1 = std::vector<std::string>{ "1622580963", "25.0" };
+	const auto line2 = std::vector<std::string>{ "1622580964", "30.0" };
+	const auto line3 = std::vector<std::string>{ "1622580965", "35.0" };
 
 	auto mockCsvReader = std::make_shared<MockCsvReader>();
 	auto mockCsvWriter = std::make_shared<MockCsvWriter>();
@@ -246,8 +254,8 @@ TEST(CsvTemperatureHistoryPersisterTest, save) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(123, 25));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(124, 30));
-	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(125, 35));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 3), 25));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 4), 30));
+	temperatureHistoryPersister.add(TemperatureHistoryPersister::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 5), 35));
 }
 

@@ -1,5 +1,6 @@
 #include "DarkSkyWrapper.h"
 #include "Logger/Logger.h"
+#include "Utils/DateTime.h"
 #include "json.hpp"
 #include <sstream>
 #include <stdexcept>
@@ -113,10 +114,10 @@ list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyWrapper::parseTemperat
 			throw runtime_error("temperature not found");
 		}
 
-		const time_t time = timeIt->get<time_t>();
+		const DateTime dateTime(timeIt->get<time_t>());
 		const float temp = tempIt->get<float>();
 
-		result.push_back(ValuesWithTimes(time, time + 3600, temp, temp));
+		result.push_back(ValuesWithTimes(dateTime, dateTime.addHours(1), temp, temp));
 	}
 
 	return result;

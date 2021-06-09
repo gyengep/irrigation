@@ -20,6 +20,10 @@ DateTime::DateTime(const std::time_t& rawtime) :
 {
 }
 
+DateTime DateTime::add(const std::chrono::seconds& second) const {
+	return addSeconds(std::chrono::duration_cast<std::chrono::seconds>(second).count());
+}
+
 DateTime DateTime::addHours(int hour) const {
 	return DateTime(rawtime + (hour * 60 * 60));
 }
