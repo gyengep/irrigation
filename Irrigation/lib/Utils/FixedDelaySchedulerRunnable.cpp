@@ -79,7 +79,7 @@ std::string FixedDelaySchedulerRunnable::periodText(const std::chrono::milliseco
 
 EveryHourSchedulerRunnable::EveryHourSchedulerRunnable(const std::shared_ptr<Runnable>& runnable, const std::string& name) :
 	FixedDelaySchedulerRunnable(runnable, std::chrono::minutes(1), std::chrono::minutes(1), name),
-	lastRun(toLocalTime(time(nullptr)))
+	lastRun(LocalDateTime::now())
 {
 }
 
@@ -87,16 +87,17 @@ EveryHourSchedulerRunnable::~EveryHourSchedulerRunnable() {
 }
 
 bool EveryHourSchedulerRunnable::skipRun() {
-	const auto current = toLocalTime(time(nullptr));
+	const auto now = LocalDateTime::now();
 
 	bool differentHour = false;
 
-	differentHour |= (current.tm_year != lastRun.tm_year);
-	differentHour |= (current.tm_yday != lastRun.tm_yday);
-	differentHour |= (current.tm_hour != lastRun.tm_hour);
+	differentHour |= (now.getYears() != lastRun.getYears());
+	differentHour |= (now.getMonths() != lastRun.getMonths());
+	differentHour |= (now.getDays() != lastRun.getDays());
+	differentHour |= (now.getHours() != lastRun.getHours());
 
 	if (differentHour) {
-		lastRun = current;
+		lastRun = now;
 	}
 
 	return !differentHour;
@@ -106,7 +107,7 @@ bool EveryHourSchedulerRunnable::skipRun() {
 
 EveryDaySchedulerRunnable::EveryDaySchedulerRunnable(const std::shared_ptr<Runnable>& runnable, const std::string& name) :
 	FixedDelaySchedulerRunnable(runnable, std::chrono::minutes(1), std::chrono::minutes(1), name),
-	lastRun(toLocalTime(time(nullptr)))
+	lastRun(LocalDateTime::now())
 {
 }
 
@@ -114,15 +115,16 @@ EveryDaySchedulerRunnable::~EveryDaySchedulerRunnable() {
 }
 
 bool EveryDaySchedulerRunnable::skipRun() {
-	const auto current = toLocalTime(time(nullptr));
+	const auto now = LocalDateTime::now();
 
 	bool differentDay = false;
 
-	differentDay |= (current.tm_year != lastRun.tm_year);
-	differentDay |= (current.tm_yday != lastRun.tm_yday);
+	differentDay |= (now.getYears() != lastRun.getYears());
+	differentDay |= (now.getMonths() != lastRun.getMonths());
+	differentDay |= (now.getDays() != lastRun.getDays());
 
 	if (differentDay) {
-		lastRun = current;
+		lastRun = now;
 	}
 
 	return !differentDay;

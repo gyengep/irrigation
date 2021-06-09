@@ -2,6 +2,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include "DateTime.h"
 #include "Runnable.h"
 #include "SynchronizationObject.h"
 
@@ -34,7 +35,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class EveryHourSchedulerRunnable : public FixedDelaySchedulerRunnable {
-	std::tm lastRun;
+	LocalDateTime lastRun;
 
 	virtual bool skipRun() override;
 
@@ -46,7 +47,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class EveryDaySchedulerRunnable : public FixedDelaySchedulerRunnable {
-	std::tm lastRun;
+	LocalDateTime lastRun;
 
 	virtual bool skipRun() override;
 
