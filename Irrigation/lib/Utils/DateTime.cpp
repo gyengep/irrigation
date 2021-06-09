@@ -36,6 +36,26 @@ bool DateTime::operator==(const DateTime& other) const {
 	return (rawtime == other.rawtime);
 }
 
+bool DateTime::operator!=(const DateTime& other) const {
+	return (rawtime != other.rawtime);
+}
+
+bool DateTime::operator<=(const DateTime& other) const {
+	return (rawtime <= other.rawtime);
+}
+
+bool DateTime::operator>=(const DateTime& other) const {
+	return (rawtime >= other.rawtime);
+}
+
+bool DateTime::operator<(const DateTime& other) const {
+	return (rawtime < other.rawtime);
+}
+
+bool DateTime::operator>(const DateTime& other) const {
+	return (rawtime > other.rawtime);
+}
+
 const std::time_t& DateTime::toRawtime() const {
 	return rawtime;
 }

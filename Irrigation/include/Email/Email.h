@@ -2,6 +2,7 @@
 #include <ctime>
 #include <list>
 #include <string>
+#include "Utils/DateTime.h"
 
 
 struct Email {
@@ -23,7 +24,7 @@ struct Email {
 	std::list<Contact> cc;
 	std::string subject;
 	std::string text;
-	std::time_t date;
+	DateTime dateTime;
 
 	Email(
 		const Contact& from,
@@ -31,12 +32,11 @@ struct Email {
 		const std::list<Contact>& cc,
 		const std::string& subject,
 		const std::string& text,
-		const std::time_t& date
+		const DateTime& dateTime
 	);
 
 	bool operator==(const Email& other) const;
 
 	std::string toString() const;
-	static std::string dateToString(const std::time_t& rawTime);
 };
 

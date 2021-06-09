@@ -88,16 +88,44 @@ TEST(LocalDateTimeTest, createInvalid) {
 	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, 8, 33, 60), std::runtime_error);
 }
 
-TEST(UtcDateTimeTest, equal) {
+TEST(UtcDateTimeTest, isEqual) {
 	EXPECT_FALSE(UtcDateTime(1621326807) == UtcDateTime(1621326808));
 	EXPECT_TRUE(UtcDateTime(1621326808) == UtcDateTime(1621326808));
 	EXPECT_FALSE(UtcDateTime(1621326809) == UtcDateTime(1621326808));
 }
 
-TEST(LocalDateTimeTest, equal) {
+TEST(LocalDateTimeTest, isEqual) {
 	EXPECT_FALSE(LocalDateTime(1621326807) == LocalDateTime(1621326808));
 	EXPECT_TRUE(LocalDateTime(1621326808) == LocalDateTime(1621326808));
 	EXPECT_FALSE(LocalDateTime(1621326809) == LocalDateTime(1621326808));
+}
+
+TEST(UtcDateTimeTest, equal) {
+	UtcDateTime dateTime(1621326808);
+
+	EXPECT_TRUE(dateTime == UtcDateTime(1621326808));
+	EXPECT_FALSE(dateTime == UtcDateTime(1622615547));
+	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-05-18T08:33:28+0000");
+
+	dateTime = LocalDateTime(1622615547);
+
+	EXPECT_FALSE(dateTime == UtcDateTime(1621326808));
+	EXPECT_TRUE(dateTime == UtcDateTime(1622615547));
+	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-06-02T06:32:27+0000");
+}
+
+TEST(LocalDateTimeTest, equal) {
+	LocalDateTime dateTime(1621326808);
+
+	EXPECT_TRUE(dateTime == LocalDateTime(1621326808));
+	EXPECT_FALSE(dateTime == LocalDateTime(1622615547));
+	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-05-18T10:33:28+0200");
+
+	dateTime = LocalDateTime(1622615547);
+
+	EXPECT_FALSE(dateTime == LocalDateTime(1621326808));
+	EXPECT_TRUE(dateTime == LocalDateTime(1622615547));
+	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-06-02T08:32:27+0200");
 }
 
 TEST(UtcDateTimeTest, addDays) {

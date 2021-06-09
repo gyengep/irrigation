@@ -68,7 +68,7 @@ TEST(EmailTest, toString1) {
 			std::list<Email::Contact>(),
 			"MySubject",
 			"MyMessage",
-			1574665689
+			LocalDateTime::create(2019, 11, 25, 8, 8, 9)
 		);
 
 	EXPECT_THAT(email.toString(), Eq(expectedMessage));
@@ -89,7 +89,7 @@ TEST(EmailTest, toString2) {
 			std::list<Email::Contact>(),
 			"MySubject",
 			"MyMessage",
-			1579279068
+			LocalDateTime::create(2020, 1, 17, 17, 37, 48)
 		);
 
 	EXPECT_THAT(email.toString(), Eq(expectedMessage));
@@ -111,26 +111,8 @@ TEST(EmailTest, toString3) {
 			std::list<Email::Contact>{Email::Contact("qwert2", "2_9876543")},
 			"MySubject",
 			"MyMessage",
-			1598474093
+			LocalDateTime::create(2020, 8, 26, 22, 34, 53)
 		);
 
 	EXPECT_THAT(email.toString(), Eq(expectedMessage));
 }
-
-TEST(EmailTest, dateToString1) {
-	//1598474093:  2020-08-26T20:34:53+00:00
-	EXPECT_THAT(Email::dateToString(1598474093), Eq("Wed, 26 Aug 2020 22:34:53 +0200"));
-}
-
-TEST(EmailTest, dateToString2) {
-	//1579279068:  2020-01-17T16:37:48+00:00
-	EXPECT_THAT(Email::dateToString(1579279068), Eq("Fri, 17 Jan 2020 17:37:48 +0100"));
-}
-
-TEST(EmailTest, dateToString3) {
-	//1574665689:  2019-11-25T07:08:09+00:00
-	EXPECT_THAT(Email::dateToString(1574665689), Eq("Mon, 25 Nov 2019 08:08:09 +0100"));
-}
-
-
-

@@ -24,14 +24,19 @@ class DateTime {
 	static std::shared_ptr<Timefunc> timefunc;
 
 protected:
-	const std::time_t rawtime;
+	std::time_t rawtime;
 
 public:
 	DateTime(const DateTime& other);
-	DateTime(const std::time_t& rawtime);
+	explicit DateTime(const std::time_t& rawtime);
 	virtual ~DateTime() = default;
 
 	bool operator==(const DateTime& other) const;
+	bool operator!=(const DateTime& other) const;
+	bool operator<=(const DateTime& other) const;
+	bool operator>=(const DateTime& other) const;
+	bool operator<(const DateTime& other) const;
+	bool operator>(const DateTime& other) const;
 
 	DateTime addHours(int hour) const;
 	DateTime addMinutes(int minute) const;
@@ -54,7 +59,10 @@ class ZonedDateTime : public DateTime {
 
 public:
 	ZonedDateTime(const DateTime& other);
-	ZonedDateTime(const std::time_t& rawtime);
+	ZonedDateTime(const ZonedDateTime<T>& other);
+	explicit ZonedDateTime(const std::time_t& rawtime);
+
+	ZonedDateTime& operator=(const ZonedDateTime<T>& other);
 
 	DateTime addDays(int day) const;
 
@@ -100,6 +108,12 @@ ZonedDateTime<T>::ZonedDateTime(const std::time_t& rawtime) :
 
 template <class T>
 ZonedDateTime<T>::ZonedDateTime(const DateTime& other) :
+	DateTime(other)
+{
+}
+
+template <class T>
+ZonedDateTime<T>::ZonedDateTime(const ZonedDateTime<T>& other) :
 	DateTime(other)
 {
 }
@@ -176,6 +190,16 @@ int ZonedDateTime<T>::getMinutes() const {
 template <class T>
 int ZonedDateTime<T>::getSeconds() const {
 	return getTimeinfo()->tm_sec;
+}
+
+template <class T>
+ZonedDateTime<T>& ZonedDateTime<T>::operator=(const ZonedDateTime<T>& other) {
+	if (this != &other) {
+		timeinfo.reset();
+		DateTime::operator=(other);
+	}
+
+	return *this;
 }
 
 template <class T>

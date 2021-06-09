@@ -58,14 +58,14 @@ Email::Email(
 	const std::list<Contact>& cc,
 	const std::string& subject,
 	const std::string& text,
-	const std::time_t& date
+	const DateTime& dateTime
 ) :
 	from(from),
 	to(to),
 	cc(cc),
 	subject(subject),
 	text(text),
-	date(date)
+	dateTime(dateTime)
 {
 }
 
@@ -76,7 +76,7 @@ bool Email::operator==(const Email& other) const {
 		other.cc == cc &&
 		other.subject == subject &&
 		other.text == text &&
-		other.date == date
+		other.dateTime == dateTime
 	);
 }
 
@@ -94,20 +94,9 @@ std::string Email::toString() const {
 	}
 
 	oss << "Subject: " << subject << "\r\n";
-	oss << "Date: " << dateToString(date) << "\r\n";
+	oss << "Date: " << LocalDateTime(dateTime).toString("%a, %d %b %G %H:%M:%S %z") << "\r\n";
 	oss << "\r\n";
 	oss << text;
 
 	return oss.str();
-}
-
-std::string Email::dateToString(const std::time_t& rawTime) {
-	const int BufferSize = 100;
-	char buffer[BufferSize];
-
-	tm timeinfo;
-	localtime_r(&rawTime, &timeinfo);
-
-	strftime(buffer, BufferSize, "%a, %d %b %G %H:%M:%S %z", &timeinfo);
-	return buffer;
 }

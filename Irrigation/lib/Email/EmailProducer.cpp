@@ -44,7 +44,7 @@ void EmailProducer::send(EmailTopic topic, const std::string& messageText) {
 			std::list<Email::Contact>(),
 			topicProperties.subject,
 			messageText,
-			std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
+			DateTime::now()
 		);
 
 		emailQueue->push(email);

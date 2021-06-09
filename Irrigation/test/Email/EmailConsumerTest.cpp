@@ -35,7 +35,7 @@ void EmailConsumerTest::SetUp() {
 		std::list<Email::Contact>{Email::Contact("name13", "address13")},
 		"mySubject1",
 		"myMessage1",
-		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
+		DateTime::now()
 	);
 
 	email2 = std::make_shared<Email>(
@@ -44,7 +44,7 @@ void EmailConsumerTest::SetUp() {
 		std::list<Email::Contact>{Email::Contact("name23", "address23")},
 		"mySubject2",
 		"myMessage2",
-		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
+		DateTime::now()
 	);
 
 	email3 = std::make_shared<Email>(
@@ -53,7 +53,7 @@ void EmailConsumerTest::SetUp() {
 		std::list<Email::Contact>{Email::Contact("name33", "address33")},
 		"mySubject3",
 		"myMessage3",
-		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
+		DateTime::now()
 	);
 
 }
