@@ -118,13 +118,18 @@ string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTim
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters) {
-	const std::string filename = resourceDirectory + request.getUrl();
+	if (request.getUrl().substr(0, 10) != "/resources") {
+		LOGGER.warning("Invalid directory: %s", request.getUrl().c_str());
+		throw std::runtime_error("Invalid directory: " + request.getUrl());
+	}
+
+	const std::string filename = resourceDirectory + request.getUrl().substr(10);
 
 	LOGGER.trace("Requested file: %s", filename.c_str());
 	std::ifstream file(filename);
 
 	if (file.fail()) {
-		LOGGER.warning("File not found");
+		LOGGER.warning("File not found: %s", filename.c_str());
 		throw FileNotFoundException();
 	}
 
