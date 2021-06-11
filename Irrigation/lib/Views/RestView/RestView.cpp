@@ -16,6 +16,7 @@
 #include "Model/IrrigationDocument.h"
 #include <ctime>
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
@@ -23,13 +24,15 @@ using namespace std;
 RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 		const std::shared_ptr<CurrentTemperature>& currentTemperature,
 		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
-		const std::shared_ptr<TemperatureHistory>& temperatureHistory
+		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+		const std::string& resourceDirectory
 ) :
 	View(irrigationDocument),
 	port(port),
 	currentTemperature(currentTemperature),
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
+	resourceDirectory(resourceDirectory),
 	irrigationDocument(irrigationDocument)
 {
 	if (nullptr == currentTemperature) {
@@ -80,6 +83,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/historical", bind(&RestView::onGetTemperatureHistory, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/logs.xsl", bind(&RestView::onGetFile, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -109,6 +113,29 @@ string RestView::getProgramUrl(const IdType& programId) {
 
 string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTimeId) {
 	return "/programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters) {
+	const std::string filename = resourceDirectory + request.getUrl();
+
+	LOGGER.trace("Requested file: %s", filename.c_str());
+	std::ifstream file(filename);
+
+	if (file.fail()) {
+		LOGGER.warning("File not found");
+		throw FileNotFoundException();
+	}
+
+	std::string str((std::istreambuf_iterator<char>(file)),
+					 std::istreambuf_iterator<char>());
+
+	return HttpResponse::Builder().
+			setStatus(200, "OK").
+			setBody(str).
+			addHeader("Content-Type", "text/xsl").
+			build();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

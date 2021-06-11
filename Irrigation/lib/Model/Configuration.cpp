@@ -13,6 +13,7 @@ const duration<int64_t> Configuration::defaultCurrentTemperatureUpdatePeriod = m
 const duration<int64_t> Configuration::defaultTemperatureForecastUpdatePeriod = hours(1);
 const duration<int64_t> Configuration::defaultTemperatureCacheLength = hours(24);
 const duration<int64_t> Configuration::defaultTemperatureHistoryPeriod = hours(1);
+const string Configuration::defaultResourceDirectory = "/usr/share/irrigation/resources";
 
 const LogLevel Configuration::defaultLogLevel = LogLevel::TRACE;
 

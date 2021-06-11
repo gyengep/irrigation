@@ -28,6 +28,7 @@ class RestView : public View {
 	const std::shared_ptr<CurrentTemperature> currentTemperature;
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
+	const std::string resourceDirectory;
 
 	IrrigationDocument& irrigationDocument;
 
@@ -66,6 +67,8 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onGetTemperatureForecast(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureHistory(const HttpRequest& request, const KeyValue& pathParameters);
 
+	std::unique_ptr<HttpResponse> onGetFile(const HttpRequest& request, const KeyValue& pathParameters);
+
 	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActionDTO);
@@ -81,7 +84,8 @@ public:
 	RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 			const std::shared_ptr<CurrentTemperature>& currentTemperature,
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
-			const std::shared_ptr<TemperatureHistory>& temperatureHistory
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+			const std::string& resourceDirectory
 		);
 	virtual ~RestView();
 

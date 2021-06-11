@@ -18,6 +18,7 @@ class Configuration {
 	static const std::chrono::duration<int64_t> defaultTemperatureForecastUpdatePeriod;
 	static const std::chrono::duration<int64_t> defaultTemperatureCacheLength;
 	static const std::chrono::duration<int64_t> defaultTemperatureHistoryPeriod;
+	static const std::string defaultResourceDirectory;
 	static const LogLevel defaultLogLevel;
 	static const uint16_t defaultRestPort = 8080;
 
@@ -34,6 +35,7 @@ public:
 	const std::chrono::duration<int64_t>& getTemperatureForecastUpdatePeriod() const { return defaultTemperatureForecastUpdatePeriod; }
 	const std::chrono::duration<int64_t>& getTemperatureCacheLength() const { return defaultTemperatureCacheLength; }
 	const std::chrono::duration<int64_t>& getTemperatureHistoryPeriod() const { return defaultTemperatureHistoryPeriod; }
+	const std::string& getResourceDirectory() const { return defaultResourceDirectory; }
 	LogLevel getLogLevel() const { return defaultLogLevel; }
 	uint16_t getRestPort() const { return defaultRestPort; }
 

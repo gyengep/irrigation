@@ -18,7 +18,8 @@ void RestViewTest::SetUp() {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			"/tmp"
 		)));
 }
 
