@@ -11,7 +11,7 @@
 
     table {
       border-collapse: collapse;
-	  font-size: large;
+	  font-size:large;
     }
 
 	caption {
@@ -19,11 +19,8 @@
 	  font-size: 200%;
     }
 
-    td {
-      text-align: left;
-    }
-
 	th, td {
+      text-align: left;
       border: 1px solid rgb(190,190,190);
 	  color: rgb(70, 70, 70);
       padding: 7px 18px;
@@ -38,6 +35,7 @@
 	}
 
 				</style>
+				<meta name="viewport" content="initial-scale=1"/>
 			</head>
 			<body>
 				<table>
