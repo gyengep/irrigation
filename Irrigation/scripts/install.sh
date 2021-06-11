@@ -37,7 +37,7 @@ install_rpi() {
 	chown pi:pi $RESOURCE_DIR
 	
 	# /usr/share/irrigation/resources/*
-	cp ./resources/* $RESOURCE_DIR
+	cp -f ./resources/* $RESOURCE_DIR
 	chmod 444 $RESOURCE_DIR/*
 	chown pi:pi $RESOURCE_DIR/*
 	
@@ -89,7 +89,7 @@ install_other() {
 	mkdir -p $RESOURCE_DIR
 	
 	# /usr/share/irrigation/resources/*
-	cp ./resources/* $RESOURCE_DIR
+	cp -f ./resources/* $RESOURCE_DIR
 	chmod 444 $RESOURCE_DIR/*
 	
 	#################################
