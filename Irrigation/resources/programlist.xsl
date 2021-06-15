@@ -6,6 +6,8 @@
 				<title>Irrigation System Programs</title>
 				<link rel="stylesheet" href="/resources/styles.css"/>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
+				<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+				<script src="/resources/scripts.js"></script>
 			</head>
 			<body>
 				<table class="hoverable striped-table bordered-table">
@@ -16,11 +18,13 @@
 							<th>Name</th>
 							<th>Adjustment</th>
 							<th>Scheduler</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 						<xsl:for-each select="programs/program">
-							<xsl:variable name="programId"><xsl:value-of select="@id" /></xsl:variable>
+							<xsl:variable name="programId"><xsl:value-of select="@id"/></xsl:variable>
+							<xsl:variable name="adjustment"><xsl:value-of select="adjustment"/></xsl:variable>
 							<tr onclick="window.location='/programs/{$programId}'">
 								<xsl:choose>
 									<xsl:when test="enabled='true'">
@@ -33,6 +37,7 @@
 								<td><div class="contentcell nowordwrap"><xsl:value-of select="name"/></div></td>
 								<td><div class="contentcell nowordwrap"><xsl:value-of select="format-number(adjustment*0.01, '#%')"/></div></td>
 								<td><div class="contentcell nowordwrap"><xsl:value-of select="schedulertype"/></div></td>
+								<td><button onclick="sendStart({$programId}, {$adjustment})">Start</button></td>
 							</tr>
 						</xsl:for-each>
 					</tbody>

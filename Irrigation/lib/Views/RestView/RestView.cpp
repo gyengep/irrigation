@@ -87,6 +87,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/programlist.xsl", bind(&RestView::onGetFile, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/program.xsl", bind(&RestView::onGetFile, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/styles.css", bind(&RestView::onGetFile, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/scripts.js", bind(&RestView::onGetFile, this, _1, _2));
 }
 
 RestView::~RestView() {
