@@ -11,9 +11,9 @@
 				<script src="/resources/scripts.js"></script>
 			</head>
 			<body>
-				<div class="w3-container w3-sans-serif">
+				<div class="w3-container w3-sans-serif w3-responsive">
+					<h1>Irrigation System Programs</h1>
 					<table class="w3-table w3-striped w3-border w3-bordered w3-hoverable w3-card-4">
-						<caption>Irrigation System Programs</caption>
 						<thead>
 							<tr>
 								<th>Enabled</th>

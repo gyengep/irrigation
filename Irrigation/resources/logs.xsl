@@ -9,9 +9,9 @@
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			</head>
 			<body>
-				<div class="w3-container w3-sans-serif">
+				<div class="w3-container w3-sans-serif w3-responsive">
+					<h1>Irrigation System Log</h1>
 					<table class="w3-table w3-striped w3-border w3-bordered w3-card-4">
-						<caption>Irrigation System Log</caption>
 						<thead>
 							<tr>
 								<th>Date</th>

@@ -3,15 +3,15 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-				<title>Irrigation System Programs</title>
+				<title>Irrigation System Program</title>
 				<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
 				<link rel="stylesheet" href="/resources/styles.css"/>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			</head>
 			<body>
 				<div class="w3-container w3-sans-serif">
+					<h1>Irrigation System Program</h1>
 					<table class="w3-table w3-bordered w3-card-4">
-						<caption>Irrigation System Program</caption>
 						<tbody>
 							<tr>
 								<td><div class="captioncell">Name</div></td>
