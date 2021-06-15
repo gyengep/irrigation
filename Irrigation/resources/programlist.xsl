@@ -12,8 +12,8 @@
 			</head>
 			<body>
 				<div class="w3-container w3-sans-serif w3-responsive">
-					<h1>Irrigation System Programs</h1>
-					<table class="w3-table w3-striped w3-border w3-bordered w3-hoverable w3-card-4">
+					<h3>Irrigation System Programs</h3>
+					<table class="w3-table w3-striped w3-border w3-bordered w3-small w3-hoverable w3-card-4">
 						<thead>
 							<tr>
 								<th>Enabled</th>
