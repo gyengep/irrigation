@@ -4,31 +4,34 @@
 		<html>
 			<head>
 				<title>Irrigation System Log</title>
+				<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
 				<link rel="stylesheet" href="/resources/styles.css"/>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			</head>
 			<body>
-				<table class="striped-table bordered-table">
-					<caption>Irrigation System Log</caption>
-					<thead>
-						<tr>
-							<th>Date</th>
-							<th>Level</th>
-							<th>Thread</th>
-							<th>Message</th>
-						</tr>
-					</thead>
-					<tbody>
-						<xsl:for-each select="log_entries/log_entry">
+				<div class="w3-container w3-sans-serif">
+					<table class="w3-table w3-striped w3-border w3-bordered w3-card-4">
+						<caption>Irrigation System Log</caption>
+						<thead>
 							<tr>
-								<td><div class="contentcell nowordwrap"><xsl:value-of select="time"/></div></td>
-								<td><div class="contentcell nowordwrap"><xsl:value-of select="level"/></div></td>
-								<td><div class="contentcell nowordwrap"><xsl:value-of select="thread"/></div></td>
-								<td><div class="contentcell"><xsl:value-of select="text"/></div></td>
+								<th>Date</th>
+								<th>Level</th>
+								<th>Thread</th>
+								<th>Message</th>
 							</tr>
-						</xsl:for-each>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							<xsl:for-each select="log_entries/log_entry">
+								<tr>
+									<td><div class="contentcell nowordwrap"><xsl:value-of select="time"/></div></td>
+									<td><div class="contentcell nowordwrap"><xsl:value-of select="level"/></div></td>
+									<td><div class="contentcell nowordwrap"><xsl:value-of select="thread"/></div></td>
+									<td><div class="contentcell"><xsl:value-of select="text"/></div></td>
+								</tr>
+							</xsl:for-each>
+						</tbody>
+					</table>
+				</div>
 			</body>
 		</html>
 	</xsl:template>

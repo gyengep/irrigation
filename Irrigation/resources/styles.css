@@ -1,71 +1,34 @@
-				
-    html {
-      font-family: "Open Sans", sans-serif;
-    }
-
-    table {
-      border-collapse: collapse;
-	  font-size:large;
-    }
 
 	caption {
-      background-color: rgb(245, 245, 245);
-	  font-size: 200%;
-      padding: 10px;
-      text-align: left;
-	  white-space: nowrap;
-    }
-          
+		background-color: WhiteSmoke;
+		font-size: 200%;
+		padding: 10px;
+		text-align: left;
+		white-space: nowrap;
+	}
+
 	th {
-      background-color: rgb(245, 245, 245);
-    }
-
-	th, td {
-      text-align: left;
-	  vertical-align: top;
-	  color: rgb(70, 70, 70);
-      padding: 7px 18px;
-	}
-	
-	.bordered-table td {
-      border: solid 1px rgb(220, 220, 220); 
-	}
-	
-	.striped-table tr:nth-child(even) {
-		background-color: rgb(245, 245, 245);
-	}
-
-	.lined-table tr { 
-	  border: none; 
-	}
-
-	.lined-table td {
-      border-top: solid 1px rgb(220, 220, 220); 
-	}
-
-	.nowordwrap {
-	  white-space: nowrap;
+		background-color: WhiteSmoke;
 	}
 
 	.captioncell {
-		color: #7d7d7d;
+		color: Gray;
 		text-align: right;
 	}
-	
+
 	.contentcell {
 	}
 
 	.groupingcell {
-      line-height: 1.1;
-      font-weight: 500;
-      color: rgb(25, 125, 225);
-      text-transform: uppercase;
-      letter-spacing: 0;
-      margin-top: 2.4em;
-      margin-bottom: 0.8em;
+		line-height: 1.1;
+		font-weight: 500;
+		color: RoyalBlue;
+		text-transform: uppercase;
+		letter-spacing: 0;
+		margin-top: 2.4em;
+		margin-bottom: 0.8em;
 	}
 
-	.hoverable tbody tr:hover {
-		background: rgb(200, 200, 200);
-		cursor: hand;
+	.nowordwrap {
+		white-space: nowrap;
 	}
