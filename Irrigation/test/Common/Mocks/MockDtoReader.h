@@ -18,21 +18,3 @@ public:
 	MOCK_CONST_METHOD1(loadRunTimeList, std::list<RunTimeDTO>(const std::string& text));
 	MOCK_CONST_METHOD1(loadStartTimeList, std::list<StartTimeDTO>(const std::string& text));
 };
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockDtoWriter : public DtoWriter {
-public:
-	MOCK_METHOD1(save, std::string(const DocumentDTO& document));
-	MOCK_METHOD2(save, std::string(const ProgramDTO& program, bool includeContainers));
-	MOCK_METHOD1(save, std::string(const RunTimeDTO& runTime));
-	MOCK_METHOD1(save, std::string(const StartTimeDTO& startTime));
-	MOCK_METHOD1(save, std::string(const EveryDaySchedulerDTO& scheduler));
-	MOCK_METHOD1(save, std::string(const HotWeatherSchedulerDTO& scheduler));
-	MOCK_METHOD1(save, std::string(const PeriodicSchedulerDTO& scheduler));
-	MOCK_METHOD1(save, std::string(const TemperatureDependentSchedulerDTO& scheduler));
-	MOCK_METHOD1(save, std::string(const WeeklySchedulerDTO& scheduler));
-	MOCK_METHOD2(save, std::string(const std::list<ProgramDTO>& programs, bool includeContainers));
-	MOCK_METHOD1(save, std::string(const std::list<RunTimeDTO>& runTimes));
-	MOCK_METHOD1(save, std::string(const std::list<StartTimeDTO>& startTimes));
-};

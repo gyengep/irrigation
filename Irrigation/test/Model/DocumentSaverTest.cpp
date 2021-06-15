@@ -3,6 +3,7 @@
 #include "DTO/DocumentDTO.h"
 #include "Model/DocumentSaver.h"
 #include "Model/IrrigationDocument.h"
+#include "Mocks/MockDtoReader.h"
 
 using namespace std;
 using namespace testing;

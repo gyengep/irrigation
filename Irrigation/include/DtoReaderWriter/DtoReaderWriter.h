@@ -34,7 +34,8 @@ class DtoWriter {
 public:
 	virtual ~DtoWriter() = default;
 	virtual std::string save(const DocumentDTO& document) = 0;
-	virtual std::string save(const ProgramDTO& program, bool includeContainers = true) = 0;
+	virtual std::string save(const ProgramDTO& program) = 0;
+	virtual std::string save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) = 0;
 	virtual std::string save(const RunTimeDTO& runTime) = 0;
 	virtual std::string save(const StartTimeDTO& startTime) = 0;
 	virtual std::string save(const EveryDaySchedulerDTO& scheduler) = 0;
@@ -42,7 +43,8 @@ public:
 	virtual std::string save(const PeriodicSchedulerDTO& scheduler) = 0;
 	virtual std::string save(const TemperatureDependentSchedulerDTO& scheduler) = 0;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) = 0;
-	virtual std::string save(const std::list<ProgramDTO>& programs, bool includeContainers = true) = 0;
+	virtual std::string save(const std::list<ProgramDTO>& programs) = 0;
+	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) = 0;
 	virtual std::string save(const std::list<RunTimeDTO>& runTimes) = 0;
 	virtual std::string save(const std::list<StartTimeDTO>& startTimes) = 0;
 };

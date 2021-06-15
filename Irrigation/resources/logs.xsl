@@ -4,41 +4,11 @@
 		<html>
 			<head>
 				<title>Irrigation System Log</title>
-				<style>
-    html {
-      font-family: "Open Sans", sans-serif;
-    }
-
-    table {
-      border-collapse: collapse;
-	  font-size:large;
-    }
-
-	caption {
-      padding: 10px;
-	  font-size: 200%;
-    }
-
-	th, td {
-      text-align: left;
-      border: 1px solid rgb(190,190,190);
-	  color: rgb(70, 70, 70);
-      padding: 7px 18px;
-	}
-
-	caption, th, tr:nth-child(even) {
-      background-color: rgb(245, 245, 245);
-    }
-
-	.nowordwrap {
-	  white-space: nowrap;
-	}
-
-				</style>
-				<meta name="viewport" content="initial-scale=1"/>
+				<link rel="stylesheet" href="/resources/styles.css"/>
+				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			</head>
 			<body>
-				<table>
+				<table class="striped-table bordered-table">
 					<caption>Irrigation System Log</caption>
 					<thead>
 						<tr>
@@ -51,12 +21,10 @@
 					<tbody>
 						<xsl:for-each select="log_entries/log_entry">
 							<tr>
-								<td>
-									<div class="nowordwrap"><xsl:value-of select="time"/></div>
-								</td>
-								<td><xsl:value-of select="level"/></td>
-								<td><xsl:value-of select="thread"/></td>
-								<td><xsl:value-of select="text"/></td>
+								<td><div class="contentcell nowordwrap"><xsl:value-of select="time"/></div></td>
+								<td><div class="contentcell nowordwrap"><xsl:value-of select="level"/></div></td>
+								<td><div class="contentcell nowordwrap"><xsl:value-of select="thread"/></div></td>
+								<td><div class="contentcell"><xsl:value-of select="text"/></div></td>
 							</tr>
 						</xsl:for-each>
 					</tbody>

@@ -76,7 +76,6 @@ class RestView : public View {
 	static IdType getProgramId(const KeyValue& pathParameters);
 	static IdType getStartTimeId(const KeyValue& pathParameters);
 
-	static bool includeContainers(const KeyValue& keyValue);
 	static std::string getProgramUrl(const IdType& programId);
 	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 

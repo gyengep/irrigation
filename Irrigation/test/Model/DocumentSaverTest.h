@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <gmock/gmock.h>
-#include "Mocks/MockDtoReader.h"
+#include "Mocks/MockDtoWriter.h"
 #include "Mocks/MockFileReader.h"
 #include "Model/DocumentSaver.h"
 
