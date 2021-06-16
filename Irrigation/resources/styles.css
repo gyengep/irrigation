@@ -3,6 +3,10 @@
 		background-color: WhiteSmoke;
 	}
 
+	.table-600px {
+		width: 800px;
+	}
+
 	.captioncell {
 		color: Gray;
 		text-align: right;

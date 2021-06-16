@@ -67,7 +67,10 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onGetTemperatureForecast(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureHistory(const HttpRequest& request, const KeyValue& pathParameters);
 
+	std::unique_ptr<HttpResponse> onGetRoot(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetFile(const HttpRequest& request, const KeyValue& pathParameters);
+
+	std::unique_ptr<HttpResponse> getFile(const std::string fileName);
 
 	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);

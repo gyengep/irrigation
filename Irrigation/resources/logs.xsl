@@ -11,7 +11,7 @@
 			<body>
 				<div class="w3-container w3-sans-serif w3-responsive">
 					<h3>Irrigation System Log</h3>
-					<table class="w3-table w3-striped w3-border w3-bordered w3-small w3-card-4">
+					<table class="w3-table w3-striped w3-border w3-bordered w3-small w3-card-4 table-600px">
 						<thead>
 							<tr>
 								<th>Date</th>

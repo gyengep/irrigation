@@ -83,11 +83,8 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/historical", bind(&RestView::onGetTemperatureHistory, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/logs.xsl", bind(&RestView::onGetFile, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/programlist.xsl", bind(&RestView::onGetFile, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/program.xsl", bind(&RestView::onGetFile, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/styles.css", bind(&RestView::onGetFile, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/scripts.js", bind(&RestView::onGetFile, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/resources/{fileName}", bind(&RestView::onGetFile, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/", bind(&RestView::onGetRoot, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -121,19 +118,37 @@ string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTim
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters) {
-	if (request.getUrl().substr(0, 10) != "/resources") {
-		LOGGER.warning("Invalid directory: %s", request.getUrl().c_str());
-		throw std::runtime_error("Invalid directory: " + request.getUrl());
+std::string getFileExtension(const std::string& fileName) {
+	const auto pos = fileName.find_last_of(".");
+	std::string result;
+
+	if (std::string::npos != pos) {
+		result = fileName.substr(pos + 1);
 	}
 
-	const std::string filename = resourceDirectory + request.getUrl().substr(10);
+	return result;
+}
 
-	LOGGER.trace("Requested file: %s", filename.c_str());
-	std::ifstream file(filename);
+std::string getContentTypeForFile(const std::string& fileName) {
+	const auto extension = getFileExtension(fileName);
+
+	std::string result;
+
+	if (extension == "js") {
+		result = "text/javascript";
+	} else {
+		result = "text/" + extension;
+	}
+
+	return result;
+}
+
+std::unique_ptr<HttpResponse> RestView::getFile(const std::string fileName) {
+	LOGGER.trace("Requested file: %s", fileName.c_str());
+	std::ifstream file(fileName);
 
 	if (file.fail()) {
-		LOGGER.warning("File not found: %s", filename.c_str());
+		LOGGER.warning("File not found: %s", fileName.c_str());
 		throw FileNotFoundException();
 	}
 
@@ -143,8 +158,18 @@ unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const K
 	return HttpResponse::Builder().
 			setStatus(200, "OK").
 			setBody(str).
-			addHeader("Content-Type", "text/xsl").
+			addHeader("Content-Type", getContentTypeForFile(fileName)).
 			build();
+}
+
+unique_ptr<HttpResponse> RestView::onGetRoot(const HttpRequest& request, const KeyValue& pathParameters) {
+	const std::string fileName = resourceDirectory + "/index.html";
+	return getFile(fileName);
+}
+
+unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters) {
+	const std::string fileName = resourceDirectory + "/" + pathParameters.at("fileName");
+	return getFile(fileName);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
