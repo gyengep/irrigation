@@ -1,9 +1,60 @@
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<style>
+
+table, th, td {
+  border: none;
+  border-collapse: collapse;
+}
+
+img {
+  border: none;
+  width: 64px;
+  height: 64px;
+}
+
+		</style>
+
+
+		<script>
+function openCity(evt) {
+  var i, tablinks;
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
+  }
+  evt.currentTarget.firstElementChild.className += " w3-border-blue";
+}
+</script>
+
 	</head>
 	<body>
-		<a target="frame" href="/programs">Programs</a>
-		<a target="frame" href="/logs">Logs</a>
-		<iframe name="frame" src="/programs" title="W3Schools Free Online Web Tutorials"  height="90%" width="100%" style="border:none;"></iframe>
+		<div class="w3-container">
+			<table width="100%" height="100%">
+				<tr height="50px">
+					<td>
+						<div class="w3-row">
+							<a href="\programs" target="frame" onclick="openCity(event);">
+								<div align="center" class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding w3-border-blue">
+									<img src="/resources/program.png" alt="Programs"/>
+									<p>Programs</p>
+								</div>
+							</a>
+							<a href="\logs" target="frame" onclick="openCity(event);">
+								<div align="center" class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding">
+									<img src="/resources/log.png" alt="Logs"/>
+									<p>Logs</p>
+								</div>
+							</a>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><iframe name="frame" src="/programs" title="W3Schools Free Online Web Tutorials" height="100%" width="100%" style="border:none;"></iframe></td>
+				</tr>
+			</table>
+		</div>
 	</body>
 </html>

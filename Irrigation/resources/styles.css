@@ -3,8 +3,8 @@
 		background-color: WhiteSmoke;
 	}
 
-	.table-600px {
-		width: 800px;
+	.table-100percent {
+		width: 100%;
 	}
 
 	.captioncell {
@@ -18,7 +18,7 @@
 	.groupingcell {
 		line-height: 1.1;
 		font-weight: 500;
-		color: RoyalBlue;
+		color: blue;
 		text-transform: uppercase;
 		letter-spacing: 0;
 		margin-top: 2.4em;

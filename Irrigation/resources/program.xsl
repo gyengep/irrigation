@@ -11,7 +11,7 @@
 			<body>
 				<div class="w3-container w3-sans-serif">
 					<h3>Irrigation System Program</h3>
-					<table class="w3-table w3-bordered w3-small w3-card-4 table-600px">
+					<table class="w3-table w3-bordered w3-small w3-card-4 table-100percent">
 						<tbody>
 							<tr>
 								<td><div class="captioncell">Name</div></td>
