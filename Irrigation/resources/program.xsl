@@ -4,13 +4,12 @@
 		<html>
 			<head>
 				<title>Irrigation System Program</title>
-				<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
-				<link rel="stylesheet" href="/resources/styles.css"/>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
+				<link rel="stylesheet" href="/resources/w3.css"/>
+				<link rel="stylesheet" href="/resources/styles.css"/>
 			</head>
 			<body>
 				<div class="w3-container w3-sans-serif">
-					<h3>Irrigation System Program</h3>
 					<table class="w3-table w3-bordered w3-small w3-card-4 table-100percent">
 						<tbody>
 							<tr>

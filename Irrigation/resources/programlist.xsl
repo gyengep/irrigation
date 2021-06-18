@@ -4,15 +4,14 @@
 		<html>
 			<head>
 				<title>Irrigation System Programs</title>
-				<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
-				<link rel="stylesheet" href="/resources/styles.css"/>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
+				<link rel="stylesheet" href="/resources/w3.css"/>
+				<link rel="stylesheet" href="/resources/styles.css"/>
 				<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 				<script src="/resources/scripts.js"></script>
 			</head>
 			<body>
 				<div class="w3-container w3-sans-serif w3-responsive">
-					<h3>Irrigation System Programs</h3>
 					<table class="w3-table w3-striped w3-border w3-bordered w3-small w3-hoverable w3-card-4 table-100percent">
 						<thead>
 							<tr>
@@ -30,10 +29,10 @@
 								<tr onclick="window.location='/programs/{$programId}'">
 									<xsl:choose>
 										<xsl:when test="enabled='true'">
-											<td><input type="checkbox" checked="" onclick="return false"/></td>
+											<td><input class="w3-check" type="checkbox" onclick="return false" checked="checked"/></td>
 										</xsl:when>
 										<xsl:otherwise>
-											<td><input type="checkbox" onclick="return false"/></td>
+											<td><input class="w3-check" type="checkbox" onclick="return false"/></td>
 										</xsl:otherwise>
 									</xsl:choose>
 									<td><div class="contentcell nowordwrap"><xsl:value-of select="name"/></div></td>

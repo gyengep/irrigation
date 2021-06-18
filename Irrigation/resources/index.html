@@ -1,7 +1,8 @@
 <html>
 	<head>
+		<title>Irrigation System</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<link rel="stylesheet" href="/resources/w3.css"/>
 		<style>
 
 table, th, td {
@@ -11,21 +12,24 @@ table, th, td {
 
 img {
   border: none;
-  width: 64px;
-  height: 64px;
+  width: 24px;
+  height: 24px;
 }
-
 		</style>
 
 
 		<script>
-function openCity(evt) {
+function openCity(evt, clickedIcon) {
   var i, tablinks;
   tablinks = document.getElementsByClassName("tablink");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
   }
-  evt.currentTarget.firstElementChild.className += " w3-border-blue";
+    
+  tablinks = document.getElementsByClassName(clickedIcon);
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className += " w3-border-blue";
+  }
 }
 </script>
 
@@ -33,21 +37,29 @@ function openCity(evt) {
 	<body>
 		<div class="w3-container">
 			<table width="100%" height="100%">
-				<tr height="50px">
+
+				<tr height="30px">
 					<td>
-						<div class="w3-row">
-							<a href="\programs" target="frame" onclick="openCity(event);">
-								<div align="center" class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding w3-border-blue">
-									<img src="/resources/program.png" alt="Programs"/>
-									<p>Programs</p>
-								</div>
+						<div class="w3-bar w3-small" style="padding-bottom:10px;">
+							<a href="\programs" target="frame" class="program-icon w3-button w3-hoverable w3-bottombar w3-padding w3-center w3-bar-item tablink w3-border-blue" onclick="openCity(event, 'program-icon');">
+								<img src="/resources/program.png" alt="Programs"/>
+								<p>Programs</p>
 							</a>
-							<a href="\logs" target="frame" onclick="openCity(event);">
-								<div align="center" class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">
-									<img src="/resources/log.png" alt="Logs"/>
-									<p>Logs</p>
-								</div>
+							<a href="\logs" target="frame" class="log-icon w3-button w3-hoverable w3-bottombar w3-padding w3-center w3-bar-item tablink" onclick="openCity(event, 'log-icon');">
+								<img src="/resources/log.png" alt="Logs"/>
+								<p>Logs</p>
 							</a>
+							<div class="w3-dropdown-hover">
+								<button class="temperature-icon w3-button w3-hoverable w3-bottombar w3-padding w3-center tablink">
+									<img src="/resources/temperature.png" alt="Temperature"/>
+									<p>Temperature</p>
+								</button>
+								<div class="w3-dropdown-content w3-bar-block">
+									<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
+									<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
+									<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
+								</div>
+							</div>
 						</div>
 					</td>
 				</tr>
