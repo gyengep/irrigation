@@ -50,8 +50,8 @@ function closeLeftMenu() {
   document.getElementById("closeMenuButton").style.display = "none";
 }
 
-function myAccFunc() {
-  var x = document.getElementById("leftMenuAccordion");
+function accord(id) {
+  var x = document.getElementById(id);
 
   if (x.className.indexOf("w3-show") == -1) {
     x.className += " w3-show";
@@ -75,10 +75,10 @@ function myAccFunc() {
 			<a onclick="closeLeftMenu(); markMenu('top-menu-program', 'left-menu-program');" class="tablink left-menu-program w3-bar-item w3-button w3-leftbar w3-border-blue" href="\programs" target="frame"><img src="/resources/program.png"/> Programs </a> 
 			<a onclick="closeLeftMenu(); markMenu('top-menu-log', 'left-menu-log');" class="tablink left-menu-log w3-bar-item w3-button w3-leftbar" href="\logs" target="frame"><img src="/resources/log.png"/> Logs </a> 
 
-			<button onclick="myAccFunc()" class="w3-bar-item w3-button">
+			<button onclick="accord('leftMenuTemperatureAccordion')" class="w3-bar-item w3-button">
 				<img src="/resources/temperature.png"/> Temperature <i class="fa fa-caret-down"></i>
 			</button>
-			<div id="leftMenuAccordion" class="w3-hide" style="text-indent: 50px">
+			<div id="leftMenuTemperatureAccordion" class="w3-hide" style="text-indent: 20px">
 				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-current');" href="\temperature" target="frame" class="tablink left-menu-temperature-current w3-bar-item w3-button w3-leftbar">Current</a>
 				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-forecast');" href="\forecast" target="frame" class="tablink left-menu-temperature-forecast w3-bar-item w3-button w3-leftbar">Forecast</a>
 				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-history');" href="\history" target="frame" class="tablink left-menu-temperature-history w3-bar-item w3-button w3-leftbar">Historical</a>
