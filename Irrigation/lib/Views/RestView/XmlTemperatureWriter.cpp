@@ -18,7 +18,13 @@ std::string XmlTemperatureWriter::contentType() const {
 
 std::string XmlTemperatureWriter::currentToString(float value) const {
 	xml_document doc;
-	xml_node currentTemperatureNode = doc.append_child("current-temperature");
+
+	xml_node processingInstructionNode = doc.prepend_child(node_pi);
+
+	processingInstructionNode.set_name("xml-stylesheet");
+	processingInstructionNode.set_value("type=\"text/xsl\" href=\"/resources/temperature.xsl\"");
+
+	xml_node currentTemperatureNode = doc.append_child("temperature");
 
 	currentTemperatureNode.append_child("value").text().set(toTemperatureValue(value).c_str());
 	currentTemperatureNode.append_child("unit").text().set("celsius");

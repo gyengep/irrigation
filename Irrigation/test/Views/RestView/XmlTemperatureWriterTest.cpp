@@ -8,10 +8,11 @@ using namespace testing;
 TEST(XmlTemperatureWriterTest, temperature) {
 	const std::string expected =
 R"(<?xml version="1.0"?>
-<current-temperature>
+<?xml-stylesheet type="text/xsl" href="/resources/temperature.xsl"?>
+<temperature>
 	<value>28.0</value>
 	<unit>celsius</unit>
-</current-temperature>
+</temperature>
 )";
 
 	EXPECT_THAT(XmlTemperatureWriter().currentToString(28), Eq(expected));

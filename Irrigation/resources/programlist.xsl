@@ -11,8 +11,8 @@
 				<script src="/resources/scripts.js"></script>
 			</head>
 			<body>
-				<div class="w3-container w3-sans-serif w3-responsive">
-					<table class="w3-table w3-striped w3-border w3-bordered w3-small w3-hoverable w3-card-4 table-100percent">
+				<div class="w3-container w3-sans-serif">
+					<table class="w3-table-all w3-hoverable w3-card-4 table-100percent">
 						<thead>
 							<tr>
 								<th>Enabled</th>
@@ -29,10 +29,10 @@
 								<tr onclick="window.location='/programs/{$programId}'">
 									<xsl:choose>
 										<xsl:when test="enabled='true'">
-											<td><input class="w3-check" type="checkbox" onclick="return false" checked="checked"/></td>
+											<td><input type="checkbox" onclick="return false" checked="checked"/></td>
 										</xsl:when>
 										<xsl:otherwise>
-											<td><input class="w3-check" type="checkbox" onclick="return false"/></td>
+											<td><input type="checkbox" onclick="return false"/></td>
 										</xsl:otherwise>
 									</xsl:choose>
 									<td><div class="contentcell nowordwrap"><xsl:value-of select="name"/></div></td>

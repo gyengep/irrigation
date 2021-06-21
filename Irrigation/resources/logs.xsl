@@ -9,8 +9,8 @@
 				<link rel="stylesheet" href="/resources/styles.css"/>
 			</head>
 			<body>
-				<div class="w3-container w3-sans-serif w3-responsive">
-					<table class="w3-table w3-striped w3-border w3-bordered w3-small w3-card-4 table-100percent">
+				<div class="w3-container w3-sans-serif">
+					<table class="w3-table-all w3-card-4 table-100percent">
 						<thead>
 							<tr>
 								<th>Date</th>

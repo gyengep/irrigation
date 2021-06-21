@@ -1,72 +1,118 @@
 <html>
-	<head>
-		<title>Irrigation System</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="/resources/w3.css"/>
-		<style>
-
-table, th, td {
-  border: none;
-  border-collapse: collapse;
-}
+<head>
+	<title>Irrigation System</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/resources/styles.css"/>
+	<link rel="stylesheet" href="/resources/w3.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+	<style>
 
 img {
   border: none;
   width: 24px;
   height: 24px;
 }
-		</style>
+	
+	</style>
 
 
-		<script>
+	<script>
+		
 function openCity(evt, clickedIcon) {
   var i, tablinks;
   tablinks = document.getElementsByClassName("tablink");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
   }
-    
+
   tablinks = document.getElementsByClassName(clickedIcon);
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className += " w3-border-blue";
   }
 }
+	</script>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("Demo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else { 
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
 </script>
+</head>
+<body>
 
-	</head>
-	<body>
-		<div class="w3-container">
-			<table width="100%" height="100%">
+	<div class="w3-container w3-hide-medium w3-hide-large">
 
-				<tr height="30px">
-					<td>
-						<div class="w3-bar w3-small" style="padding-bottom:10px;">
-							<a href="\programs" target="frame" class="program-icon w3-button w3-hoverable w3-bottombar w3-padding w3-center w3-bar-item tablink w3-border-blue" onclick="openCity(event, 'program-icon');">
-								<img src="/resources/program.png" alt="Programs"/>
-								<p>Programs</p>
-							</a>
-							<a href="\logs" target="frame" class="log-icon w3-button w3-hoverable w3-bottombar w3-padding w3-center w3-bar-item tablink" onclick="openCity(event, 'log-icon');">
-								<img src="/resources/log.png" alt="Logs"/>
-								<p>Logs</p>
-							</a>
-							<div class="w3-dropdown-hover">
-								<button class="temperature-icon w3-button w3-hoverable w3-bottombar w3-padding w3-center tablink">
-									<img src="/resources/temperature.png" alt="Temperature"/>
-									<p>Temperature</p>
-								</button>
-								<div class="w3-dropdown-content w3-bar-block">
-									<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
-									<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
-									<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
-								</div>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td><iframe name="frame" src="/programs" title="W3Schools Free Online Web Tutorials" height="100%" width="100%" style="border:none;"></iframe></td>
-				</tr>
-			</table>
+		<header class="w3-bar">
+			<button class="w3-bar-item w3-button" onclick="openSidebar()">&#9776;</button>
+		</header>
+	
+		<div class="w3-bar-block w3-padding">
+
+			<a class="tablink program-icon w3-bar-item w3-button w3-leftbar w3-border-blue" href="\programs" target="frame" onclick="openCity(event, 'program-icon');">
+				<img src="/resources/program.png" alt="Programs"/>
+				Programs
+			</a> 
+			
+			<a class="tablink log-icon w3-bar-item w3-button w3-leftbar" href="\logs" target="frame" onclick="openCity(event, 'log-icon');">
+				<img src="/resources/log.png" alt="Logs"/>
+				Logs
+			</a> 
+			
+			<div class="w3-dropdown-click">
+				<button onclick="myFunction()" class="tablink temperature-icon w3-button w3-leftbar">
+					<img src="/resources/temperature.png" alt="Temperature"/>
+					Temperature
+					<i class="fa fa-caret-down"></i>
+				</button>
+				<div id="Demo" class="w3-dropdown-content w3-bar-block w3-card-4">
+					<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
+					<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
+					<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
+				</div>
+
+			</div>
 		</div>
-	</body>
+	</div>
+
+
+	<div class="w3-container w3-hide-small">
+
+		<div class="w3-bar w3-padding">
+
+			<a class="tablink program-icon w3-bar-item w3-button w3-bottombar w3-border-blue" href="\programs" target="frame" onclick="openCity(event, 'program-icon');">
+				<img src="/resources/program.png" alt="Programs"/>
+				Programs
+			</a> 
+			
+			<a class="tablink log-icon w3-bar-item w3-button w3-bottombar" href="\logs" target="frame" onclick="openCity(event, 'log-icon');">
+				<img src="/resources/log.png" alt="Logs"/>
+				Logs
+			</a> 
+			
+			<div class="w3-dropdown-hover">
+				<button class="tablink temperature-icon w3-button w3-bottombar">
+					<img src="/resources/temperature.png" alt="Temperature"/>
+					Temperature
+					<i class="fa fa-caret-down"></i>
+				</button>
+				<div class="w3-dropdown-content w3-bar-block w3-card-4">
+					<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
+					<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
+					<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="w3-container">
+		<iframe name="frame" src="/programs" title="W3Schools Free Online Web Tutorials" height="100%" width="100%" style="border:none;"/>
+	</div>
+
+</body>
 </html>

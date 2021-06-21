@@ -1,0 +1,73 @@
+<html>
+<head>
+	<title>Irrigation System</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="/resources/w3.css"/>
+		<style>
+
+img {
+  border: none;
+  width: 24px;
+  height: 24px;
+}
+
+		</style>
+
+
+		<script>
+		
+function openCity(evt, clickedIcon) {
+  var i, tablinks;
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
+  }
+
+  tablinks = document.getElementsByClassName(clickedIcon);
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className += " w3-border-blue";
+  }
+}
+		</script>
+
+	</head>
+	<body>
+	
+		<div class="w3-container">
+
+			<div class="w3-row w3-padding">
+			
+				<div class="w3-col w3-third">
+					<a href="\programs" target="frame" class="tablink program-icon w3-button w3-block w3-hoverable w3-bottombar w3-border-blue" onclick="openCity(event, 'program-icon');">
+						<img src="/resources/program.png" alt="Programs"/>
+						<p>Programs</p>
+					</a>
+				</div>
+				
+				<div class="w3-col w3-third">
+					<a href="\logs" target="frame" class="tablink log-icon w3-button w3-block w3-hoverable w3-bottombar" onclick="openCity(event, 'log-icon');">
+						<img src="/resources/log.png" alt="Logs"/>
+						<p>Logs</p>
+					</a>
+				</div>
+				
+				<div class="w3-col w3-third w3-dropdown-hover">
+					
+					<button class="tablink temperature-icon w3-button w3-block w3-hoverable w3-bottombar">
+						<img src="/resources/temperature.png" alt="Temperature"/>
+						<p>Temperature</p>
+					</button>
+					<div class="w3-dropdown-content w3-bar-block">
+						<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
+						<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
+						<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
+					</div>
+					
+				</div>
+			</div>
+
+			<iframe name="frame" src="/programs" title="W3Schools Free Online Web Tutorials" height="100%" width="100%" style="border:none;"/>
+			
+		</div>
+	</body>
+</html>
