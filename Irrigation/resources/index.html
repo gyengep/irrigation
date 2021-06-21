@@ -13,104 +13,109 @@ img {
   width: 24px;
   height: 24px;
 }
-	
+
 	</style>
 
 
 	<script>
 		
-function openCity(evt, clickedIcon) {
-  var i, tablinks;
+function markMenu(clickedIcon1, clickedIcon2) {
+  var i, tablinks, icons1, icons2;
   tablinks = document.getElementsByClassName("tablink");
+  
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
   }
 
-  tablinks = document.getElementsByClassName(clickedIcon);
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className += " w3-border-blue";
+  icons1 = document.getElementsByClassName(clickedIcon1);
+  for (i = 0; i < icons1.length; i++) {
+    icons1[i].className += " w3-border-blue";
+  }
+
+  icons2 = document.getElementsByClassName(clickedIcon2);
+  for (i = 0; i < icons2.length; i++) {
+    icons2[i].className += " w3-border-blue";
   }
 }
-	</script>
 
-<script>
-function myFunction() {
-  var x = document.getElementById("Demo");
+function openLeftMenu() {
+  document.getElementById("leftMenu").style.display = "block";
+  document.getElementById("openMenuButton").style.display = "none";
+  document.getElementById("closeMenuButton").style.display = "block";
+}
+
+function closeLeftMenu() {
+  document.getElementById("leftMenu").style.display = "none";
+  document.getElementById("openMenuButton").style.display = "block";
+  document.getElementById("closeMenuButton").style.display = "none";
+}
+
+function myAccFunc() {
+  var x = document.getElementById("leftMenuAccordion");
+
   if (x.className.indexOf("w3-show") == -1) {
     x.className += " w3-show";
   } else { 
     x.className = x.className.replace(" w3-show", "");
   }
 }
+
 </script>
 </head>
 <body>
 
-	<div class="w3-container w3-hide-medium w3-hide-large">
+	<div class="w3-hide-medium w3-hide-large">
 
-		<header class="w3-bar">
-			<button class="w3-bar-item w3-button" onclick="openSidebar()">&#9776;</button>
-		</header>
+		<div class="w3-bar w3-light-grey" style="height:48px">
+			<button class="w3-button w3-left" style="height:48px" onclick="openLeftMenu()" id="openMenuButton">&#9776;</button>
+			<button class="w3-button w3-left" style="height:48px;display:none" onclick="closeLeftMenu()" id="closeMenuButton">&times;</button>
+		</div>
 	
-		<div class="w3-bar-block w3-padding">
+		<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="leftMenu">
+			<a onclick="closeLeftMenu(); markMenu('top-menu-program', 'left-menu-program');" class="tablink left-menu-program w3-bar-item w3-button w3-leftbar w3-border-blue" href="\programs" target="frame"><img src="/resources/program.png"/> Programs </a> 
+			<a onclick="closeLeftMenu(); markMenu('top-menu-log', 'left-menu-log');" class="tablink left-menu-log w3-bar-item w3-button w3-leftbar" href="\logs" target="frame"><img src="/resources/log.png"/> Logs </a> 
 
-			<a class="tablink program-icon w3-bar-item w3-button w3-leftbar w3-border-blue" href="\programs" target="frame" onclick="openCity(event, 'program-icon');">
-				<img src="/resources/program.png" alt="Programs"/>
-				Programs
-			</a> 
-			
-			<a class="tablink log-icon w3-bar-item w3-button w3-leftbar" href="\logs" target="frame" onclick="openCity(event, 'log-icon');">
-				<img src="/resources/log.png" alt="Logs"/>
-				Logs
-			</a> 
-			
-			<div class="w3-dropdown-click">
-				<button onclick="myFunction()" class="tablink temperature-icon w3-button w3-leftbar">
-					<img src="/resources/temperature.png" alt="Temperature"/>
-					Temperature
-					<i class="fa fa-caret-down"></i>
-				</button>
-				<div id="Demo" class="w3-dropdown-content w3-bar-block w3-card-4">
-					<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
-					<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
-					<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
-				</div>
-
+			<button onclick="myAccFunc()" class="w3-bar-item w3-button">
+				<img src="/resources/temperature.png"/> Temperature <i class="fa fa-caret-down"></i>
+			</button>
+			<div id="leftMenuAccordion" class="w3-hide" style="text-indent: 50px">
+				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-current');" href="\temperature" target="frame" class="tablink left-menu-temperature-current w3-bar-item w3-button w3-leftbar">Current</a>
+				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-forecast');" href="\forecast" target="frame" class="tablink left-menu-temperature-forecast w3-bar-item w3-button w3-leftbar">Forecast</a>
+				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-history');" href="\history" target="frame" class="tablink left-menu-temperature-history w3-bar-item w3-button w3-leftbar">Historical</a>
 			</div>
 		</div>
+		
+		
 	</div>
 
 
-	<div class="w3-container w3-hide-small">
+	<div class="w3-hide-small">
 
-		<div class="w3-bar w3-padding">
+		<div class="w3-bar w3-light-grey" style="height:48px">
 
-			<a class="tablink program-icon w3-bar-item w3-button w3-bottombar w3-border-blue" href="\programs" target="frame" onclick="openCity(event, 'program-icon');">
-				<img src="/resources/program.png" alt="Programs"/>
-				Programs
+			<a class="tablink top-menu-program w3-bar-item w3-button w3-bottombar w3-border-blue" href="\programs" target="frame" onclick="markMenu('top-menu-program', 'left-menu-program');">
+				<img src="/resources/program.png"/> Programs
 			</a> 
 			
-			<a class="tablink log-icon w3-bar-item w3-button w3-bottombar" href="\logs" target="frame" onclick="openCity(event, 'log-icon');">
-				<img src="/resources/log.png" alt="Logs"/>
-				Logs
+			<a class="tablink top-menu-log w3-bar-item w3-button w3-bottombar" href="\logs" target="frame" onclick="markMenu('top-menu-log', 'left-menu-log');">
+				<img src="/resources/log.png"/> Logs
 			</a> 
 			
 			<div class="w3-dropdown-hover">
-				<button class="tablink temperature-icon w3-button w3-bottombar">
-					<img src="/resources/temperature.png" alt="Temperature"/>
-					Temperature
-					<i class="fa fa-caret-down"></i>
+				<button class="tablink top-menu-temperature w3-button w3-bottombar">
+					<img src="/resources/temperature.png"/>	Temperature <i class="fa fa-caret-down"></i>
 				</button>
+				
 				<div class="w3-dropdown-content w3-bar-block w3-card-4">
-					<a href="\temperature" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Current</a>
-					<a href="\forecast" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Forecast</a>
-					<a href="\history" target="frame" class="temperature-icon w3-button w3-bar-item" onclick="openCity(event, 'temperature-icon');">Historical</a>
+					<a href="\temperature" target="frame" class="w3-button w3-bar-item" onclick="markMenu('top-menu-temperature', 'left-menu-temperature-current');">Current</a>
+					<a href="\forecast" target="frame" class="w3-button w3-bar-item" onclick="markMenu('top-menu-temperature', 'left-menu-temperature-forecast');">Forecast</a>
+					<a href="\history" target="frame" class="w3-button w3-bar-item" onclick="markMenu('top-menu-temperature', 'left-menu-temperature-history');">Historical</a>
 				</div>
 			</div>
 		</div>
 	</div>
 	
-	<div class="w3-container">
+	<div class="w3-container w3-padding-16">
 		<iframe name="frame" src="/programs" title="W3Schools Free Online Web Tutorials" height="100%" width="100%" style="border:none;"/>
 	</div>
 

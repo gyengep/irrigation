@@ -11,7 +11,7 @@
 			<body>
 				<div class="w3-container w3-sans-serif">
 					Current temperature
-					<div class="w3-center w3-xxxlarge"><xsl:value-of select="temperature/value"/>&#8451;</div>
+					<div class="w3-center w3-jumbo"><xsl:value-of select="temperature/value"/>&#8451;</div>
 				</div>
 			</body>
 		</html>

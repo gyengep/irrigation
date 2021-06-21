@@ -10,7 +10,7 @@
 			</head>
 			<body>
 				<div class="w3-container w3-sans-serif">
-					<table class="w3-table w3-bordered w3-card-4 table-100percent">
+					<table class="w3-table w3-border w3-bordered w3-card-4 table-100percent">
 						<tbody>
 							<tr>
 								<td><div class="captioncell">Name</div></td>
