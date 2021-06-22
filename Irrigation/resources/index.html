@@ -19,23 +19,31 @@ img {
 
 	<script>
 		
-function markMenu(clickedIcon1, clickedIcon2) {
-  var i, tablinks, icons1, icons2;
-  tablinks = document.getElementsByClassName("tablink");
-  
+function markTopMenu(menuItem) {
+  var i, tablinks;
+ 
+ tablinks = document.getElementsByClassName("topMenuItem");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
   }
 
-  icons1 = document.getElementsByClassName(clickedIcon1);
-  for (i = 0; i < icons1.length; i++) {
-    icons1[i].className += " w3-border-blue";
+  document.getElementById(menuItem).className += " w3-border-blue";
+}
+
+function markLeftMenu(menuItem) {
+  var i, tablinks;
+
+  tablinks = document.getElementsByClassName("leftMenuItem");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
   }
 
-  icons2 = document.getElementsByClassName(clickedIcon2);
-  for (i = 0; i < icons2.length; i++) {
-    icons2[i].className += " w3-border-blue";
-  }
+  document.getElementById(menuItem).className += " w3-border-blue";
+}
+
+function markMenu(topMenuItem, leftMenuItem) {
+  markTopMenu(topMenuItem);
+  markLeftMenu(leftMenuItem);
 }
 
 function openLeftMenu() {
@@ -67,21 +75,22 @@ function accord(id) {
 	<div class="w3-hide-medium w3-hide-large">
 
 		<div class="w3-bar w3-light-grey" style="height:48px">
-			<button class="w3-button w3-left" style="height:48px" onclick="openLeftMenu()" id="openMenuButton">&#9776;</button>
-			<button class="w3-button w3-left" style="height:48px;display:none" onclick="closeLeftMenu()" id="closeMenuButton">&times;</button>
+			<button id="openMenuButton" class="w3-button w3-left" onclick="openLeftMenu()" style="height:48px">&#9776;</button>
+			<button id="closeMenuButton" class="w3-button w3-left" onclick="closeLeftMenu()" style="height:48px;display:none">&times;</button>
 		</div>
 	
-		<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="leftMenu">
-			<a onclick="closeLeftMenu(); markMenu('top-menu-program', 'left-menu-program');" class="tablink left-menu-program w3-bar-item w3-button w3-leftbar w3-border-blue" href="\programs" target="frame"><img src="/resources/program.png"/> Programs </a> 
-			<a onclick="closeLeftMenu(); markMenu('top-menu-log', 'left-menu-log');" class="tablink left-menu-log w3-bar-item w3-button w3-leftbar" href="\logs" target="frame"><img src="/resources/log.png"/> Logs </a> 
+		<div id="leftMenu" class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none">
+			<a id="leftMenu-Program" class="leftMenuItem w3-bar-item w3-button w3-leftbar w3-border-blue" onclick="closeLeftMenu(); markMenu('topMenu-Program', 'leftMenu-Program');" href="\programs" target="frame"><img src="/resources/program.png"/> Programs </a> 
+			<a id="leftMenu-Log" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Log', 'leftMenu-Log');" href="\logs" target="frame"><img src="/resources/log.png"/> Logs </a> 
 
-			<button onclick="accord('leftMenuTemperatureAccordion')" class="w3-bar-item w3-button">
+			<button class="w3-bar-item w3-button w3-leftbar" onclick="accord('leftMenu-Temperature')">
 				<img src="/resources/temperature.png"/> Temperature <i class="fa fa-caret-down"></i>
 			</button>
-			<div id="leftMenuTemperatureAccordion" class="w3-hide" style="text-indent: 20px">
-				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-current');" href="\temperature" target="frame" class="tablink left-menu-temperature-current w3-bar-item w3-button w3-leftbar">Current</a>
-				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-forecast');" href="\forecast" target="frame" class="tablink left-menu-temperature-forecast w3-bar-item w3-button w3-leftbar">Forecast</a>
-				<a onclick="closeLeftMenu(); markMenu('top-menu-temperature', 'left-menu-temperature-history');" href="\history" target="frame" class="tablink left-menu-temperature-history w3-bar-item w3-button w3-leftbar">Historical</a>
+			
+			<div id="leftMenu-Temperature" class="w3-hide" style="text-indent: 20px">
+				<a id="leftMenu-Temperature-Current" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');" href="\temperature" target="frame">Current</a>
+				<a id="leftMenu-Temperature-Forecast" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Forecast');" href="\forecast" target="frame">Forecast</a>
+				<a id="leftMenu-Temperature-History" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-History');" href="\history" target="frame">Historical</a>
 			</div>
 		</div>
 		
@@ -93,23 +102,23 @@ function accord(id) {
 
 		<div class="w3-bar w3-light-grey" style="height:48px">
 
-			<a class="tablink top-menu-program w3-bar-item w3-button w3-bottombar w3-border-blue" href="\programs" target="frame" onclick="markMenu('top-menu-program', 'left-menu-program');">
+			<a id="topMenu-Program" class="topMenuItem w3-bar-item w3-button w3-bottombar w3-border-blue" onclick="markMenu('topMenu-Program', 'leftMenu-Program');" href="\programs" target="frame">
 				<img src="/resources/program.png"/> Programs
 			</a> 
 			
-			<a class="tablink top-menu-log w3-bar-item w3-button w3-bottombar" href="\logs" target="frame" onclick="markMenu('top-menu-log', 'left-menu-log');">
+			<a id="topMenu-Log" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Log', 'leftMenu-Log');" href="\logs" target="frame">
 				<img src="/resources/log.png"/> Logs
 			</a> 
 			
 			<div class="w3-dropdown-hover">
-				<button class="tablink top-menu-temperature w3-button w3-bottombar">
+				<button id="topMenu-Temperature" class="topMenuItem w3-button w3-bottombar">
 					<img src="/resources/temperature.png"/>	Temperature <i class="fa fa-caret-down"></i>
 				</button>
 				
 				<div class="w3-dropdown-content w3-bar-block w3-card-4">
-					<a href="\temperature" target="frame" class="w3-button w3-bar-item" onclick="markMenu('top-menu-temperature', 'left-menu-temperature-current');">Current</a>
-					<a href="\forecast" target="frame" class="w3-button w3-bar-item" onclick="markMenu('top-menu-temperature', 'left-menu-temperature-forecast');">Forecast</a>
-					<a href="\history" target="frame" class="w3-button w3-bar-item" onclick="markMenu('top-menu-temperature', 'left-menu-temperature-history');">Historical</a>
+					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');" href="\temperature" target="frame">Current</a>
+					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Forecast');" href="\forecast" target="frame">Forecast</a>
+					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-History');" href="\history" target="frame">Historical</a>
 				</div>
 			</div>
 		</div>
