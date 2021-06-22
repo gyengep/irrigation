@@ -66,7 +66,7 @@ protected:
     static std::string createTemperatureDependentSchedulerUrl(IdType programId);
     static std::string createWeeklySchedulerUrl(IdType programId);
     static std::string createIrrigationActionUrl();
-    static std::string createTemperatureUrl();
+    static std::string createTemperatureUrl(const std::string& requestParameters = "");
     static std::string createTemperatureForecastUrl(const std::string& requestParameters = "");
     static std::string createTemperatureHistoryUrl(const std::string& requestParameters = "");
 };

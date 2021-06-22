@@ -88,9 +88,9 @@ function accord(id) {
 			</button>
 			
 			<div id="leftMenu-Temperature" class="w3-hide" style="text-indent: 20px">
-				<a id="leftMenu-Temperature-Current" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');" href="\temperature" target="frame">Current</a>
-				<a id="leftMenu-Temperature-Forecast" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Forecast');" href="\forecast" target="frame">Forecast</a>
-				<a id="leftMenu-Temperature-History" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-History');" href="\history" target="frame">Historical</a>
+				<a id="leftMenu-Temperature-Current" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');" href="\temperature?datetime-format=%H:%M" target="frame">Current</a>
+				<a id="leftMenu-Temperature-Forecast" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Forecast');" href="\temperature\forecast?datetime-format=%Y-%m-%d" target="frame">Forecast</a>
+				<a id="leftMenu-Temperature-History" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-History');" href="\temperature\historical?datetime-format=%Y-%m-%d" target="frame">Historical</a>
 			</div>
 		</div>
 		
@@ -116,9 +116,9 @@ function accord(id) {
 				</button>
 				
 				<div class="w3-dropdown-content w3-bar-block w3-card-4">
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');" href="\temperature" target="frame">Current</a>
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Forecast');" href="\forecast" target="frame">Forecast</a>
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-History');" href="\history" target="frame">Historical</a>
+					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');" href="\temperature?datetime-format=%H:%M" target="frame">Current</a>
+					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Forecast');" href="\temperature\forecast?datetime-format=%Y-%m-%d" target="frame">Forecast</a>
+					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-History');" href="\temperature\historical?datetime-format=%Y-%m-%d" target="frame">Historical</a>
 				</div>
 			</div>
 		</div>

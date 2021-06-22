@@ -10,48 +10,47 @@ TEST(XmlTemperatureWriterTest, temperature) {
 R"(<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="/resources/temperature.xsl"?>
 <temperature>
-	<value>28.0</value>
+	<value>28</value>
+	<datetime>22:00</datetime>
 	<unit>celsius</unit>
 </temperature>
 )";
 
-	EXPECT_THAT(XmlTemperatureWriter().currentToString(28), Eq(expected));
+	EXPECT_THAT(XmlTemperatureWriter().currentToString("22:00", 28), Eq(expected));
 }
 
 TEST(XmlTemperatureWriterTest, temperatureForecast) {
 	const std::string expected =
 R"(<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="/resources/temperature-forecast.xsl"?>
 <temperature-forecast>
-	<min>10.0</min>
-	<max>20.0</max>
+	<value-min>10</value-min>
+	<value-max>20</value-max>
 	<unit>celsius</unit>
-	<from>Sun, 30 May 2021 00:00:00 +0200</from>
-	<to>Sun, 30 May 2021 23:59:59 +0200</to>
+	<datetime-from>2021-05-01 00:00:00</datetime-from>
+	<datetime-to>2021-05-01 23:59:59</datetime-to>
 </temperature-forecast>
 )";
 
 	const TemperatureForecast::Values value(10, 20);
-	const LocalDateTime from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
-	const LocalDateTime to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
 
-	EXPECT_THAT(XmlTemperatureWriter().forecastToString(value, from, to), Eq(expected));
+	EXPECT_THAT(XmlTemperatureWriter().forecastToString("2021-05-01 00:00:00", "2021-05-01 23:59:59", value), Eq(expected));
 }
 
 TEST(XmlTemperatureWriterTest, temperatureHistory) {
 	const std::string expected =
 R"(<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="/resources/temperature-history.xsl"?>
 <temperature-history>
-	<min>10.0</min>
-	<max>20.0</max>
+	<value-min>10</value-min>
+	<value-max>20</value-max>
 	<unit>celsius</unit>
-	<from>Sun, 30 May 2021 00:00:00 +0200</from>
-	<to>Sun, 30 May 2021 23:59:59 +0200</to>
+	<datetime-from>2021-02-03 00:00:00</datetime-from>
+	<datetime-to>2021-02-03 23:59:59</datetime-to>
 </temperature-history>
 )";
 
 	const TemperatureHistory::Values value(10, 20, 18);
-	const LocalDateTime from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
-	const LocalDateTime to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
 
-	EXPECT_THAT(XmlTemperatureWriter().historyToString(value, from, to), Eq(expected));
+	EXPECT_THAT(XmlTemperatureWriter().historyToString("2021-02-03 00:00:00", "2021-02-03 23:59:59", value), Eq(expected));
 }

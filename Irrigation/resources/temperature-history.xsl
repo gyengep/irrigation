@@ -12,12 +12,12 @@
 				<div class="w3-container w3-sans-serif">
 					<center>
 						<div class="w3-bar" style="max-width: 600px">
-							<div class="w3-bar-item w3-left">Current temperature</div>
-							<div class="w3-bar-item w3-right"><xsl:value-of select="temperature/datetime"/></div>
+							<div class="w3-bar-item w3-left">Temperature history</div>
+							<div class="w3-bar-item w3-right"><xsl:value-of select="temperature-history/datetime-from"/></div>
 						</div>
 					</center>
 
-					<div class="w3-center w3-jumbo"><xsl:value-of select="temperature/value"/>&#8451;</div>
+					<div class="w3-center w3-jumbo"><xsl:value-of select="temperature-history/value-max"/>&#8451;</div>
 				</div>
 			</body>
 		</html>

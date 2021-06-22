@@ -9,14 +9,26 @@
 
 using namespace std;
 
+std::string getDatetimeFormatParameter(const KeyValue& parameters) {
+	const auto it = parameters.find("datetime-format");
 
+	if (parameters.end() == it) {
+		return "%a, %d %b %G %H:%M:%S %z";
+	}
+
+	return it->second;
+}
+
+
+#include <iostream>
 unique_ptr<HttpResponse> RestView::onGetTemperature(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
 		const float temperature = currentTemperature->getCurrentTemperature();
+		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->currentToString(temperature)).
+				setBody(temperatureWriter->currentToString(LocalDateTime::now().toString(datetimeFormat), temperature)).
 				addHeader("Content-Type", temperatureWriter->contentType()).
 				build();
 
@@ -28,6 +40,7 @@ unique_ptr<HttpResponse> RestView::onGetTemperature(const HttpRequest& request, 
 
 std::unique_ptr<HttpResponse> RestView::onGetTemperatureForecast(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
+		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
 		int daysToAdd = 0;
 
 		const auto it = request.getParameters().find("day");
@@ -52,7 +65,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureForecast(const HttpReque
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->forecastToString(forecastValues, from, to)).
+				setBody(temperatureWriter->forecastToString(from.toString(datetimeFormat), to.toString(datetimeFormat), forecastValues)).
 				addHeader("Content-Type", temperatureWriter->contentType()).
 				build();
 
@@ -64,7 +77,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureForecast(const HttpReque
 
 std::unique_ptr<HttpResponse> RestView::onGetTemperatureHistory(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-
+		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
 		int daysToAdd = 0;
 
 		const auto it = request.getParameters().find("day");
@@ -89,7 +102,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureHistory(const HttpReques
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->historyToString(historyValues, from, to)).
+				setBody(temperatureWriter->historyToString(from.toString(datetimeFormat), to.toString(datetimeFormat), historyValues)).
 				addHeader("Content-Type", temperatureWriter->contentType()).
 				build();
 
