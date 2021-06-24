@@ -12,37 +12,50 @@
 			</head>
 			<body>
 				<div class="w3-container w3-sans-serif">
-					<table class="w3-table-all w3-hoverable w3-card-4 table-100percent">
-						<thead>
-							<tr>
-								<th>Enabled</th>
-								<th>Name</th>
-								<th>Adjustment</th>
-								<th>Scheduler</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							<xsl:for-each select="programs/program">
-								<xsl:variable name="programId"><xsl:value-of select="@id"/></xsl:variable>
-								<xsl:variable name="adjustment"><xsl:value-of select="adjustment"/></xsl:variable>
-								<tr onclick="window.location='/programs/{$programId}'">
-									<xsl:choose>
-										<xsl:when test="enabled='true'">
-											<td><input type="checkbox" onclick="return false" checked="checked"/></td>
-										</xsl:when>
-										<xsl:otherwise>
-											<td><input type="checkbox" onclick="return false"/></td>
-										</xsl:otherwise>
-									</xsl:choose>
-									<td><div class="contentcell nowordwrap"><xsl:value-of select="name"/></div></td>
-									<td><div class="contentcell nowordwrap"><xsl:value-of select="format-number(adjustment*0.01, '#%')"/></div></td>
-									<td><div class="contentcell nowordwrap"><xsl:value-of select="schedulertype"/></div></td>
-									<td><button class="w3-round" onclick="sendStart({$programId}, {$adjustment})">Start</button></td>
-								</tr>
-							</xsl:for-each>
-						</tbody>
-					</table>
+
+					<div class="w3-content" style="max-width:600px">
+						<xsl:for-each select="programs/program">
+							<xsl:variable name="programId"><xsl:value-of select="@id"/></xsl:variable>
+							<xsl:variable name="adjustment"><xsl:value-of select="adjustment"/></xsl:variable>
+							
+							<div class="w3-card w3-panel w3-padding-large w3-hover-shadow w3-border" onclick="window.location='/programs/{$programId}'">
+							
+								<div class="w3-cell-row">
+								
+									<h4 style="width:90%">
+										<xsl:value-of select="name"/>
+									</h4>
+
+									<div class="w3-cell w3-cell-middle">
+										<div class="w3-right"><button class="w3-round" onclick="sendStart({$programId}, {$adjustment})">Start</button></div>
+									</div>
+									
+								</div>
+										
+								<div class="w3-row">
+								
+									<div class="w3-col s1 w3-check">
+										<xsl:choose>
+											<xsl:when test="enabled='true'">
+												<input type="checkbox" onclick="return false" checked="checked"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<input type="checkbox" onclick="return false"/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</div>
+									
+									<div class="w3-col s2">
+										<xsl:value-of select="format-number(adjustment*0.01, '#%')"/>
+									</div>
+									
+									<div class="w3-rest"><xsl:value-of select="schedulertype"/></div>
+								</div>
+									
+								
+							</div>
+						</xsl:for-each>
+					</div>
 				</div>
 			</body>
 		</html>
