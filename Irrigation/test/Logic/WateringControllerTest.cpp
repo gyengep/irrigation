@@ -61,7 +61,7 @@ TEST_F(WateringControllerTest, stop) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(WateringControllerTimingTest, timingCheck) {
+TEST_F(WateringControllerTimingTest, check_TIMING) {
 	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
 	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
 	RunTimeContainer runTimeContainer;
@@ -98,7 +98,7 @@ TEST_F(WateringControllerTimingTest, timingCheck) {
 	EXPECT_THAT(calls[6].first - calls[5].first, AllOf(Gt(chrono::milliseconds(expectedTimes[5])), Le(chrono::milliseconds(expectedTimes[5]) * 1.2f)));
 }
 
-TEST_F(WateringControllerTimingTest, timingCheckWithZeroAndOtherTimes) {
+TEST_F(WateringControllerTimingTest, checkWithZeroAndOtherTimes_TIMING) {
 	const vector<unsigned> expectedTimes { 0, 100, 0, 200, 300, 0 };
 	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
 	RunTimeContainer runTimeContainer;
@@ -129,7 +129,7 @@ TEST_F(WateringControllerTimingTest, timingCheckWithZeroAndOtherTimes) {
 	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(chrono::milliseconds(expectedTimes[4])), Le(chrono::milliseconds(expectedTimes[4]) * 1.2f)));
 }
 
-TEST_F(WateringControllerTimingTest, timingCheckWithAdjustment) {
+TEST_F(WateringControllerTimingTest, checkWithAdjustment_TIMING) {
 	const float adjustment = 0.7f;
 	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
 	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
@@ -167,7 +167,7 @@ TEST_F(WateringControllerTimingTest, timingCheckWithAdjustment) {
 	EXPECT_THAT(calls[6].first - calls[5].first, AllOf(Gt(chrono::milliseconds(expectedTimes[5]) * adjustment), Le(chrono::milliseconds(expectedTimes[5]) * adjustment * 1.2f)));
 }
 
-TEST_F(WateringControllerTimingTest, timingCheckWithZeroTimes) {
+TEST_F(WateringControllerTimingTest, checkWithZeroTimes_TIMING) {
 	RunTimeContainer runTimeContainer;
 
 	wateringController->start(runTimeContainer, 100);
@@ -179,7 +179,7 @@ TEST_F(WateringControllerTimingTest, timingCheckWithZeroTimes) {
 	EXPECT_THAT(calls[0].second, Eq(ZoneHandler::invalidZoneId));
 }
 
-TEST_F(WateringControllerTimingTest, timingCheckWithZeroAdjustment) {
+TEST_F(WateringControllerTimingTest, checkWithZeroAdjustment_TIMING) {
 	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
 	RunTimeContainer runTimeContainer;
 
