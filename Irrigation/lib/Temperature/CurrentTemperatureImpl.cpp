@@ -26,12 +26,18 @@ CurrentTemperatureImpl::~CurrentTemperatureImpl() {
 }
 
 void CurrentTemperatureImpl::updateCache() {
+	LOGGER.trace("CurrentTemperatureImpl::updateCache() started");
+
 	try {
 		setValue(provider->readCurrentTemperature());
 	} catch(const std::runtime_error& e) {
 		invalidateValue();
+
+		LOGGER.trace("CurrentTemperatureImpl::updateCache() failed");
 		throw;
 	}
+
+	LOGGER.trace("CurrentTemperatureImpl::updateCache() finished");
 }
 
 void CurrentTemperatureImpl::start(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed) {

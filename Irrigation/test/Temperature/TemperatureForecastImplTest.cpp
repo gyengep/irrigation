@@ -158,3 +158,26 @@ TEST(TemperatureForecastImplTest, getForecastOutOfBounds) {
 	EXPECT_THROW(temperatureForecast.getTemperatureForecast(DateTime(60), DateTime(70)), TemperatureException);
 	EXPECT_THROW(temperatureForecast.getTemperatureForecast(DateTime(5), DateTime(10)), TemperatureException);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(TemperatureForecastImplTest, timer) {
+	auto mockTemperatureForecastProvider = make_shared<MockTemperatureForecastProvider>();
+
+	EXPECT_CALL(*mockTemperatureForecastProvider, getForecastProviderName()).Times(AnyNumber());
+	EXPECT_CALL(*mockTemperatureForecastProvider, readTemperatureForecast()).
+			Times(3).
+			WillOnce(Return(valueList1)).
+			WillOnce(Throw(std::runtime_error(""))).
+			WillOnce(Return(valueList2));
+
+	TemperatureForecastImpl temperatureForecast(mockTemperatureForecastProvider);
+
+	temperatureForecast.start(std::chrono::seconds(1), std::vector<std::chrono::milliseconds>{ std::chrono::milliseconds(500) });
+
+	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList1));
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	EXPECT_THAT(temperatureForecast.getContainer(), ContainerEq(valueList2));
+
+	temperatureForecast.stop();
+}

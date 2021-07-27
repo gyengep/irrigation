@@ -29,14 +29,20 @@ TemperatureForecastImpl::~TemperatureForecastImpl() {
 }
 
 void TemperatureForecastImpl::updateCache() {
+	LOGGER.trace("TemperatureForecastImpl::updateCache() started");
+
 	try {
 		auto temporaryTemperatures = provider->readTemperatureForecast();
 		checkValueList(temporaryTemperatures);
 		setValues(std::move(temporaryTemperatures));
 	} catch (const std::exception&) {
 		invalidateValues();
+
+		LOGGER.trace("TemperatureForecastImpl::updateCache() failed");
 		throw;
 	}
+
+	LOGGER.trace("TemperatureForecastImpl::updateCache() finished");
 }
 
 void TemperatureForecastImpl::start(const std::chrono::milliseconds& updatePeriod, const std::vector<std::chrono::milliseconds>& delayOnFailed) {
