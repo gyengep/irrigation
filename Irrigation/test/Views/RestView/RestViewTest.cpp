@@ -13,12 +13,14 @@ void RestViewTest::SetUp() {
 	mockCurrentTemperature = std::make_shared<MockCurrentTemperature>();
 	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
 	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
+	mockShutdownManager = std::make_shared<MockShutdownManager>();
 
 	irrigationDocument = IrrigationDocument::Builder().build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 }
 

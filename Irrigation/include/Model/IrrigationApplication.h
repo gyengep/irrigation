@@ -1,5 +1,6 @@
 #pragma once
 #include "Application.h"
+#include "ShutdownManagerImpl.h"
 #include "DTO/DocumentDTO.h"
 #include "Temperature/Temperature.h"
 
@@ -11,14 +12,17 @@ class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	//std::shared_ptr<Temperature> temperature;
 	std::unique_ptr<DocumentSaver> documentSaver;
+	std::shared_ptr<ShutdownManagerImpl> shutdownManager;
 
 	void initEmail();
 	void initGpio();
 	void initTemperature();
 	void initDocument();
+	void initShutdownManager();
 	void uninitEmail();
 	void uninitTemperature();
 	void uninitDocument();
+	void uninitShutdownManager();
 	void setMyDefaults();
 
 	virtual void onInitialize() override;

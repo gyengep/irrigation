@@ -48,7 +48,8 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -87,7 +88,8 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -124,7 +126,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -154,7 +157,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -184,7 +188,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -207,7 +212,8 @@ TEST_F(RestViewTest, patchIrrigationActionStop) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");

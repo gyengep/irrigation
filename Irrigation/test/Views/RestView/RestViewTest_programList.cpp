@@ -28,7 +28,8 @@ TEST_F(RestViewTest, postProgramList) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
@@ -56,7 +57,8 @@ void RestViewTest::testGetProgramList(const ProgramListSample& programListSample
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	const Response response = executeRequest("GET", createProgramListUrl(requestParameters));

@@ -23,13 +23,15 @@ using namespace std;
 RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 		const std::shared_ptr<CurrentTemperature>& currentTemperature,
 		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
-		const std::shared_ptr<TemperatureHistory>& temperatureHistory
+		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+		const std::shared_ptr<ShutdownManager>& shutdownManager
 ) :
 	View(irrigationDocument),
 	port(port),
 	currentTemperature(currentTemperature),
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
+	shutdownManager(shutdownManager),
 	irrigationDocument(irrigationDocument)
 {
 	if (nullptr == currentTemperature) {
@@ -42,6 +44,10 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 
 	if (nullptr == temperatureHistory) {
 		throw std::invalid_argument("RestView::RestView() nullptr == temperatureHistory");
+	}
+
+	if (nullptr == shutdownManager) {
+		throw std::invalid_argument("RestView::RestView() nullptr == shutdownManager");
 	}
 
 	restService.reset(new RestService());
@@ -206,25 +212,25 @@ void RestView::onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActio
 ///////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<HttpResponse> RestView::onPatchReboot(const HttpRequest& request, const KeyValue& pathParameters) {
-	const int systemExitCode = std::system("shutdown --reboot now");
-	if (0 != systemExitCode) {
-		const int processExitCode = (systemExitCode & 0xFF00) >> 8;
-		throw RestInternalServerError(restService->getErrorWriter(), "Can not execute reboot. Error: " + std::to_string(processExitCode));
+	try {
+		shutdownManager->reboot();
+	} catch(const std::exception& e) {
+		throw RestInternalServerError(restService->getErrorWriter(), std::string("Can not execute reboot. Error: ") + e.what());
 	}
 
 	return HttpResponse::Builder().
-			setStatus(200, "OK").
+			setStatus(204, "No Content").
 			build();
 }
 
 std::unique_ptr<HttpResponse> RestView::onPatchPoweroff(const HttpRequest& request, const KeyValue& pathParameters) {
-	const int systemExitCode = std::system("shutdown --poweroff now");
-	if (0 != systemExitCode) {
-		const int processExitCode = (systemExitCode & 0xFF00) >> 8;
-		throw RestInternalServerError(restService->getErrorWriter(), "Can not execute power off. Error: " + std::to_string(processExitCode));
+	try {
+		shutdownManager->powerOff();
+	} catch(const std::exception& e) {
+		throw RestInternalServerError(restService->getErrorWriter(), std::string("Can not execute power off. Error: ") + e.what());
 	}
 
 	return HttpResponse::Builder().
-			setStatus(200, "OK").
+			setStatus(204, "No Content").
 			build();
 }

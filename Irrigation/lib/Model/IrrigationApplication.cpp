@@ -93,6 +93,14 @@ void IrrigationApplication::initGpio() {
 	}
 }
 
+void IrrigationApplication::initShutdownManager() {
+	shutdownManager = make_shared<ShutdownManagerImpl>();
+}
+
+void IrrigationApplication::uninitShutdownManager() {
+	shutdownManager.reset();
+}
+
 void IrrigationApplication::initTemperature() {
 	try {
 		Temperature::getInstance().init(
@@ -171,7 +179,8 @@ void IrrigationApplication::initDocument() {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, Configuration::getInstance().getRestPort(),
 			Temperature::getInstance().getCurrentTemperature(),
 			Temperature::getInstance().getTemperatureForecast(),
-			Temperature::getInstance().getTemperatureHistory()
+			Temperature::getInstance().getTemperatureHistory(),
+			shutdownManager
 		)));
 }
 
@@ -195,6 +204,7 @@ void IrrigationApplication::onInitialize() {
 	initEmail();
 	initGpio();
 	initTemperature();
+	initShutdownManager();
 	initDocument();
 
 	LOGGER.info("Irrigation System started");
@@ -206,6 +216,7 @@ void IrrigationApplication::onTerminate() {
 	uninitDocument();
 	uninitTemperature();
 	uninitEmail();
+	uninitShutdownManager();
 
 	LOGGER.info("Irrigation System stopped");
 }

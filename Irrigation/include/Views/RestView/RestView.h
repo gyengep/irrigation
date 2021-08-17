@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "DocumentView/View.h"
+#include "Utils/ShutdownManager.h"
 #include "WebServer/KeyValue.h"
 #include "XmlIrrigationActionReader.h"
 
@@ -28,6 +29,7 @@ class RestView : public View {
 	const std::shared_ptr<CurrentTemperature> currentTemperature;
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
+	const std::shared_ptr<ShutdownManager> shutdownManager;
 
 	IrrigationDocument& irrigationDocument;
 
@@ -81,7 +83,8 @@ public:
 	RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 			const std::shared_ptr<CurrentTemperature>& currentTemperature,
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
-			const std::shared_ptr<TemperatureHistory>& temperatureHistory
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+			const std::shared_ptr<ShutdownManager>& shutdownManager
 		);
 	virtual ~RestView();
 

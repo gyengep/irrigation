@@ -32,7 +32,8 @@ void RestViewTest::testGetProgram(const ProgramListSample& programListSample, co
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 
 	for (const auto& programWithId : *programListSample.getContainer()) {
@@ -165,7 +166,8 @@ TEST_F(RestViewTest, deleteProgram) {
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
-			mockTemperatureHistory
+			mockTemperatureHistory,
+			mockShutdownManager
 		)));
 	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
 

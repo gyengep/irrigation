@@ -5,6 +5,7 @@
 #include "Utils/CurlStringWriter.h"
 #include "Dto2Object/ProgramListSamples.h"
 #include "Mocks/MockCurrentTemperature.h"
+#include "Mocks/MockShutdownManager.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include "Mocks/MockTemperatureForecast.h"
 
@@ -30,6 +31,7 @@ protected:
 	std::shared_ptr<MockCurrentTemperature> mockCurrentTemperature;
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
 	std::shared_ptr<MockTemperatureForecast> mockTemperatureForecast;
+	std::shared_ptr<MockShutdownManager> mockShutdownManager;
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 
     virtual void SetUp();
@@ -69,4 +71,6 @@ protected:
     static std::string createTemperatureUrl();
     static std::string createTemperatureForecastUrl(const std::string& requestParameters = "");
     static std::string createTemperatureHistoryUrl(const std::string& requestParameters = "");
+    static std::string createPoweroffUrl();
+    static std::string createRebootUrl();
 };
