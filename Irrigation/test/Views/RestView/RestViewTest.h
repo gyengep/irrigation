@@ -41,9 +41,9 @@ protected:
     Response executeRequest(const std::string& method, const std::string&  url, const std::string& customHeader);
     Response executeRequest(const std::string& method, const std::string&  url, const std::string& body, const std::string& contentType);
 
-    void testGetProgram(const Dto2ObjectTest::ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers);
+    void testGetProgram(const Dto2ObjectTest::ProgramListSample& programListSample);
     void testGetStartTime(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
-    void testGetProgramList(const Dto2ObjectTest::ProgramListSample& programListSample, const std::string& requestParameters, bool includeContainers);
+    void testGetProgramList(const Dto2ObjectTest::ProgramListSample& programListSample);
     void testGetRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
     void testPatchRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
     void testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
@@ -58,9 +58,9 @@ protected:
     static void checkResponseWithBody(const Response& response, long statusCode, const std::string& contentType, const std::string& body);
 
     static std::string createUrl(const std::string& path);
-    static std::string createProgramUrl(IdType programId, const std::string& requestParameters = "");
+    static std::string createProgramUrl(IdType programId);
     static std::string createStartTimeUrl(IdType programId, IdType runTimeId);
-    static std::string createProgramListUrl(const std::string& requestParameters = "");
+    static std::string createProgramListUrl();
     static std::string createRunTimeListUrl(IdType programId);
     static std::string createStartTimeListUrl(IdType programId);
     static std::string createHotWeatherSchedulerUrl(IdType programId);
@@ -68,9 +68,10 @@ protected:
     static std::string createTemperatureDependentSchedulerUrl(IdType programId);
     static std::string createWeeklySchedulerUrl(IdType programId);
     static std::string createIrrigationActionUrl();
-    static std::string createTemperatureUrl();
-    static std::string createTemperatureForecastUrl(const std::string& requestParameters = "");
-    static std::string createTemperatureHistoryUrl(const std::string& requestParameters = "");
+    static std::string createTemperatureUrl(const std::string& requestParameters = "");
+    static std::string createTemperatureTomorrowUrl(const std::string& requestParameters = "");
+    static std::string createTemperatureTodayUrl(const std::string& requestParameters = "");
+    static std::string createTemperatureYesterdayUrl(const std::string& requestParameters = "");
     static std::string createPoweroffUrl();
     static std::string createRebootUrl();
 };

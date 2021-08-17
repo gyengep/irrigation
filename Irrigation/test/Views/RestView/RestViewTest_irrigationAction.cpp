@@ -49,7 +49,8 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -89,7 +90,8 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -127,7 +129,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -158,7 +161,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -189,7 +193,8 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");
@@ -213,7 +218,8 @@ TEST_F(RestViewTest, patchIrrigationActionStop) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	Response response = executeRequest("PATCH", createIrrigationActionUrl(), xml, "application/xml");

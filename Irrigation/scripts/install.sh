@@ -6,6 +6,7 @@ LOG_DIR=/var/log/irrigation
 LOG_FILE=$LOG_DIR/irrigation.log
 CFG_FILE=$APP_DIR/irrigation.xml
 SERVICE=/etc/init.d/irrigation_service
+WEB_ROOT_DIR=$APP_DIR/web_root
 
 	
 install_rpi() {
@@ -27,6 +28,18 @@ install_rpi() {
 	cp --no-clobber ./data/irrigation.xml $CFG_FILE
 	chmod 644 $CFG_FILE
 	chown pi:pi $CFG_FILE
+	
+	#################################
+	# RESOURCES
+	#################################
+	mkdir -p $WEB_ROOT_DIR
+	chmod 777 $WEB_ROOT_DIR
+	chown pi:pi $WEB_ROOT_DIR
+	
+	# /usr/share/irrigation/web_root/*
+	cp -f ./web_root/* $WEB_ROOT_DIR
+	chmod 444 $WEB_ROOT_DIR/*
+	chown pi:pi $WEB_ROOT_DIR/*
 	
 	#################################
 	# LOGGING
@@ -69,6 +82,15 @@ install_other() {
 	# /usr/share/irrigation/irrigation.xml
 	cp --no-clobber ./data/irrigation.xml $CFG_FILE
 	chmod 644 $CFG_FILE
+	
+	#################################
+	# RESOURCES
+	#################################
+	mkdir -p $WEB_ROOT_DIR
+	
+	# /usr/share/irrigation/web_root/*
+	cp -f ./web_root/* $WEB_ROOT_DIR
+	chmod 444 $WEB_ROOT_DIR/*
 	
 	#################################
 	# LOGGING

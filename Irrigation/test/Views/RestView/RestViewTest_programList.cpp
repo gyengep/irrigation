@@ -9,12 +9,8 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-string RestViewTest::createProgramListUrl(const string& requestParameters) {
-	if (requestParameters.empty()) {
-		return createUrl("/programs");
-	} else {
-		return createUrl("/programs") + "?" + requestParameters;
-	}
+string RestViewTest::createProgramListUrl() {
+	return createUrl("/programs");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +25,8 @@ TEST_F(RestViewTest, postProgramList) {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
 	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
@@ -52,68 +49,40 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RestViewTest::testGetProgramList(const ProgramListSample& programListSample, const string& requestParameters, bool includeContainers) {
+void RestViewTest::testGetProgramList(const ProgramListSample& programListSample) {
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 
-	const Response response = executeRequest("GET", createProgramListUrl(requestParameters));
+	const Response response = executeRequest("GET", createProgramListUrl());
 	checkResponseWithBody(response, 200, "application/xml");
 
-	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(programListSample.getDtoList(), includeContainers)));
+	const std::string piName = "xml-stylesheet";
+	const std::string piValue = "type=\"text/xsl\" href=\"/programlist.xsl\"";
+
+	EXPECT_THAT(response.curlStringWriter.getText(), Eq(XmlWriter().save(programListSample.getDtoList(), piName, piValue)));
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(RestViewTest, getProgramList1) {
-	testGetProgramList(ProgramListSample1(), "", false);
+	testGetProgramList(ProgramListSample1());
 }
 
 TEST_F(RestViewTest, getProgramList2) {
-	testGetProgramList(ProgramListSample2(), "", false);
+	testGetProgramList(ProgramListSample2());
 }
 
 TEST_F(RestViewTest, getProgramList3) {
-	testGetProgramList(ProgramListSample2(), "", false);
+	testGetProgramList(ProgramListSample2());
 }
 
 TEST_F(RestViewTest, getProgramList4) {
-	testGetProgramList(ProgramListSample4(), "", false);
-}
-
-TEST_F(RestViewTest, getProgramListIncludeContainers1) {
-	testGetProgramList(ProgramListSample1(), "include-containers=true", true);
-}
-
-TEST_F(RestViewTest, getProgramListIncludeContainers2) {
-	testGetProgramList(ProgramListSample2(), "include-containers=true", true);
-}
-
-TEST_F(RestViewTest, getProgramListIncludeContainers3) {
-	testGetProgramList(ProgramListSample2(), "include-containers=true", true);
-}
-
-TEST_F(RestViewTest, getProgramListIncludeContainers4) {
-	testGetProgramList(ProgramListSample4(), "include-containers=true", true);
-}
-
-TEST_F(RestViewTest, getProgramListNotIncludeContainers1) {
-	testGetProgramList(ProgramListSample1(), "include-containers=false", false);
-}
-
-TEST_F(RestViewTest, getProgramListNotIncludeContainers2) {
-	testGetProgramList(ProgramListSample2(), "include-containers=false", false);
-}
-
-TEST_F(RestViewTest, getProgramListNotIncludeContainers3) {
-	testGetProgramList(ProgramListSample2(), "include-containers=false", false);
-}
-
-TEST_F(RestViewTest, getProgramListNotIncludeContainers4) {
-	testGetProgramList(ProgramListSample4(), "include-containers=false", false);
+	testGetProgramList(ProgramListSample4());
 }
 
 TEST_F(RestViewTest, getProgramListAcceptable) {

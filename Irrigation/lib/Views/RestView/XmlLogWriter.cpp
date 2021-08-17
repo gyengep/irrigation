@@ -13,6 +13,12 @@ string XmlLogWriter::contentType() const {
 
 string XmlLogWriter::toString(const deque<Logger::Entry>& logEntries) const {
 	xml_document doc;
+
+	xml_node processingInstructionNode = doc.prepend_child(node_pi);
+
+	processingInstructionNode.set_name("xml-stylesheet");
+	processingInstructionNode.set_value("type=\"text/xsl\" href=\"/logs.xsl\"");
+
 	xml_node logEntriesListNode = doc.append_child("log_entries");
 
 	for (auto entry : logEntries) {

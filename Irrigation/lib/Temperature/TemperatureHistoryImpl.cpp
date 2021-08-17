@@ -44,7 +44,7 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 	const auto samples = temperatureHistoryPersister->getBetween(from, to);
 
 	if (samples.empty()) {
-		throw TemperatureException("Temperature history not found with specified criteria");
+		throw TemperatureException("Temperature history not found from: " + LocalDateTime(from).toString() + " to: " + LocalDateTime(to).toString());
 	}
 
 	float minValue = std::numeric_limits<float>::max();

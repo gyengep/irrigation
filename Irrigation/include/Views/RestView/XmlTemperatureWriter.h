@@ -6,9 +6,13 @@
 class XmlTemperatureWriter : public TemperatureWriter {
 public:
 	virtual std::string contentType() const override;
-	virtual std::string currentToString(float value) const override;
-	virtual std::string forecastToString(const TemperatureForecast::Values& value, const DateTime& from, const DateTime& to) const override;
-	virtual std::string historyToString(const TemperatureHistory::Values& value, const DateTime& from, const DateTime& to) const override;
+	virtual std::string currentToString(const std::string& datetimeStr, float value) const override;
+	virtual std::string tomorrowToString(const std::string& datetimeFromStr, const std::string& datetimeToStr, const TemperatureForecast::Values& value) const override;
+	virtual std::string yesterdayToString(const std::string& datetimeFromStr, const std::string& datetimeToStr, const TemperatureHistory::Values& value) const override;
+	virtual std::string todayToString(
+			const std::string& datetimeFromStr, const std::string& datetimeNowStr, const std::string& datetimeToStr,
+			const TemperatureHistory::Values& historyValue, const TemperatureForecast::Values& forecastValue
+		) const override;
 
 	static std::string toTemperatureValue(float value);
 };

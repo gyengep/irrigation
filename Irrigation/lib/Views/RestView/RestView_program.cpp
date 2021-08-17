@@ -14,15 +14,6 @@ IdType RestView::getProgramId(const KeyValue& pathParameters) {
 	return IdType::from_string(pathParameters.at("programId"));
 }
 
-bool RestView::includeContainers(const KeyValue& keyValue) {
-	bool result = false;
-	auto it = keyValue.find("include-containers");
-	if (keyValue.end() != it) {
-		result = (it->second == "true");
-	}
-	return result;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
@@ -34,9 +25,12 @@ unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, 
 		programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
 	}
 
+	const std::string piName = "xml-stylesheet";
+	const std::string piValue = "type=\"text/xsl\" href=\"/programlist.xsl\"";
+
 	return HttpResponse::Builder().
 			setStatus(200, "OK").
-			setBody(dtoWriter->save(programDtoList, includeContainers(request.getParameters()))).
+			setBody(dtoWriter->save(programDtoList, piName, piValue)).
 			addHeader("Content-Type", "application/xml").
 			build();
 }
@@ -90,9 +84,12 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 			programDto = irrigationDocument.getPrograms().at(programId)->toProgramDto();
 		}
 
+		const std::string piName = "xml-stylesheet";
+		const std::string piValue = "type=\"text/xsl\" href=\"/program.xsl\"";
+
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(dtoWriter->save(programDto, includeContainers(request.getParameters()))).
+				setBody(dtoWriter->save(programDto, piName, piValue)).
 				addHeader("Content-Type", "application/xml").
 				build();
 

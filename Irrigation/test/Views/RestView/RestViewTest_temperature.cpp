@@ -13,40 +13,81 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 
-string RestViewTest::createTemperatureUrl() {
-	return createUrl("/temperature");
-}
-
-string RestViewTest::createTemperatureForecastUrl(const std::string& requestParameters) {
+string RestViewTest::createTemperatureUrl(const std::string& requestParameters) {
 	if (requestParameters.empty()) {
-		return createUrl("/temperature/forecast");
+		return createUrl("/temperature/current");
 	} else {
-		return createUrl("/temperature/forecast") + "?" + requestParameters;
+		return createUrl("/temperature/current") + "?" + requestParameters;
 	}
 }
 
-string RestViewTest::createTemperatureHistoryUrl(const std::string& requestParameters) {
+string RestViewTest::createTemperatureTomorrowUrl(const std::string& requestParameters) {
 	if (requestParameters.empty()) {
-		return createUrl("/temperature/historical");
+		return createUrl("/temperature/tomorrow");
 	} else {
-		return createUrl("/temperature/historical") + "?" + requestParameters;
+		return createUrl("/temperature/tomorrow") + "?" + requestParameters;
+	}
+}
+
+string RestViewTest::createTemperatureTodayUrl(const std::string& requestParameters) {
+	if (requestParameters.empty()) {
+		return createUrl("/temperature/today");
+	} else {
+		return createUrl("/temperature/today") + "?" + requestParameters;
+	}
+}
+
+string RestViewTest::createTemperatureYesterdayUrl(const std::string& requestParameters) {
+	if (requestParameters.empty()) {
+		return createUrl("/temperature/yesterday");
+	} else {
+		return createUrl("/temperature/yesterday") + "?" + requestParameters;
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getTemperature) {
+	const auto now = LocalDateTime::create(2021, 6, 22, 23, 36, 57);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+
+
 	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(1).WillOnce(Return(28));
 
 	const Response response = executeRequest("GET", createTemperatureUrl());
-	checkResponseWithBody(response, 200, "application/xml", XmlTemperatureWriter().currentToString(28));
+	checkResponseWithBody(response, 200, "application/xml", XmlTemperatureWriter().currentToString("Tue, 22 Jun 2021 23:36:57 +0200", 28));
+}
+
+TEST_F(RestViewTest, getTemperatureWithTimeFormat) {
+	const auto now = LocalDateTime::create(2021, 6, 22, 23, 36, 57);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+
+	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(1).WillOnce(Return(28));
+
+	const Response response = executeRequest("GET", createTemperatureUrl("datetime-format=%H:%M"));
+	checkResponseWithBody(response, 200, "application/xml", XmlTemperatureWriter().currentToString("23:36", 28));
 }
 
 TEST_F(RestViewTest, getTemperatureAcceptable) {
+	const auto now = LocalDateTime::create(2021, 6, 22, 23, 36, 57);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+
 	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(1).WillOnce(Return(28));
 
 	const Response response = executeRequest("GET", createTemperatureUrl(), "Accept: application/xml");
-	checkResponseWithBody(response, 200, "application/xml", XmlTemperatureWriter().currentToString(28));
+	checkResponseWithBody(response, 200, "application/xml", XmlTemperatureWriter().currentToString("Tue, 22 Jun 2021 23:36:57 +0200", 28));
 }
 
 TEST_F(RestViewTest, getTemperatureNotFound) {
@@ -65,47 +106,7 @@ TEST_F(RestViewTest, getTemperatureNotAcceptable) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, getTemperatureForecast) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
-	auto mockTimefunc = std::make_shared<MockTimefunc>();
-
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
-
-	DateTime::setTimefunc(mockTimefunc);
-
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
-	const auto values = TemperatureForecast::Values(25, 30);
-
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
-
-	const Response response = executeRequest("GET", createTemperatureForecastUrl());
-	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().forecastToString(values, from, to)
-	);
-}
-
-TEST_F(RestViewTest, getTemperatureForecastToday) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
-	auto mockTimefunc = std::make_shared<MockTimefunc>();
-
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
-
-	DateTime::setTimefunc(mockTimefunc);
-
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
-	const auto values = TemperatureForecast::Values(25, 30);
-
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
-
-	const Response response = executeRequest("GET", createTemperatureForecastUrl("day=today"));
-	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().forecastToString(values, from, to)
-	);
-}
-
-TEST_F(RestViewTest, getTemperatureForecastTomorrow) {
+TEST_F(RestViewTest, getTomorrowTemperature) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
@@ -119,20 +120,13 @@ TEST_F(RestViewTest, getTemperatureForecastTomorrow) {
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
 
-	const Response response = executeRequest("GET", createTemperatureForecastUrl("day=tomorrow"));
+	const Response response = executeRequest("GET", createTemperatureTomorrowUrl());
 	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().forecastToString(values, from, to)
+			XmlTemperatureWriter().tomorrowToString("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 23:59:59 +0200", values)
 	);
 }
 
-TEST_F(RestViewTest, getTemperatureForecastInvalidDay) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(_, _)).Times(0);
-
-	const Response response = executeRequest("GET", createTemperatureForecastUrl("day=abcd"));
-	checkErrorResponse(response, 400, "application/xml");
-}
-
-TEST_F(RestViewTest, getTemperatureForecastAcceptable) {
+TEST_F(RestViewTest, getTomorrowTemperatureWithDatetimeFormat) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
@@ -140,44 +134,64 @@ TEST_F(RestViewTest, getTemperatureForecastAcceptable) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
 
-	const Response response = executeRequest("GET", createTemperatureForecastUrl(), "Accept: application/xml");
+	const Response response = executeRequest("GET", createTemperatureTomorrowUrl("datetime-format=%Y-%m-%d"));
 	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().forecastToString(values, from, to)
+			XmlTemperatureWriter().tomorrowToString("2021-05-30", "2021-05-30", values)
 	);
 }
 
-TEST_F(RestViewTest, getTemperatureForecastNotFound) {
+TEST_F(RestViewTest, getTomorrowTemperatureAcceptable) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+
+	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
+	const auto values = TemperatureForecast::Values(25, 30);
+
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
+
+	const Response response = executeRequest("GET", createTemperatureTomorrowUrl(), "Accept: application/xml");
+	checkResponseWithBody(response, 200, "application/xml",
+			XmlTemperatureWriter().tomorrowToString("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 23:59:59 +0200", values)
+	);
+}
+
+TEST_F(RestViewTest, getTomorrowTemperatureNotFound) {
+	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Throw(TemperatureException("")));
 
-	const Response response = executeRequest("GET", createTemperatureForecastUrl());
+	const Response response = executeRequest("GET", createTemperatureTomorrowUrl());
 	checkErrorResponse(response, 404, "application/xml");
 }
 
-TEST_F(RestViewTest, getTemperatureForecastNotAcceptable) {
+TEST_F(RestViewTest, getTomorrowTemperatureNotAcceptable) {
 	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(0);
 
-	const Response response = executeRequest("GET", createTemperatureForecastUrl(), "Accept: application/json");
+	const Response response = executeRequest("GET", createTemperatureTomorrowUrl(), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTest, getTemperatureHistory) {
+TEST_F(RestViewTest, getTodayTemperature) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
@@ -187,17 +201,22 @@ TEST_F(RestViewTest, getTemperatureHistory) {
 
 	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
 	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
-	const auto values = TemperatureHistory::Values(20, 30, 28);
+	const auto historyValues = TemperatureHistory::Values(20, 28, 23);
+	const auto forecastValues = TemperatureForecast::Values(25, 30);
 
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Return(historyValues));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(now, to)).Times(1).WillOnce(Return(forecastValues));
 
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl());
+	const Response response = executeRequest("GET", createTemperatureTodayUrl());
 	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().historyToString(values, from, to)
+			XmlTemperatureWriter().todayToString(
+					"Sat, 29 May 2021 00:00:00 +0200", "Sat, 29 May 2021 19:33:54 +0200", "Sat, 29 May 2021 23:59:59 +0200",
+					historyValues, forecastValues
+				)
 	);
 }
 
-TEST_F(RestViewTest, getTemperatureHistoryToday) {
+TEST_F(RestViewTest, getTodayTemperatureWithDatetimeFormat) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
@@ -207,17 +226,131 @@ TEST_F(RestViewTest, getTemperatureHistoryToday) {
 
 	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
 	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
-	const auto values = TemperatureHistory::Values(20, 30, 28);
+	const auto historyValues = TemperatureHistory::Values(20, 28, 23);
+	const auto forecastValues = TemperatureForecast::Values(25, 30);
 
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Return(historyValues));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(now, to)).Times(1).WillOnce(Return(forecastValues));
 
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl("day=today"));
+	const Response response = executeRequest("GET", createTemperatureTodayUrl("datetime-format=%Y-%m-%d"));
 	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().historyToString(values, from, to)
+			XmlTemperatureWriter().todayToString(
+					"2021-05-29", "2021-05-29", "2021-05-29",
+					historyValues, forecastValues
+				)
 	);
 }
 
-TEST_F(RestViewTest, getTemperatureHistoryYesterday) {
+TEST_F(RestViewTest, getTodayTemperatureAcceptable) {
+	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const auto historyValues = TemperatureHistory::Values(20, 28, 23);
+	const auto forecastValues = TemperatureForecast::Values(25, 30);
+
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Return(historyValues));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(now, to)).Times(1).WillOnce(Return(forecastValues));
+
+	const Response response = executeRequest("GET", createTemperatureTodayUrl(), "Accept: application/xml");
+	checkResponseWithBody(response, 200, "application/xml",
+			XmlTemperatureWriter().todayToString(
+					"Sat, 29 May 2021 00:00:00 +0200", "Sat, 29 May 2021 19:33:54 +0200", "Sat, 29 May 2021 23:59:59 +0200",
+					historyValues, forecastValues
+				)
+	);
+}
+
+TEST_F(RestViewTest, getTodayTemperature_HistoryNotFound) {
+	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Throw(TemperatureException("")));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(now, to)).Times(0);
+
+	const Response response = executeRequest("GET", createTemperatureTodayUrl());
+	checkErrorResponse(response, 404, "application/xml");
+}
+
+TEST_F(RestViewTest, getTodayTemperature_ForecastNotFound) {
+	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const auto historyValues = TemperatureHistory::Values(25, 30, 28);
+
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Return(historyValues));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(now, to)).Times(1).WillOnce(Throw(TemperatureException("")));
+
+	const Response response = executeRequest("GET", createTemperatureTodayUrl());
+	checkErrorResponse(response, 404, "application/xml");
+}
+
+TEST_F(RestViewTest, getTodayTemperatureNotAcceptable) {
+	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(0);
+
+	const Response response = executeRequest("GET", createTemperatureTodayUrl(), "Accept: application/json");
+	checkErrorResponse(response, 406, "application/xml");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(RestViewTest, getYesterdayTemperature) {
+	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+
+	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
+	const auto values = TemperatureHistory::Values(25, 30, 28);
+
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
+
+	const Response response = executeRequest("GET", createTemperatureYesterdayUrl());
+	checkResponseWithBody(response, 200, "application/xml",
+			XmlTemperatureWriter().yesterdayToString("Fri, 28 May 2021 00:00:00 +0200", "Fri, 28 May 2021 23:59:59 +0200", values)
+	);
+}
+
+TEST_F(RestViewTest, getYesterdayTemperatureWithDatetimeFormat) {
+	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	auto mockTimefunc = std::make_shared<MockTimefunc>();
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+
+	DateTime::setTimefunc(mockTimefunc);
+
+	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
+	const auto values = TemperatureHistory::Values(25, 30, 28);
+
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
+
+	const Response response = executeRequest("GET", createTemperatureYesterdayUrl("datetime-format=%Y-%m-%d"));
+	checkResponseWithBody(response, 200, "application/xml",
+			XmlTemperatureWriter().yesterdayToString("2021-05-28", "2021-05-28", values)
+	);
+}
+
+TEST_F(RestViewTest, getYesterdayTemperatureAcceptable) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
@@ -231,20 +364,13 @@ TEST_F(RestViewTest, getTemperatureHistoryYesterday) {
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
 
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl("day=yesterday"));
+	const Response response = executeRequest("GET", createTemperatureYesterdayUrl(), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().historyToString(values, from, to)
+			XmlTemperatureWriter().yesterdayToString("Fri, 28 May 2021 00:00:00 +0200", "Fri, 28 May 2021 23:59:59 +0200", values)
 	);
 }
 
-TEST_F(RestViewTest, getTemperatureHistoryInvalidDay) {
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(_, _)).Times(0);
-
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl("day=abcd"));
-	checkErrorResponse(response, 400, "application/xml");
-}
-
-TEST_F(RestViewTest, getTemperatureHistoryAcceptable) {
+TEST_F(RestViewTest, getYesterdayTemperatureNotFound) {
 	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
@@ -252,38 +378,18 @@ TEST_F(RestViewTest, getTemperatureHistoryAcceptable) {
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
-	const auto values = TemperatureHistory::Values(20, 30, 28);
-
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
-
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl(), "Accept: application/xml");
-	checkResponseWithBody(response, 200, "application/xml",
-			XmlTemperatureWriter().historyToString(values, from, to)
-	);
-}
-
-TEST_F(RestViewTest, getTemperatureHistoryNotFound) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
-	auto mockTimefunc = std::make_shared<MockTimefunc>();
-
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
-
-	DateTime::setTimefunc(mockTimefunc);
-
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
+	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Throw(TemperatureException("")));
 
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl());
+	const Response response = executeRequest("GET", createTemperatureYesterdayUrl());
 	checkErrorResponse(response, 404, "application/xml");
 }
 
-TEST_F(RestViewTest, getTemperatureHistoryNotAcceptable) {
+TEST_F(RestViewTest, getYesterdayTemperatureNotAcceptable) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(_, _)).Times(0);
 
-	const Response response = executeRequest("GET", createTemperatureHistoryUrl(), "Accept: application/json");
+	const Response response = executeRequest("GET", createTemperatureYesterdayUrl(), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
 }

@@ -77,6 +77,7 @@ public:
 
 	std::string toString() const;
 	std::string toString(const char* format) const;
+	std::string toString(const std::string& format) const;
 
 	static ZonedDateTime now();
 	static ZonedDateTime create(int year, int month, int day, int hour, int minute, int second);
@@ -157,6 +158,11 @@ std::tm* ZonedDateTime<T>::getTimeinfo() const {
 template <class T>
 std::string ZonedDateTime<T>::toString() const {
 	return toString("%F %T");
+}
+
+template <class T>
+std::string ZonedDateTime<T>::toString(const std::string& format) const {
+	return toString(format.c_str());
 }
 
 template <class T>

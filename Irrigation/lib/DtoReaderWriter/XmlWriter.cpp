@@ -243,15 +243,37 @@ string XmlWriter::save(const DocumentDTO& document) {
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const ProgramDTO& program, bool includeContainers) {
+string XmlWriter::save(const ProgramDTO& program) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveProgram(doc.get(), program, includeContainers);
+	saveProgram(doc.get(), program, true);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<ProgramDTO>& programs, bool includeContainers) {
+string XmlWriter::save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) {
 	unique_ptr<xml_document> doc(new xml_document());
-	saveProgramList(doc.get(), programs, includeContainers);
+	xml_node processingInstructionNode = doc->prepend_child(node_pi);
+
+	processingInstructionNode.set_name(piName.c_str());
+	processingInstructionNode.set_value(piValue.c_str());
+
+	saveProgram(doc.get(), program, true);
+	return toString(doc.get(), humanReadable);
+}
+
+string XmlWriter::save(const list<ProgramDTO>& programs) {
+	unique_ptr<xml_document> doc(new xml_document());
+	saveProgramList(doc.get(), programs, true);
+	return toString(doc.get(), humanReadable);
+}
+
+string XmlWriter::save(const list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) {
+	unique_ptr<xml_document> doc(new xml_document());
+	xml_node processingInstructionNode = doc->prepend_child(node_pi);
+
+	processingInstructionNode.set_name(piName.c_str());
+	processingInstructionNode.set_value(piValue.c_str());
+
+	saveProgramList(doc.get(), programs, false);
 	return toString(doc.get(), humanReadable);
 }
 

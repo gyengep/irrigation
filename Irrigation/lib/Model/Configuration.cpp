@@ -13,6 +13,8 @@ const duration<int64_t> Configuration::defaultCurrentTemperatureUpdatePeriod = m
 const duration<int64_t> Configuration::defaultTemperatureForecastUpdatePeriod = hours(1);
 const duration<int64_t> Configuration::defaultTemperatureCacheLength = hours(24);
 const duration<int64_t> Configuration::defaultTemperatureHistoryPeriod = hours(1);
+const string Configuration::defaultResourceDirectory = "/usr/share/irrigation/web_root";
+//const string Configuration::defaultResourceDirectory = "/cygdrive/c/Work/irrigation/Irrigation/web_root";
 
 const LogLevel Configuration::defaultLogLevel = LogLevel::TRACE;
 

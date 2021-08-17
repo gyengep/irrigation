@@ -20,7 +20,8 @@ void RestViewTest::SetUp() {
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
-			mockShutdownManager
+			mockShutdownManager,
+			"/tmp"
 		)));
 }
 
@@ -36,6 +37,7 @@ string RestViewTest::createUrl(const string& path) {
 	ostringstream o;
 
 	o << "http://localhost:" << port;
+	o << "/api/v1";
 	o << path;
 /*
 	if (!parameters.empty()) {

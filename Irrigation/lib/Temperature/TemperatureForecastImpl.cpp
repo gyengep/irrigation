@@ -134,7 +134,7 @@ TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(
 	}
 
 	if (false == found) {
-		throw TemperatureException("Temperature forecast not available with specified criteria");
+		throw TemperatureException("Temperature forecast not available from: " + LocalDateTime(from).toString() + " to: " + LocalDateTime(to).toString());
 	}
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {

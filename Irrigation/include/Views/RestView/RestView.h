@@ -30,6 +30,7 @@ class RestView : public View {
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 	const std::shared_ptr<ShutdownManager> shutdownManager;
+	const std::string resourceDirectory;
 
 	IrrigationDocument& irrigationDocument;
 
@@ -64,9 +65,15 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchReboot(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchPoweroff(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetTemperature(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetTemperatureForecast(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetTemperatureHistory(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperatureCurrent(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperatureYesterday(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperatureToday(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetTemperatureTomorrow(const HttpRequest& request, const KeyValue& pathParameters);
+
+	std::unique_ptr<HttpResponse> onGetRoot(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetFile(const HttpRequest& request, const KeyValue& pathParameters);
+
+	std::unique_ptr<HttpResponse> getFile(const std::string fileName);
 
 	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
 	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);
@@ -75,7 +82,6 @@ class RestView : public View {
 	static IdType getProgramId(const KeyValue& pathParameters);
 	static IdType getStartTimeId(const KeyValue& pathParameters);
 
-	static bool includeContainers(const KeyValue& keyValue);
 	static std::string getProgramUrl(const IdType& programId);
 	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 
@@ -84,7 +90,8 @@ public:
 			const std::shared_ptr<CurrentTemperature>& currentTemperature,
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
-			const std::shared_ptr<ShutdownManager>& shutdownManager
+			const std::shared_ptr<ShutdownManager>& shutdownManager,
+			const std::string& resourceDirectory
 		);
 	virtual ~RestView();
 

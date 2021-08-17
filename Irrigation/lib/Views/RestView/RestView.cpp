@@ -16,6 +16,7 @@
 #include "Model/IrrigationDocument.h"
 #include <ctime>
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
@@ -24,7 +25,8 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 		const std::shared_ptr<CurrentTemperature>& currentTemperature,
 		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
-		const std::shared_ptr<ShutdownManager>& shutdownManager
+		const std::shared_ptr<ShutdownManager>& shutdownManager,
+		const std::string& resourceDirectory
 ) :
 	View(irrigationDocument),
 	port(port),
@@ -32,6 +34,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	shutdownManager(shutdownManager),
+	resourceDirectory(resourceDirectory),
 	irrigationDocument(irrigationDocument)
 {
 	if (nullptr == currentTemperature) {
@@ -59,33 +62,36 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 
 	using namespace placeholders;
 
-	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs", bind(&RestView::onGetProgramList, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_POST,   "/programs", bind(&RestView::onPostProgramList, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}", bind(&RestView::onGetProgram, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}", bind(&RestView::onPatchProgram, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_DELETE, "/programs/{programId}", bind(&RestView::onDeleteProgram, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/runtimes", bind(&RestView::onGetRunTimeList, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/runtimes", bind(&RestView::onPatchRunTimeList, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/starttimes", bind(&RestView::onGetStartTimeList, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_POST, 	 "/programs/{programId}/starttimes", bind(&RestView::onPostStartTimeList, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onGetStartTime, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onPatchStartTime, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_DELETE, "/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/hot-weather", bind(&RestView::onGetHotWeatherScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/hot-weather", bind(&RestView::onPatchHotWeatherScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/periodic", bind(&RestView::onGetPeriodicScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/periodic", bind(&RestView::onPatchPeriodicScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onGetTemperatureDependentScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onPatchTemperatureDependentScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/logs", bind(&RestView::onGetLogs, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature", bind(&RestView::onGetTemperature, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/forecast", bind(&RestView::onGetTemperatureForecast, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/temperature/historical", bind(&RestView::onGetTemperatureHistory, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/api/v1/programs", bind(&RestView::onGetProgramList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_POST,   "/api/v1/programs", bind(&RestView::onPostProgramList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}", bind(&RestView::onGetProgram, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}", bind(&RestView::onPatchProgram, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_DELETE, "/api/v1/programs/{programId}", bind(&RestView::onDeleteProgram, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/runtimes", bind(&RestView::onGetRunTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/runtimes", bind(&RestView::onPatchRunTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/starttimes", bind(&RestView::onGetStartTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_POST, 	 "/api/v1/programs/{programId}/starttimes", bind(&RestView::onPostStartTimeList, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,  	 "/api/v1/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onGetStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onPatchStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_DELETE, "/api/v1/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/hot-weather", bind(&RestView::onGetHotWeatherScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/hot-weather", bind(&RestView::onPatchHotWeatherScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/periodic", bind(&RestView::onGetPeriodicScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/periodic", bind(&RestView::onPatchPeriodicScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onGetTemperatureDependentScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onPatchTemperatureDependentScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/logs", bind(&RestView::onGetLogs, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/current", bind(&RestView::onGetTemperatureCurrent, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/yesterday", bind(&RestView::onGetTemperatureYesterday, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/today", bind(&RestView::onGetTemperatureToday, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/tomorrow", bind(&RestView::onGetTemperatureTomorrow, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/{fileName}", bind(&RestView::onGetFile, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/", bind(&RestView::onGetRoot, this, _1, _2));
 }
 
 RestView::~RestView() {
@@ -115,6 +121,73 @@ string RestView::getProgramUrl(const IdType& programId) {
 
 string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTimeId) {
 	return "/programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::string getFileExtension(const std::string& fileName) {
+	const auto pos = fileName.find_last_of(".");
+	std::string result;
+
+	if (std::string::npos != pos) {
+		result = fileName.substr(pos + 1);
+	}
+
+	return result;
+}
+
+std::string getContentTypeForFile(const std::string& fileName) {
+	const auto extension = getFileExtension(fileName);
+
+	std::string result;
+
+	if (extension == "js") {
+		result = "text/javascript";
+	} else if (extension == "ico") {
+		result = "image/x-icon";
+	} else if (extension == "png") {
+		result = "image/png";
+	} else {
+		result = "text/" + extension;
+	}
+
+	return result;
+}
+
+std::unique_ptr<HttpResponse> RestView::getFile(const std::string fileName) {
+	try {
+
+		LOGGER.trace("Requested file: %s", fileName.c_str());
+		std::ifstream file(fileName);
+
+		if (file.fail()) {
+			LOGGER.warning("File not found: %s", fileName.c_str());
+			throw FileNotFoundException();
+		}
+
+		std::string str((std::istreambuf_iterator<char>(file)),
+						 std::istreambuf_iterator<char>());
+
+		return HttpResponse::Builder().
+				setStatus(200, "OK").
+				setBody(str).
+				addHeader("Content-Type", getContentTypeForFile(fileName)).
+				build();
+
+	} catch (const FileNotFoundException& e) {
+		LOGGER.warning("File not found", e);
+		throw RestNotFound(restService->getErrorWriter(), e.what());
+	}
+}
+
+unique_ptr<HttpResponse> RestView::onGetRoot(const HttpRequest& request, const KeyValue& pathParameters) {
+	const std::string fileName = resourceDirectory + "/index.html";
+	return getFile(fileName);
+}
+
+unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters) {
+	const std::string fileName = resourceDirectory + "/" + pathParameters.at("fileName");
+	return getFile(fileName);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
