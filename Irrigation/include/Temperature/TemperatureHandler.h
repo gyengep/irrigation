@@ -12,17 +12,19 @@ class CurrentTemperatureImpl;
 class TemperatureForecastImpl;
 class TemperatureHistoryImpl;
 class TemperatureHistoryLogger;
+class CsvTemperatureHistoryRepository;
 
 
-class Temperature {
+class TemperatureHandler {
 	std::shared_ptr<CurrentTemperatureImpl> current;
 	std::shared_ptr<TemperatureForecastImpl> forecast;
 	std::shared_ptr<TemperatureHistoryImpl> history;
 	std::shared_ptr<TemperatureHistoryLogger> historyLogger;
+	std::shared_ptr<CsvTemperatureHistoryRepository> historyRepository;
 
 	std::shared_ptr<CurrentTemperatureProvider> createCurrentTemperatureProvider();
 
-	Temperature();
+	TemperatureHandler();
 
 public:
 
@@ -54,7 +56,7 @@ public:
 		TemperatureHistoryLoggerProperties(const std::chrono::milliseconds& period, const std::string& fileName);
 	};
 
-	~Temperature();
+	~TemperatureHandler();
 
 	const std::shared_ptr<CurrentTemperature> getCurrentTemperature() const;
 	const std::shared_ptr<TemperatureHistory> getTemperatureHistory() const;
@@ -68,5 +70,5 @@ public:
 		);
 	void uninit();
 
-	static Temperature& getInstance();
+	static TemperatureHandler& getInstance();
 };

@@ -5,27 +5,27 @@
 #include <mutex>
 #include "Utils/CsvReader.h"
 #include "Utils/CsvWriter.h"
-#include "TemperatureHistoryPersister.h"
+#include "TemperatureHistoryRepository.h"
 
 
-class CsvTemperatureHistoryPersister : public TemperatureHistoryPersister {
+class CsvTemperatureHistoryRepository : public TemperatureHistoryRepository {
 	const std::shared_ptr<CsvReaderFactory> csvReaderFactory;
 	const std::shared_ptr<CsvWriterFactory> csvWriterFactory;
 
 	mutable std::mutex mtx;
 	std::list<Sample> samples;
 
-	void load();
-	void save();
-
 	static std::string temperatureToString(float value);
 
 public:
-	CsvTemperatureHistoryPersister(
+	CsvTemperatureHistoryRepository(
 			const std::shared_ptr<CsvReaderFactory>& csvReaderFactory,
 			const std::shared_ptr<CsvWriterFactory>& csvWriterFactory
 		);
-	virtual ~CsvTemperatureHistoryPersister();
+	virtual ~CsvTemperatureHistoryRepository();
+
+	void load();
+	void save();
 
 	virtual void removeOlder(const DateTime& dateTime) override;
 	virtual void removeNewer(const DateTime& dateTime) override;

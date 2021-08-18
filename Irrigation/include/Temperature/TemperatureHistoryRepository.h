@@ -4,7 +4,7 @@
 #include "Utils/DateTime.h"
 
 
-class TemperatureHistoryPersister {
+class TemperatureHistoryRepository {
 public:
 
 	struct Sample {
@@ -18,7 +18,7 @@ public:
 		friend std::ostream& operator<<(std::ostream& os, const Sample& sample);
 	};
 
-	virtual ~TemperatureHistoryPersister() = default;
+	virtual ~TemperatureHistoryRepository() = default;
 	virtual void removeOlder(const DateTime& dateTime) = 0;
 	virtual void removeNewer(const DateTime& dateTime) = 0;
 	virtual void add(const Sample& sample) = 0;

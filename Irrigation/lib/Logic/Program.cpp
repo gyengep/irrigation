@@ -9,7 +9,7 @@
 #include "Schedulers/PeriodicScheduler.h"
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
-#include "Temperature/Temperature.h"
+#include "Temperature/TemperatureHandler.h"
 #include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <algorithm>
@@ -41,12 +41,12 @@ Program::Program() :
 	Program(true, "", 100, SchedulerType::WEEKLY,
 		make_shared<EveryDayScheduler>(),
 		make_shared<HotWeatherScheduler>(
-				Temperature::getInstance().getTemperatureHistory()
+				TemperatureHandler::getInstance().getTemperatureHistory()
 				),
 		make_shared<PeriodicScheduler>(),
 		make_shared<TemperatureDependentScheduler>(
-				Temperature::getInstance().getTemperatureForecast(),
-				Temperature::getInstance().getTemperatureHistory()
+				TemperatureHandler::getInstance().getTemperatureForecast(),
+				TemperatureHandler::getInstance().getTemperatureHistory()
 				),
 		make_shared<WeeklyScheduler>(),
 		make_shared<RunTimeContainer>(),
@@ -374,7 +374,7 @@ shared_ptr<Program> Program::Builder::build() {
 
 	if (nullptr == hotWeatherScheduler) {
 		hotWeatherScheduler = make_shared<HotWeatherScheduler>(
-				Temperature::getInstance().getTemperatureHistory()
+				TemperatureHandler::getInstance().getTemperatureHistory()
 			);
 	}
 
@@ -384,8 +384,8 @@ shared_ptr<Program> Program::Builder::build() {
 
 	if (nullptr == temperatureDependentScheduler) {
 		temperatureDependentScheduler = make_shared<TemperatureDependentScheduler>(
-				Temperature::getInstance().getTemperatureForecast(),
-				Temperature::getInstance().getTemperatureHistory()
+				TemperatureHandler::getInstance().getTemperatureForecast(),
+				TemperatureHandler::getInstance().getTemperatureHistory()
 			);
 	}
 

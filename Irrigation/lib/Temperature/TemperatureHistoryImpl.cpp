@@ -11,19 +11,19 @@ using namespace std;
 
 TemperatureHistoryImpl::TemperatureHistoryImpl(
 	const std::shared_ptr<CurrentTemperature>& currentTemperature,
-	const std::shared_ptr<TemperatureHistoryPersister>& temperatureHistoryPersister,
+	const std::shared_ptr<TemperatureHistoryRepository>& temperatureHistoryRepository,
 	const std::chrono::seconds& historyLength
 ) :
 	currentTemperature(currentTemperature),
-	temperatureHistoryPersister(temperatureHistoryPersister),
+	temperatureHistoryRepository(temperatureHistoryRepository),
 	historyLength(historyLength)
 {
 	if (nullptr == currentTemperature) {
 		throw std::invalid_argument("TemperatureHistoryImpl::TemperatureHistoryImpl() nullptr == currentTemperature");
 	}
 
-	if (nullptr == temperatureHistoryPersister) {
-		throw std::invalid_argument("TemperatureHistoryImpl::TemperatureHistoryImpl() nullptr == temperatureHistoryPersister");
+	if (nullptr == temperatureHistoryRepository) {
+		throw std::invalid_argument("TemperatureHistoryImpl::TemperatureHistoryImpl() nullptr == temperatureHistoryRepository");
 	}
 }
 
@@ -41,7 +41,7 @@ void TemperatureHistoryImpl::unregisterFromListener() {
 TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(const DateTime& from, const DateTime& to) const {
 	lock_guard<mutex> lock(mtx);
 
-	const auto samples = temperatureHistoryPersister->getBetween(from, to);
+	const auto samples = temperatureHistoryRepository->getBetween(from, to);
 
 	if (samples.empty()) {
 		throw TemperatureException("Temperature history not found from: " + LocalDateTime(from).toString() + " to: " + LocalDateTime(to).toString());
@@ -73,7 +73,7 @@ void TemperatureHistoryImpl::onTemperatureUpdated(const DateTime& dateTime, floa
 
 	LOGGER.debug("Temperature history is updated with new value: %s", toCelsius(temperature).c_str());
 
-	temperatureHistoryPersister->add(TemperatureHistoryPersister::Sample(dateTime, temperature));
-	temperatureHistoryPersister->removeOlder(dateTime.add(-historyLength));
-	temperatureHistoryPersister->removeNewer(dateTime);
+	temperatureHistoryRepository->add(TemperatureHistoryRepository::Sample(dateTime, temperature));
+	temperatureHistoryRepository->removeOlder(dateTime.add(-historyLength));
+	temperatureHistoryRepository->removeNewer(dateTime);
 }

@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "ShutdownManagerImpl.h"
 #include "DTO/DocumentDTO.h"
-#include "Temperature/Temperature.h"
+#include "Temperature/TemperatureHandler.h"
 
 class IrrigationDocument;
 class DocumentSaver;
@@ -10,7 +10,7 @@ class DocumentSaver;
 
 class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
-	//std::shared_ptr<Temperature> temperature;
+	//std::shared_ptr<TemperatureHandler> temperature;
 	std::unique_ptr<DocumentSaver> documentSaver;
 	std::shared_ptr<ShutdownManagerImpl> shutdownManager;
 

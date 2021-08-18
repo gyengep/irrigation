@@ -103,26 +103,26 @@ void IrrigationApplication::uninitShutdownManager() {
 
 void IrrigationApplication::initTemperature() {
 	try {
-		Temperature::getInstance().init(
-				Temperature::CurrentTemperatureProperties(
+		TemperatureHandler::getInstance().init(
+				TemperatureHandler::CurrentTemperatureProperties(
 						Configuration::getInstance().getCurrentTemperatureUpdatePeriod(),
 						std::vector<std::chrono::milliseconds> {
 							std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
 							std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
 						}
 					),
-				Temperature::TemperatureForecastProperties(
+				TemperatureHandler::TemperatureForecastProperties(
 						Configuration::getInstance().getTemperatureForecastUpdatePeriod(),
 						std::vector<std::chrono::milliseconds> {
 							std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
 							std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
 						}
 					),
-				Temperature::TemperatureHistoryProperties(
+				TemperatureHandler::TemperatureHistoryProperties(
 						Configuration::getInstance().getTemperatureCacheLength(),
 						Configuration::getInstance().getTemperatureCacheFileName()
 					),
-				Temperature::TemperatureHistoryLoggerProperties(
+				TemperatureHandler::TemperatureHistoryLoggerProperties(
 						Configuration::getInstance().getTemperatureHistoryPeriod(),
 						Configuration::getInstance().getTemperatureHistoryFileName()
 					)
@@ -135,7 +135,7 @@ void IrrigationApplication::initTemperature() {
 
 void IrrigationApplication::uninitTemperature() {
 	try {
-		Temperature::getInstance().uninit();
+		TemperatureHandler::getInstance().uninit();
 	} catch (const exception& e) {
 		LOGGER.warning("An error during uninitialize temperature module", e);
 	}
@@ -178,9 +178,9 @@ void IrrigationApplication::initDocument() {
 	irrigationDocument->addView(unique_ptr<View>(new TimerView(*irrigationDocument)));
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument,
 			Configuration::getInstance().getRestPort(),
-			Temperature::getInstance().getCurrentTemperature(),
-			Temperature::getInstance().getTemperatureForecast(),
-			Temperature::getInstance().getTemperatureHistory(),
+			TemperatureHandler::getInstance().getCurrentTemperature(),
+			TemperatureHandler::getInstance().getTemperatureForecast(),
+			TemperatureHandler::getInstance().getTemperatureHistory(),
 			shutdownManager,
 			Configuration::getInstance().getResourceDirectory()
 		)));
@@ -232,8 +232,8 @@ void IrrigationApplication::setMyDefaults() {
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
-				Temperature::getInstance().getTemperatureForecast(),
-				Temperature::getInstance().getTemperatureHistory(),
+				TemperatureHandler::getInstance().getTemperatureForecast(),
+				TemperatureHandler::getInstance().getTemperatureHistory(),
 				0.75f,
 				50, 0,
 				100
@@ -260,8 +260,8 @@ void IrrigationApplication::setMyDefaults() {
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
-				Temperature::getInstance().getTemperatureForecast(),
-				Temperature::getInstance().getTemperatureHistory(),
+				TemperatureHandler::getInstance().getTemperatureForecast(),
+				TemperatureHandler::getInstance().getTemperatureHistory(),
 				1.0f,
 				100, 0,
 				0
@@ -288,7 +288,7 @@ void IrrigationApplication::setMyDefaults() {
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::HOT_WEATHER).
 			setHotWeatherScheduler(make_shared<HotWeatherScheduler>(
-				Temperature::getInstance().getTemperatureHistory(),
+				TemperatureHandler::getInstance().getTemperatureHistory(),
 				chrono::hours(2), 33
 			)).
 			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
@@ -318,8 +318,8 @@ void IrrigationApplication::setMyDefaults() {
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
-				Temperature::getInstance().getTemperatureForecast(),
-				Temperature::getInstance().getTemperatureHistory(),
+				TemperatureHandler::getInstance().getTemperatureForecast(),
+				TemperatureHandler::getInstance().getTemperatureHistory(),
 				1.0f,
 				75, 75,
 				0
@@ -347,8 +347,8 @@ void IrrigationApplication::setMyDefaults() {
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
 			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
-				Temperature::getInstance().getTemperatureForecast(),
-				Temperature::getInstance().getTemperatureHistory(),
+				TemperatureHandler::getInstance().getTemperatureForecast(),
+				TemperatureHandler::getInstance().getTemperatureHistory(),
 				1.0f,
 				75, 75,
 				0

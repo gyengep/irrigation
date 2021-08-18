@@ -4,13 +4,13 @@
 #include <mutex>
 #include "CurrentTemperature.h"
 #include "TemperatureHistory.h"
-#include "TemperatureHistoryPersister.h"
+#include "TemperatureHistoryRepository.h"
 #include "Utils/DateTime.h"
 
 
 class TemperatureHistoryImpl : public TemperatureHistory, public CurrentTemperatureListener {
 	const std::shared_ptr<CurrentTemperature> currentTemperature;
-	const std::shared_ptr<TemperatureHistoryPersister> temperatureHistoryPersister;
+	const std::shared_ptr<TemperatureHistoryRepository> temperatureHistoryRepository;
 	const std::chrono::seconds historyLength;
 
 	mutable std::mutex mtx;
@@ -18,7 +18,7 @@ class TemperatureHistoryImpl : public TemperatureHistory, public CurrentTemperat
 public:
 	TemperatureHistoryImpl(
 			const std::shared_ptr<CurrentTemperature>& currentTemperature,
-			const std::shared_ptr<TemperatureHistoryPersister>& temperatureHistoryPersister,
+			const std::shared_ptr<TemperatureHistoryRepository>& temperatureHistoryRepository,
 			const std::chrono::seconds& historyLength
 		);
 
