@@ -12,7 +12,6 @@ public:
 	MOCK_METHOD1(save, std::string(const StartTimeDTO& startTime));
 	MOCK_METHOD1(save, std::string(const EveryDaySchedulerDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const HotWeatherSchedulerDTO& scheduler));
-	MOCK_METHOD1(save, std::string(const PeriodicSchedulerDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const TemperatureDependentSchedulerDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const WeeklySchedulerDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const std::list<ProgramDTO>& programs));

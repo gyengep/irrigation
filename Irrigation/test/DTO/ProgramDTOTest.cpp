@@ -18,7 +18,6 @@ TEST(ProgramDTOTest, defaultConstructor) {
 	EXPECT_FALSE(programDTO.hasSchedulerType());
 	EXPECT_FALSE(programDTO.hasEveryDayScheduler());
 	EXPECT_FALSE(programDTO.hasHotWeatherScheduler());
-	EXPECT_FALSE(programDTO.hasPeriodicScheduler());
 	EXPECT_FALSE(programDTO.hasTemperatureDependentScheduler());
 	EXPECT_FALSE(programDTO.hasWeeklyScheduler());
 	EXPECT_FALSE(programDTO.hasRunTimes());
@@ -31,7 +30,6 @@ TEST(ProgramDTOTest, defaultConstructor) {
 	EXPECT_THROW(programDTO.getSchedulerType(), logic_error);
 	EXPECT_THROW(programDTO.getEveryDayScheduler(), logic_error);
 	EXPECT_THROW(programDTO.getHotWeatherScheduler(), logic_error);
-	EXPECT_THROW(programDTO.getPeriodicScheduler(), logic_error);
 	EXPECT_THROW(programDTO.getTemperatureDependentScheduler(), logic_error);
 	EXPECT_THROW(programDTO.getWeeklyScheduler(), logic_error);
 	EXPECT_THROW(programDTO.getRunTimes(), logic_error);
@@ -45,7 +43,6 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	const string expectedSchedulerType("scheduler");
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(120, 35.0f);
-	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ true, false, true }), 2018, 11, 15);
 	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 80, 90, 120);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(10, 0), RunTimeDTO(15, 0), RunTimeDTO(20, 0) });
@@ -58,7 +55,6 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 			expectedSchedulerType,
 			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			HotWeatherSchedulerDTO(expectedHotWeatherScheduler),
-			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			TemperatureDependentSchedulerDTO(expectedTemperatureDependentScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
@@ -71,7 +67,6 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	EXPECT_TRUE(programDTO.hasSchedulerType());
 	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasHotWeatherScheduler());
-	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasTemperatureDependentScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
@@ -83,7 +78,6 @@ TEST(ProgramDTOTest, parametrizedConstructor) {
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
 	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getHotWeatherScheduler(), Eq(expectedHotWeatherScheduler));
-	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
@@ -97,7 +91,6 @@ TEST(ProgramDTOTest, copyConstructor) {
 	const string expectedSchedulerType("scheduler");
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(90, 31.0f);
-	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ true, false, true }), 2018, 11, 15);
 	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(2.1f, 180, 190, 20);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
@@ -110,7 +103,6 @@ TEST(ProgramDTOTest, copyConstructor) {
 			expectedSchedulerType,
 			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			HotWeatherSchedulerDTO(expectedHotWeatherScheduler),
-			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			TemperatureDependentSchedulerDTO(expectedTemperatureDependentScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
@@ -125,7 +117,6 @@ TEST(ProgramDTOTest, copyConstructor) {
 	EXPECT_TRUE(programDTO.hasSchedulerType());
 	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasHotWeatherScheduler());
-	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasTemperatureDependentScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
@@ -137,7 +128,6 @@ TEST(ProgramDTOTest, copyConstructor) {
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
 	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getHotWeatherScheduler(), Eq(expectedHotWeatherScheduler));
-	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
@@ -151,7 +141,6 @@ TEST(ProgramDTOTest, moveConstructor) {
 	const string expectedSchedulerType("scheduler");
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(43, 15.0f);
-	const PeriodicSchedulerDTO expectedPeriodicScheduler(list<bool>({ false, true }), 2018, 11, 10);
 	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 63, 64, 65);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 	const list<RunTimeDTO> expectedRunTimes({ RunTimeDTO(0, 90), RunTimeDTO(5, 0) });
@@ -164,7 +153,6 @@ TEST(ProgramDTOTest, moveConstructor) {
 			expectedSchedulerType,
 			EveryDaySchedulerDTO(expectedEveryDayScheduler),
 			HotWeatherSchedulerDTO(expectedHotWeatherScheduler),
-			PeriodicSchedulerDTO(expectedPeriodicScheduler),
 			TemperatureDependentSchedulerDTO(expectedTemperatureDependentScheduler),
 			WeeklySchedulerDTO(expectedWeeklyScheduler),
 			list<RunTimeDTO>(expectedRunTimes),
@@ -179,7 +167,6 @@ TEST(ProgramDTOTest, moveConstructor) {
 	EXPECT_TRUE(programDTO.hasSchedulerType());
 	EXPECT_TRUE(programDTO.hasEveryDayScheduler());
 	EXPECT_TRUE(programDTO.hasHotWeatherScheduler());
-	EXPECT_TRUE(programDTO.hasPeriodicScheduler());
 	EXPECT_TRUE(programDTO.hasTemperatureDependentScheduler());
 	EXPECT_TRUE(programDTO.hasWeeklyScheduler());
 	EXPECT_TRUE(programDTO.hasRunTimes());
@@ -191,7 +178,6 @@ TEST(ProgramDTOTest, moveConstructor) {
 	EXPECT_THAT(programDTO.getSchedulerType(), Eq(expectedSchedulerType));
 	EXPECT_THAT(programDTO.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
 	EXPECT_THAT(programDTO.getHotWeatherScheduler(), Eq(expectedHotWeatherScheduler));
-	EXPECT_THAT(programDTO.getPeriodicScheduler(), Eq(expectedPeriodicScheduler));
 	EXPECT_THAT(programDTO.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentScheduler));
 	EXPECT_THAT(programDTO.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
 	EXPECT_THAT(programDTO.getRunTimes(), ContainerEq(expectedRunTimes));
@@ -207,7 +193,6 @@ CHECK_DTO_FUNCTIONS(ProgramDTO, unsigned, Adjustment, 123);
 CHECK_DTO_FUNCTIONS(ProgramDTO, string, SchedulerType, "qwertzuio");
 CHECK_DTO_FUNCTIONS(ProgramDTO, EveryDaySchedulerDTO, EveryDayScheduler, EveryDaySchedulerDTO());
 CHECK_DTO_FUNCTIONS(ProgramDTO, HotWeatherSchedulerDTO, HotWeatherScheduler, HotWeatherSchedulerDTO(120, 30));
-CHECK_DTO_FUNCTIONS(ProgramDTO, PeriodicSchedulerDTO, PeriodicScheduler, PeriodicSchedulerDTO(list<bool>({ true, false }), 1990, 10, 11));
 CHECK_DTO_FUNCTIONS(ProgramDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler, TemperatureDependentSchedulerDTO(0.9f, 75, 110, 90));
 CHECK_DTO_FUNCTIONS(ProgramDTO, WeeklySchedulerDTO, WeeklyScheduler, WeeklySchedulerDTO(list<bool>({ true, false, true, false })));
 CHECK_DTO_FUNCTIONS(ProgramDTO, std::list<RunTimeDTO>, RunTimes, list<RunTimeDTO>({ RunTimeDTO(11, 10), RunTimeDTO(11, 55), RunTimeDTO(12, 0) }));
@@ -231,10 +216,6 @@ TEST(ProgramDTOTest, equalsOperator) {
 	CHECK_DTO_EQUALS_MOVE(HotWeatherSchedulerDTO, HotWeatherScheduler,
 			HotWeatherSchedulerDTO(100, 25.0f),
 			HotWeatherSchedulerDTO(110, 35.0f)
-		);
-	CHECK_DTO_EQUALS_MOVE(PeriodicSchedulerDTO, PeriodicScheduler,
-			PeriodicSchedulerDTO(list<bool>({ true, false, true }), 2018, 11, 15),
-			PeriodicSchedulerDTO(list<bool>({ true, false, false }), 2015, 10, 15)
 		);
 	CHECK_DTO_EQUALS_MOVE(TemperatureDependentSchedulerDTO, TemperatureDependentScheduler,
 			TemperatureDependentSchedulerDTO(10.0f, 15, 25, 35),

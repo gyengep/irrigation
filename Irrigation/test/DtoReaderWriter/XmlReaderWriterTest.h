@@ -125,28 +125,6 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class PeriodicSchedulerReaderTest : public ::testing::Test {
-protected:
-
-	XmlReader reader;
-
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
-
-class PeriodicSchedulerWriterTest : public ::testing::Test {
-protected:
-
-	XmlWriter writer;
-
-	PeriodicSchedulerWriterTest() : writer(false) {}
-
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
 class TemperatureDependentSchedulerReaderTest : public ::testing::Test {
 protected:
 

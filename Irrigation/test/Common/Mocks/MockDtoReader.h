@@ -11,7 +11,6 @@ public:
 	MOCK_CONST_METHOD1(loadStartTime, StartTimeDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadEveryDayScheduler, EveryDaySchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadHotWeatherScheduler, HotWeatherSchedulerDTO(const std::string&));
-	MOCK_CONST_METHOD1(loadPeriodicScheduler, PeriodicSchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadTemperatureDependentScheduler, TemperatureDependentSchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadWeeklyScheduler, WeeklySchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadProgramList, std::list<ProgramDTO>(const std::string& text));

@@ -15,6 +15,8 @@ class CsvTemperatureHistoryRepository : public TemperatureHistoryRepository {
 	mutable std::mutex mtx;
 	std::list<Sample> samples;
 
+	void add_withoutLock(const Sample& sample);
+
 	static std::string temperatureToString(float value);
 
 public:

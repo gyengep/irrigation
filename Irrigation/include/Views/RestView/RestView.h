@@ -8,7 +8,6 @@
 class IdType;
 class Program;
 class StartTime;
-class PeriodicScheduler;
 class WeeklyScheduler;
 class RestService;
 class WebServer;
@@ -54,11 +53,9 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onDeleteProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetHotWeatherScheduler(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureDependentScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchHotWeatherScheduler(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onPatchPeriodicScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchTemperatureDependentScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchWeeklyScheduler(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchIrrigation(const HttpRequest& request, const KeyValue& pathParameters);

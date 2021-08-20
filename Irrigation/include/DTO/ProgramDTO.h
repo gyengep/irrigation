@@ -6,7 +6,6 @@
 #include "StartTimeDTO.h"
 #include "EveryDaySchedulerDTO.h"
 #include "HotWeatherSchedulerDTO.h"
-#include "PeriodicSchedulerDTO.h"
 #include "TemperatureDependentSchedulerDTO.h"
 #include "WeeklySchedulerDTO.h"
 #include "DtoMacros.h"
@@ -20,7 +19,6 @@
 	DTO_MEMBER_COPY(ProgramDTO, std::string, SchedulerType);										\
 	DTO_MEMBER_MOVE(ProgramDTO, EveryDaySchedulerDTO, EveryDayScheduler);							\
 	DTO_MEMBER_MOVE(ProgramDTO, HotWeatherSchedulerDTO, HotWeatherScheduler);						\
-	DTO_MEMBER_MOVE(ProgramDTO, PeriodicSchedulerDTO, PeriodicScheduler);							\
 	DTO_MEMBER_MOVE(ProgramDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler);	\
 	DTO_MEMBER_MOVE(ProgramDTO, WeeklySchedulerDTO, WeeklyScheduler);								\
 	DTO_MEMBER_MOVE(ProgramDTO, std::list<RunTimeDTO>, RunTimes);									\
@@ -37,7 +35,6 @@ CREATE_DTO_CLASS(ProgramDTO)
 			const std::string& SchedulerType,
 			EveryDaySchedulerDTO&& EveryDayScheduler,
 			HotWeatherSchedulerDTO&& HotWeatherScheduler,
-			PeriodicSchedulerDTO&& PeriodicScheduler,
 			TemperatureDependentSchedulerDTO&& TemperatureDependentScheduler,
 			WeeklySchedulerDTO&& WeeklyScheduler,
 			std::list<RunTimeDTO>&& RunTimes,

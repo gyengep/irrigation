@@ -7,7 +7,6 @@
 #include "DTO/StartTimeDTO.h"
 #include "DTO/EveryDaySchedulerDTO.h"
 #include "DTO/HotWeatherSchedulerDTO.h"
-#include "DTO/PeriodicSchedulerDTO.h"
 #include "DTO/TemperatureDependentSchedulerDTO.h"
 #include "DTO/WeeklySchedulerDTO.h"
 
@@ -21,7 +20,6 @@ public:
 	virtual StartTimeDTO loadStartTime(const std::string& text) const = 0;
 	virtual EveryDaySchedulerDTO loadEveryDayScheduler(const std::string& text) const = 0;
 	virtual HotWeatherSchedulerDTO loadHotWeatherScheduler(const std::string& text) const = 0;
-	virtual PeriodicSchedulerDTO loadPeriodicScheduler(const std::string& text) const = 0;
 	virtual TemperatureDependentSchedulerDTO loadTemperatureDependentScheduler(const std::string& text) const = 0;
 	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const = 0;
 	virtual std::list<ProgramDTO> loadProgramList(const std::string& text) const = 0;
@@ -40,7 +38,6 @@ public:
 	virtual std::string save(const StartTimeDTO& startTime) = 0;
 	virtual std::string save(const EveryDaySchedulerDTO& scheduler) = 0;
 	virtual std::string save(const HotWeatherSchedulerDTO& scheduler) = 0;
-	virtual std::string save(const PeriodicSchedulerDTO& scheduler) = 0;
 	virtual std::string save(const TemperatureDependentSchedulerDTO& scheduler) = 0;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) = 0;
 	virtual std::string save(const std::list<ProgramDTO>& programs) = 0;

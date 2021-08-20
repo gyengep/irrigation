@@ -7,14 +7,12 @@
 #include "StartTimeListSamples.h"
 #include "EveryDaySchedulerSamples.h"
 #include "HotWeatherSchedulerSamples.h"
-#include "PeriodicSchedulerSamples.h"
 #include "TemperatureDependentSchedulerSamples.h"
 #include "WeeklySchedulerSamples.h"
 
 #define PROGRAM_SAMPLE_1 programSample_all
 #define PROGRAM_SAMPLE_2 programSample_name
 #define PROGRAM_SAMPLE_3 programSample_schedulerType
-#define PROGRAM_SAMPLE_4 programSample_periodicScheduler
 #define PROGRAM_SAMPLE_5 programSample_weeklyScheduler
 #define PROGRAM_SAMPLE_6 programSample_runTimes
 #define PROGRAM_SAMPLE_7 programSample_startTimes
@@ -41,7 +39,6 @@ const ProgramSample programSample_all(
 			"<schedulers>" +
 				EVERY_DAY_SCHEDULER_SAMPLE.first +
 				HOT_WEATHER_SCHEDULER_SAMPLE_1.first +
-				PERIODIC_SCHEDULER_SAMPLE_1.first +
 				TEMPERATURE_DEPENDENT_SCHEDULER_SAMPLE_1.first +
 				WEEKLY_SCHEDULER_SAMPLE_1.first +
 			"</schedulers>" +
@@ -56,7 +53,6 @@ const ProgramSample programSample_all(
 		.setSchedulerType("weekly")
 		.setEveryDayScheduler(EveryDaySchedulerDTO(EVERY_DAY_SCHEDULER_SAMPLE.second))
 		.setHotWeatherScheduler(HotWeatherSchedulerDTO(HOT_WEATHER_SCHEDULER_SAMPLE_1.second))
-		.setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_1.second))
 		.setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(TEMPERATURE_DEPENDENT_SCHEDULER_SAMPLE_1.second))
 		.setWeeklyScheduler(WeeklySchedulerDTO(WEEKLY_SCHEDULER_SAMPLE_1.second))
 		.setRunTimes(std::list<RunTimeDTO>(RUNTIME_LIST_SAMPLE_1.second))
@@ -108,15 +104,6 @@ const ProgramSample programSample_hotWeatherScheduler(
 			"</schedulers>"
 		"</program>",
 		ProgramDTO().setHotWeatherScheduler(HotWeatherSchedulerDTO(HOT_WEATHER_SCHEDULER_SAMPLE_2.second))
-		);
-
-const ProgramSample programSample_periodicScheduler(
-		"<program>"
-			"<schedulers>" +
-				PERIODIC_SCHEDULER_SAMPLE_3.first +
-			"</schedulers>"
-		"</program>",
-		ProgramDTO().setPeriodicScheduler(PeriodicSchedulerDTO(PERIODIC_SCHEDULER_SAMPLE_3.second))
 		);
 
 const ProgramSample programSample_temperatureDependentScheduler(

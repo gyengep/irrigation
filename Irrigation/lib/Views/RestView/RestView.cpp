@@ -76,8 +76,6 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_DELETE, "/api/v1/programs/{programId}/starttimes/{startTimeId}", bind(&RestView::onDeleteStartTime, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/hot-weather", bind(&RestView::onGetHotWeatherScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/hot-weather", bind(&RestView::onPatchHotWeatherScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/periodic", bind(&RestView::onGetPeriodicScheduler, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/periodic", bind(&RestView::onPatchPeriodicScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onGetTemperatureDependentScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onPatchTemperatureDependentScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));

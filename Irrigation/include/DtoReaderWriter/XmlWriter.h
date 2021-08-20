@@ -20,7 +20,6 @@ protected:
 	void saveStartTime(pugi::xml_node* parent, const StartTimeDTO& startTime);
 	void saveEveryDayScheduler(pugi::xml_node* parent, const EveryDaySchedulerDTO& scheduler);
 	void saveHotWeatherScheduler(pugi::xml_node* parent, const HotWeatherSchedulerDTO& scheduler);
-	void savePeriodicScheduler(pugi::xml_node* parent, const PeriodicSchedulerDTO& scheduler);
 	void saveTemperatureDependentScheduler(pugi::xml_node* parent, const TemperatureDependentSchedulerDTO& scheduler);
 	void saveWeeklyScheduler(pugi::xml_node* parent, const WeeklySchedulerDTO& scheduler);
 	void saveProgramList(pugi::xml_node* parent, const std::list<ProgramDTO>& programs, bool includeContainers);
@@ -38,7 +37,6 @@ public:
 	virtual std::string save(const StartTimeDTO& startTime) override;
 	virtual std::string save(const EveryDaySchedulerDTO& scheduler) override;
 	virtual std::string save(const HotWeatherSchedulerDTO& scheduler) override;
-	virtual std::string save(const PeriodicSchedulerDTO& scheduler) override;
 	virtual std::string save(const TemperatureDependentSchedulerDTO& scheduler) override;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) override;
 	virtual std::string save(const std::list<ProgramDTO>& programs) override;

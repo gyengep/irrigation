@@ -9,7 +9,6 @@
 
 class EveryDayScheduler;
 class HotWeatherScheduler;
-class PeriodicScheduler;
 class TemperatureDependentScheduler;
 class WeeklyScheduler;
 class RunTimeContainer;
@@ -40,7 +39,6 @@ protected:
 	SchedulerType schedulerType;
 	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
 	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
-	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
 	std::shared_ptr<Scheduler> currentScheduler;
@@ -56,7 +54,6 @@ public:
 		SchedulerType schedulerType,
 		const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
 		const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
-		const std::shared_ptr<PeriodicScheduler>& periodicScheduler,
 		const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
 		const std::shared_ptr<WeeklyScheduler>& weeklyScheduler,
 		const std::shared_ptr<RunTimeContainer>& runTimes,
@@ -87,7 +84,6 @@ public:
 
 	const EveryDayScheduler& getEveryDayScheduler() const { return *everyDayScheduler; }
 	const HotWeatherScheduler& getHotWeatherScheduler() const { return *hotWeatherScheduler; }
-	const PeriodicScheduler& getPeriodicScheduler() const { return *periodicScheduler; }
 	const TemperatureDependentScheduler& getTemperatureDependentScheduler() const { return *temperatureDependentScheduler; }
 	const WeeklyScheduler& getWeeklyScheduler() const { return *weeklyScheduler; }
 	const RunTimeContainer& getRunTimes() const { return *runTimes; }
@@ -95,7 +91,6 @@ public:
 
 	EveryDayScheduler& getEveryDayScheduler() { return *everyDayScheduler; }
 	HotWeatherScheduler& getHotWeatherScheduler() { return *hotWeatherScheduler; }
-	PeriodicScheduler& getPeriodicScheduler() { return *periodicScheduler; }
 	TemperatureDependentScheduler& getTemperatureDependentScheduler() { return *temperatureDependentScheduler; }
 	WeeklyScheduler& getWeeklyScheduler() { return *weeklyScheduler; }
 	RunTimeContainer& getRunTimes() { return *runTimes; }
@@ -118,7 +113,6 @@ class Program::Builder {
 	SchedulerType schedulerType;
 	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
 	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
-	std::shared_ptr<PeriodicScheduler> periodicScheduler;
 	std::shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler;
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
 	std::shared_ptr<RunTimeContainer> runTimes;
@@ -134,7 +128,6 @@ public:
 	Builder& setSchedulerType(SchedulerType schedulerType);
 	Builder& setEveryDayScheduler(const std::shared_ptr<EveryDayScheduler>& everyDayScheduler);
 	Builder& setHotWeatherScheduler(const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler);
-	Builder& setPeriodicScheduler(const std::shared_ptr<PeriodicScheduler>& periodicScheduler);
 	Builder& setTemperatureDependentScheduler(const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler);
 	Builder& setWeeklyScheduler(const std::shared_ptr<WeeklyScheduler>& weeklyScheduler);
 	Builder& setRunTimeContainer(const std::shared_ptr<RunTimeContainer>& runTimes);

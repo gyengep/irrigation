@@ -26,7 +26,7 @@ void CsvTemperatureHistoryRepository::load() {
 
 		while ((result = csvReader->read()) != nullptr) {
 			if (result->size() == 2) {
-				add(CsvTemperatureHistoryRepository::Sample(DateTime(stoul(result->at(0))), stof(result->at(1))));
+				add_withoutLock(CsvTemperatureHistoryRepository::Sample(DateTime(stoul(result->at(0))), stof(result->at(1))));
 			} else {
 				LOGGER.warning("TemperatureHistoryRepository loaded invalid line");
 			}
@@ -80,7 +80,10 @@ void CsvTemperatureHistoryRepository::removeNewer(const DateTime& dateTime) {
 
 void CsvTemperatureHistoryRepository::add(const Sample& sample) {
 	std::lock_guard<std::mutex> lock(mtx);
+	add_withoutLock(sample);
+}
 
+void CsvTemperatureHistoryRepository::add_withoutLock(const Sample& sample) {
 	auto removeIfTimeIsSame = [&sample](const Sample& value) {
 		return (sample.dateTime == value.dateTime);
 	};

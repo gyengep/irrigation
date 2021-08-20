@@ -26,13 +26,13 @@ EveryDaySchedulerDTO EveryDayScheduler::toEveryDaySchedulerDto() const {
 void EveryDayScheduler::updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO) {
 }
 
-string to_string(const EveryDayScheduler& periodicScheduler) {
+string to_string(const EveryDayScheduler& scheduler) {
 	ostringstream oss;
-	oss << periodicScheduler;
+	oss << scheduler;
 	return oss.str();
 }
 
-ostream& operator<<(ostream& os, const EveryDayScheduler& periodicScheduler) {
+ostream& operator<<(ostream& os, const EveryDayScheduler& scheduler) {
 	os << "EveryDayScheduler{}";
 	return os;
 }

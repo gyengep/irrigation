@@ -14,8 +14,6 @@ string to_string(SchedulerType schedulerType) {
 		return "every-day";
 	case SchedulerType::HOT_WEATHER:
 		return "hot-weather";
-	case SchedulerType::PERIODIC:
-		return "periodic";
 	case SchedulerType::TEMPERATURE_DEPENDENT:
 		return "temperature-dependent";
 	case SchedulerType::WEEKLY:

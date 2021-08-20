@@ -62,7 +62,7 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 	}
 
 	if (includeContainers) {
-		if (program.hasEveryDayScheduler() || program.hasHotWeatherScheduler() || program.hasPeriodicScheduler() ||
+		if (program.hasEveryDayScheduler() || program.hasHotWeatherScheduler() ||
 				program.hasTemperatureDependentScheduler() || program.hasWeeklyScheduler()) {
 
 			xml_node schedulersListNode = node.append_child("schedulers");
@@ -75,11 +75,6 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 			if (program.hasHotWeatherScheduler()) {
 				const HotWeatherSchedulerDTO& scheduler = program.getHotWeatherScheduler();
 				saveHotWeatherScheduler(&schedulersListNode, scheduler);
-			}
-
-			if (program.hasPeriodicScheduler()) {
-				const PeriodicSchedulerDTO& scheduler = program.getPeriodicScheduler();
-				savePeriodicScheduler(&schedulersListNode, scheduler);
 			}
 
 			if (program.hasTemperatureDependentScheduler()) {
@@ -168,38 +163,6 @@ void XmlWriter::saveHotWeatherScheduler(xml_node* parent, const HotWeatherSchedu
 		node.append_child("temperature").text().set(scheduler.getMinTemperature());
 	}
 }
-
-void XmlWriter::savePeriodicScheduler(xml_node* parent, const PeriodicSchedulerDTO& scheduler) {
-	xml_node node = parent->append_child("scheduler");
-	node.append_attribute("type").set_value("periodic");
-
-	if (scheduler.hasValues()) {
-		xml_node daysNode = node.append_child("days");
-		const list<bool>& values = scheduler.getValues();
-		for (auto value : values) {
-			daysNode.append_child("day").text().set(value);
-		}
-	}
-
-	if (scheduler.hasPeriodStartYear() ||
-		scheduler.hasPeriodStartMonth() ||
-		scheduler.hasPeriodStartDay()) {
-
-		xml_node startDateNode = node.append_child("periodStartDate");
-		if (scheduler.hasPeriodStartYear()) {
-			startDateNode.append_child("year").text().set(scheduler.getPeriodStartYear());
-		}
-
-		if (scheduler.hasPeriodStartMonth()) {
-			startDateNode.append_child("month").text().set(scheduler.getPeriodStartMonth());
-		}
-
-		if (scheduler.hasPeriodStartDay()) {
-			startDateNode.append_child("day").text().set(scheduler.getPeriodStartDay());
-		}
-	}
-}
-
 
 void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const TemperatureDependentSchedulerDTO& scheduler) {
 	xml_node node = parent->append_child("scheduler");
@@ -310,12 +273,6 @@ string XmlWriter::save(const EveryDaySchedulerDTO& scheduler) {
 string XmlWriter::save(const HotWeatherSchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveHotWeatherScheduler(doc.get(), scheduler);
-	return toString(doc.get(), humanReadable);
-}
-
-string XmlWriter::save(const PeriodicSchedulerDTO& scheduler) {
-	unique_ptr<xml_document> doc(new xml_document());
-	savePeriodicScheduler(doc.get(), scheduler);
 	return toString(doc.get(), humanReadable);
 }
 

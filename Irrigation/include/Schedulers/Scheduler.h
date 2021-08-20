@@ -6,7 +6,6 @@
 enum class SchedulerType {
 	EVERY_DAY,
 	HOT_WEATHER,
-	PERIODIC,
 	TEMPERATURE_DEPENDENT,
 	WEEKLY,
 };

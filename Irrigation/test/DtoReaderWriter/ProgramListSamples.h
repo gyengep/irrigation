@@ -20,7 +20,6 @@ const ProgramListSample programListSample_more(
 			PROGRAM_SAMPLE_1.first +
 			PROGRAM_SAMPLE_2.first +
 			PROGRAM_SAMPLE_3.first +
-			PROGRAM_SAMPLE_4.first +
 			PROGRAM_SAMPLE_5.first +
 			PROGRAM_SAMPLE_6.first +
 			PROGRAM_SAMPLE_7.first +
@@ -36,7 +35,6 @@ const ProgramListSample programListSample_more(
 			ProgramDTO(PROGRAM_SAMPLE_1.second),
 			ProgramDTO(PROGRAM_SAMPLE_2.second),
 			ProgramDTO(PROGRAM_SAMPLE_3.second),
-			ProgramDTO(PROGRAM_SAMPLE_4.second),
 			ProgramDTO(PROGRAM_SAMPLE_5.second),
 			ProgramDTO(PROGRAM_SAMPLE_6.second),
 			ProgramDTO(PROGRAM_SAMPLE_7.second),

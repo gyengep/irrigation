@@ -20,6 +20,6 @@ public:
 	EveryDaySchedulerDTO toEveryDaySchedulerDto() const;
 	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO);
 
-	friend std::string to_string(const EveryDayScheduler& periodicScheduler);
-	friend std::ostream& operator<<(std::ostream& os, const EveryDayScheduler& periodicScheduler);
+	friend std::string to_string(const EveryDayScheduler& scheduler);
+	friend std::ostream& operator<<(std::ostream& os, const EveryDayScheduler& scheduler);
 };

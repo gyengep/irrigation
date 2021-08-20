@@ -54,10 +54,6 @@ TEST_F(ProgramReaderTest, programSchedulerType) {
 	testProgramRead(programSample_schedulerType, reader);
 }
 
-TEST_F(ProgramReaderTest, programPeriodicScheduler) {
-	testProgramRead(programSample_periodicScheduler, reader);
-}
-
 TEST_F(ProgramReaderTest, programWeeklyScheduler) {
 	testProgramRead(programSample_weeklyScheduler, reader);
 }
@@ -98,10 +94,6 @@ TEST_F(ProgramWriterTest, programAdjustment) {
 
 TEST_F(ProgramWriterTest, programSchedulerType) {
 	testProgramWrite(programSample_schedulerType, writer);
-}
-
-TEST_F(ProgramWriterTest, programPeriodicScheduler) {
-	testProgramWrite(programSample_periodicScheduler, writer);
 }
 
 TEST_F(ProgramWriterTest, programWeeklyScheduler) {

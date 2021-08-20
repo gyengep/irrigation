@@ -76,10 +76,6 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 			program.setHotWeatherScheduler(loadHotWeatherScheduler(schedulerNode));
 		}
 
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "periodic")) != nullptr) {
-			program.setPeriodicScheduler(loadPeriodicScheduler(schedulerNode));
-		}
-
 		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "temperature-dependent")) != nullptr) {
 			program.setTemperatureDependentScheduler(loadTemperatureDependentScheduler(schedulerNode));
 		}
@@ -129,49 +125,6 @@ HotWeatherSchedulerDTO XmlReader::loadHotWeatherScheduler(const xml_node& node) 
 
 	if ((tmpNode = node.child("temperature")) != nullptr) {
 		scheduler.setMinTemperature(tmpNode.text().as_float());
-	}
-
-	return scheduler;
-}
-
-PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const xml_node& node) const {
-	PeriodicSchedulerDTO scheduler;
-
-	xml_attribute typeAttribute;
-	if ((typeAttribute = node.attribute("type")) != nullptr) {
-		if (strcmp(typeAttribute.as_string(), "periodic") != 0) {
-			throw invalid_argument(string("XmlReader::loadScheduler(): invalid SchedulerType: ") + typeAttribute.as_string());
-		}
-	}
-
-	xml_node tmpNode;
-
-	if ((tmpNode = node.child("days")) != nullptr) {
-		list<bool> values;
-
-		xml_node dayNode = tmpNode.child("day");
-		while (dayNode) {
-			values.push_back(dayNode.text().as_bool());
-			dayNode = dayNode.next_sibling("day");
-		}
-
-		scheduler.setValues(move(values));
-	}
-
-	if ((tmpNode = node.child("periodStartDate")) != nullptr) {
-		xml_node dateNode;
-
-		if ((dateNode = tmpNode.child("year")) != nullptr) {
-			scheduler.setPeriodStartYear(dateNode.text().as_uint());
-		}
-
-		if ((dateNode = tmpNode.child("month")) != nullptr) {
-			scheduler.setPeriodStartMonth(dateNode.text().as_uint());
-		}
-
-		if ((dateNode = tmpNode.child("day")) != nullptr) {
-			scheduler.setPeriodStartDay(dateNode.text().as_uint());
-		}
 	}
 
 	return scheduler;
@@ -430,21 +383,6 @@ HotWeatherSchedulerDTO XmlReader::loadHotWeatherScheduler(const string& text) co
 	}
 
 	return loadHotWeatherScheduler(node);
-}
-
-PeriodicSchedulerDTO XmlReader::loadPeriodicScheduler(const string& text) const {
-	const char* tagName = "scheduler";
-
-	unique_ptr<xml_document> doc(new xml_document());
-	loadFromString(doc.get(), text);
-
-	const xml_node node = doc->child(tagName);
-
-	if (node == nullptr) {
-		throw RequiredTagMissing("The 'scheduler' element tag not found");
-	}
-
-	return loadPeriodicScheduler(node);
 }
 
 TemperatureDependentSchedulerDTO XmlReader::loadTemperatureDependentScheduler(const string& text) const {
