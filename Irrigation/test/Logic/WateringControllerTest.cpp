@@ -1,5 +1,6 @@
 #include "WateringControllerTest.h"
-#include "Hardware/Valves/ZoneHandler.h"
+#include "Hardware/Valves/GpioValve.h"
+#include "Hardware/Valves/ZoneHandlerImpl.h"
 #include <numeric>
 
 using namespace std;
@@ -8,7 +9,9 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 void WateringControllerTest::SetUp() {
-	wateringController = make_shared<WateringController>(ZoneHandler::getInstancePtr());
+	wateringController = make_shared<WateringController>(
+		std::make_shared<testing::NiceMock<MockZoneHandler>>()
+	);
 }
 
 void WateringControllerTest::TearDown() {

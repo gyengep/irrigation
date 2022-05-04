@@ -1,43 +1,64 @@
 #include "GpioValve.h"
-#include "GpioHandler.h"
 #include "ValveConfig.h"
 #include "Exceptions/Exceptions.h"
 
 using namespace std;
 
+const std::vector<std::shared_ptr<Valve>> GpioValve::valves({
+	std::make_shared<GpioValve>(VALVE0_PIN),
+	std::make_shared<GpioValve>(VALVE1_PIN),
+	std::make_shared<GpioValve>(VALVE2_PIN),
+	std::make_shared<GpioValve>(VALVE3_PIN),
+	std::make_shared<GpioValve>(VALVE4_PIN),
+	std::make_shared<GpioValve>(VALVE5_PIN),
+	std::make_shared<GpioValve>(VALVE6_PIN)
+});
 
-GpioValve::GpioValve(int pin) : pin(pin) {
+
+#ifdef __arm__
+#include <wiringPi.h>
+
+void GpioValve::init() {
+	if (wiringPiSetup() == -1) {
+		throw runtime_error("GPIO initialization FAILED");
+	}
+
+	for (const GpioValve& valve : valves) {
+		pinMode(valve.pin, OUTPUT);
+	}
+}
+
+#else
+
+void GpioValve::init() {
+}
+
+#endif
+
+
+std::vector<std::shared_ptr<Valve>> GpioValve::getValves() {
+	return valves;
+}
+
+
+GpioValve::GpioValve(int pin) :
+	pin(pin)
+{
 }
 
 GpioValve::~GpioValve() {
 }
 
+void GpioValve::setPin(int mode) {
+#ifdef __arm__
+	digitalWrite(pin, mode);
+#endif
+}
+
 void GpioValve::activate() {
-	GpioHandler::getInstance().setPin(pin, 1);
+	setPin(1);
 }
 
 void GpioValve::deactivate() {
-	GpioHandler::getInstance().setPin(pin, 0);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-shared_ptr<Valve> GpioValveFactory::createValve(size_t id) {
-	static const array<int, VALVE_COUNT> pins {
-		VALVE0_PIN,
-		VALVE1_PIN,
-		VALVE2_PIN,
-		VALVE3_PIN,
-		VALVE4_PIN,
-		VALVE5_PIN,
-		VALVE6_PIN
-	};
-
-	if (pins.size() <= id) {
-		throw IndexOutOfBoundsException(
-				"Valve index shall be less than " + to_string(pins.size()) +
-				", while actual value is " + to_string(id));
-	}
-
-	return make_shared<GpioValve>(pins[id]);
+	setPin(0);
 }

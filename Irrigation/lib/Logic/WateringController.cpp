@@ -1,5 +1,6 @@
 #include "WateringController.h"
-#include "Hardware/Valves/ZoneHandler.h"
+#include "Hardware/Valves/GpioValve.h"
+#include "Hardware/Valves/ZoneHandlerImpl.h"
 #include "Logger/Logger.h"
 #include "Utils/ToString.h"
 #include <stdexcept>
@@ -8,7 +9,7 @@ using namespace std;
 
 
 WateringController::WateringController() :
-	WateringController(ZoneHandler::getInstancePtr())
+	WateringController(std::make_shared<ZoneHandlerImpl>(GpioValve::getValves()))
 {
 }
 

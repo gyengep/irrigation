@@ -1,9 +1,15 @@
 #pragma once
+#include <memory>
+#include <vector>
 #include "Valve.h"
 
 
 class GpioValve: public Valve {
+	static const std::vector<std::shared_ptr<Valve>> valves;
+
 	const int pin;
+
+	void setPin(int mode);
 
 public:
 	GpioValve(int pin);
@@ -11,11 +17,7 @@ public:
 
 	virtual void activate() override;
 	virtual void deactivate() override;
-};
 
-///////////////////////////////////////////////////////////////////////////////
-
-class GpioValveFactory : public ValveFactory {
-public:
-	virtual std::shared_ptr<Valve> createValve(size_t id) override;
+	static void init();
+	static std::vector<std::shared_ptr<Valve>> getValves();
 };

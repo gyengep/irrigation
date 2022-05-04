@@ -1,104 +1,99 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "Hardware/Valves/ZoneHandlerImpl.h"
+#include "ZoneHandlerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Mocks/MockValve.h"
 
 using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(ZoneHandlerImplTest, getZoneCount) {
+void ZoneHandlerImplTest::SetUp() {
+	mockValves = std::vector<std::shared_ptr<MockValve>>({
+		std::make_shared<StrictMock<MockValve>>(),
+		std::make_shared<StrictMock<MockValve>>(),
+		std::make_shared<StrictMock<MockValve>>(),
+		std::make_shared<StrictMock<MockValve>>(),
+		std::make_shared<StrictMock<MockValve>>(),
+		std::make_shared<StrictMock<MockValve>>(),
+		std::make_shared<StrictMock<MockValve>>()
+	});
+
+	zoneHandler = std::make_shared<ZoneHandlerImpl>(std::vector<std::shared_ptr<Valve>>(mockValves.begin(), mockValves.end()));
+}
+
+void ZoneHandlerImplTest::TearDown() {
+
+}
+
+
+TEST_F(ZoneHandlerImplTest, getZoneCount) {
 	EXPECT_EQ(6, ZoneHandler::getZoneCount());
 }
 
-TEST(ZoneHandlerImplTest, activate) {
-	std::shared_ptr<MockValveFactory<NiceMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
+TEST_F(ZoneHandlerImplTest, activate) {
 
-	mockValveFactory = make_shared<MockValveFactory<NiceMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
+	for (size_t i = 0; i < mockValves.size(); i++) {
+		EXPECT_CALL(*mockValves[i], activate()).Times(AnyNumber());
+		EXPECT_CALL(*mockValves[i], deactivate()).Times(AnyNumber());
+	}
 
 	for (size_t i = 0; i < zoneHandler->getZoneCount(); i++) {
 		EXPECT_NO_THROW(zoneHandler->activate(i));
 	}
 }
 
-TEST(ZoneHandlerImplTest, activateInvalid) {
-	std::shared_ptr<MockValveFactory<NiceMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
-
-	mockValveFactory = make_shared<MockValveFactory<NiceMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
-
+TEST_F(ZoneHandlerImplTest, activateInvalid) {
 	EXPECT_THROW(zoneHandler->activate(zoneHandler->getZoneCount()), IndexOutOfBoundsException);
 }
 
-TEST(ZoneHandlerImplTest, getActiveId) {
-	std::shared_ptr<MockValveFactory<NiceMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
-
-	mockValveFactory = make_shared<MockValveFactory<NiceMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
+TEST_F(ZoneHandlerImplTest, getActiveId) {
+	for (size_t i = 0; i < mockValves.size(); i++) {
+		EXPECT_CALL(*mockValves[i], activate()).Times(AnyNumber());
+		EXPECT_CALL(*mockValves[i], deactivate()).Times(AnyNumber());
+	}
 
 	EXPECT_EQ(ZoneHandler::invalidZoneId, zoneHandler->getActiveId());
 	zoneHandler->activate(0);
 	EXPECT_EQ(0, zoneHandler->getActiveId());
+	zoneHandler->activate(4);
+	EXPECT_EQ(4, zoneHandler->getActiveId());
 }
 
-TEST(ZoneHandlerImplTest, activateValve) {
-	std::shared_ptr<MockValveFactory<StrictMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
-
-	mockValveFactory = make_shared<MockValveFactory<StrictMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
-
+TEST_F(ZoneHandlerImplTest, activateValve) {
 	Sequence seq;
 
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[0], activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[0], deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[0], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[0], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], deactivate()).Times(1).InSequence(seq);
 
 	zoneHandler->activate(0);
 	zoneHandler->deactivate();
 }
 
-TEST(ZoneHandlerImplTest, deactivateInDestructor) {
-	std::shared_ptr<MockValveFactory<StrictMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
-
-	mockValveFactory = make_shared<MockValveFactory<StrictMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
-
+TEST_F(ZoneHandlerImplTest, deactivateInDestructor) {
 	Sequence seq;
 
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[0], activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[0], deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[0], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[0], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], deactivate()).Times(1).InSequence(seq);
 
 	zoneHandler->activate(0);
 }
 
-TEST(ZoneHandlerImplTest, deactivateValve) {
-	std::shared_ptr<MockValveFactory<StrictMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
-
-	mockValveFactory = make_shared<MockValveFactory<StrictMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
-
+TEST_F(ZoneHandlerImplTest, deactivateValve) {
 	Sequence seq;
 
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[1], activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[1], deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[2], activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[2], deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[1], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[1], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[2], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[2], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], deactivate()).Times(1).InSequence(seq);
 
 	zoneHandler->activate(1);
 	zoneHandler->deactivate();
@@ -106,21 +101,15 @@ TEST(ZoneHandlerImplTest, deactivateValve) {
 	zoneHandler->deactivate();
 }
 
-TEST(ZoneHandlerImplTest, activateValveAgain) {
-	std::shared_ptr<MockValveFactory<StrictMock<MockValve>>> mockValveFactory;
-	std::shared_ptr<ZoneHandlerImpl> zoneHandler;
-
-	mockValveFactory = make_shared<MockValveFactory<StrictMock<MockValve>>>();
-	zoneHandler = ZoneHandlerImpl::Builder().setValveFactory(mockValveFactory).build();
-
+TEST_F(ZoneHandlerImplTest, activateValveAgain) {
 	Sequence seq;
 
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[1], activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[1], deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[2], activate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockZoneValves[2], deactivate()).Times(1).InSequence(seq);
-	EXPECT_CALL(*mockValveFactory->mockMasterValve, deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[1], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[1], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[2], activate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[2], deactivate()).Times(1).InSequence(seq);
+	EXPECT_CALL(*mockValves[6], deactivate()).Times(1).InSequence(seq);
 
 	zoneHandler->activate(1);
 	zoneHandler->activate(2);

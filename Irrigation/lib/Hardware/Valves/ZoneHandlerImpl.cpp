@@ -1,25 +1,24 @@
 #include "ZoneHandlerImpl.h"
-#include "GpioValve.h"
-#include "ValveConfig.h"
 #include "Exceptions/Exceptions.h"
 
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ZoneHandlerImpl::ZoneHandlerImpl(const shared_ptr<ValveFactory>& valveFactory) :
-	zoneValves(getZoneCount()),
+ZoneHandlerImpl::ZoneHandlerImpl(const std::vector<std::shared_ptr<Valve>>& valves) :
+	masterValve(valves.back()),
+	zoneValves(valves.begin(), valves.end() - 1),
 	activeZoneId(invalidZoneId)
 {
-	if (nullptr == valveFactory) {
-		throw invalid_argument("ZoneHandlerImpl::ZoneHandlerImpl() valveFactory pointer cannot be NULL");
+	if (getZoneCount() + 1 != valves.size()) {
+		throw invalid_argument("ZoneHandlerImpl::ZoneHandlerImpl() valves.size() must be " + std::to_string(getZoneCount() + 1));
 	}
 
-	for (size_t i = 0; i < zoneValves.size(); i++) {
-		zoneValves[i] = valveFactory->createValve(i);
+	for (size_t i = 0; i < valves.size(); i++) {
+		if (nullptr == valves[i]) {
+			throw invalid_argument("ZoneHandlerImpl::ZoneHandlerImpl() valves[" + std::to_string(i) + "] pointer cannot be NULL");
+		}
 	}
-
-	masterValve = valveFactory->createValve(getZoneCount());
 }
 
 ZoneHandlerImpl::~ZoneHandlerImpl() {
@@ -53,19 +52,4 @@ void ZoneHandlerImpl::deactivate() {
 		masterValve->deactivate();
 		activeZoneId = invalidZoneId;
 	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ZoneHandlerImpl::Builder& ZoneHandlerImpl::Builder::setValveFactory(const shared_ptr<ValveFactory>& valveFactory) {
-	this->valveFactory = valveFactory;
-	return *this;
-}
-
-shared_ptr<ZoneHandlerImpl> ZoneHandlerImpl::Builder::build() {
-	if (nullptr == valveFactory) {
-		valveFactory = make_shared<GpioValveFactory>();
-	}
-
-	return shared_ptr<ZoneHandlerImpl>(new ZoneHandlerImpl(valveFactory));
 }

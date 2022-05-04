@@ -6,7 +6,8 @@
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Email/EmailHandler.h"
 #include "Exceptions/Exceptions.h"
-#include "Hardware/Valves/GpioHandler.h"
+#include "Hardware/Valves/GpioValve.h"
+#include "Hardware/Valves/ZoneHandlerImpl.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
@@ -14,6 +15,7 @@
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/HotWeatherScheduler.h"
@@ -87,7 +89,7 @@ void IrrigationApplication::uninitEmail() {
 
 void IrrigationApplication::initGpio() {
 	try {
-		GpioHandler::init();
+		GpioValve::init();
 	} catch (const exception& e) {
 		throw_with_nested(runtime_error("Can't initialize valves"));
 	}
@@ -142,7 +144,12 @@ void IrrigationApplication::uninitTemperature() {
 }
 
 void IrrigationApplication::initDocument() {
-	irrigationDocument = IrrigationDocument::Builder().build();
+	irrigationDocument = std::make_shared<IrrigationDocument>(
+		std::make_shared<ProgramContainer>(),
+		std::make_shared<WateringController>(
+			std::make_shared<ZoneHandlerImpl>(GpioValve::getValves())
+		)
+	);
 
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,

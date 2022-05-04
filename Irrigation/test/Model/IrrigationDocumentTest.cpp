@@ -4,7 +4,6 @@
 #include <thread>
 #include "DTO/DocumentDTO.h"
 #include "Exceptions/Exceptions.h"
-#include "Hardware/Valves/GpioHandler.h"
 #include "Hardware/Valves/ZoneHandler.h"
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
