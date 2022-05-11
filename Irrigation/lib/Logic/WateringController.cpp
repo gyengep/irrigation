@@ -46,7 +46,7 @@ void WateringController::start(const RunTimeContainer& runTimes, unsigned adjust
 
 	const auto adjustedRunTimes = adjustRunTimes(runTimes, adjustmentPercent);
 
-	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+	/*if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 		LOGGER.debug("Irrigation started with parameters: \n"
 			"\tadjustment: %u%%, runTimes: %s\n"
 			"\tadjusted runTimes: %s",
@@ -55,7 +55,7 @@ void WateringController::start(const RunTimeContainer& runTimes, unsigned adjust
 					adjustedRunTimes.begin(),
 					adjustedRunTimes.end()).c_str()
 				);
-	} else {
+	} else*/ {
 		LOGGER.info("Irrigation started");
 	}
 
@@ -77,16 +77,16 @@ void WateringController::stop() {
 	LOGGER.info("Irrigation stopped");
 }
 
-void WateringController::workerFunc(const vector<RunTime> runTimes) {
+void WateringController::workerFunc(const vector<RunTimePtr> runTimes) {
 	unique_lock<mutex> lock(mtx);
 
 	for (size_t i = 0; i < zoneHandler->getZoneCount(); ++i) {
 
-		if (runTimes[i].getMilliSeconds() > 0) {
+		if (runTimes[i]->getMilliSeconds() > 0) {
 			zoneHandler->activate(i);
 			LOGGER.debug("Zone[%u] activated", i);
 
-			condition.wait_for(lock, chrono::milliseconds(runTimes[i].getMilliSeconds()), [this]{ return stopped; });
+			condition.wait_for(lock, chrono::milliseconds(runTimes[i]->getMilliSeconds()), [this]{ return stopped; });
 			if (stopped) {
 				zoneHandler->deactivate();
 				active = false;
@@ -112,12 +112,16 @@ size_t WateringController::getActiveZoneId() const {
 	return zoneHandler->getActiveId();
 }
 
-vector<RunTime> WateringController::adjustRunTimes(const RunTimeContainer& runTimes, unsigned adjustmentPercent) {
-	vector<RunTime> adjustedRunTimes(runTimes.size());
+vector<RunTimePtr> WateringController::adjustRunTimes(const RunTimeContainer& runTimes, unsigned adjustmentPercent) {
+	vector<RunTimePtr> adjustedRunTimes;
+
+	adjustedRunTimes.reserve(runTimes.size());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
 		unsigned adjustedMilliSeconds = runTimes.at(i)->getMilliSeconds() * adjustmentPercent / 100;
-		adjustedRunTimes[i].setMilliSeconds(adjustedMilliSeconds);
+
+		adjustedRunTimes.push_back(RunTimeFactory().create());
+		adjustedRunTimes.back()->setMilliSeconds(adjustedMilliSeconds);
 	}
 
 	return adjustedRunTimes;

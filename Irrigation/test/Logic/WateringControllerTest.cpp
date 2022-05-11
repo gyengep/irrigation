@@ -1,4 +1,5 @@
 #include "WateringControllerTest.h"
+#include "Logic/RunTimeImpl.h"
 #include "Hardware/Valves/GpioValve.h"
 #include "Hardware/Valves/ZoneHandlerImpl.h"
 #include <numeric>
@@ -50,12 +51,12 @@ TEST_F(WateringControllerTest, init) {
 
 TEST_F(WateringControllerTest, startWithNotEmpty) {
 	const RunTimeContainer runTimes({
-		std::make_shared<RunTime>(1),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0)
+		std::make_shared<RunTimeImpl>(1),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0)
 	});
 
 	wateringController->start(runTimes, 100);
@@ -65,12 +66,12 @@ TEST_F(WateringControllerTest, startWithNotEmpty) {
 
 TEST_F(WateringControllerTest, stop) {
 	const RunTimeContainer runTimes({
-		std::make_shared<RunTime>(1),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0),
-		std::make_shared<RunTime>(0)
+		std::make_shared<RunTimeImpl>(1),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0),
+		std::make_shared<RunTimeImpl>(0)
 	});
 
 	wateringController->start(runTimes, 100);

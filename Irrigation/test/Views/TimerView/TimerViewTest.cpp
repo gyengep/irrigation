@@ -1,5 +1,6 @@
 #include "TimerViewTest.h"
 #include "Logic/ProgramContainer.h"
+#include "Logic/RunTimeImpl.h"
 
 using namespace std;
 using namespace testing;
@@ -9,21 +10,21 @@ using namespace testing;
 const time_t TimerViewTest::rawtime = time(nullptr);
 const tm TimerViewTest::timeinfo = *localtime(&TimerViewTest::rawtime);
 const RunTimeContainer TimerViewTest::runTimes1 {
-	std::make_shared<RunTime>(110),
-	std::make_shared<RunTime>(120),
-	std::make_shared<RunTime>(130),
-	std::make_shared<RunTime>(140),
-	std::make_shared<RunTime>(150),
-	std::make_shared<RunTime>(160)
+	std::make_shared<RunTimeImpl>(110),
+	std::make_shared<RunTimeImpl>(120),
+	std::make_shared<RunTimeImpl>(130),
+	std::make_shared<RunTimeImpl>(140),
+	std::make_shared<RunTimeImpl>(150),
+	std::make_shared<RunTimeImpl>(160)
 };
 
 const RunTimeContainer TimerViewTest::runTimes2 {
-	std::make_shared<RunTime>(210),
-	std::make_shared<RunTime>(220),
-	std::make_shared<RunTime>(230),
-	std::make_shared<RunTime>(240),
-	std::make_shared<RunTime>(250),
-	std::make_shared<RunTime>(260)
+	std::make_shared<RunTimeImpl>(210),
+	std::make_shared<RunTimeImpl>(220),
+	std::make_shared<RunTimeImpl>(230),
+	std::make_shared<RunTimeImpl>(240),
+	std::make_shared<RunTimeImpl>(250),
+	std::make_shared<RunTimeImpl>(260)
 };
 
 

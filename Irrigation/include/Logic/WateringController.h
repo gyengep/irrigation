@@ -17,7 +17,7 @@ class WateringController {
 	bool stopped;
 	bool active;
 
-	void workerFunc(const std::vector<RunTime> runTimes);
+	void workerFunc(const std::vector<RunTimePtr> runTimes);
 
 public:
 	WateringController();
@@ -35,5 +35,5 @@ public:
 	virtual bool isWateringActive() const;
 	size_t getActiveZoneId() const;
 
-	static std::vector<RunTime> adjustRunTimes(const RunTimeContainer& runTimes, unsigned adjustmentPercent);
+	static std::vector<RunTimePtr> adjustRunTimes(const RunTimeContainer& runTimes, unsigned adjustmentPercent);
 };

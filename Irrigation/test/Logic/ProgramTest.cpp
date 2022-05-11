@@ -21,12 +21,12 @@ using ::testing::AnyNumber;
 
 TEST(ProgramTest, defaultConstructor) {
 	const RunTimeContainer expectedRunTimeContainer({
-		std::make_shared<RunTime>(),
-		std::make_shared<RunTime>(),
-		std::make_shared<RunTime>(),
-		std::make_shared<RunTime>(),
-		std::make_shared<RunTime>(),
-		std::make_shared<RunTime>()
+		RunTimeFactory().create(),
+		RunTimeFactory().create(),
+		RunTimeFactory().create(),
+		RunTimeFactory().create(),
+		RunTimeFactory().create(),
+		RunTimeFactory().create()
 	});
 
 	const Program program;

@@ -38,7 +38,15 @@ bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
 	return equal(container.begin(), container.end(), other.container.begin(), comp);
 }
 
-const RunTimeContainer::mapped_type& RunTimeContainer::at(const key_type& key) const {
+RunTimeContainer::const_mapped_type RunTimeContainer::at(const key_type& key) const {
+	if (container.size() <= key) {
+		throw NoSuchElementException("RunTime[" + to_string(key) + "] does not exist");
+	}
+
+	return container[key].second;
+}
+
+RunTimeContainer::mapped_type RunTimeContainer::at(const key_type& key) {
 	if (container.size() <= key) {
 		throw NoSuchElementException("RunTime[" + to_string(key) + "] does not exist");
 	}

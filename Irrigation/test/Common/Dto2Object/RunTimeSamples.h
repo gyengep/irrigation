@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Logic/RunTime.h"
+#include "Logic/RunTimeImpl.h"
 #include "SampleBase.h"
 
 
@@ -12,7 +12,7 @@ namespace Dto2ObjectTest {
 	class RunTimeSample1 : public RunTimeSample {
 	public:
 		RunTimeSample1() : RunTimeSample (
-			std::make_shared<RunTime>(60 * 1 + 10),
+			std::make_shared<RunTimeImpl>(60 * 1 + 10),
 			RunTimeDTO(1, 10)
 		) {}
 	};
@@ -20,7 +20,7 @@ namespace Dto2ObjectTest {
 	class RunTimeSample2 : public RunTimeSample {
 	public:
 		RunTimeSample2() : RunTimeSample(
-			std::make_shared<RunTime>(60 * 2 + 15),
+			std::make_shared<RunTimeImpl>(60 * 2 + 15),
 			RunTimeDTO(2, 15)
 		) {}
 	};
@@ -28,7 +28,7 @@ namespace Dto2ObjectTest {
 	class RunTimeSample3 : public RunTimeSample {
 	public:
 		RunTimeSample3() : RunTimeSample(
-			std::make_shared<RunTime>(60 * 3 + 20),
+			std::make_shared<RunTimeImpl>(60 * 3 + 20),
 			RunTimeDTO(3, 20)
 		) {}
 	};
@@ -36,7 +36,7 @@ namespace Dto2ObjectTest {
 	class RunTimeSample4 : public RunTimeSample {
 	public:
 		RunTimeSample4() : RunTimeSample(
-			std::make_shared<RunTime>(60 * 4 + 30),
+			std::make_shared<RunTimeImpl>(60 * 4 + 30),
 			RunTimeDTO(4, 30)
 		) {}
 	};
@@ -44,7 +44,7 @@ namespace Dto2ObjectTest {
 	class RunTimeSample5 : public RunTimeSample {
 	public:
 		RunTimeSample5() : RunTimeSample(
-			std::make_shared<RunTime>(60 * 5 + 40),
+			std::make_shared<RunTimeImpl>(60 * 5 + 40),
 			RunTimeDTO(5, 40)
 		) {}
 	};
@@ -52,7 +52,7 @@ namespace Dto2ObjectTest {
 	class RunTimeSample6 : public RunTimeSample {
 	public:
 		RunTimeSample6() : RunTimeSample(
-			std::make_shared<RunTime>(60 * 10 + 50),
+			std::make_shared<RunTimeImpl>(60 * 10 + 50),
 			RunTimeDTO(10, 50)
 		) {}
 	};
