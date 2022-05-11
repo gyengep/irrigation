@@ -47,22 +47,10 @@ Program::Program() :
 				TemperatureHandler::getInstance().getTemperatureHistory()
 				),
 		make_shared<WeeklyScheduler>(),
-		make_shared<RunTimeContainer>(),
+		make_shared<RunTimeContainer>(
+				std::make_shared<RunTimeFactory>()
+				),
 		make_shared<StartTimeContainer>()
-	)
-{
-}
-
-Program::Program(const Program& other) :
-	Program(other.isEnabled(), other.getName(),
-		other.getAdjustment(),
-		other.getSchedulerType(),
-		make_shared<EveryDayScheduler>(other.getEveryDayScheduler()),
-		make_shared<HotWeatherScheduler>(other.getHotWeatherScheduler()),
-		make_shared<TemperatureDependentScheduler>(other.getTemperatureDependentScheduler()),
-		make_shared<WeeklyScheduler>(other.getWeeklyScheduler()),
-		make_shared<RunTimeContainer>(other.getRunTimes()),
-		make_shared<StartTimeContainer>(other.getStartTimes())
 	)
 {
 }
@@ -346,7 +334,7 @@ Program::Builder& Program::Builder::setStartTimeContainer(const shared_ptr<Start
 shared_ptr<Program> Program::Builder::build() {
 
 	if (nullptr == everyDayScheduler) {
-		everyDayScheduler.reset(new EveryDayScheduler());
+		everyDayScheduler = std::make_shared<EveryDayScheduler>();
 	}
 
 	if (nullptr == hotWeatherScheduler) {
@@ -363,18 +351,20 @@ shared_ptr<Program> Program::Builder::build() {
 	}
 
 	if (nullptr == weeklyScheduler) {
-		weeklyScheduler.reset(new WeeklyScheduler());
+		weeklyScheduler = std::make_shared<WeeklyScheduler>();
 	}
 
 	if (nullptr == runTimes) {
-		runTimes.reset(new RunTimeContainer());
+		runTimes = std::make_shared<RunTimeContainer>(
+					std::make_shared<RunTimeFactory>()
+				);
 	}
 
 	if (nullptr == startTimes) {
-		startTimes.reset(new StartTimeContainer());
+		startTimes = std::make_shared<StartTimeContainer>();
 	}
 
-	return shared_ptr<Program>(new Program(
+	return std::make_shared<Program>(
 			enabled,
 			name,
 			adjustment,
@@ -384,7 +374,7 @@ shared_ptr<Program> Program::Builder::build() {
 			temperatureDependentScheduler,
 			weeklyScheduler,
 			runTimes,
-			startTimes));
+			startTimes);
 }
 
 nlohmann::json Program::saveTo() const {

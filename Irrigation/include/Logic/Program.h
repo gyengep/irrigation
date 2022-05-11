@@ -6,13 +6,16 @@
 #include "json.hpp"
 #include "DTO/ProgramDTO.h"
 #include "Schedulers/Scheduler.h"
+#include "RunTime.h"
+#include "RunTimeContainer.h"
+#include "StartTime.h"
+#include "StartTimeContainer.h"
 
 class EveryDayScheduler;
 class HotWeatherScheduler;
 class TemperatureDependentScheduler;
 class WeeklyScheduler;
-class RunTimeContainer;
-class StartTimeContainer;
+
 
 class ScheduledResult {
 	const bool scheduled;
@@ -48,7 +51,7 @@ protected:
 public:
 	Program();
 	Program(Program&&) = default;
-	Program(const Program&);
+	Program(const Program&) = delete;
 	Program(bool enabled, const std::string& name,
 		unsigned adjustment,
 		SchedulerType schedulerType,
@@ -106,6 +109,8 @@ public:
 	void loadFrom(const nlohmann::json& values);
 };
 
+typedef std::shared_ptr<Program> ProgramPtr;
+
 class Program::Builder {
 	bool enabled;
 	std::string name;
@@ -133,5 +138,5 @@ public:
 	Builder& setRunTimeContainer(const std::shared_ptr<RunTimeContainer>& runTimes);
 	Builder& setStartTimeContainer(const std::shared_ptr<StartTimeContainer>& startTimes);
 
-	std::shared_ptr<Program> build();
+	ProgramPtr build();
 };

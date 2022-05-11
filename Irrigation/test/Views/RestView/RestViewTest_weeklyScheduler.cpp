@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postWeeklyScheduler) {
 
 void RestViewTest::testGetWeeklyScheduler(const WeeklySchedulerSample& weeklySchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setWeeklyScheduler(weeklySchedulerSample.getObject()).build();
+	const shared_ptr<Program> program = Program::Builder().setWeeklyScheduler(weeklySchedulerSample.getObjectPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 

@@ -4,16 +4,14 @@
 #include <memory>
 #include <vector>
 #include "IdType.h"
+#include "RunTime.h"
 #include "DTO/RunTimeDTO.h"
-
-class RunTime;
-class RunTimeFactory;
 
 
 class RunTimeContainer {
 public:
 	typedef IdType									key_type;
-	typedef std::shared_ptr<RunTime>				mapped_type;
+	typedef RunTimePtr								mapped_type;
 	typedef std::pair<const key_type, mapped_type>	value_type;
 	typedef std::vector<value_type>					container_type;
 	typedef typename container_type::const_iterator const_iterator;
@@ -24,15 +22,11 @@ private:
 	container_type container;
 
 public:
-	RunTimeContainer();
+	RunTimeContainer(const std::shared_ptr<RunTimeFactory>& runTimeFactory);
 	RunTimeContainer(RunTimeContainer&&) = default;
-	RunTimeContainer(const RunTimeContainer& other);
-	RunTimeContainer(std::initializer_list<RunTime> initializer);
-	RunTimeContainer(const std::list<RunTimeDTO>& runTimeDtoList);
+	RunTimeContainer(const RunTimeContainer& other) = delete;
+	RunTimeContainer(std::initializer_list<RunTimePtr> initializer);
 	virtual ~RunTimeContainer() = default;
-
-	// for testing
-	RunTimeContainer(std::shared_ptr<RunTimeFactory> runTimeFactory);
 
 	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
 	RunTimeContainer& operator= (const RunTimeContainer& other) = delete;
@@ -49,12 +43,4 @@ public:
 
 	friend std::string to_string(const RunTimeContainer& runTimeContainer);
 	friend std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
-class RunTimeFactory {
-public:
-	virtual ~RunTimeFactory() = default;
-	virtual std::shared_ptr<RunTime> createRunTime();
 };

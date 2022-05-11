@@ -1,22 +1,15 @@
 #include "StartTimeContainer.h"
-#include "StartTime.h"
 #include <algorithm>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
 
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
 
-StartTimeContainer::StartTimeContainer(const StartTimeContainer& other) {
-	for (const auto& value : other.container) {
-		container.push_back(make_pair(value.first, shared_ptr<StartTime>(new StartTime(*value.second))));
-	}
-}
-
-StartTimeContainer::StartTimeContainer(initializer_list<StartTimeContainer::value_type> initializer) {
-	for (const auto& value : initializer) {
-		insert(value.first, value.second);
-	}
+StartTimeContainer::StartTimeContainer(initializer_list<StartTimeContainer::value_type> initializer) :
+	container(initializer)
+{
 }
 
 bool StartTimeContainer::operator== (const StartTimeContainer& other) const {

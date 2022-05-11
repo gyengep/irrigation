@@ -4,8 +4,13 @@
 #include <sstream>
 #include "Exceptions/Exceptions.h"
 
-using namespace std;
+///////////////////////////////////////////////////////////////////////////////
 
+RunTimePtr RunTimeFactory::create() const {
+	return std::make_shared<RunTime>();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 RunTime::RunTime() : RunTime(0) {
 }
@@ -15,7 +20,7 @@ RunTime::RunTime(unsigned seconds) :
 {
 }
 
-RunTime::RunTime(const chrono::seconds& seconds) : RunTime(seconds.count()) {
+RunTime::RunTime(const std::chrono::seconds& seconds) : RunTime(seconds.count()) {
 }
 
 bool RunTime::operator== (const RunTime& other) const {
@@ -33,8 +38,8 @@ unsigned RunTime::getMilliSeconds() const {
 void RunTime::setSeconds(unsigned seconds) {
 	if (seconds > maxSeconds) {
 		throw ValueOutOfBoundsException(
-				"RunTime value shall not be greater than " + to_string(maxSeconds) +
-				", while actual value is " + to_string(seconds));
+				"RunTime value shall not be greater than " + std::to_string(maxSeconds) +
+				", while actual value is " + std::to_string(seconds));
 	}
 
 	this->milliSeconds = seconds * 1000;
@@ -43,8 +48,8 @@ void RunTime::setSeconds(unsigned seconds) {
 void RunTime::setMilliSeconds(unsigned milliSeconds) {
 	if (milliSeconds > maxSeconds * 1000) {
 		throw ValueOutOfBoundsException(
-				"RunTime value shall not be greater than " + to_string(maxSeconds * 1000) + " ms" +
-				", while actual value is " + to_string(milliSeconds));
+				"RunTime value shall not be greater than " + std::to_string(maxSeconds * 1000) + " ms" +
+				", while actual value is " + std::to_string(milliSeconds));
 	}
 
 	this->milliSeconds = milliSeconds;
@@ -72,14 +77,14 @@ void RunTime::updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) {
 	}
 }
 
-string to_string(const RunTime& runTime) {
-	ostringstream oss;
+std::string to_string(const RunTime& runTime) {
+	std::ostringstream oss;
 	oss << runTime;
 	return oss.str();
 }
 
-ostream& operator<<(ostream& os, const RunTime& runTime) {
-	os << setfill('0') << setw(2) << (runTime.getSeconds() / 60) << ":";
-	os << setfill('0') << setw(2) << (runTime.getSeconds() % 60);
+std::ostream& operator<<(std::ostream& os, const RunTime& runTime) {
+	os << std::setfill('0') << std::setw(2) << (runTime.getSeconds() / 60) << ":";
+	os << std::setfill('0') << std::setw(2) << (runTime.getSeconds() % 60);
 	return os;
 }

@@ -12,9 +12,8 @@ namespace Dto2ObjectTest {
 	class EveryDaySchedulerSample1 : public EveryDaySchedulerSample {
 	public:
 		EveryDaySchedulerSample1() : EveryDaySchedulerSample(
-				EveryDayScheduler(),
-				EveryDaySchedulerDTO()
-			)
-		{}
+			std::make_shared<EveryDayScheduler>(),
+			EveryDaySchedulerDTO()
+		) {}
 	};
 };

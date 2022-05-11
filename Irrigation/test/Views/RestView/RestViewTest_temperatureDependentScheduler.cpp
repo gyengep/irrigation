@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postTemperatureDependentScheduler) {
 
 void RestViewTest::testGetTemperatureDependentScheduler(const TemperatureDependentSchedulerSample& temperatureDependentSchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setTemperatureDependentScheduler(temperatureDependentSchedulerSample.getObject()).build();
+	const shared_ptr<Program> program = Program::Builder().setTemperatureDependentScheduler(temperatureDependentSchedulerSample.getObjectPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 

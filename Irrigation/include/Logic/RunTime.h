@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <memory>
 #include <string>
 #include "DTO/RunTimeDTO.h"
 
@@ -31,4 +32,16 @@ public:
 
 	friend std::string to_string(const RunTime& runTime);
 	friend std::ostream& operator<<(std::ostream& os, const RunTime& runTime);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<RunTime> RunTimePtr;
+
+///////////////////////////////////////////////////////////////////////////////
+
+class RunTimeFactory {
+public:
+	virtual ~RunTimeFactory() = default;
+	virtual RunTimePtr create() const;
 };

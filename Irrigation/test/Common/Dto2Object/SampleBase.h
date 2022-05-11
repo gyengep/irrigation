@@ -7,37 +7,34 @@ namespace Dto2ObjectTest {
 
 	template<class OBJECT, class DTO>
 	class ObjectSample {
-		const std::shared_ptr<OBJECT> object;
-		const DTO dto;
+		std::shared_ptr<OBJECT> objectPtr;
+		DTO dto;
 
 	public:
-		ObjectSample(const OBJECT& object, const DTO& dto) : object(new OBJECT(object)), dto(dto) {}
-		ObjectSample(const std::shared_ptr<OBJECT>& object, const DTO& dto) : object(object), dto(dto) {}
+		ObjectSample(const std::shared_ptr<OBJECT>& objectPtr, DTO&& dto) : objectPtr(objectPtr), dto(std::move(dto)) {}
+		virtual ~ObjectSample() = default;
 
-		~ObjectSample() = default;
+		const std::shared_ptr<OBJECT>& getObjectPtr() const { return objectPtr; }
+		std::shared_ptr<OBJECT>& getObjectPtr() { return objectPtr; }
 
-		const std::shared_ptr<OBJECT> getObject() const { return object; }
 		const DTO& getDto() const { return dto; }
-
-		DTO getDto() { return dto; }
-};
+		DTO& getDto() { return dto; }
+	};
 
 
 	template <class CONTAINER, class DTO>
 	class ContainerSample {
-		const std::shared_ptr<CONTAINER> container;
-		const std::list<DTO> dtoList;
+		std::shared_ptr<CONTAINER> containerPtr;
+		std::list<DTO> dtoList;
 
 	public:
-		ContainerSample(const CONTAINER& container, const std::list<DTO>& dtoList) :
-			container(new CONTAINER(container)),
-			dtoList(dtoList)
-		{}
-
+		ContainerSample(const std::shared_ptr<CONTAINER>& containerPtr, std::list<DTO>&& dtoList) : containerPtr(containerPtr), dtoList(std::move(dtoList)) {}
 		virtual ~ContainerSample() = default;
 
-		const std::shared_ptr<CONTAINER> getContainer() const { return container; }
-		const std::list<DTO>& getDtoList() const { return dtoList; }
-	};
+		const std::shared_ptr<CONTAINER>& getContainerPtr() const { return containerPtr; }
+		std::shared_ptr<CONTAINER>& getContainerPtr() { return containerPtr; }
 
+		const std::list<DTO>& getDtoList() const { return dtoList; }
+		std::list<DTO>& getDtoList() { return dtoList; }
+	};
 };

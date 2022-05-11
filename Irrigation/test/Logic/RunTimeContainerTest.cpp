@@ -13,7 +13,9 @@ using namespace Dto2ObjectTest;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeContainerTest, defaultConstructor) {
-	const RunTimeContainer runTimes;
+	const RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+
+	ASSERT_THAT(runTimes, SizeIs(6));
 
 	EXPECT_THAT(runTimes.at(0), Pointee(RunTime()));
 	EXPECT_THAT(runTimes.at(1), Pointee(RunTime()));
@@ -24,53 +26,160 @@ TEST(RunTimeContainerTest, defaultConstructor) {
 }
 
 TEST(RunTimeContainerTest, initializerConstructor) {
-	const initializer_list<RunTime> initializer { 10, 11, 12, 13, 14, 15 };
+	const initializer_list<RunTimePtr> initializer {
+		std::make_shared<RunTime>(10),
+		std::make_shared<RunTime>(11),
+		std::make_shared<RunTime>(12),
+		std::make_shared<RunTime>(13),
+		std::make_shared<RunTime>(14),
+		std::make_shared<RunTime>(15)
+	};
+
 	const RunTimeContainer runTimes(initializer);
 
 	ASSERT_THAT(runTimes, SizeIs(initializer.size()));
 
 	for (size_t i = 0; i < initializer.size(); ++i) {
 		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(i));
-		EXPECT_THAT(next(runTimes.begin(), i)->second.get(), Pointee(*next(initializer.begin(), i)));
-	}
-}
-
-TEST(RunTimeContainerTest, copyConstructor) {
-	const RunTimeContainer runTimes1({ 10, 11, 12, 13, 14, 15 });
-	const RunTimeContainer runTimes2(runTimes1);
-
-	ASSERT_THAT(runTimes2, SizeIs(runTimes1.size()));
-
-	for (size_t i = 0; i < runTimes1.size(); ++i) {
-		EXPECT_THAT(next(runTimes2.begin(), i)->first, Eq(i));
-		EXPECT_THAT(next(runTimes2.begin(), i)->second.get(), Pointee(*next(runTimes1.begin(), i)->second.get()));
+		EXPECT_THAT(next(runTimes.begin(), i)->second.get(), next(initializer.begin(), i)->get());
 	}
 }
 
 TEST(RunTimeContainerTest, initializerConstructorWithWrongInitializer) {
-	EXPECT_THROW(RunTimeContainer({ 10, 11, 12, 13, 14 }), logic_error);
-	EXPECT_THROW(RunTimeContainer({ 10, 11, 12, 13, 14, 15, 16 }), logic_error);
+	EXPECT_THROW(
+		RunTimeContainer({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14)
+		}),
+		logic_error
+	);
+
+	EXPECT_THROW(
+		RunTimeContainer({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(15),
+			std::make_shared<RunTime>(16)
+		}),
+		logic_error
+	);
 }
 
 TEST(RunTimeContainerTest, equalsOperator) {
-	EXPECT_TRUE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 11, 12, 13, 14, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 20, 21, 22, 23, 24, 25 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 20, 11, 12, 13, 14, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 20, 11, 12, 13, 14, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 21, 12, 13, 14, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 11, 22, 13, 14, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 11, 12, 23, 14, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 11, 12, 13, 24, 15 }));
-	EXPECT_FALSE(RunTimeContainer({ 10, 11, 12, 13, 14, 15 }) == RunTimeContainer({ 10, 11, 12, 13, 14, 25 }));
+	const RunTimeContainer actual({
+		std::make_shared<RunTime>(10),
+		std::make_shared<RunTime>(11),
+		std::make_shared<RunTime>(12),
+		std::make_shared<RunTime>(13),
+		std::make_shared<RunTime>(14),
+		std::make_shared<RunTime>(15)
+	});
+
+	{
+		const RunTimeContainer otherSameAsActaul({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(15)
+		});
+
+		EXPECT_TRUE(actual == otherSameAsActaul);
+	}
+
+	{
+		const RunTimeContainer other1({
+			std::make_shared<RunTime>(0),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(15)
+		});
+
+		EXPECT_FALSE(actual == other1);
+	}
+
+	{
+		const RunTimeContainer other2({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(0),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(15)
+		});
+
+		EXPECT_FALSE(actual == other2);
+	}
+
+	{
+		const RunTimeContainer other3({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(0),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(15)
+		});
+
+		EXPECT_FALSE(actual == other3);
+	}
+
+	{
+		const RunTimeContainer other4({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(0),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(15)
+		});
+
+		EXPECT_FALSE(actual == other4);
+	}
+
+	{
+		const RunTimeContainer other5({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(0),
+			std::make_shared<RunTime>(15)
+		});
+
+		EXPECT_FALSE(actual == other5);
+	}
+
+	{
+		const RunTimeContainer other6({
+			std::make_shared<RunTime>(10),
+			std::make_shared<RunTime>(11),
+			std::make_shared<RunTime>(12),
+			std::make_shared<RunTime>(13),
+			std::make_shared<RunTime>(14),
+			std::make_shared<RunTime>(0)
+		});
+
+		EXPECT_FALSE(actual == other6);
+	}
 }
 
 TEST(RunTimeContainerTest, size) {
-	RunTimeContainer runTimes;
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
 	EXPECT_THAT(runTimes, SizeIs(ZoneHandler::getZoneCount()));
 }
 
 TEST(RunTimeContainerTest, id) {
-	RunTimeContainer runTimes;
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
 		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(i));
@@ -78,7 +187,7 @@ TEST(RunTimeContainerTest, id) {
 }
 
 TEST(RunTimeContainerTest, at) {
-	RunTimeContainer runTimes;
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
 		EXPECT_THAT(runTimes.at(i), Eq(next(runTimes.begin(), i)->second));
@@ -86,18 +195,15 @@ TEST(RunTimeContainerTest, at) {
 }
 
 TEST(RunTimeContainerTest, atInvalid) {
-	RunTimeContainer runTimes;
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
 	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
-}
-
-TEST(RunTimeContainerTest, destroyed) {
-	RunTimeContainer runTimes(unique_ptr<RunTimeFactory>(new MockRunTimeFactory()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList_zeroItem) {
-	EXPECT_THROW(RunTimeContainer().updateFromRunTimeDtoList(list<RunTimeDTO>()), IllegalArgumentException);
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(list<RunTimeDTO>()), IllegalArgumentException);
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList_oneItem) {
@@ -105,7 +211,8 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_oneItem) {
 		RunTimeDTO()
 	});
 
-	EXPECT_THROW(RunTimeContainer().updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList_lessItems) {
@@ -117,7 +224,8 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_lessItems) {
 		RunTimeDTO()
 	});
 
-	EXPECT_THROW(RunTimeContainer().updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList_moreItems) {
@@ -131,7 +239,8 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_moreItems) {
 		RunTimeDTO()
 	});
 
-	EXPECT_THROW(RunTimeContainer().updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList_wrongId) {
@@ -145,8 +254,8 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_wrongId) {
 			RunTimeDTO().setId(0)
 		});
 
-		RunTimeContainer runTimeContainer;
-		EXPECT_THROW(runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+		RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+		EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 	}
 
 	{
@@ -159,8 +268,8 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_wrongId) {
 			RunTimeDTO()
 		});
 
-		RunTimeContainer runTimeContainer;
-		EXPECT_THROW(runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+		RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+		EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 	}
 }
 
@@ -168,7 +277,7 @@ TEST(RunTimeContainerTest, updateFromRunTimeDtoList_wrongId) {
 
 void testToRunTimeDtoList(const RunTimeListSample& runTimeListSample) {
 	EXPECT_THAT(
-		runTimeListSample.getContainer()->toRunTimeDtoList(),
+		runTimeListSample.getContainerPtr()->toRunTimeDtoList(),
 		Eq(runTimeListSample.getDtoList())
 	);
 }
@@ -191,28 +300,25 @@ TEST(RunTimeContainerTest, toRunTimeDtoList4) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromRunTimeDtoList(shared_ptr<RunTimeContainer> runTimeContainer, const RunTimeListSample& runTimeListSample) {
-	EXPECT_THAT(runTimeContainer, Not(Pointee(*runTimeListSample.getContainer())));
-	runTimeContainer->updateFromRunTimeDtoList(runTimeListSample.getDtoList());
-	EXPECT_THAT(runTimeContainer, Pointee(*runTimeListSample.getContainer()));
+void testUpdateFromRunTimeDtoList(shared_ptr<RunTimeContainer> runTimes, const RunTimeListSample& runTimeListSample) {
+	EXPECT_THAT(runTimes, Pointee(Not(Eq(std::ref(*runTimeListSample.getContainerPtr())))));
+	runTimes->updateFromRunTimeDtoList(runTimeListSample.getDtoList());
+	EXPECT_THAT(runTimes, Pointee(Eq(std::ref(*runTimeListSample.getContainerPtr()))));
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList1) {
-	shared_ptr<RunTimeContainer> runTimeContainer = shared_ptr<RunTimeContainer>(new RunTimeContainer());
-	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample1());
+	shared_ptr<RunTimeContainer> runTimes = std::make_shared<RunTimeContainer>(std::make_shared<RunTimeFactory>());
+	testUpdateFromRunTimeDtoList(runTimes, RunTimeListSample1());
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList2) {
-	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample1().getContainer();
-	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample2());
+	testUpdateFromRunTimeDtoList(RunTimeListSample1().getContainerPtr(), RunTimeListSample2());
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList3) {
-	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getContainer();
-	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample3());
+	testUpdateFromRunTimeDtoList(RunTimeListSample2().getContainerPtr(), RunTimeListSample3());
 }
 
 TEST(RunTimeContainerTest, updateFromRunTimeDtoList4) {
-	shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample3().getContainer();
-	testUpdateFromRunTimeDtoList(runTimeContainer, RunTimeListSample4());
+	testUpdateFromRunTimeDtoList(RunTimeListSample3().getContainerPtr(), RunTimeListSample4());
 }

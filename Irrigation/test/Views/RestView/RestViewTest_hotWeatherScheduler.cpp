@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postHotWeatherScheduler) {
 
 void RestViewTest::testGetHotWeatherScheduler(const HotWeatherSchedulerSample& hotWeatherSchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setHotWeatherScheduler(hotWeatherSchedulerSample.getObject()).build();
+	const shared_ptr<Program> program = Program::Builder().setHotWeatherScheduler(hotWeatherSchedulerSample.getObjectPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 

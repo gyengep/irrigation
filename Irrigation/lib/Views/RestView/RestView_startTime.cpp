@@ -60,13 +60,13 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 			irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(startTimeId, startTime);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const StartTime startTimeCopy(*startTime);
+				const std::string logText = to_string(*startTime);
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].StartTime[%s] is added: %s",
 						to_string(programId).c_str(),
 						to_string(startTimeId).c_str(),
-						to_string(startTimeCopy).c_str());
+						logText.c_str());
 			}
 		}
 
@@ -133,13 +133,13 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 			startTime->updateFromStartTimeDto(startTimeDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const StartTime startTimeCopy(*startTime);
+				const std::string logText = to_string(*startTime);
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].StartTime[%s] is modified: %s",
 						to_string(programId).c_str(),
 						to_string(startTimeId).c_str(),
-						to_string(startTimeCopy).c_str());
+						logText.c_str());
 			}
 		}
 

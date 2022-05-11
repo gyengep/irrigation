@@ -59,7 +59,7 @@ TEST(EveryDaySchedulerTest, isDayScheduled) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToEveryDaySchedulerDto(const EveryDaySchedulerSample& everyDaySchedulerSample) {
-	const shared_ptr<EveryDayScheduler> everyDayScheduler = everyDaySchedulerSample.getObject();
+	const shared_ptr<EveryDayScheduler> everyDayScheduler = everyDaySchedulerSample.getObjectPtr();
 	const EveryDaySchedulerDTO& expectedEveryDaySchedulerDto = everyDaySchedulerSample.getDto();
 	EXPECT_THAT(everyDayScheduler->toEveryDaySchedulerDto(), Eq(expectedEveryDaySchedulerDto));
 }
@@ -71,9 +71,9 @@ TEST(EveryDaySchedulerTest, toEveryDaySchedulerDto) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromEveryDaySchedulerDto(shared_ptr<EveryDayScheduler> everyDayScheduler, const EveryDaySchedulerSample& everyDaySchedulerSample) {
-	//EXPECT_THAT(everyDayScheduler, Not(Pointee(*everyDaySchedulerSample.getObject())));
+	//EXPECT_THAT(everyDayScheduler, Not(Pointee(*everyDaySchedulerSample.getObjectPtr())));
 	everyDayScheduler->updateFromEveryDaySchedulerDto(everyDaySchedulerSample.getDto());
-	EXPECT_THAT(everyDayScheduler, Pointee(*everyDaySchedulerSample.getObject()));
+	EXPECT_THAT(everyDayScheduler, Pointee(*everyDaySchedulerSample.getObjectPtr()));
 }
 
 TEST(EveryDaySchedulerTest, updateFromEveryDaySchedulerDto1) {

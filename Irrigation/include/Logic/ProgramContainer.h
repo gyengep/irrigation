@@ -2,15 +2,14 @@
 #include <list>
 #include <memory>
 #include "IdType.h"
+#include "Program.h"
 #include "DTO/ProgramDTO.h"
-
-class Program;
 
 
 class ProgramContainer {
 public:
 	typedef IdType									key_type;
-	typedef std::shared_ptr<Program>				mapped_type;
+	typedef ProgramPtr								mapped_type;
 	typedef std::pair<const key_type, mapped_type>	value_type;
 	typedef std::list<value_type>					container_type;
 	typedef typename container_type::const_iterator const_iterator;
@@ -33,7 +32,7 @@ private:
 public:
 	ProgramContainer() = default;
 	ProgramContainer(ProgramContainer&&) = default;
-	ProgramContainer(const ProgramContainer&);
+	ProgramContainer(const ProgramContainer&) = delete;
 	ProgramContainer(std::initializer_list<value_type> initializer);
 	virtual ~ProgramContainer() = default;
 
@@ -47,6 +46,7 @@ public:
 	const_iterator begin() const 	{ return container.begin(); }
 	const_iterator end() const 		{ return container.end(); }
 	size_t size() const 			{ return container.size(); }
+	bool empty() const	 			{ return container.empty(); }
 
 	const mapped_type& at(const key_type& key) const;
 

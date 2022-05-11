@@ -1,13 +1,10 @@
 #pragma once
+#include <memory>
 #include <string>
 #include "DTO/StartTimeDTO.h"
 
-class StartTimeContainer;
-
 
 class StartTime {
-	friend StartTimeContainer;
-
 	unsigned hour, minute;
 	static const unsigned second = 0;
 
@@ -37,4 +34,16 @@ public:
 
 	friend std::string to_string(const StartTime& startTime);
 	friend std::ostream& operator<<(std::ostream& os, const StartTime& startTime);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<StartTime> StartTimePtr;
+
+///////////////////////////////////////////////////////////////////////////////
+
+class StartTimeFactory {
+public:
+	virtual ~StartTimeFactory() = default;
+	virtual StartTimePtr create() const;
 };

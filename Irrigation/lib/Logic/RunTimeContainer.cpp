@@ -1,5 +1,4 @@
 #include "RunTimeContainer.h"
-#include "RunTime.h"
 #include <memory>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
@@ -7,51 +6,24 @@
 
 using namespace std;
 
-
-shared_ptr<RunTime> RunTimeFactory::createRunTime() {
-	return shared_ptr<RunTime>(new RunTime());
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeContainer::RunTimeContainer() {
+RunTimeContainer::RunTimeContainer(const std::shared_ptr<RunTimeFactory>& runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		shared_ptr<RunTime> runTime(new RunTime());
-		container.push_back(make_pair(i, runTime));
+		container.push_back(make_pair(IdType(i), runTimeFactory->create()));
 	}
 }
 
-RunTimeContainer::RunTimeContainer(shared_ptr<RunTimeFactory> runTimeFactory) {
-	container.reserve(ZoneHandler::getZoneCount());
-	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		shared_ptr<RunTime> runTime = runTimeFactory->createRunTime();
-		container.push_back(make_pair(i, runTime));
-	}
-}
-
-RunTimeContainer::RunTimeContainer(const RunTimeContainer& other) {
-	container.reserve(ZoneHandler::getZoneCount());
-	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		shared_ptr<RunTime> runTime(new RunTime(*other.container[i].second));
-		container.push_back(make_pair(i, runTime));
-	}
-}
-
-RunTimeContainer::RunTimeContainer(initializer_list<RunTime> initializer) {
+RunTimeContainer::RunTimeContainer(initializer_list<RunTimePtr> initializer) {
 	if (ZoneHandler::getZoneCount() != initializer.size()) {
 		throw logic_error("ZoneHandler::getZoneCount() != initializer.size()");
 	}
 
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); ++i) {
-		shared_ptr<RunTime> runTime(new RunTime(*next(initializer.begin(), i)));
-		container.push_back(make_pair(i, runTime));
+		container.emplace_back(make_pair(IdType(i), *next(initializer.begin(), i)));
 	}
-}
-
-RunTimeContainer::RunTimeContainer(const list<RunTimeDTO>& runTimeDtoList) : RunTimeContainer() {
-	updateFromRunTimeDtoList(runTimeDtoList);
 }
 
 bool RunTimeContainer::operator== (const RunTimeContainer& other) const {

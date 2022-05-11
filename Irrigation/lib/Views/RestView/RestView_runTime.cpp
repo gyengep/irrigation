@@ -54,12 +54,12 @@ unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request
 			runTimes.updateFromRunTimeDtoList(runTimeDtoList);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const RunTimeContainer runTimeContainerCopy(runTimes);
+				const std::string logText = to_string(runTimes);
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].RunTimes are modified: %s",
 						to_string(programId).c_str(),
-						to_string(runTimeContainerCopy).c_str());
+						logText.c_str());
 			}
 		}
 

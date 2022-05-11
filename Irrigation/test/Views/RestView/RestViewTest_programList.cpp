@@ -18,7 +18,8 @@ string RestViewTest::createProgramListUrl() {
 TEST_F(RestViewTest, postProgramList) {
 	shared_ptr<MockProgramContainer> mockProgramContainer(new MockProgramContainer());
 
-	EXPECT_CALL(*mockProgramContainer, insert(_, Pointee(*ProgramSample1().getObject())));
+	const ProgramPtr expectedParam = ProgramSample1().getObjectPtr();
+	EXPECT_CALL(*mockProgramContainer, insert(_, Pointee(Eq(std::ref(*expectedParam)))));
 
 	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(mockProgramContainer).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
@@ -50,7 +51,7 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::testGetProgramList(const ProgramListSample& programListSample) {
-	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
+	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainerPtr()).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,

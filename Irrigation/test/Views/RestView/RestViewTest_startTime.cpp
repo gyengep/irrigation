@@ -25,11 +25,11 @@ TEST_F(RestViewTest, postStartTime) {
 
 void RestViewTest::testGetStartTime(const StartTimeListSample& startTimeListSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainer()).build();
+	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainerPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
-	for (const auto& startTimeWithId : *startTimeListSample.getContainer()) {
+	for (const auto& startTimeWithId : *startTimeListSample.getContainerPtr()) {
 		const Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeWithId.first));
 		checkResponseWithBody(response, 200, "application/xml");
 

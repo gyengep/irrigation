@@ -246,12 +246,12 @@ void IrrigationApplication::setMyDefaults() {
 				100
 			)).
 			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
-				RunTime(chrono::minutes(26)),
-				RunTime(chrono::minutes(38)),
-				RunTime(chrono::minutes(32)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0))
+				std::make_shared<RunTime>(chrono::minutes(26)),
+				std::make_shared<RunTime>(chrono::minutes(38)),
+				std::make_shared<RunTime>(chrono::minutes(32)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
 				{ IdType(), make_shared<StartTime>(4, 0) }
@@ -274,12 +274,12 @@ void IrrigationApplication::setMyDefaults() {
 				0
 			)).
 			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(15)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0))
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(15)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
 				{ IdType(), make_shared<StartTime>(6, 0) }
@@ -299,12 +299,12 @@ void IrrigationApplication::setMyDefaults() {
 				chrono::hours(2), 33
 			)).
 			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
-				RunTime(chrono::minutes(2) + chrono::seconds(30)),
-				RunTime(chrono::minutes(3) + chrono::seconds(30)),
-				RunTime(chrono::minutes(3)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0))
+				std::make_shared<RunTime>(chrono::minutes(2) + chrono::seconds(30)),
+				std::make_shared<RunTime>(chrono::minutes(3) + chrono::seconds(30)),
+				std::make_shared<RunTime>(chrono::minutes(3)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
 				{ IdType(), make_shared<StartTime>(12, 0) },
@@ -332,12 +332,12 @@ void IrrigationApplication::setMyDefaults() {
 				0
 			)).
 			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(1)),
-				RunTime(chrono::minutes(0))
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(1)),
+				std::make_shared<RunTime>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
 				{ IdType(), make_shared<StartTime>(7, 0) },
@@ -361,12 +361,12 @@ void IrrigationApplication::setMyDefaults() {
 				0
 			)).
 			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(0)),
-				RunTime(chrono::minutes(2))
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(0)),
+				std::make_shared<RunTime>(chrono::minutes(2))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
 				{ IdType(), make_shared<StartTime>(7, 10) },

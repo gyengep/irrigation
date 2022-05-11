@@ -100,7 +100,7 @@ TEST_F(IrrigationDocumentTest, lockUnlock) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToDocumentDto(const DocumentSample& documentSample) {
-	EXPECT_THAT(documentSample.getObject()->toDocumentDto(), Eq(documentSample.getDto()));
+	EXPECT_THAT(documentSample.getObjectPtr()->toDocumentDto(), Eq(documentSample.getDto()));
 }
 
 TEST_F(IrrigationDocumentTest, toDocumentDto1) {
@@ -121,24 +121,24 @@ TEST_F(IrrigationDocumentTest, toDocumentDto4) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromDocumentDto(shared_ptr<IrrigationDocument> irrigationDocument, const DocumentSample& documentSample) {
-	EXPECT_THAT(irrigationDocument->getPrograms(), Not(documentSample.getObject()->getPrograms()));
+void testUpdateFromDocumentDto(const shared_ptr<IrrigationDocument>& irrigationDocument, const DocumentSample& documentSample) {
+	EXPECT_THAT(irrigationDocument->getPrograms(), Not(Eq(std::ref(documentSample.getObjectPtr()->getPrograms()))));
 	irrigationDocument->updateFromDocumentDto(documentSample.getDto());
-	EXPECT_THAT(irrigationDocument->getPrograms(), documentSample.getObject()->getPrograms());
+	EXPECT_THAT(irrigationDocument->getPrograms(), Eq(std::ref(documentSample.getObjectPtr()->getPrograms())));
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto1) {
-	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample4().getObject();
+	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample4().getObjectPtr();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample1());
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto2) {
-	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample1().getObject();
+	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample1().getObjectPtr();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample2());
 }
 
 TEST_F(IrrigationDocumentTest, updateFromDocumentDto3) {
-	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample2().getObject();
+	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample2().getObjectPtr();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample3());
 }
 
@@ -153,8 +153,8 @@ TEST_F(IrrigationDocumentTest, partialUpdateFromDocumentDto_empty) {
 	const DocumentSample3 expected;
 
 	DocumentSample3 actual;
-	actual.getObject()->updateFromDocumentDto(DocumentDTO());
-	EXPECT_THAT(actual.getObject()->getPrograms(), Eq(expected.getObject()->getPrograms()));
+	actual.getObjectPtr()->updateFromDocumentDto(DocumentDTO());
+	EXPECT_THAT(actual.getObjectPtr()->getPrograms(), Eq(std::ref(expected.getObjectPtr()->getPrograms())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

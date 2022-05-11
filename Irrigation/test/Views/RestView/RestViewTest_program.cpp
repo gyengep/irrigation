@@ -24,7 +24,7 @@ TEST_F(RestViewTest, postProgram) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::testGetProgram(const ProgramListSample& programListSample) {
-	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainer()).build();
+	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainerPtr()).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
@@ -36,7 +36,7 @@ void RestViewTest::testGetProgram(const ProgramListSample& programListSample) {
 	const std::string piName = "xml-stylesheet";
 	const std::string piValue = "type=\"text/xsl\" href=\"/program.xsl\"";
 
-	for (const auto& programWithId : *programListSample.getContainer()) {
+	for (const auto& programWithId : *programListSample.getContainerPtr()) {
 		const Response response = executeRequest("GET", createProgramUrl(programWithId.first));
 		checkResponseWithBody(response, 200, "application/xml");
 

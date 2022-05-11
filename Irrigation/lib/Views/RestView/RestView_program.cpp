@@ -49,12 +49,12 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 			irrigationDocument.getPrograms().insert(programId, program);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const Program programCopy(*program);
+				const std::string logText = to_string(*program);
 				lock.unlock();
 
 				LOGGER.debug("Program[%s] is added: %s",
 						to_string(programId).c_str(),
-						to_string(programCopy).c_str());
+						logText.c_str());
 			}
 		}
 
@@ -117,12 +117,12 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 			program->updateFromProgramDto(programDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const Program programCopy(*program);
+				const std::string logText = to_string(*program);
 				lock.unlock();
 
 				LOGGER.debug("Program[%s] is modified: %s",
 						to_string(programId).c_str(),
-						to_string(programCopy).c_str());
+						logText.c_str());
 			}
 		}
 

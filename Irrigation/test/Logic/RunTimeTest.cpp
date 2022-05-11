@@ -45,7 +45,7 @@ TEST(RunTimeTest, setValueMax) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToRunTimeDto(const RunTimeSample& runTimeSample) {
-	EXPECT_THAT(runTimeSample.getObject()->toRunTimeDto(), Eq(runTimeSample.getDto()));
+	EXPECT_THAT(runTimeSample.getObjectPtr()->toRunTimeDto(), Eq(runTimeSample.getDto()));
 }
 
 TEST(RunTimeTest, toRunTimeDto1) {
@@ -75,9 +75,9 @@ TEST(RunTimeTest, toRunTimeDto6) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromRunTimeDto(shared_ptr<RunTime> runTime, const RunTimeSample& runTimeSample) {
-	EXPECT_THAT(runTime, Not(Pointee(*runTimeSample.getObject())));
+	EXPECT_THAT(runTime, Not(Pointee(*runTimeSample.getObjectPtr())));
 	runTime->updateFromRunTimeDto(runTimeSample.getDto());
-	EXPECT_THAT(runTime, Pointee(*runTimeSample.getObject()));
+	EXPECT_THAT(runTime, Pointee(*runTimeSample.getObjectPtr()));
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto1) {
@@ -86,44 +86,44 @@ TEST(RunTimeTest, updateFromRunTimeDto1) {
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto2) {
-	shared_ptr<RunTime> runTime = RunTimeSample1().getObject();
+	shared_ptr<RunTime> runTime = RunTimeSample1().getObjectPtr();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample2());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto3) {
-	shared_ptr<RunTime> runTime = RunTimeSample2().getObject();
+	shared_ptr<RunTime> runTime = RunTimeSample2().getObjectPtr();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample3());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto4) {
-	shared_ptr<RunTime> runTime = RunTimeSample3().getObject();
+	shared_ptr<RunTime> runTime = RunTimeSample3().getObjectPtr();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample4());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto5) {
-	shared_ptr<RunTime> runTime = RunTimeSample4().getObject();
+	shared_ptr<RunTime> runTime = RunTimeSample4().getObjectPtr();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample5());
 }
 
 TEST(RunTimeTest, updateFromRunTimeDto6) {
-	shared_ptr<RunTime> runTime = RunTimeSample5().getObject();
+	shared_ptr<RunTime> runTime = RunTimeSample5().getObjectPtr();
 	testUpdateFromRunTimeDto(runTime, RunTimeSample6());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeTest, partialUpdateFromRunTimeDto_empty) {
-	RunTime actualRunTime(*RunTimeSample1().getObject());
+	RunTime actualRunTime(*RunTimeSample1().getObjectPtr());
 
 	actualRunTime.updateFromRunTimeDto(RunTimeDTO());
-	EXPECT_THAT(actualRunTime, RunTime(*RunTimeSample1().getObject()));
+	EXPECT_THAT(actualRunTime, RunTime(*RunTimeSample1().getObjectPtr()));
 }
 
 TEST(RunTimeTest, partialUpdateFromRunTimeDto_seconds) {
 	const unsigned second1 = 20;
 	const unsigned second2 = 30;
 
-	RunTime actualRunTime(*RunTimeSample2().getObject());
+	RunTime actualRunTime(*RunTimeSample2().getObjectPtr());
 
 	actualRunTime.updateFromRunTimeDto(RunTimeDTO().setSeconds(second1));
 	EXPECT_THAT(actualRunTime, Eq(RunTime(second1)));
@@ -136,7 +136,7 @@ TEST(RunTimeTest, partialUpdateFromRunTimeDto_minutes) {
 	const unsigned minute1 = 55;
 	const unsigned minute2 = 40;
 
-	RunTime actualRunTime(*RunTimeSample3().getObject());
+	RunTime actualRunTime(*RunTimeSample3().getObjectPtr());
 
 	actualRunTime.updateFromRunTimeDto(RunTimeDTO().setMinutes(minute1));
 	EXPECT_THAT(actualRunTime, Eq(RunTime(minute1 * 60)));

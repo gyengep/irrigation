@@ -6,17 +6,9 @@
 
 using namespace std;
 
-
-ProgramContainer::ProgramContainer(const ProgramContainer& other) {
-	for (const auto& value : other.container) {
-		container.push_back(make_pair(value.first, shared_ptr<Program>(new Program(*value.second))));
-	}
-}
-
-ProgramContainer::ProgramContainer(initializer_list<ProgramContainer::value_type> initializer) {
-	for (const auto& value : initializer) {
-		insert(value.first, value.second);
-	}
+ProgramContainer::ProgramContainer(initializer_list<ProgramContainer::value_type> initializer) :
+	container(initializer)
+{
 }
 
 bool ProgramContainer::operator== (const ProgramContainer& other) const {

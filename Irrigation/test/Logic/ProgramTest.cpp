@@ -20,38 +20,30 @@ using ::testing::AnyNumber;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramTest, defaultConstructor) {
+	const RunTimeContainer expectedRunTimeContainer({
+		std::make_shared<RunTime>(),
+		std::make_shared<RunTime>(),
+		std::make_shared<RunTime>(),
+		std::make_shared<RunTime>(),
+		std::make_shared<RunTime>(),
+		std::make_shared<RunTime>()
+	});
+
 	const Program program;
 
 	EXPECT_THAT(program.getName(), Eq(""));
 	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
 	EXPECT_THAT(program.getWeeklyScheduler(), Eq(WeeklyScheduler()));
-	EXPECT_THAT(program.getRunTimes(), Eq(RunTimeContainer()));
-	EXPECT_THAT(program.getStartTimes(), Eq(StartTimeContainer()));
-}
-
-TEST(ProgramTest, copyConstructor) {
-	const ProgramSample3 programSampe;
-
-	const Program& program1 = *programSampe.getObject();
-	const Program program2(*programSampe.getObject());
-
-	EXPECT_THAT(program1, Eq(program2));
-	EXPECT_THAT(program1.getSchedulerType(), Eq(program2.getSchedulerType()));
-	EXPECT_THAT(program1.getWeeklyScheduler(), Eq(program2.getWeeklyScheduler()));
-	EXPECT_THAT(program1.getRunTimes(), Eq(program2.getRunTimes()));
-	EXPECT_THAT(program1.getStartTimes(), Eq(program2.getStartTimes()));
-
-	EXPECT_THAT(&program1.getWeeklyScheduler(), Ne(&program2.getWeeklyScheduler()));
-	EXPECT_THAT(&program1.getRunTimes(), Ne(&program2.getRunTimes()));
-	EXPECT_THAT(&program1.getStartTimes(), Ne(&program2.getStartTimes()));
+	EXPECT_THAT(program.getRunTimes(), Eq(std::ref(expectedRunTimeContainer)));
+	EXPECT_THAT(program.getStartTimes(), IsEmpty());
 }
 
 TEST(ProgramTest, parametrizedConstructor) {
 	const string name("gcuuzg");
 	const SchedulerType schedulerType = SchedulerType::EVERY_DAY;
-	const shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample3().getObject();
-	const shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getContainer();
-	const shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample1().getContainer();
+	const shared_ptr<WeeklyScheduler> weeklyScheduler = WeeklySchedulerSample3().getObjectPtr();
+	const shared_ptr<RunTimeContainer> runTimeContainer = RunTimeListSample2().getContainerPtr();
+	const shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample1().getContainerPtr();
 
 	shared_ptr<Program> program = Program::Builder().
 			setName(name).
@@ -64,8 +56,8 @@ TEST(ProgramTest, parametrizedConstructor) {
 	EXPECT_THAT(program->getName(), Eq(name));
 	EXPECT_THAT(program->getSchedulerType(), Eq(schedulerType));
 	EXPECT_THAT(program->getWeeklyScheduler(), Eq(*weeklyScheduler));
-	EXPECT_THAT(program->getRunTimes(), Eq(*runTimeContainer));
-	EXPECT_THAT(program->getStartTimes(), Eq(*startTimeContainer));
+	EXPECT_THAT(program->getRunTimes(), Eq(std::ref(*runTimeContainer)));
+	EXPECT_THAT(program->getStartTimes(), Eq(std::ref(*startTimeContainer)));
 
 	EXPECT_THAT(&program->getWeeklyScheduler(), Eq(weeklyScheduler.get()));
 	EXPECT_THAT(&program->getRunTimes(), Eq(runTimeContainer.get()));
@@ -114,9 +106,9 @@ TEST(ProgramTest, equalsOperator) {
 	}
 
 	{
-		auto program1 = Program::Builder().setWeeklyScheduler(WeeklySchedulerSample2().getObject()).build();
-		auto program2 = Program::Builder().setWeeklyScheduler(WeeklySchedulerSample3().getObject()).build();
-		auto program3 = Program::Builder().setWeeklyScheduler(WeeklySchedulerSample3().getObject()).build();
+		auto program1 = Program::Builder().setWeeklyScheduler(WeeklySchedulerSample2().getObjectPtr()).build();
+		auto program2 = Program::Builder().setWeeklyScheduler(WeeklySchedulerSample3().getObjectPtr()).build();
+		auto program3 = Program::Builder().setWeeklyScheduler(WeeklySchedulerSample3().getObjectPtr()).build();
 
 		EXPECT_FALSE(*program1 == *program2);
 		EXPECT_FALSE(*program2 == *program1);
@@ -125,9 +117,9 @@ TEST(ProgramTest, equalsOperator) {
 	}
 
 	{
-		auto program1 = Program::Builder().setRunTimeContainer(RunTimeListSample2().getContainer()).build();
-		auto program2 = Program::Builder().setRunTimeContainer(RunTimeListSample3().getContainer()).build();
-		auto program3 = Program::Builder().setRunTimeContainer(RunTimeListSample3().getContainer()).build();
+		auto program1 = Program::Builder().setRunTimeContainer(RunTimeListSample2().getContainerPtr()).build();
+		auto program2 = Program::Builder().setRunTimeContainer(RunTimeListSample3().getContainerPtr()).build();
+		auto program3 = Program::Builder().setRunTimeContainer(RunTimeListSample3().getContainerPtr()).build();
 
 		EXPECT_FALSE(*program1 == *program2);
 		EXPECT_FALSE(*program2 == *program1);
@@ -136,9 +128,9 @@ TEST(ProgramTest, equalsOperator) {
 	}
 
 	{
-		auto program1 = Program::Builder().setStartTimeContainer(StartTimeListSample2().getContainer()).build();
-		auto program2 = Program::Builder().setStartTimeContainer(StartTimeListSample3().getContainer()).build();
-		auto program3 = Program::Builder().setStartTimeContainer(StartTimeListSample3().getContainer()).build();
+		auto program1 = Program::Builder().setStartTimeContainer(StartTimeListSample2().getContainerPtr()).build();
+		auto program2 = Program::Builder().setStartTimeContainer(StartTimeListSample3().getContainerPtr()).build();
+		auto program3 = Program::Builder().setStartTimeContainer(StartTimeListSample3().getContainerPtr()).build();
 
 		EXPECT_FALSE(*program1 == *program2);
 		EXPECT_FALSE(*program2 == *program1);
@@ -148,17 +140,29 @@ TEST(ProgramTest, equalsOperator) {
 }
 
 TEST(ProgramTest, setName) {
-	const string name("AbcXyz");
+	const string expected1("AbcXyz");
+	const string expected2("9876543210");
 
 	Program program;
-	program.setName(name);
-	EXPECT_THAT(program.getName(), Eq(name));
+
+	program.setName(expected1);
+	EXPECT_THAT(program.getName(), Eq(expected1));
+
+	program.setName(expected2);
+	EXPECT_THAT(program.getName(), Eq(expected2));
 }
 
 TEST(ProgramTest, setSchedulerType) {
+	const SchedulerType expected1 = SchedulerType::EVERY_DAY;
+	const SchedulerType expected2 = SchedulerType::WEEKLY;
+
 	Program program;
-	program.setSchedulerType(SchedulerType::EVERY_DAY);
-	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::EVERY_DAY));
+
+	program.setSchedulerType(expected1);
+	EXPECT_THAT(program.getSchedulerType(), Eq(expected1));
+
+	program.setSchedulerType(expected2);
+	EXPECT_THAT(program.getSchedulerType(), Eq(expected2));
 }
 
 TEST(ProgramTest, isScheduled1) {
@@ -281,7 +285,7 @@ TEST(ProgramTest, isScheduled_disabled) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToProgramDto(const ProgramSample& programSample) {
-	EXPECT_THAT(programSample.getObject()->toProgramDto(), Eq(programSample.getDto()));
+	EXPECT_THAT(programSample.getObjectPtr()->toProgramDto(), Eq(programSample.getDto()));
 }
 
 TEST(ProgramTest, toProgramDto1) {
@@ -302,10 +306,10 @@ TEST(ProgramTest, toProgramDto4) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromProgramDto(shared_ptr<Program> program, const ProgramSample& programSample) {
-	EXPECT_THAT(program, Not(Pointee(*programSample.getObject())));
+void testUpdateFromProgramDto(const shared_ptr<Program>& program, const ProgramSample& programSample) {
+	EXPECT_THAT(program, Pointee(Not(Eq(std::ref(*programSample.getObjectPtr())))));
 	program->updateFromProgramDto(programSample.getDto());
-	EXPECT_THAT(program, Pointee(*programSample.getObject()));
+	EXPECT_THAT(program, Pointee(Eq(std::ref(*programSample.getObjectPtr()))));
 }
 
 TEST(ProgramTest, updateFromProgramDto1) {
@@ -314,113 +318,96 @@ TEST(ProgramTest, updateFromProgramDto1) {
 }
 
 TEST(ProgramTest, updateFromProgramDto2) {
-	shared_ptr<Program> program = ProgramSample1().getObject();
+	shared_ptr<Program> program = ProgramSample1().getObjectPtr();
 	testUpdateFromProgramDto(program, ProgramSample2());
 }
 
 TEST(ProgramTest, updateFromProgramDto3) {
-	shared_ptr<Program> program = ProgramSample2().getObject();
+	shared_ptr<Program> program = ProgramSample2().getObjectPtr();
 	testUpdateFromProgramDto(program, ProgramSample3());
 }
 
 TEST(ProgramTest, updateFromProgramDto4) {
-	shared_ptr<Program> program = ProgramSample3().getObject();
+	shared_ptr<Program> program = ProgramSample3().getObjectPtr();
 	testUpdateFromProgramDto(program, ProgramSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramTest, partialUpdateFromProgramDto_empty) {
-	Program actual(*ProgramSample1().getObject());
-	Program expected(*ProgramSample1().getObject());
+	const ProgramPtr expected = ProgramSample1().getObjectPtr();
 
-	actual.updateFromProgramDto(ProgramDTO());
-	EXPECT_THAT(actual, Eq(expected));
-}
-
-unique_ptr<Program::Builder> createBuilder(const Program& program) {
-	unique_ptr<Program::Builder> builder(new Program::Builder());
-	builder->setEnabled(program.isEnabled());
-	builder->setName(program.getName());
-	builder->setAdjustment(program.getAdjustment());
-	builder->setSchedulerType(program.getSchedulerType());
-	builder->setWeeklyScheduler(shared_ptr<WeeklyScheduler>(new WeeklyScheduler(program.getWeeklyScheduler())));
-	builder->setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer(program.getRunTimes())));
-	builder->setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer(program.getStartTimes())));
-	return builder;
+	ProgramPtr actual = ProgramSample1().getObjectPtr();
+	actual->updateFromProgramDto(ProgramDTO());
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected))));
 }
 
 TEST(ProgramTest, partialUpdateFromProgramDto_name) {
-	Program actual(*ProgramSample2().getObject());
+	const ProgramSample2 programSample;
+	const ProgramPtr expected1 = programSample.createBuilder()->setName("abcdefg").build();
+	const ProgramPtr expected2 = programSample.createBuilder()->setName("123456789").build();
 
-	unique_ptr<Program::Builder> builder = createBuilder(actual);
+	ProgramPtr actual = programSample.getObjectPtr();
 
-	const Program expected1(*builder->setName("abcdefg").build());
-	const Program expected2(*builder->setName("123456789").build());
+	actual->updateFromProgramDto(ProgramDTO().setName("abcdefg"));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected1))));
 
-	actual.updateFromProgramDto(ProgramDTO().setName("abcdefg"));
-	EXPECT_THAT(actual, Eq(expected1));
-
-	actual.updateFromProgramDto(ProgramDTO().setName("123456789"));
-	EXPECT_THAT(actual, Eq(expected2));
+	actual->updateFromProgramDto(ProgramDTO().setName("123456789"));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected2))));
 }
 
 TEST(ProgramTest, partialUpdateFromProgramDto_schedulerType) {
-	Program actual(*ProgramSample3().getObject());
+	const ProgramSample3 programSample;
+	const ProgramPtr expected1 = programSample.createBuilder()->setSchedulerType(SchedulerType::EVERY_DAY).build();
+	const ProgramPtr expected2 = programSample.createBuilder()->setSchedulerType(SchedulerType::WEEKLY).build();
 
-	unique_ptr<Program::Builder> builder = createBuilder(actual);
+	ProgramPtr actual = programSample.getObjectPtr();
 
-	const Program expected1(*builder->setSchedulerType(SchedulerType::EVERY_DAY).build());
-	const Program expected2(*builder->setSchedulerType(SchedulerType::WEEKLY).build());
+	actual->updateFromProgramDto(ProgramDTO().setSchedulerType(to_string(SchedulerType::EVERY_DAY)));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected1))));
 
-	actual.updateFromProgramDto(ProgramDTO().setSchedulerType(to_string(SchedulerType::EVERY_DAY)));
-	EXPECT_THAT(actual, Eq(expected1));
-
-	actual.updateFromProgramDto(ProgramDTO().setSchedulerType(to_string(SchedulerType::WEEKLY)));
-	EXPECT_THAT(actual, Eq(expected2));
+	actual->updateFromProgramDto(ProgramDTO().setSchedulerType(to_string(SchedulerType::WEEKLY)));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected2))));
 }
 
 TEST(ProgramTest, partialUpdateFromProgramDto_weeklyScheduler) {
-	Program actual(*ProgramSample1().getObject());
+	const ProgramSample1 programSample;
+	const ProgramPtr expected1 = programSample.createBuilder()->setWeeklyScheduler(WeeklySchedulerSample1().getObjectPtr()).build();
+	const ProgramPtr expected2 = programSample.createBuilder()->setWeeklyScheduler(WeeklySchedulerSample2().getObjectPtr()).build();
 
-	unique_ptr<Program::Builder> builder = createBuilder(actual);
+	ProgramPtr actual = programSample.getObjectPtr();
 
-	const Program expected1(*builder->setWeeklyScheduler(WeeklySchedulerSample1().getObject()).build());
-	const Program expected2(*builder->setWeeklyScheduler(WeeklySchedulerSample2().getObject()).build());
+	actual->updateFromProgramDto(ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WeeklySchedulerSample1().getDto())));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected1))));
 
-	actual.updateFromProgramDto(ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WeeklySchedulerSample1().getDto())));
-	EXPECT_THAT(actual, Eq(expected1));
-
-	actual.updateFromProgramDto(ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WeeklySchedulerSample2().getDto())));
-	EXPECT_THAT(actual, Eq(expected2));
+	actual->updateFromProgramDto(ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(WeeklySchedulerSample2().getDto())));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected2))));
 }
 
 TEST(ProgramTest, partialUpdateFromProgramDto_runTimeContainer) {
-	Program actual(*ProgramSample2().getObject());
+	const ProgramSample2 programSample;
+	const ProgramPtr expected1 = programSample.createBuilder()->setRunTimeContainer(RunTimeListSample1().getContainerPtr()).build();
+	const ProgramPtr expected2 = programSample.createBuilder()->setRunTimeContainer(RunTimeListSample2().getContainerPtr()).build();
 
-	unique_ptr<Program::Builder> builder = createBuilder(actual);
+	ProgramPtr actual = programSample.getObjectPtr();
 
-	const Program expected1(*builder->setRunTimeContainer(RunTimeListSample1().getContainer()).build());
-	const Program expected2(*builder->setRunTimeContainer(RunTimeListSample2().getContainer()).build());
+	actual->updateFromProgramDto(ProgramDTO().setRunTimes(list<RunTimeDTO>(RunTimeListSample1().getDtoList())));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected1))));
 
-	actual.updateFromProgramDto(ProgramDTO().setRunTimes(list<RunTimeDTO>(RunTimeListSample1().getDtoList())));
-	EXPECT_THAT(actual, Eq(expected1));
-
-	actual.updateFromProgramDto(ProgramDTO().setRunTimes(list<RunTimeDTO>(RunTimeListSample2().getDtoList())));
-	EXPECT_THAT(actual, Eq(expected2));
+	actual->updateFromProgramDto(ProgramDTO().setRunTimes(list<RunTimeDTO>(RunTimeListSample2().getDtoList())));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected2))));
 }
 
 TEST(ProgramTest, partialUpdateFromProgramDto_startTimeContainer) {
-	Program actual(*ProgramSample3().getObject());
+	const ProgramSample3 programSample;
+	const ProgramPtr expected1 = programSample.createBuilder()->setStartTimeContainer(StartTimeListSample1().getContainerPtr()).build();
+	const ProgramPtr expected2 = programSample.createBuilder()->setStartTimeContainer(StartTimeListSample2().getContainerPtr()).build();
 
-	unique_ptr<Program::Builder> builder = createBuilder(actual);
+	ProgramPtr actual = programSample.getObjectPtr();
 
-	const Program expected1(*builder->setStartTimeContainer(StartTimeListSample1().getContainer()).build());
-	const Program expected2(*builder->setStartTimeContainer(StartTimeListSample2().getContainer()).build());
+	actual->updateFromProgramDto(ProgramDTO().setStartTimes(list<StartTimeDTO>(StartTimeListSample1().getDtoList())));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected1))));
 
-	actual.updateFromProgramDto(ProgramDTO().setStartTimes(list<StartTimeDTO>(StartTimeListSample1().getDtoList())));
-	EXPECT_THAT(actual, Eq(expected1));
-
-	actual.updateFromProgramDto(ProgramDTO().setStartTimes(list<StartTimeDTO>(StartTimeListSample2().getDtoList())));
-	EXPECT_THAT(actual, Eq(expected2));
+	actual->updateFromProgramDto(ProgramDTO().setStartTimes(list<StartTimeDTO>(StartTimeListSample2().getDtoList())));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected2))));
 }

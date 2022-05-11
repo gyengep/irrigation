@@ -16,9 +16,10 @@ string RestViewTest::createStartTimeListUrl(IdType programId) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, postStartTimeList) {
-	shared_ptr<MockStartTimeContainer> mockStartTimeContainer(new MockStartTimeContainer());
+	shared_ptr<MockStartTimeContainer> mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
 
-	EXPECT_CALL(*mockStartTimeContainer, insert(_, Pointee(*StartTimeSample1().getObject())));
+	const StartTimeSample1 startTimeSample;
+	EXPECT_CALL(*mockStartTimeContainer, insert(_, Pointee(Eq(std::ref(*startTimeSample.getObjectPtr())))));
 
 	const IdType programId;
 	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(mockStartTimeContainer).build();
@@ -57,7 +58,7 @@ TEST_F(RestViewTest, postStartTimeListNotFound) {
 
 void RestViewTest::testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainer()).build();
+	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(startTimeListSample.getContainerPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 

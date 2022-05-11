@@ -8,8 +8,23 @@ using namespace testing;
 
 const time_t TimerViewTest::rawtime = time(nullptr);
 const tm TimerViewTest::timeinfo = *localtime(&TimerViewTest::rawtime);
-const RunTimeContainer TimerViewTest::runTimes1 { 110, 120, 130, 140, 150, 160 };
-const RunTimeContainer TimerViewTest::runTimes2 { 210, 220, 230, 240, 250, 260 };
+const RunTimeContainer TimerViewTest::runTimes1 {
+	std::make_shared<RunTime>(110),
+	std::make_shared<RunTime>(120),
+	std::make_shared<RunTime>(130),
+	std::make_shared<RunTime>(140),
+	std::make_shared<RunTime>(150),
+	std::make_shared<RunTime>(160)
+};
+
+const RunTimeContainer TimerViewTest::runTimes2 {
+	std::make_shared<RunTime>(210),
+	std::make_shared<RunTime>(220),
+	std::make_shared<RunTime>(230),
+	std::make_shared<RunTime>(240),
+	std::make_shared<RunTime>(250),
+	std::make_shared<RunTime>(260)
+};
 
 
 void TimerViewTest::SetUp() {

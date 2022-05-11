@@ -3,15 +3,14 @@
 #include <list>
 #include <memory>
 #include "IdType.h"
+#include "StartTime.h"
 #include "DTO/StartTimeDTO.h"
-
-class StartTime;
 
 
 class StartTimeContainer {
 public:
 	typedef IdType									key_type;
-	typedef std::shared_ptr<StartTime>				mapped_type;
+	typedef StartTimePtr							mapped_type;
 	typedef std::pair<const key_type, mapped_type>	value_type;
 	typedef std::list<value_type>					container_type;
 	typedef typename container_type::const_iterator const_iterator;
@@ -34,7 +33,7 @@ private:
 public:
 	StartTimeContainer() = default;
 	StartTimeContainer(StartTimeContainer&&) = default;
-	StartTimeContainer(const StartTimeContainer& other);
+	StartTimeContainer(const StartTimeContainer& other) = delete;
 	StartTimeContainer(std::initializer_list<value_type> initializer);
 	virtual ~StartTimeContainer() = default;
 
@@ -46,9 +45,10 @@ public:
 	virtual void erase(const key_type& key);
 	virtual void sort();
 
-	const_iterator begin() const 		{ return container.begin(); }
-	const_iterator end() const 			{ return container.end(); }
-	size_t size() const 				{ return container.size(); }
+	const_iterator begin() const 	{ return container.begin(); }
+	const_iterator end() const 		{ return container.end(); }
+	size_t size() const 			{ return container.size(); }
+	bool empty() const	 			{ return container.empty(); }
 
 	const mapped_type& at(const key_type& key) const;
 

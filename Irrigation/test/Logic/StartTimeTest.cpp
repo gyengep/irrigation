@@ -97,7 +97,7 @@ TEST(StartTimeTest, setValueMax) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToStartTimeDto(const StartTimeSample& startTimeSample) {
-	const shared_ptr<StartTime> startTime = startTimeSample.getObject();
+	const shared_ptr<StartTime> startTime = startTimeSample.getObjectPtr();
 	const StartTimeDTO& expectedStartTimeDto = startTimeSample.getDto();
 	EXPECT_THAT(startTime->toStartTimeDto(), Eq(expectedStartTimeDto));
 }
@@ -121,9 +121,9 @@ TEST(StartTimeTest, toStartTimeDto4) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void testUpdateFromStartTimeDto(shared_ptr<StartTime> startTime, const StartTimeSample& startTimeSample) {
-	EXPECT_THAT(startTime, Not(Pointee(*startTimeSample.getObject())));
+	EXPECT_THAT(startTime, Pointee(Not(Eq(std::ref(*startTimeSample.getObjectPtr())))));
 	startTime->updateFromStartTimeDto(startTimeSample.getDto());
-	EXPECT_THAT(startTime, Pointee(*startTimeSample.getObject()));
+	EXPECT_THAT(startTime, Pointee(Eq(std::ref(*startTimeSample.getObjectPtr()))));
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto1) {
@@ -132,51 +132,58 @@ TEST(StartTimeTest, updateFromStartTimeDto1) {
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto2) {
-	shared_ptr<StartTime> startTime = StartTimeSample1().getObject();
+	shared_ptr<StartTime> startTime = StartTimeSample1().getObjectPtr();
 	testUpdateFromStartTimeDto(startTime, StartTimeSample2());
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto3) {
-	shared_ptr<StartTime> startTime = StartTimeSample2().getObject();
+	shared_ptr<StartTime> startTime = StartTimeSample2().getObjectPtr();
 	testUpdateFromStartTimeDto(startTime, StartTimeSample3());
 }
 
 TEST(StartTimeTest, updateFromStartTimeDto4) {
-	shared_ptr<StartTime> startTime = StartTimeSample3().getObject();
+	shared_ptr<StartTime> startTime = StartTimeSample3().getObjectPtr();
 	testUpdateFromStartTimeDto(startTime, StartTimeSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeTest, partialUpdateFromStartTimeDto_empty) {
-	StartTime actualStartTime(*StartTimeSample1().getObject());
+	const StartTimePtr expected = StartTimeSample1().getObjectPtr();
 
-	actualStartTime.updateFromStartTimeDto(StartTimeDTO());
-	EXPECT_THAT(actualStartTime, Eq(StartTime(*StartTimeSample1().getObject())));
+	StartTimePtr actual = StartTimeSample1().getObjectPtr();
+	actual->updateFromStartTimeDto(StartTimeDTO());
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(*expected))));
 }
 
 TEST(StartTimeTest, partialUpdateFromStartTimeDto_minutes) {
 	const unsigned minute1 = 20;
 	const unsigned minute2 = 30;
 
-	StartTime actualStartTime(*StartTimeSample2().getObject());
+	const StartTime expected1(0, minute1);
+	const StartTime expected2(0, minute2);
 
-	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setMinutes(minute1));
-	EXPECT_THAT(actualStartTime, Eq(StartTime(0, minute1)));
+	StartTimePtr actual = StartTimeSample2().getObjectPtr();
 
-	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setMinutes(minute2));
-	EXPECT_THAT(actualStartTime, Eq(StartTime(0, minute2)));
+	actual->updateFromStartTimeDto(StartTimeDTO().setMinutes(minute1));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(expected1))));
+
+	actual->updateFromStartTimeDto(StartTimeDTO().setMinutes(minute2));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(expected2))));
 }
 
 TEST(StartTimeTest, partialUpdateFromStartTimeDto_hours) {
 	const unsigned hour1 = 10;
 	const unsigned hour2 = 15;
 
-	StartTime actualStartTime(*StartTimeSample3().getObject());
+	const StartTime expected1(hour1, 0);
+	const StartTime expected2(hour2, 0);
 
-	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setHours(hour1));
-	EXPECT_THAT(actualStartTime, Eq(StartTime(hour1, 0)));
+	StartTimePtr actual = StartTimeSample3().getObjectPtr();
 
-	actualStartTime.updateFromStartTimeDto(StartTimeDTO().setHours(hour2));
-	EXPECT_THAT(actualStartTime, Eq(StartTime(hour2, 0)));
+	actual->updateFromStartTimeDto(StartTimeDTO().setHours(hour1));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(expected1))));
+
+	actual->updateFromStartTimeDto(StartTimeDTO().setHours(hour2));
+	EXPECT_THAT(actual, Pointee(Eq(std::ref(expected2))));
 }

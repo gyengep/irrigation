@@ -12,7 +12,10 @@ using namespace Dto2ObjectTest;
 
 TEST(ProgramContainerTest, defaultConstructor) {
 	ProgramContainer programs;
+
 	EXPECT_THAT(programs.begin(), Eq(programs.end()));
+	EXPECT_THAT(programs, IsEmpty());
+	EXPECT_THAT(programs, SizeIs(0));
 }
 
 TEST(ProgramContainerTest, initializerConstructor) {
@@ -28,31 +31,10 @@ TEST(ProgramContainerTest, initializerConstructor) {
 	for (size_t i = 0; i < initializer.size(); ++i) {
 		EXPECT_THAT(next(programs.begin(), i)->first, Eq(next(initializer.begin(), i)->first));
 		EXPECT_THAT(next(programs.begin(), i)->second.get(), Eq(next(initializer.begin(), i)->second.get()));
-		EXPECT_THAT(next(programs.begin(), i)->second.get(), Pointee(*next(initializer.begin(), i)->second.get()));
-	}
-}
-
-TEST(ProgramContainerTest, copyConstructor) {
-	const ProgramContainer programs1({
-		{ 10, Program::Builder().build() },
-		{ 20, Program::Builder().build() },
-		{ 15, Program::Builder().build() },
-	});
-	const ProgramContainer programs2(programs1);
-
-	ASSERT_THAT(programs2, SizeIs(programs1.size()));
-
-	for (size_t i = 0; i < programs1.size(); ++i) {
-		EXPECT_THAT(next(programs2.begin(), i)->first, Eq(next(programs1.begin(), i)->first));
-		EXPECT_THAT(next(programs2.begin(), i)->second.get(), Ne(next(programs1.begin(), i)->second.get()));
-		EXPECT_THAT(next(programs2.begin(), i)->second.get(), Pointee(*next(programs1.begin(), i)->second.get()));
 	}
 }
 
 TEST(ProgramContainerTest, equalsOperator) {
-	const Program program1(*ProgramSample2().getObject());
-	const Program program2(*ProgramSample3().getObject());
-
 	{
 		ProgramContainer container1;
 		ProgramContainer container2;
@@ -60,11 +42,11 @@ TEST(ProgramContainerTest, equalsOperator) {
 		EXPECT_TRUE(container1 == container2);
 		EXPECT_TRUE(container2 == container1);
 
-		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
+		container1.insert(1000, ProgramSample2().getObjectPtr());
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 
-		container2.insert(1000, shared_ptr<Program>(new Program(program1)));
+		container2.insert(1000, ProgramSample2().getObjectPtr());
 		EXPECT_TRUE(container1 == container2);
 		EXPECT_TRUE(container2 == container1);
 	}
@@ -73,8 +55,8 @@ TEST(ProgramContainerTest, equalsOperator) {
 		ProgramContainer container1;
 		ProgramContainer container2;
 
-		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
-		container2.insert(1001, shared_ptr<Program>(new Program(program1)));
+		container1.insert(1000, ProgramSample2().getObjectPtr());
+		container2.insert(1001, ProgramSample2().getObjectPtr());
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 	}
@@ -83,8 +65,8 @@ TEST(ProgramContainerTest, equalsOperator) {
 		ProgramContainer container1;
 		ProgramContainer container2;
 
-		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
-		container2.insert(1000, shared_ptr<Program>(new Program(program2)));
+		container1.insert(1000, ProgramSample2().getObjectPtr());
+		container2.insert(1000, ProgramSample3().getObjectPtr());
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 	}
@@ -93,10 +75,10 @@ TEST(ProgramContainerTest, equalsOperator) {
 		ProgramContainer container1;
 		ProgramContainer container2;
 
-		container1.insert(1000, shared_ptr<Program>(new Program(program1)));
-		container1.insert(1001, shared_ptr<Program>(new Program(program2)));
-		container2.insert(1001, shared_ptr<Program>(new Program(program2)));
-		container2.insert(1000, shared_ptr<Program>(new Program(program1)));
+		container1.insert(1000, ProgramSample2().getObjectPtr());
+		container1.insert(1001, ProgramSample3().getObjectPtr());
+		container2.insert(1001, ProgramSample3().getObjectPtr());
+		container2.insert(1000, ProgramSample2().getObjectPtr());
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 	}
@@ -133,7 +115,7 @@ TEST(ProgramContainerTest, insertExisting) {
 		{ 102, Program::Builder().build() },
 	});
 
-	EXPECT_THROW(programs.insert(101, shared_ptr<Program>(new MockProgram())), AlreadyExistException);
+	EXPECT_THROW(programs.insert(101, Program::Builder().build()), AlreadyExistException);
 }
 
 TEST(ProgramContainerTest, erase) {
@@ -172,12 +154,6 @@ TEST(ProgramContainerTest, eraseInvalid) {
 	EXPECT_THAT(programs, SizeIs(initializer.size()));
 }
 
-TEST(ProgramContainerTest, eraseDestroy) {
-	ProgramContainer programs;
-	programs.insert(0, shared_ptr<Program>(new MockProgram()));
-	programs.erase(0);
-}
-
 TEST(ProgramContainerTest, at) {
 	const initializer_list<ProgramContainer::value_type> initializer {
 		{ 10, Program::Builder().build() },
@@ -188,6 +164,7 @@ TEST(ProgramContainerTest, at) {
 	ProgramContainer programs(initializer);
 
 	ASSERT_THAT(programs, SizeIs(initializer.size()));
+
 	for (unsigned i = 0; i < initializer.size(); ++i) {
 		const ProgramContainer::value_type& value = *next(initializer.begin(), i);
 		const ProgramContainer::key_type& requiredKey = value.first;
@@ -207,15 +184,10 @@ TEST(ProgramContainerTest, atInvalid) {
 	EXPECT_THROW(programs.at(6), NoSuchElementException);
 }
 
-TEST(ProgramContainerTest, destroyed) {
-	ProgramContainer programs;
-	programs.insert(0, shared_ptr<Program>(new MockProgram()));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void testToProgramDtoList(const ProgramListSample& programListSample) {
-	const shared_ptr<ProgramContainer> programContainer = programListSample.getContainer();
+	const shared_ptr<ProgramContainer> programContainer = programListSample.getContainerPtr();
 	const list<ProgramDTO>& expectedProgramDtoList = programListSample.getDtoList();
 	EXPECT_THAT(programContainer->toProgramDtoList(), Eq(expectedProgramDtoList));
 }
@@ -238,28 +210,28 @@ TEST(ProgramContainerTest, toProgramDtoList_moreItem2) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromProgramDtoList(shared_ptr<ProgramContainer> programContainer, const ProgramListSample& programListSample) {
-	EXPECT_THAT(programContainer, Not(Pointee(*programListSample.getContainer())));
+void testUpdateFromProgramDtoList(const shared_ptr<ProgramContainer>& programContainer, const ProgramListSample& programListSample) {
+	EXPECT_THAT(programContainer, Pointee(Not(Eq(std::ref(*programListSample.getContainerPtr())))));
 	programContainer->updateFromProgramDtoList(programListSample.getDtoList());
-	EXPECT_THAT(programContainer, Pointee(*programListSample.getContainer()));
+	EXPECT_THAT(programContainer, Pointee(Eq(std::ref(*programListSample.getContainerPtr()))));
 }
 
 TEST(ProgramContainerTest, updateFromProgramDtoList_empty) {
-	shared_ptr<ProgramContainer> programContainer = ProgramListSample2().getContainer();
+	shared_ptr<ProgramContainer> programContainer = ProgramListSample2().getContainerPtr();
 	testUpdateFromProgramDtoList(programContainer, ProgramListSample1());
 }
 
 TEST(ProgramContainerTest, updateFromProgramDtoList_oneItem) {
-	shared_ptr<ProgramContainer> programContainer = ProgramListSample3().getContainer();
+	shared_ptr<ProgramContainer> programContainer = ProgramListSample3().getContainerPtr();
 	testUpdateFromProgramDtoList(programContainer, ProgramListSample2());
 }
 
 TEST(ProgramContainerTest, updateFromProgramDtoList_moreItem1) {
-	shared_ptr<ProgramContainer> programContainer = ProgramListSample1().getContainer();
+	shared_ptr<ProgramContainer> programContainer = ProgramListSample1().getContainerPtr();
 	testUpdateFromProgramDtoList(programContainer, ProgramListSample3());
 }
 
 TEST(ProgramContainerTest, updateFromProgramDtoList_moreItem2) {
-	shared_ptr<ProgramContainer> programContainer = ProgramListSample2().getContainer();
+	shared_ptr<ProgramContainer> programContainer = ProgramListSample2().getContainerPtr();
 	testUpdateFromProgramDtoList(programContainer, ProgramListSample4());
 }
