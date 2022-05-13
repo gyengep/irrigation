@@ -19,11 +19,13 @@ public:
 class MockRunTimeFactory : public RunTimeFactory {
 public:
 	mutable std::vector<std::shared_ptr<MockRunTime>> mockRunTimes;
+	mutable size_t index = 0;
 
 	virtual RunTimePtr create() const {
-		auto result = mockRunTimes.front();
-		mockRunTimes.erase(mockRunTimes.begin());
-		return result;
+		if (index >= mockRunTimes.size()) {
+			throw std::runtime_error("MockRunTimeFactory no more item");
+		}
+
+		return mockRunTimes[index++];
 	}
 };
-

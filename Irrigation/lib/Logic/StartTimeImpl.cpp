@@ -1,0 +1,66 @@
+#include "StartTimeImpl.h"
+#include "Exceptions/Exceptions.h"
+
+///////////////////////////////////////////////////////////////////////////////
+
+StartTimePtr StartTimeFactory::create() const {
+	return std::make_shared<StartTimeImpl>();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+StartTimeImpl::StartTimeImpl() : StartTimeImpl(0, 0) {
+}
+
+StartTimeImpl::StartTimeImpl(unsigned hour, unsigned minute) {
+	set(hour, minute);
+}
+
+StartTimeImpl::~StartTimeImpl() {
+}
+
+unsigned StartTimeImpl::getHours() const {
+	return hour;
+}
+
+unsigned StartTimeImpl::getMinutes() const {
+	return minute;
+}
+
+void StartTimeImpl::set(unsigned hour, unsigned minute) {
+	if (hour >= 24) {
+		throw ValueOutOfBoundsException(
+				"StartTimeImpl hour shall be less than " + std::to_string(24) +
+				", while actual value is " + std::to_string(hour));
+	}
+
+	if (minute >= 60) {
+		throw ValueOutOfBoundsException(
+				"StartTimeImpl minute shall be less than " + std::to_string(60) +
+				", while actual value is " + std::to_string(minute));
+	}
+
+	this->hour = hour;
+	this->minute = minute;
+}
+
+StartTimeDTO StartTimeImpl::toStartTimeDto() const {
+	return StartTimeDTO(getHours(), getMinutes());
+}
+
+void StartTimeImpl::updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) {
+	if (startTimeDTO.hasHours() || startTimeDTO.hasMinutes()) {
+		unsigned hour = 0;
+		unsigned minute = 0;
+
+		if (startTimeDTO.hasHours()) {
+			hour = startTimeDTO.getHours();
+		}
+
+		if (startTimeDTO.hasMinutes()) {
+			minute = startTimeDTO.getMinutes();
+		}
+
+		set(hour, minute);
+	}
+}

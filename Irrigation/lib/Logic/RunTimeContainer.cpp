@@ -11,7 +11,7 @@ using namespace std;
 RunTimeContainer::RunTimeContainer(const std::shared_ptr<RunTimeFactory>& runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
-		container.push_back(make_pair(IdType(i), runTimeFactory->create()));
+		container.emplace_back(make_pair(IdType(i), runTimeFactory->create()));
 	}
 }
 
@@ -57,7 +57,7 @@ RunTimeContainer::mapped_type RunTimeContainer::at(const key_type& key) {
 list<RunTimeDTO> RunTimeContainer::toRunTimeDtoList() const {
 	list<RunTimeDTO> runTimeDtoList;
 	for (size_t i = 0; i < container.size(); ++i) {
-		runTimeDtoList.push_back(container[i].second->toRunTimeDto().setId(container[i].first));
+		runTimeDtoList.emplace_back(container[i].second->toRunTimeDto().setId(container[i].first));
 	}
 	return runTimeDtoList;
 }

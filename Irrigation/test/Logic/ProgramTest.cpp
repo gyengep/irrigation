@@ -176,10 +176,10 @@ TEST(ProgramTest, isScheduled1) {
 			WillRepeatedly(Return(Scheduler::Result(false, false, 0)));
 
 	program.setAdjustment(76);
-	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -209,10 +209,10 @@ TEST(ProgramTest, isScheduled2) {
 			WillRepeatedly(Return(Scheduler::Result(true, false, 0)));
 
 	program.setAdjustment(76);
-	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -241,10 +241,10 @@ TEST(ProgramTest, isScheduled3) {
 			WillRepeatedly(Return(Scheduler::Result(true, true, 25)));
 
 	program.setAdjustment(76);
-	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -267,10 +267,10 @@ TEST(ProgramTest, isScheduled_disabled) {
 	MockScheduler scheduler;
 
 	program.setEnabled(false);
-	program.getStartTimes().insert(0, shared_ptr<StartTime>(new StartTime(4, 0)));
-	program.getStartTimes().insert(1, shared_ptr<StartTime>(new StartTime(6, 0)));
-	program.getStartTimes().insert(2, shared_ptr<StartTime>(new StartTime(6, 30)));
-	program.getStartTimes().insert(3, shared_ptr<StartTime>(new StartTime(20, 15)));
+	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {

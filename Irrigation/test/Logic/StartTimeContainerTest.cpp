@@ -1,12 +1,11 @@
 #include <gmock/gmock.h>
+#include <memory>
 #include "Exceptions/Exceptions.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/StartTimeImpl.h"
 #include "Mocks/MockStartTime.h"
-#include "Dto2Object/StartTimeListSamples.h"
 
-using namespace std;
 using namespace testing;
-using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,10 +18,10 @@ TEST(StartTimeContainerTest, defaultConstructor) {
 }
 
 TEST(StartTimeContainerTest, initializerConstructor) {
-	const initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<StartTime>(1, 10) },
-		{ 20, std::make_shared<StartTime>(2, 20) },
-		{ 15, std::make_shared<StartTime>(3, 30) },
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StartTimeImpl>(1, 10) },
+		{ IdType(20), std::make_shared<StartTimeImpl>(2, 20) },
+		{ IdType(15), std::make_shared<StartTimeImpl>(3, 30) },
 	};
 	const StartTimeContainer startTimes(initializer);
 
@@ -42,11 +41,11 @@ TEST(StartTimeContainerTest, equalsOperator) {
 		EXPECT_TRUE(container1 == container2);
 		EXPECT_TRUE(container2 == container1);
 
-		container1.insert(1000, std::make_shared<StartTime>(10, 20));
+		container1.insert(1000, std::make_shared<StartTimeImpl>(10, 20));
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 
-		container2.insert(1000, std::make_shared<StartTime>(10, 20));
+		container2.insert(1000, std::make_shared<StartTimeImpl>(10, 20));
 		EXPECT_TRUE(container1 == container2);
 		EXPECT_TRUE(container2 == container1);
 	}
@@ -55,8 +54,8 @@ TEST(StartTimeContainerTest, equalsOperator) {
 		StartTimeContainer container1;
 		StartTimeContainer container2;
 
-		container1.insert(1000, std::make_shared<StartTime>(10, 20));
-		container2.insert(1001, std::make_shared<StartTime>(10, 20));
+		container1.insert(1000, std::make_shared<StartTimeImpl>(10, 20));
+		container2.insert(1001, std::make_shared<StartTimeImpl>(10, 20));
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 	}
@@ -65,8 +64,8 @@ TEST(StartTimeContainerTest, equalsOperator) {
 		StartTimeContainer container1;
 		StartTimeContainer container2;
 
-		container1.insert(1000, std::make_shared<StartTime>(10, 20));
-		container2.insert(1000, std::make_shared<StartTime>(15, 20));
+		container1.insert(1000, std::make_shared<StartTimeImpl>(10, 20));
+		container2.insert(1000, std::make_shared<StartTimeImpl>(15, 20));
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 	}
@@ -75,10 +74,10 @@ TEST(StartTimeContainerTest, equalsOperator) {
 		StartTimeContainer container1;
 		StartTimeContainer container2;
 
-		container1.insert(1000, std::make_shared<StartTime>(10, 20));
-		container1.insert(1001, std::make_shared<StartTime>(15, 20));
-		container2.insert(1001, std::make_shared<StartTime>(15, 20));
-		container2.insert(1000, std::make_shared<StartTime>(10, 20));
+		container1.insert(1000, std::make_shared<StartTimeImpl>(10, 20));
+		container1.insert(1001, std::make_shared<StartTimeImpl>(15, 20));
+		container2.insert(1001, std::make_shared<StartTimeImpl>(15, 20));
+		container2.insert(1000, std::make_shared<StartTimeImpl>(10, 20));
 		EXPECT_FALSE(container1 == container2);
 		EXPECT_FALSE(container2 == container1);
 	}
@@ -87,15 +86,19 @@ TEST(StartTimeContainerTest, equalsOperator) {
 TEST(StartTimeContainerTest, size) {
 	StartTimeContainer startTimes;
 
-	startTimes.insert(0, std::make_shared<StartTime>());
+	startTimes.insert(IdType(), std::make_shared<StartTimeImpl>());
 	EXPECT_THAT(startTimes, SizeIs(1));
+
+	startTimes.insert(IdType(), std::make_shared<StartTimeImpl>());
+	startTimes.insert(IdType(), std::make_shared<StartTimeImpl>());
+	EXPECT_THAT(startTimes, SizeIs(3));
 }
 
 TEST(StartTimeContainerTest, insert) {
-	const initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<StartTime>() },
-		{ 20, std::make_shared<StartTime>() },
-		{ 15, std::make_shared<StartTime>() },
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ 10, std::make_shared<StartTimeImpl>() },
+		{ 20, std::make_shared<StartTimeImpl>() },
+		{ 15, std::make_shared<StartTimeImpl>() },
 	};
 
 	StartTimeContainer startTimes;
@@ -109,20 +112,20 @@ TEST(StartTimeContainerTest, insert) {
 
 TEST(StartTimeContainerTest, insertExisted) {
 	StartTimeContainer startTimes({
-		{ 10, std::make_shared<StartTime>() },
-		{ 20, std::make_shared<StartTime>() },
-		{ 15, std::make_shared<StartTime>() },
+		{ 10, std::make_shared<StartTimeImpl>() },
+		{ 20, std::make_shared<StartTimeImpl>() },
+		{ 15, std::make_shared<StartTimeImpl>() },
 	});
 
-	EXPECT_THROW(startTimes.insert(20, shared_ptr<StartTime>(new MockStartTime())), AlreadyExistException);
+	EXPECT_THROW(startTimes.insert(20, std::make_shared<StartTimeImpl>()), AlreadyExistException);
 }
 
 TEST(StartTimeContainerTest, erase) {
-	const initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<StartTime>() },
-		{ 20, std::make_shared<StartTime>() },
-		{ 30, std::make_shared<StartTime>() },
-		{ 15, std::make_shared<StartTime>() },
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ 10, std::make_shared<StartTimeImpl>() },
+		{ 20, std::make_shared<StartTimeImpl>() },
+		{ 30, std::make_shared<StartTimeImpl>() },
+		{ 15, std::make_shared<StartTimeImpl>() },
 	};
 
 	StartTimeContainer startTimes(initializer);
@@ -131,19 +134,21 @@ TEST(StartTimeContainerTest, erase) {
 	EXPECT_NO_THROW(startTimes.erase(30));
 	EXPECT_THAT(startTimes, SizeIs(initializer.size() - 1));
 
-	EXPECT_THAT(startTimes,
-			ElementsAre(
-				*next(initializer.begin(), 0),
-				*next(initializer.begin(), 1),
-				*next(initializer.begin(), 3)
-			));
+	EXPECT_THAT(
+		startTimes,
+		ElementsAre(
+			*next(initializer.begin(), 0),
+			*next(initializer.begin(), 1),
+			*next(initializer.begin(), 3)
+		)
+	);
 }
 
 TEST(StartTimeContainerTest, eraseInvalid) {
-	const initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<StartTime>() },
-		{ 20, std::make_shared<StartTime>() },
-		{ 15, std::make_shared<StartTime>() },
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ 10, std::make_shared<StartTimeImpl>() },
+		{ 20, std::make_shared<StartTimeImpl>() },
+		{ 15, std::make_shared<StartTimeImpl>() },
 	};
 
 	StartTimeContainer startTimes(initializer);
@@ -153,115 +158,170 @@ TEST(StartTimeContainerTest, eraseInvalid) {
 	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
 }
 
-TEST(StartTimeContainerTest, eraseDestroy) {
-	StartTimeContainer startTimes;
-	startTimes.insert(0, shared_ptr<StartTime>(new MockStartTime()));
-	startTimes.erase(0);
-}
-
 TEST(StartTimeContainerTest, at) {
-	const initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<StartTime>() },
-		{ 15, std::make_shared<StartTime>() },
-		{ 20, std::make_shared<StartTime>() },
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ 10, std::make_shared<StartTimeImpl>() },
+		{ 15, std::make_shared<StartTimeImpl>() },
+		{ 20, std::make_shared<StartTimeImpl>() },
 	};
 
 	StartTimeContainer startTimes(initializer);
 
-	ASSERT_THAT(startTimes, SizeIs(initializer.size()));
-	for (unsigned i = 0; i < initializer.size(); ++i) {
-		const StartTimeContainer::value_type& value = *next(initializer.begin(), i);
-		const StartTimeContainer::key_type& requiredKey = value.first;
-		const StartTimeContainer::mapped_type& requiredValue = value.second;
+	ASSERT_THAT(startTimes, SizeIs(3));
 
-		EXPECT_THAT(startTimes.at(requiredKey), Eq(requiredValue));
+	for (size_t i = 0; i < initializer.size(); i++) {
+		const IdType& key = std::next(initializer.begin(), 0)->first;
+		const StartTimePtr& value = std::next(initializer.begin(), 0)->second;
+
+		EXPECT_THAT(startTimes.at(key).get(), Eq(value.get()));
 	}
 }
 
 TEST(StartTimeContainerTest, atInvalid) {
 	StartTimeContainer startTimes({
-		{ 10, std::make_shared<StartTime>() },
-		{ 15, std::make_shared<StartTime>() },
-		{ 20, std::make_shared<StartTime>() },
+		{ 10, std::make_shared<StartTimeImpl>() },
+		{ 15, std::make_shared<StartTimeImpl>() },
+		{ 20, std::make_shared<StartTimeImpl>() },
 	});
 
 	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
 }
 
-TEST(StartTimeContainerTest, destroyed) {
-	StartTimeContainer startTimes;
-	startTimes.insert(0, shared_ptr<StartTime>(new MockStartTime()));
-}
-
 TEST(StartTimeContainerTest, sort) {
-	const initializer_list<StartTimeContainer::value_type> initializer {
-		{ 0, std::make_shared<StartTime>(0, 15) },
-		{ 1, std::make_shared<StartTime>(0, 25) },
-		{ 2, std::make_shared<StartTime>(0, 10) },
-		{ 3, std::make_shared<StartTime>(0, 20) },
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ 0, std::make_shared<StartTimeImpl>(0, 15) },
+		{ 1, std::make_shared<StartTimeImpl>(0, 25) },
+		{ 2, std::make_shared<StartTimeImpl>(0, 10) },
+		{ 3, std::make_shared<StartTimeImpl>(0, 20) },
 	};
 
 	StartTimeContainer startTimes(initializer);
-
 	startTimes.sort();
 
-	EXPECT_THAT(startTimes,
-			ElementsAre(
-				*next(initializer.begin(), 2),
-				*next(initializer.begin(), 0),
-				*next(initializer.begin(), 3),
-				*next(initializer.begin(), 1)
-			));
+	EXPECT_THAT(
+		startTimes,
+		ElementsAre(
+			*next(initializer.begin(), 2),
+			*next(initializer.begin(), 0),
+			*next(initializer.begin(), 3),
+			*next(initializer.begin(), 1)
+		)
+	);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testToStartTimeDtoList(const StartTimeListSample& startTimeListSample) {
-	const shared_ptr<StartTimeContainer> startTimeContainer = startTimeListSample.getContainerPtr();
-	const list<StartTimeDTO>& expectedStartTimeDtoList = startTimeListSample.getDtoList();
-	EXPECT_THAT(startTimeContainer->toStartTimeDtoList(), Eq(expectedStartTimeDtoList));
+#define START_TIME_DTO(i)  	StartTimeDTO().setHours(10 + i).setMinutes(20 + i)
+
+
+void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) {
+	std::shared_ptr<MockStartTimeFactory> mockStartTimeFactory = std::make_shared<MockStartTimeFactory>();
+
+	for (size_t i = 0; i < startTimeDtoList.size(); ++i) {
+		mockStartTimeFactory->mockStartTimes.push_back(std::make_shared<StrictMock<MockStartTime>>());
+
+		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(*next(startTimeDtoList.begin(), i)))
+			.Times(1);
+	}
+
+	StartTimeContainer startTimeContainer {
+		{ IdType(10), std::make_shared<StartTimeImpl>(2, 3) },
+		{ IdType(20), std::make_shared<StartTimeImpl>(4, 5) },
+		{ IdType(30), std::make_shared<StartTimeImpl>(6, 7) }
+	};
+
+	EXPECT_THAT(startTimeContainer.size(), Eq(3));
+
+	startTimeContainer.updateFromStartTimeDtoList(mockStartTimeFactory, startTimeDtoList);
+	ASSERT_THAT(startTimeContainer.size(), Eq(startTimeDtoList.size()));
+
+	for (size_t i = 0; i < startTimeDtoList.size(); ++i) {
+		const IdType id = next(startTimeDtoList.begin(), i)->getId();
+
+		ASSERT_NO_THROW(startTimeContainer.at(id));
+		EXPECT_THAT(startTimeContainer.at(id).get(), Eq(mockStartTimeFactory->mockStartTimes[i].get()));
+	}
 }
 
-TEST(StartTimeContainerTest, toStartTimeDtoList_empty) {
-	testToStartTimeDtoList(StartTimeListSample1());
-}
 
-TEST(StartTimeContainerTest, toStartTimeDtoList_oneItem) {
-	testToStartTimeDtoList(StartTimeListSample2());
-}
+TEST(StartTimeContainerTest, updateFromStartTimeDtoList_zeroItem) {
+	const std::list<StartTimeDTO> startTimeDtoList {
+	};
 
-TEST(StartTimeContainerTest, toStartTimeDtoList_moreItem1) {
-	testToStartTimeDtoList(StartTimeListSample3());
-}
-
-TEST(StartTimeContainerTest, toStartTimeDtoList_moreItem2) {
-	testToStartTimeDtoList(StartTimeListSample4());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void testUpdateFromStartTimeDtoList(shared_ptr<StartTimeContainer> startTimeContainer, const StartTimeListSample& startTimeListSample) {
-	EXPECT_THAT(startTimeContainer, Pointee(Not(Eq(std::ref(*startTimeListSample.getContainerPtr())))));
-	startTimeContainer->updateFromStartTimeDtoList(startTimeListSample.getDtoList());
-	EXPECT_THAT(startTimeContainer, Pointee(Eq(std::ref(*startTimeListSample.getContainerPtr()))));
-}
-
-TEST(StartTimeContainerTest, updateFromStartTimeDtoList_empty) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample2().getContainerPtr();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample1());
+	updateFromStartTimeDtoList(startTimeDtoList);
 }
 
 TEST(StartTimeContainerTest, updateFromStartTimeDtoList_oneItem) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample3().getContainerPtr();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample2());
+	const std::list<StartTimeDTO> startTimeDtoList {
+		START_TIME_DTO(5).setId(5)
+	};
+
+	updateFromStartTimeDtoList(startTimeDtoList);
 }
 
-TEST(StartTimeContainerTest, updateFromStartTimeDtoList_moreItem1) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample1().getContainerPtr();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample3());
+TEST(StartTimeContainerTest, updateFromStartTimeDtoList_moreItem) {
+	const std::list<StartTimeDTO> startTimeDtoList {
+		START_TIME_DTO(10).setId(5),
+		START_TIME_DTO(11).setId(15),
+		START_TIME_DTO(12).setId(20),
+		START_TIME_DTO(13).setId(21),
+		START_TIME_DTO(14).setId(22)
+	};
+
+	updateFromStartTimeDtoList(startTimeDtoList);
 }
 
-TEST(StartTimeContainerTest, updateFromStartTimeDtoList_moreItem2) {
-	shared_ptr<StartTimeContainer> startTimeContainer = StartTimeListSample2().getContainerPtr();
-	testUpdateFromStartTimeDtoList(startTimeContainer, StartTimeListSample4());
+///////////////////////////////////////////////////////////////////////////////
+
+void toStartTimeDtoList(const std::initializer_list<StartTimeContainer::value_type>& initializer, const std::list<StartTimeDTO>& expected) {
+	for (size_t i = 0; i < initializer.size(); i++) {
+		MockStartTime* mockStartTime = dynamic_cast<MockStartTime*>(next(initializer.begin(), i)->second.get());
+
+		ASSERT_THAT(mockStartTime, Not(IsNull()));
+		EXPECT_CALL(*mockStartTime, toStartTimeDto())
+			.Times(1)
+			.WillOnce(Return(START_TIME_DTO(i)));
+	}
+
+	EXPECT_THAT(StartTimeContainer(initializer).toStartTimeDtoList(), ContainerEq(expected));
+}
+
+TEST(StartTimeContainerTest, toStartTimeDtoList_empty) {
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+	};
+
+	const std::list<StartTimeDTO> expected {
+	};
+
+	toStartTimeDtoList(initializer, expected);
+}
+
+TEST(StartTimeContainerTest, toStartTimeDtoList_one) {
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StrictMock<MockStartTime>>() },
+	};
+
+	const std::list<StartTimeDTO> expected {
+		START_TIME_DTO(0).setId(10),
+	};
+
+	toStartTimeDtoList(initializer, expected);
+}
+
+TEST(StartTimeContainerTest, toStartTimeDtoList_more) {
+	const std::initializer_list<StartTimeContainer::value_type> initializer {
+		{ IdType(20), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(21), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(22), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(23), std::make_shared<StrictMock<MockStartTime>>() },
+	};
+
+	const std::list<StartTimeDTO> expected {
+		START_TIME_DTO(0).setId(20),
+		START_TIME_DTO(1).setId(21),
+		START_TIME_DTO(2).setId(22),
+		START_TIME_DTO(3).setId(23),
+	};
+
+	toStartTimeDtoList(initializer, expected);
 }

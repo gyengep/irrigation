@@ -43,23 +43,11 @@ TEST(RunTimeImplTest, setValueMax) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeImplTest, toRunTimeDto) {
-	RunTimeImpl runTime;
-	RunTimeDTO expected;
-
-	runTime.setSeconds(0);
-	EXPECT_THAT(runTime.toRunTimeDto(), Eq(RunTimeDTO(0, 0)));
-
-	runTime.setSeconds(39);
-	EXPECT_THAT(runTime.toRunTimeDto(), Eq(RunTimeDTO(0, 39)));
-
-	runTime.setSeconds(18);
-	EXPECT_THAT(runTime.toRunTimeDto(), Eq(RunTimeDTO(0, 18)));
-
-	runTime.setSeconds(75);
-	EXPECT_THAT(runTime.toRunTimeDto(), Eq(RunTimeDTO(1, 15)));
-
-	runTime.setSeconds(150);
-	EXPECT_THAT(runTime.toRunTimeDto(), Eq(RunTimeDTO(2, 30)));
+	EXPECT_THAT(RunTimeImpl(0).toRunTimeDto(), Eq(RunTimeDTO(0, 0)));
+	EXPECT_THAT(RunTimeImpl(39).toRunTimeDto(), Eq(RunTimeDTO(0, 39)));
+	EXPECT_THAT(RunTimeImpl(18).toRunTimeDto(), Eq(RunTimeDTO(0, 18)));
+	EXPECT_THAT(RunTimeImpl(75).toRunTimeDto(), Eq(RunTimeDTO(1, 15)));
+	EXPECT_THAT(RunTimeImpl(150).toRunTimeDto(), Eq(RunTimeDTO(2, 30)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,8 +56,8 @@ TEST(RunTimeImplTest, partialUpdateFromRunTimeDto_empty) {
 	const RunTimeImpl expected(25);
 
 	RunTimeImpl actual(25);
-
 	actual.updateFromRunTimeDto(RunTimeDTO());
+
 	EXPECT_THAT(actual, Eq(std::ref(expected)));
 }
 

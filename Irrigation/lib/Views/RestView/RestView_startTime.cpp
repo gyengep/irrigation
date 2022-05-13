@@ -50,9 +50,11 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 
 	try {
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
-		const shared_ptr<StartTime> startTime(new StartTime(startTimeDto));
 		const IdType programId = getProgramId(pathParameters);
 		const IdType startTimeId;
+
+		StartTimePtr startTime = StartTimeFactory().create();
+		startTime->updateFromStartTimeDto(startTimeDto);
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);

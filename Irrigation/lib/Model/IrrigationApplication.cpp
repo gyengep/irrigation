@@ -11,10 +11,9 @@
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
-#include "Logic/RunTime.h"
 #include "Logic/RunTimeImpl.h"
 #include "Logic/RunTimeContainer.h"
-#include "Logic/StartTime.h"
+#include "Logic/StartTimeImpl.h"
 #include "Logic/StartTimeContainer.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
@@ -255,7 +254,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
-				{ IdType(), make_shared<StartTime>(4, 0) }
+				{ IdType(), make_shared<StartTimeImpl>(4, 0) }
 			})).
 			build()
 		);
@@ -283,7 +282,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
-				{ IdType(), make_shared<StartTime>(6, 0) }
+				{ IdType(), make_shared<StartTimeImpl>(6, 0) }
 			})).
 			build()
 		);
@@ -308,12 +307,12 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
-				{ IdType(), make_shared<StartTime>(12, 0) },
-				{ IdType(), make_shared<StartTime>(13, 0) },
-				{ IdType(), make_shared<StartTime>(14, 0) },
-				{ IdType(), make_shared<StartTime>(15, 0) },
-				{ IdType(), make_shared<StartTime>(16, 0) },
-				{ IdType(), make_shared<StartTime>(17, 0) }
+				{ IdType(), make_shared<StartTimeImpl>(12, 0) },
+				{ IdType(), make_shared<StartTimeImpl>(13, 0) },
+				{ IdType(), make_shared<StartTimeImpl>(14, 0) },
+				{ IdType(), make_shared<StartTimeImpl>(15, 0) },
+				{ IdType(), make_shared<StartTimeImpl>(16, 0) },
+				{ IdType(), make_shared<StartTimeImpl>(17, 0) }
 			})).
 			build()
 		);
@@ -341,8 +340,8 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
-				{ IdType(), make_shared<StartTime>(7, 0) },
-				{ IdType(), make_shared<StartTime>(20, 0) }
+				{ IdType(), make_shared<StartTimeImpl>(7, 0) },
+				{ IdType(), make_shared<StartTimeImpl>(20, 0) }
 			})).
 			build()
 		);
@@ -370,8 +369,8 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(2))
 			})).
 			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
-				{ IdType(), make_shared<StartTime>(7, 10) },
-				{ IdType(), make_shared<StartTime>(20, 10) }
+				{ IdType(), make_shared<StartTimeImpl>(7, 10) },
+				{ IdType(), make_shared<StartTimeImpl>(20, 10) }
 			})).
 			build()
 		);

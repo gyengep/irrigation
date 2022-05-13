@@ -242,7 +242,7 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasStartTimes()) {
-		startTimes->updateFromStartTimeDtoList(programDTO.getStartTimes());
+		startTimes->updateFromStartTimeDtoList(std::make_shared<StartTimeFactory>(), programDTO.getStartTimes());
 	}
 }
 

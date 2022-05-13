@@ -24,7 +24,17 @@ bool StartTimeContainer::operator== (const StartTimeContainer& other) const {
 	return equal(container.begin(), container.end(), other.container.begin(), comp);
 }
 
-const StartTimeContainer::mapped_type& StartTimeContainer::at(const key_type& key) const {
+StartTimeContainer::const_mapped_type StartTimeContainer::at(const key_type& key) const {
+	auto it = find_if(container.begin(), container.end(), findKey(key));
+
+	if (container.end() == it) {
+		throw NoSuchElementException("StartTime[" + to_string(key) + "] does not exist");
+	}
+
+	return it->second;
+}
+
+StartTimeContainer::mapped_type StartTimeContainer::at(const key_type& key) {
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
@@ -49,7 +59,7 @@ StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, 
 		throw AlreadyExistException("StartTime[" + to_string(key) + "] already exists");
 	}
 
-	container.push_back(make_pair(key, value));
+	container.emplace_back(make_pair(key, value));
 	return container.back();
 }
 
@@ -69,7 +79,7 @@ list<StartTimeDTO> StartTimeContainer::toStartTimeDtoList() const {
 	return startTimeDtoList;
 }
 
-void StartTimeContainer::updateFromStartTimeDtoList(const list<StartTimeDTO>& startTimeDtoList) {
+void StartTimeContainer::updateFromStartTimeDtoList(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const list<StartTimeDTO>& startTimeDtoList) {
 	container.clear();
 	for (const StartTimeDTO& startTimeDTO : startTimeDtoList) {
 		unique_ptr<IdType> id;
@@ -79,7 +89,7 @@ void StartTimeContainer::updateFromStartTimeDtoList(const list<StartTimeDTO>& st
 			id.reset(new IdType());
 		}
 
-		shared_ptr<StartTime> startTime(new StartTime());
+		StartTimePtr startTime = startTimeFactory->create();
 		startTime->updateFromStartTimeDto(startTimeDTO);
 		insert(IdType(*id), startTime);
 	}

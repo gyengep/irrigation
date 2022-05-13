@@ -11,6 +11,7 @@ class StartTimeContainer {
 public:
 	typedef IdType									key_type;
 	typedef StartTimePtr							mapped_type;
+	typedef ConstStartTimePtr						const_mapped_type;
 	typedef std::pair<const key_type, mapped_type>	value_type;
 	typedef std::list<value_type>					container_type;
 	typedef typename container_type::const_iterator const_iterator;
@@ -50,10 +51,11 @@ public:
 	size_t size() const 			{ return container.size(); }
 	bool empty() const	 			{ return container.empty(); }
 
-	const mapped_type& at(const key_type& key) const;
+	const_mapped_type at(const key_type& key) const;
+	mapped_type at(const key_type& key);
 
 	std::list<StartTimeDTO> toStartTimeDtoList() const;
-	void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList);
+	void updateFromStartTimeDtoList(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const std::list<StartTimeDTO>& startTimeDtoList);
 
 	friend std::string to_string(const StartTimeContainer& startTimeContainer);
 	friend std::ostream& operator<<(std::ostream& os, const StartTimeContainer& startTimeContainer);

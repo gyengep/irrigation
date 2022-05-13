@@ -5,11 +5,27 @@
 
 class MockStartTime : public StartTime {
 public:
-	MockStartTime() {
-		EXPECT_CALL(*this, destroyed()).Times(1);
-	}
+	MOCK_METHOD2(set, void(unsigned hour, unsigned minute));
 
+	MOCK_CONST_METHOD0(getHours, unsigned());
+	MOCK_CONST_METHOD0(getMinutes, unsigned());
+
+	MOCK_CONST_METHOD0(toStartTimeDto, StartTimeDTO());
 	MOCK_METHOD1(updateFromStartTimeDto, void(const StartTimeDTO& startTimeDTO));
-	MOCK_METHOD0(destroyed, void());
-	virtual ~MockStartTime() { destroyed(); }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class MockStartTimeFactory : public StartTimeFactory {
+public:
+	mutable std::vector<std::shared_ptr<MockStartTime>> mockStartTimes;
+	mutable size_t index = 0;
+
+	virtual StartTimePtr create() const {
+		if (index >= mockStartTimes.size()) {
+			throw std::runtime_error("MockStartTimeFactory no more item");
+		}
+
+		return mockStartTimes[index++];
+	}
 };
