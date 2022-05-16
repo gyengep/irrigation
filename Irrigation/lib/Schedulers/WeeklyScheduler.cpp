@@ -1,84 +1,21 @@
 #include "WeeklyScheduler.h"
-#include <algorithm>
-#include <ctime>
-#include <list>
-#include <sstream>
-#include "Exceptions/Exceptions.h"
-#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
-
-using namespace std;
+#include <sstream>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WeeklyScheduler::WeeklyScheduler() : WeeklyScheduler(array<bool, 7>({false, false, false, false, false, false, false})) {
-}
-
-WeeklyScheduler::WeeklyScheduler(const array<bool, 7>& days) :
-	days(days),
-	isScheduled(false)
-{
-}
-
-WeeklyScheduler::~WeeklyScheduler() {
-}
-
 bool WeeklyScheduler::operator== (const WeeklyScheduler& other) const {
-	return (days == other.days);
-}
-
-void WeeklyScheduler::checkIndex(size_t day) const {
-	if (days.size() <= day) {
-		throw IndexOutOfBoundsException(
-				"Day index shall be less than " + to_string(days.size()) +
-				", while actual value is " + to_string(day));
-	}
-}
-
-void WeeklyScheduler::enableDay(size_t day, bool enable) {
-	checkIndex(day);
-	days[day] = enable;
-}
-
-bool WeeklyScheduler::isDayEnabled(size_t day) const {
-	checkIndex(day);
-	return days[day];
-}
-
-bool WeeklyScheduler::onProcess(const time_t rawtime) const {
-	const size_t weekDay = toLocalTime(rawtime).tm_wday;
-	checkIndex(weekDay);
-	return days[(weekDay + 6) % 7];
-}
-
-Scheduler::Result WeeklyScheduler::process(const time_t rawtime) {
-	return Scheduler::Result(onProcess(rawtime));
-}
-
-WeeklySchedulerDTO WeeklyScheduler::toWeeklySchedulerDto() const {
-	return WeeklySchedulerDTO(move(list<bool>(days.begin(), days.end())));
-}
-
-void WeeklyScheduler::updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasValues()) {
-		if (schedulerDTO.getValues().size() != days.size()) {
-			throw runtime_error("WeeklyScheduler::updateFromDTO(): " + to_string(days.size()) +
-					"\"days\" have to be exist");
+	for (size_t i = 0; i < count; ++i) {
+		if (isDayEnabled(i) != other.isDayEnabled(i)) {
+			return false;
 		}
-
-		copy(schedulerDTO.getValues().begin(), schedulerDTO.getValues().end(), days.begin());
 	}
+
+	return true;
 }
 
-string to_string(const WeeklyScheduler& weeklyScheduler) {
-	ostringstream oss;
-	oss << weeklyScheduler;
-	return oss.str();
-}
-
-ostream& operator<<(ostream& os, const WeeklyScheduler& weeklyScheduler) {
-	os << "WeeklyScheduler{";
-	os << "values=" << to_string(weeklyScheduler.days.begin(), weeklyScheduler.days.end());
-	os << "}";
+std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler) {
+	os << weeklyScheduler.toString();
 	return os;
 }

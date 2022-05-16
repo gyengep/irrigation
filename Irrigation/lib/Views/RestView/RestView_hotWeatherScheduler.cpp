@@ -53,12 +53,12 @@ unique_ptr<HttpResponse> RestView::onPatchHotWeatherScheduler(const HttpRequest&
 			hotWeatherScheduler.updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const HotWeatherScheduler hotWeatherSchedulerCopy(hotWeatherScheduler);
+				const std::string logText = hotWeatherScheduler.toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].HotWeatherScheduler is modified: %s",
 						to_string(programId).c_str(),
-						to_string(hotWeatherSchedulerCopy).c_str());
+						logText.c_str());
 			}
 		}
 

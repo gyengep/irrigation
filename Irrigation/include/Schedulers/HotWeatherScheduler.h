@@ -1,43 +1,40 @@
 #pragma once
 #include <chrono>
 #include <memory>
+#include <string>
+#include <ostream>
 #include "json.hpp"
 #include "DTO/HotWeatherSchedulerDTO.h"
-#include "Temperature/TemperatureHistory.h"
 #include "Scheduler.h"
 
 
 class HotWeatherScheduler : public Scheduler {
-	const std::shared_ptr<TemperatureHistory> temperatureHistory;
-
-	std::time_t lastRun;
-	unsigned periodInSeconds;
-	float minTemperature;
-
 public:
-	HotWeatherScheduler(const std::shared_ptr<TemperatureHistory>& temperatureHistory);
-	HotWeatherScheduler(HotWeatherScheduler&&) = default;
-	HotWeatherScheduler(const HotWeatherScheduler&) = default;
-	HotWeatherScheduler(
-			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
-			const std::chrono::seconds& period, float minTemperature
-		);
+	virtual ~HotWeatherScheduler() = default;
 
-	virtual ~HotWeatherScheduler();
-
-	void setMinTemperature(float minTemperature);
-	void setPeriod(const std::chrono::seconds& period);
-
-	virtual Result process(const std::time_t rawtime) override;
-
-	HotWeatherSchedulerDTO toHotWeatherSchedulerDto() const;
-	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO);
-
-	friend std::string to_string(const HotWeatherScheduler& scheduler);
-	friend std::ostream& operator<<(std::ostream& os, const HotWeatherScheduler& scheduler);
+	virtual void setMinTemperature(float minTemperature) = 0;
+	virtual void setPeriod(const std::chrono::seconds& period) = 0;
 
 	////////////////////////////////////////////////////////////
 
-	nlohmann::json saveTo() const;
-	void loadFrom(const nlohmann::json& json);
+	virtual HotWeatherSchedulerDTO toHotWeatherSchedulerDto() const = 0;
+	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) = 0;
+
+	////////////////////////////////////////////////////////////
+
+	virtual std::string toString() const = 0;
+
+	////////////////////////////////////////////////////////////
+
+	virtual nlohmann::json saveTo() const = 0;
+	virtual void loadFrom(const nlohmann::json& json) = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::ostream& operator<<(std::ostream& os, const HotWeatherScheduler& scheduler);
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<HotWeatherScheduler> HotWeatherSchedulerPtr;
+typedef std::shared_ptr<const HotWeatherScheduler> ConstHotWeatherSchedulerPtr;

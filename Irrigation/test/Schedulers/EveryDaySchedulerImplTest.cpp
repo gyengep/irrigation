@@ -1,15 +1,13 @@
 #include <gmock/gmock.h>
-#include "Schedulers/EveryDayScheduler.h"
+#include "Schedulers/EveryDaySchedulerImpl.h"
 #include "Utils/TimeConversion.h"
-#include "Dto2Object/EveryDaySchedulerSamples.h"
 
-using namespace std;
 using namespace testing;
-using namespace Dto2ObjectTest;
 
+///////////////////////////////////////////////////////////////////////////////
 
-TEST(EveryDaySchedulerTest, isDayScheduled) {
-	EveryDayScheduler scheduler;
+TEST(EveryDaySchedulerImplTest, isDayScheduled) {
+	EveryDaySchedulerImpl scheduler;
 
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 5)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 6)), Eq(Scheduler::Result(true, false, 0)));
@@ -58,25 +56,13 @@ TEST(EveryDaySchedulerTest, isDayScheduled) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testToEveryDaySchedulerDto(const EveryDaySchedulerSample& everyDaySchedulerSample) {
-	const shared_ptr<EveryDayScheduler> everyDayScheduler = everyDaySchedulerSample.getObjectPtr();
-	const EveryDaySchedulerDTO& expectedEveryDaySchedulerDto = everyDaySchedulerSample.getDto();
-	EXPECT_THAT(everyDayScheduler->toEveryDaySchedulerDto(), Eq(expectedEveryDaySchedulerDto));
-}
-
-TEST(EveryDaySchedulerTest, toEveryDaySchedulerDto) {
-	testToEveryDaySchedulerDto(EveryDaySchedulerSample1());
+TEST(EveryDaySchedulerImplTest, toEveryDaySchedulerDto) {
+	EXPECT_THAT(EveryDaySchedulerImpl().toEveryDaySchedulerDto(), Eq(EveryDaySchedulerDTO()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromEveryDaySchedulerDto(shared_ptr<EveryDayScheduler> everyDayScheduler, const EveryDaySchedulerSample& everyDaySchedulerSample) {
-	//EXPECT_THAT(everyDayScheduler, Not(Pointee(*everyDaySchedulerSample.getObjectPtr())));
-	everyDayScheduler->updateFromEveryDaySchedulerDto(everyDaySchedulerSample.getDto());
-	EXPECT_THAT(everyDayScheduler, Pointee(*everyDaySchedulerSample.getObjectPtr()));
-}
-
-TEST(EveryDaySchedulerTest, updateFromEveryDaySchedulerDto1) {
-	shared_ptr<EveryDayScheduler> everyDayScheduler = shared_ptr<EveryDayScheduler>(new EveryDayScheduler());
-	testUpdateFromEveryDaySchedulerDto(everyDayScheduler, EveryDaySchedulerSample1());
+TEST(EveryDaySchedulerImplTest, updateFromEveryDaySchedulerDto) {
+	EveryDaySchedulerImpl actual;
+	actual.updateFromEveryDaySchedulerDto(EveryDaySchedulerDTO());
 }

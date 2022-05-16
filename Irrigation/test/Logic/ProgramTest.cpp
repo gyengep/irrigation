@@ -33,7 +33,7 @@ TEST(ProgramTest, defaultConstructor) {
 
 	EXPECT_THAT(program.getName(), Eq(""));
 	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
-	EXPECT_THAT(program.getWeeklyScheduler(), Eq(WeeklyScheduler()));
+	EXPECT_THAT(program.getWeeklyScheduler(), Eq(WeeklySchedulerImpl()));
 	EXPECT_THAT(program.getRunTimes(), Eq(std::ref(expectedRunTimeContainer)));
 	EXPECT_THAT(program.getStartTimes(), IsEmpty());
 }
@@ -55,7 +55,7 @@ TEST(ProgramTest, parametrizedConstructor) {
 
 	EXPECT_THAT(program->getName(), Eq(name));
 	EXPECT_THAT(program->getSchedulerType(), Eq(schedulerType));
-	EXPECT_THAT(program->getWeeklyScheduler(), Eq(*weeklyScheduler));
+	EXPECT_THAT(program->getWeeklyScheduler(), Eq(std::ref(*weeklyScheduler)));
 	EXPECT_THAT(program->getRunTimes(), Eq(std::ref(*runTimeContainer)));
 	EXPECT_THAT(program->getStartTimes(), Eq(std::ref(*startTimeContainer)));
 

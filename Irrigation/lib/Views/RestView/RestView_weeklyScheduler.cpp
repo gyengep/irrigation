@@ -53,12 +53,12 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 			weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const WeeklyScheduler weeklySchedulerCopy(weeklyScheduler);
+				const std::string logText = weeklyScheduler.toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
 						to_string(programId).c_str(),
-						to_string(weeklySchedulerCopy).c_str());
+						logText.c_str());
 			}
 		}
 

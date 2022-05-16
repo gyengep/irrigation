@@ -17,8 +17,8 @@
 #include "Logic/StartTimeContainer.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
-#include "Schedulers/TemperatureDependentScheduler.h"
-#include "Schedulers/HotWeatherScheduler.h"
+#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/HotWeatherSchedulerImpl.h"
 #include "Utils/FileReaderWriterImpl.h"
 #include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
@@ -238,7 +238,7 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureForecast(),
 				TemperatureHandler::getInstance().getTemperatureHistory(),
 				0.75f,
@@ -266,7 +266,7 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureForecast(),
 				TemperatureHandler::getInstance().getTemperatureHistory(),
 				1.0f,
@@ -294,7 +294,7 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::HOT_WEATHER).
-			setHotWeatherScheduler(make_shared<HotWeatherScheduler>(
+			setHotWeatherScheduler(make_shared<HotWeatherSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureHistory(),
 				chrono::hours(2), 33
 			)).
@@ -324,7 +324,7 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureForecast(),
 				TemperatureHandler::getInstance().getTemperatureHistory(),
 				1.0f,
@@ -353,7 +353,7 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentScheduler>(
+			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureForecast(),
 				TemperatureHandler::getInstance().getTemperatureHistory(),
 				1.0f,

@@ -1,28 +1,23 @@
-#include "TemperatureDependentSchedulerProcessTest.h"
+#include "TemperatureDependentSchedulerImplProcessTest.h"
 #include "Schedulers/TemperatureToPercent.h"
 #include "Utils/TimeConversion.h"
-#include "Logger/Logger.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void TemperatureDependentSchedulerProcessTest::SetUp() {
+void TemperatureDependentSchedulerImplProcessTest::SetUp() {
 
-	LOGGER.setLevel(LogLevel::OFF);
-	LOGGER.setOutputStream(std::cout);
-
-	mockTemperatureForecast = make_shared<MockTemperatureForecast>();
-	mockTemperatureHistory = make_shared<MockTemperatureHistory>();
-	scheduler.reset(new TemperatureDependentScheduler(mockTemperatureForecast, mockTemperatureHistory));
+	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
+	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
+	scheduler = std::make_shared<TemperatureDependentSchedulerImpl>(mockTemperatureForecast, mockTemperatureHistory);
 
 	scheduler->setRemainingCorrection(1.0f);
 	scheduler->setMinAdjustment(0);
 	scheduler->setMaxAdjustment(0);
 	scheduler->trimAdjustmentOver(0);
 
-	TemperatureToPercent::getInstance().setTemperatureAndPercents(vector<pair<float, unsigned>>{
+	TemperatureToPercent::getInstance().setTemperatureAndPercents(std::vector<std::pair<float, unsigned>>{
 		{ 15.0f, 25U },
 		{ 25.0f, 50U },
 		{ 35.0f, 100U }
@@ -61,12 +56,12 @@ void TemperatureDependentSchedulerProcessTest::SetUp() {
 		WillOnce(Return(TemperatureHistory::Values(0, 29.0f, 0)));
 }
 
-void TemperatureDependentSchedulerProcessTest::TearDown() {
+void TemperatureDependentSchedulerImplProcessTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(TemperatureDependentSchedulerProcessTest, process) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, process) {
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(85));
 
@@ -95,7 +90,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, process) {
 ///////////////////////////////////////////////////////////////////////////////
 // Min adjustment
 
-TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustment70) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, minAdjustment70) {
 	scheduler->setMinAdjustment(70);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
@@ -130,7 +125,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustment70) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(105));
 }
 
-TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustment100) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, minAdjustment100) {
 	scheduler->setMinAdjustment(100);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 100)));	// 85 : 90
@@ -161,7 +156,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustment100) {
 ///////////////////////////////////////////////////////////////////////////////
 // Max adjustment
 
-TEST_F(TemperatureDependentSchedulerProcessTest, maxAdjustment) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, maxAdjustment) {
 	scheduler->setMaxAdjustment(75);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));	// 85 : 90
@@ -196,7 +191,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, maxAdjustment) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
 }
 
-TEST_F(TemperatureDependentSchedulerProcessTest, maxAdjustmentDailyTwoTimes) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, maxAdjustmentDailyTwoTimes) {
 	scheduler->setMaxAdjustment(75);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));	// 85 : 90
@@ -258,7 +253,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, maxAdjustmentDailyTwoTimes) {
 ///////////////////////////////////////////////////////////////////////////////
 // Min/Max adjustment
 
-TEST_F(TemperatureDependentSchedulerProcessTest, minMaxAdjustment) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, minMaxAdjustment) {
 	scheduler->setMinAdjustment(75);
 	scheduler->setMaxAdjustment(75);
 
@@ -314,7 +309,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, minMaxAdjustment) {
 ///////////////////////////////////////////////////////////////////////////////
 // Remaining correction
 
-TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection100) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, remainingCorrection100) {
 	scheduler->setRemainingCorrection(1.0f);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
@@ -349,7 +344,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection100) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
 }
 
-TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection50) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, remainingCorrection50) {
 	scheduler->setRemainingCorrection(0.5f);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
@@ -384,7 +379,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection50) {
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(80));
 }
 
-TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection0) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, remainingCorrection0) {
 	scheduler->setRemainingCorrection(0.0f);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 85)));	// 85 : 90
@@ -415,7 +410,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, remainingCorrection0) {
 ///////////////////////////////////////////////////////////////////////////////
 // Trim
 
-TEST_F(TemperatureDependentSchedulerProcessTest, trim) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, trim) {
 	scheduler->trimAdjustmentOver(80);
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 80)));	// 85 : 90
@@ -452,10 +447,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, trim) {
 ///////////////////////////////////////////////////////////////////////////////
 // Min adjustment / Remaining correction
 
-TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrection100) {
-	LOGGER.setLevel(LogLevel::TRACE);
-	LOGGER.setOutputStream(std::cout);
-
+TEST_F(TemperatureDependentSchedulerImplProcessTest, minAdjustmentAndRemainingCorrection100) {
  	scheduler->setMinAdjustment(100);
 	scheduler->setRemainingCorrection(1.0f);
 
@@ -491,7 +483,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrec
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(160));
 }
 
-TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrection50) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, minAdjustmentAndRemainingCorrection50) {
 	scheduler->setMinAdjustment(100);
 	scheduler->setRemainingCorrection(0.5f);
 
@@ -527,7 +519,7 @@ TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrec
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(125));
 }
 
-TEST_F(TemperatureDependentSchedulerProcessTest, minAdjustmentAndRemainingCorrection0) {
+TEST_F(TemperatureDependentSchedulerImplProcessTest, minAdjustmentAndRemainingCorrection0) {
 	scheduler->setMinAdjustment(100);
 	scheduler->setRemainingCorrection(0.0f);
 

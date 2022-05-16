@@ -53,12 +53,12 @@ unique_ptr<HttpResponse> RestView::onPatchTemperatureDependentScheduler(const Ht
 			temperatureDependentScheduler.updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const TemperatureDependentScheduler temperatureDependentSchedulerCopy(temperatureDependentScheduler);
+				const std::string logText = temperatureDependentScheduler.toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].TemperatureDependentScheduler is modified: %s",
 						to_string(programId).c_str(),
-						to_string(temperatureDependentSchedulerCopy).c_str());
+						logText.c_str());
 			}
 		}
 

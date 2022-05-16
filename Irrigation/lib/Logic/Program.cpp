@@ -14,6 +14,11 @@
 #include <algorithm>
 #include <sstream>
 
+#include "Schedulers/EveryDaySchedulerImpl.h"
+#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/WeeklySchedulerImpl.h"
+
 using namespace std;
 
 
@@ -38,15 +43,15 @@ bool ScheduledResult::operator==(const ScheduledResult& other) const {
 
 Program::Program() :
 	Program(true, "", 100, SchedulerType::WEEKLY,
-		make_shared<EveryDayScheduler>(),
-		make_shared<HotWeatherScheduler>(
+		make_shared<EveryDaySchedulerImpl>(),
+		make_shared<HotWeatherSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureHistory()
 				),
-		make_shared<TemperatureDependentScheduler>(
+		make_shared<TemperatureDependentSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureForecast(),
 				TemperatureHandler::getInstance().getTemperatureHistory()
 				),
-		make_shared<WeeklyScheduler>(),
+		make_shared<WeeklySchedulerImpl>(),
 		make_shared<RunTimeContainer>(
 				std::make_shared<RunTimeFactory>()
 				),
@@ -259,10 +264,10 @@ ostream& operator<<(ostream& os, const Program& program) {
 	os << "adjustment=\"" << program.getAdjustment() << "\", ";
 	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
 	os << "schedulers=[" <<
-			to_string(program.getEveryDayScheduler()) << ", " <<
-			to_string(program.getHotWeatherScheduler()) << ", " <<
-			to_string(program.getTemperatureDependentScheduler()) << ", " <<
-			to_string(program.getWeeklyScheduler()) << "], ";
+			program.getEveryDayScheduler().toString() << ", " <<
+			program.getHotWeatherScheduler().toString() << ", " <<
+			program.getTemperatureDependentScheduler().toString() << ", " <<
+			program.getWeeklyScheduler().toString() << "], ";
 	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
 	os << "startTimes=" << to_string(program.getStartTimes());
 	os << "}";
@@ -334,24 +339,24 @@ Program::Builder& Program::Builder::setStartTimeContainer(const shared_ptr<Start
 shared_ptr<Program> Program::Builder::build() {
 
 	if (nullptr == everyDayScheduler) {
-		everyDayScheduler = std::make_shared<EveryDayScheduler>();
+		everyDayScheduler = std::make_shared<EveryDaySchedulerImpl>();
 	}
 
 	if (nullptr == hotWeatherScheduler) {
-		hotWeatherScheduler = make_shared<HotWeatherScheduler>(
+		hotWeatherScheduler = make_shared<HotWeatherSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureHistory()
 			);
 	}
 
 	if (nullptr == temperatureDependentScheduler) {
-		temperatureDependentScheduler = make_shared<TemperatureDependentScheduler>(
+		temperatureDependentScheduler = make_shared<TemperatureDependentSchedulerImpl>(
 				TemperatureHandler::getInstance().getTemperatureForecast(),
 				TemperatureHandler::getInstance().getTemperatureHistory()
 			);
 	}
 
 	if (nullptr == weeklyScheduler) {
-		weeklyScheduler = std::make_shared<WeeklyScheduler>();
+		weeklyScheduler = std::make_shared<WeeklySchedulerImpl>();
 	}
 
 	if (nullptr == runTimes) {

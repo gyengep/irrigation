@@ -73,7 +73,7 @@ TEST_F(RestViewTest, getStartTimeAcceptable) {
 	const shared_ptr<Program> program(new Program());
 
 	irrigationDocument->getPrograms().insert(programId, program);
-	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime));
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -85,7 +85,7 @@ TEST_F(RestViewTest, getStartTimeNotAcceptable) {
 	const shared_ptr<Program> program(new Program());
 
 	irrigationDocument->getPrograms().insert(programId, program);
-	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime));
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -121,7 +121,7 @@ TEST_F(RestViewTest, patchStartTimeInvalidXml) {
 	const shared_ptr<Program> program(new Program());
 
 	irrigationDocument->getPrograms().insert(programId, program);
-	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -133,7 +133,7 @@ TEST_F(RestViewTest, patchStartTimeInvalidContentType) {
 	const shared_ptr<Program> program(new Program());
 
 	irrigationDocument->getPrograms().insert(programId, program);
-	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "{ \"key\" : \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -150,7 +150,7 @@ TEST_F(RestViewTest, deleteStartTime) {
 	EXPECT_CALL(*mockStartTimeContainer, erase(startTimeId));
 	EXPECT_CALL(*mockStartTimeContainer, insert(_, _)).Times(AnyNumber());
 
-	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTime()));
+	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 	irrigationDocument->getPrograms().insert(programId, program);
 
 	Response response = executeRequest("DELETE", createStartTimeUrl(programId, startTimeId));

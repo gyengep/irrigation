@@ -1,14 +1,14 @@
 #include <gmock/gmock.h>
 #include <memory>
 #include "Mocks/MockTemperatureHistory.h"
-#include "Schedulers/HotWeatherScheduler.h"
+#include "Schedulers/HotWeatherSchedulerImpl.h"
 
 
-class HotWeatherSchedulerTest : public ::testing::Test {
+class HotWeatherSchedulerImplTest : public ::testing::Test {
 protected:
 
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
-	std::unique_ptr<HotWeatherScheduler> scheduler;
+	std::shared_ptr<HotWeatherSchedulerImpl> scheduler;
 
 	virtual void SetUp();
     virtual void TearDown();

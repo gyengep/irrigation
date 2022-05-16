@@ -2,15 +2,15 @@
 #include <memory>
 #include "Mocks/MockTemperatureForecast.h"
 #include "Mocks/MockTemperatureHistory.h"
-#include "Schedulers/TemperatureDependentScheduler.h"
+#include "Schedulers/TemperatureDependentSchedulerImpl.h"
 
 
-class TemperatureDependentSchedulerProcessTest : public ::testing::Test {
+class TemperatureDependentSchedulerImplTest : public ::testing::Test {
 protected:
 
 	std::shared_ptr<MockTemperatureForecast> mockTemperatureForecast;
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
-	std::unique_ptr<TemperatureDependentScheduler> scheduler;
+	std::shared_ptr<TemperatureDependentSchedulerImpl> scheduler;
 
 	virtual void SetUp();
     virtual void TearDown();

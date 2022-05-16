@@ -1,12 +1,15 @@
 #pragma once
-#include <array>
+#include <memory>
+#include <string>
+#include <ostream>
 #include "DTO/WeeklySchedulerDTO.h"
-#include "Schedulers/Scheduler.h"
-
+#include "Scheduler.h"
 
 
 class WeeklyScheduler : public Scheduler {
 public:
+
+	static const size_t count = 7;
 
 	enum {
 		MONDAY,
@@ -18,33 +21,33 @@ public:
 		SUNDAY
 	};
 
-private:
-
-	std::array<bool, 7> days;
-	bool isScheduled;
-
-	void checkIndex(size_t day) const;
-	bool onProcess(const std::time_t rawtime) const;
-
-public:
-	WeeklyScheduler();
+	WeeklyScheduler() = default;
 	WeeklyScheduler(WeeklyScheduler&&) = default;
 	WeeklyScheduler(const WeeklyScheduler&) = default;
-	WeeklyScheduler(const std::array<bool, 7>& days);
-	virtual ~WeeklyScheduler();
+	virtual ~WeeklyScheduler() = default;
 
 	WeeklyScheduler& operator= (WeeklyScheduler&&) = delete;
 	WeeklyScheduler& operator= (const WeeklyScheduler&) = delete;
 	bool operator== (const WeeklyScheduler& other) const;
 
-	void enableDay(size_t day, bool enable);
-	bool isDayEnabled(size_t day) const;
+	virtual void enableDay(size_t day, bool enable) = 0;
+	virtual bool isDayEnabled(size_t day) const = 0;
 
-	virtual Result process(const std::time_t rawtime) override;
+	////////////////////////////////////////////////////////////
 
-	WeeklySchedulerDTO toWeeklySchedulerDto() const;
-	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO);
+	virtual WeeklySchedulerDTO toWeeklySchedulerDto() const = 0;
+	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) = 0;
 
-	friend std::string to_string(const WeeklyScheduler& weeklyScheduler);
-	friend std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler);
+	////////////////////////////////////////////////////////////
+
+	virtual std::string toString() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler);
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<WeeklyScheduler> WeeklySchedulerPtr;
+typedef std::shared_ptr<const WeeklyScheduler> ConstWeeklySchedulerPtr;
