@@ -10,7 +10,7 @@ using namespace Dto2ObjectTest;
 
 
 string RestViewTest::createRunTimeListUrl(IdType programId) {
-	return createUrl("/programs/" + to_string(programId) + "/runtimes");
+	return createUrl("/programs/" + programId.toString() + "/runtimes");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

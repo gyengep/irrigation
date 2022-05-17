@@ -21,4 +21,7 @@ public:
 
 	virtual StartTimeDTO toStartTimeDto() const override;
 	virtual void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) override;
+
+	virtual std::string toString() const override;
+	virtual std::string toShortString() const override;
 };

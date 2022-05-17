@@ -90,7 +90,7 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 		if (scheduledResult->isScheduled()) {
 			if (0 < scheduledResult->getAdjustment()) {
 				LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
-						to_string(idType).c_str(),
+						idType.toString().c_str(),
 						program->getName().c_str(),
 						to_string(program->getSchedulerType()).c_str());
 

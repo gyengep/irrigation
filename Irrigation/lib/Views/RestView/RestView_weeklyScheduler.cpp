@@ -57,7 +57,7 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
-						to_string(programId).c_str(),
+						programId.toString().c_str(),
 						logText.c_str());
 			}
 		}

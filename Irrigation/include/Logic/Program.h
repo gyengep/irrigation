@@ -6,6 +6,7 @@
 #include "json.hpp"
 #include "DTO/ProgramDTO.h"
 #include "Schedulers/Scheduler.h"
+#include "Utils/OstreamInsert.h"
 #include "RunTime.h"
 #include "RunTimeContainer.h"
 #include "StartTime.h"
@@ -102,12 +103,17 @@ public:
 	ProgramDTO toProgramDto() const;
 	virtual void updateFromProgramDto(const ProgramDTO& programDTO);
 
-	friend std::string to_string(const Program& program);
-	friend std::ostream& operator<<(std::ostream& os, const Program& program);
+	std::string toString() const;
 
 	nlohmann::json saveTo() const;
 	void loadFrom(const nlohmann::json& values);
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(Program);
+
+///////////////////////////////////////////////////////////////////////////////
 
 typedef std::shared_ptr<Program> ProgramPtr;
 

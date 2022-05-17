@@ -46,7 +46,7 @@ void IrrigationDocument::updateFromDocumentDto(const DocumentDTO& documentDTO) {
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 		for (const auto& programWithId : getPrograms()) {
-			LOGGER.debug("Program[%s] is added: %s", to_string(programWithId.first).c_str(), to_string(*programWithId.second).c_str());
+			LOGGER.debug("Program[%s] is added: %s", programWithId.first.toString().c_str(), programWithId.second->toString().c_str());
 		}
 
  		LOGGER.debug("Configuration is successfully loaded");
@@ -90,7 +90,7 @@ nlohmann::json IrrigationDocument::saveTo() const {
 	nlohmann::json result;
 
 	for (const auto& programWithId : getPrograms()) {
-		const string key = "program_" + to_string(programWithId.first);
+		const string key = "program_" + programWithId.first.toString();
 		result[key] = programWithId.second->saveTo();
 	}
 
@@ -99,7 +99,7 @@ nlohmann::json IrrigationDocument::saveTo() const {
 
 void IrrigationDocument::loadFrom(const nlohmann::json& values) {
 	for (const auto& programWithId : getPrograms()) {
-		const string key = "program_" + to_string(programWithId.first);
+		const string key = "program_" + programWithId.first.toString();
 
 		auto it = values.find(key);
 		if (values.end() != it) {

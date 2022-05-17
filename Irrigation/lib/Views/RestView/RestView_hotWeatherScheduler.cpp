@@ -57,7 +57,7 @@ unique_ptr<HttpResponse> RestView::onPatchHotWeatherScheduler(const HttpRequest&
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].HotWeatherScheduler is modified: %s",
-						to_string(programId).c_str(),
+						programId.toString().c_str(),
 						logText.c_str());
 			}
 		}

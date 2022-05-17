@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <string>
 #include "DTO/RunTimeDTO.h"
 #include "RunTime.h"
 
@@ -24,4 +25,6 @@ public:
 
 	virtual RunTimeDTO toRunTimeDto() const override;
 	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) override;
+
+	virtual std::string toString() const override;
 };

@@ -1,5 +1,4 @@
 #include "RunTimeContainer.h"
-#include <memory>
 #include <sstream>
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
@@ -39,25 +38,25 @@ bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
 }
 
 RunTimeContainer::const_mapped_type RunTimeContainer::at(const key_type& key) const {
-	if (container.size() <= key) {
-		throw NoSuchElementException("RunTime[" + to_string(key) + "] does not exist");
+	if (container.size() <= key.getValue()) {
+		throw NoSuchElementException("RunTime[" + key.toString() + "] does not exist");
 	}
 
-	return container[key].second;
+	return container[key.getValue()].second;
 }
 
 RunTimeContainer::mapped_type RunTimeContainer::at(const key_type& key) {
-	if (container.size() <= key) {
-		throw NoSuchElementException("RunTime[" + to_string(key) + "] does not exist");
+	if (container.size() <= key.getValue()) {
+		throw NoSuchElementException("RunTime[" + key.toString() + "] does not exist");
 	}
 
-	return container[key].second;
+	return container[key.getValue()].second;
 }
 
 list<RunTimeDTO> RunTimeContainer::toRunTimeDtoList() const {
 	list<RunTimeDTO> runTimeDtoList;
 	for (size_t i = 0; i < container.size(); ++i) {
-		runTimeDtoList.emplace_back(container[i].second->toRunTimeDto().setId(container[i].first));
+		runTimeDtoList.emplace_back(container[i].second->toRunTimeDto().setId(container[i].first.getValue()));
 	}
 	return runTimeDtoList;
 }
@@ -83,20 +82,15 @@ void RunTimeContainer::updateFromRunTimeDtoList(const list<RunTimeDTO>& runTimeD
 	}
 }
 
-string to_string(const RunTimeContainer& runTimeContainer) {
-	ostringstream oss;
-	oss << runTimeContainer;
-	return oss.str();
-}
-
-ostream& operator<<(ostream& os, const RunTimeContainer& runTimeContainer) {
-	os << "[";
-	for (auto it = runTimeContainer.begin(); it != runTimeContainer.end(); ++it) {
-		if (it != runTimeContainer.begin()) {
-			os << ", ";
+std::string RunTimeContainer::toString() const {
+	std::ostringstream oss;
+	oss << "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) {
+			oss << ", ";
 		}
-		os << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
+		oss << "{" << it->first.toString() << ", " << it->second->toString() << "}";
 	}
-	os << "]";
-	return os;
+	oss << "]";
+	return oss.str();
 }

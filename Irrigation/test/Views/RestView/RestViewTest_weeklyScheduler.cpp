@@ -10,7 +10,7 @@ using namespace Dto2ObjectTest;
 
 
 string RestViewTest::createWeeklySchedulerUrl(IdType programId) {
-	return createUrl("/programs/" + to_string(programId) + "/schedulers/weekly");
+	return createUrl("/programs/" + programId.toString() + "/schedulers/weekly");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

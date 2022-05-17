@@ -2,12 +2,12 @@
 #include <cstddef>
 #include <list>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <vector>
+#include "DTO/RunTimeDTO.h"
+#include "Utils/OstreamInsert.h"
 #include "IdType.h"
 #include "RunTime.h"
-#include "DTO/RunTimeDTO.h"
 
 
 class RunTimeContainer {
@@ -44,6 +44,9 @@ public:
 	std::list<RunTimeDTO> toRunTimeDtoList() const;
 	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
 
-	friend std::string to_string(const RunTimeContainer& runTimeContainer);
-	friend std::ostream& operator<<(std::ostream& os, const RunTimeContainer& runTimeContainer);
+	std::string toString() const;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(RunTimeContainer);

@@ -11,7 +11,7 @@ using namespace Dto2ObjectTest;
 
 
 string RestViewTest::createProgramUrl(IdType programId) {
-	return createUrl("/programs/" + to_string(programId));
+	return createUrl("/programs/" + programId.toString());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

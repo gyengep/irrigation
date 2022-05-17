@@ -251,27 +251,24 @@ void Program::updateFromProgramDto(const ProgramDTO& programDTO) {
 	}
 }
 
-string to_string(const Program& program) {
-	ostringstream oss;
-	oss << program;
-	return oss.str();
-}
+std::string Program::toString() const {
+	std::ostringstream oss;
 
-ostream& operator<<(ostream& os, const Program& program) {
-	os << "Program{";
-	os << "name=\"" << program.getName() << "\", ";
-	os << "enabled=" << to_string(program.isEnabled()) << ", ";
-	os << "adjustment=\"" << program.getAdjustment() << "\", ";
-	os << "schedulerType=\"" << to_string(program.getSchedulerType()) << "\", ";
-	os << "schedulers=[" <<
-			program.getEveryDayScheduler().toString() << ", " <<
-			program.getHotWeatherScheduler().toString() << ", " <<
-			program.getTemperatureDependentScheduler().toString() << ", " <<
-			program.getWeeklyScheduler().toString() << "], ";
-	os << "runTimes=" << to_string(program.getRunTimes()) << ", ";
-	os << "startTimes=" << to_string(program.getStartTimes());
-	os << "}";
-	return os;
+	oss << "Program{";
+	oss << "name=\"" << getName() << "\", ";
+	oss << "enabled=" << to_string(isEnabled()) << ", ";
+	oss << "adjustment=\"" << getAdjustment() << "\", ";
+	oss << "schedulerType=\"" << to_string(getSchedulerType()) << "\", ";
+	oss << "schedulers=[" <<
+			getEveryDayScheduler().toString() << ", " <<
+			getHotWeatherScheduler().toString() << ", " <<
+			getTemperatureDependentScheduler().toString() << ", " <<
+			getWeeklyScheduler().toString() << "], ";
+	oss << "runTimes=" << getRunTimes().toString() << ", ";
+	oss << "startTimes=" << getStartTimes().toString();
+	oss << "}";
+
+	return oss.str();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

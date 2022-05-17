@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
-#include <ostream>
 #include <string>
 #include "DTO/StartTimeDTO.h"
+#include "Utils/OstreamInsert.h"
 
 
 class StartTime {
@@ -26,10 +26,13 @@ public:
 	virtual StartTimeDTO toStartTimeDto() const = 0;
 	virtual void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) = 0;
 
-	friend std::string to_string_short(const StartTime& startTime);
-	friend std::string to_string(const StartTime& startTime);
-	friend std::ostream& operator<<(std::ostream& os, const StartTime& startTime);
+	virtual std::string toString() const = 0;
+	virtual std::string toShortString() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(StartTime);
 
 ///////////////////////////////////////////////////////////////////////////////
 

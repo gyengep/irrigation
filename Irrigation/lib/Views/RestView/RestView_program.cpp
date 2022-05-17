@@ -49,11 +49,11 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 			irrigationDocument.getPrograms().insert(programId, program);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = to_string(*program);
+				const std::string logText = program->toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s] is added: %s",
-						to_string(programId).c_str(),
+						programId.toString().c_str(),
 						logText.c_str());
 			}
 		}
@@ -117,11 +117,11 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 			program->updateFromProgramDto(programDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = to_string(*program);
+				const std::string logText = program->toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s] is modified: %s",
-						to_string(programId).c_str(),
+						programId.toString().c_str(),
 						logText.c_str());
 			}
 		}
@@ -156,7 +156,7 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 		}
 
 		LOGGER.debug("Program[%s] is deleted",
-				to_string(programId).c_str());
+				programId.toString().c_str());
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").

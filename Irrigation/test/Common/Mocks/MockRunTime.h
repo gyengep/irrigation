@@ -12,6 +12,8 @@ public:
 
 	MOCK_CONST_METHOD0(toRunTimeDto, RunTimeDTO());
 	MOCK_METHOD1(updateFromRunTimeDto, void(const RunTimeDTO&));
+
+	MOCK_CONST_METHOD0(toString, std::string());
 };
 
 ///////////////////////////////////////////////////////////////////////////////

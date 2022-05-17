@@ -34,7 +34,7 @@ TEST_F(RestViewTest, postProgramList) {
 	const IdType programId = irrigationDocument->getPrograms().begin()->first;
 
 	checkResponseWithoutBody(response, 201);
-	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + to_string(programId) + "\r\n"));
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + programId.toString() + "\r\n"));
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
 

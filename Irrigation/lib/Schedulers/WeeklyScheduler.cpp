@@ -1,6 +1,4 @@
 #include "WeeklyScheduler.h"
-#include "Utils/ToString.h"
-#include <sstream>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -13,9 +11,4 @@ bool WeeklyScheduler::operator== (const WeeklyScheduler& other) const {
 	}
 
 	return true;
-}
-
-std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler) {
-	os << weeklyScheduler.toString();
-	return os;
 }

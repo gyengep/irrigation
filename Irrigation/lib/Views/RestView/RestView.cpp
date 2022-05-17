@@ -114,11 +114,11 @@ void RestView::terminate() {
 ///////////////////////////////////////////////////////////////////////////////
 
 string RestView::getProgramUrl(const IdType& programId) {
-	return "/programs/" + to_string(programId);
+	return "/programs/" + programId.toString();
 }
 
 string RestView::getStartTimeUrl(const IdType& programId, const IdType& startTimeId) {
-	return "/programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId);
+	return "/programs/" + programId.toString() + "/starttimes/" + startTimeId.toString();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

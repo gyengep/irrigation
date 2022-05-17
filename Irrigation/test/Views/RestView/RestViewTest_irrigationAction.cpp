@@ -147,7 +147,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 			"<irrigation>"
 				"<action>start-program</action>"
 				"<adjustment>" + to_string(expectedAdjustment) + "</adjustment>"
-				"<program-id>" + to_string(programListSample.getContainerPtr()->begin()->first) + "</program-id>"
+				"<program-id>" + programListSample.getContainerPtr()->begin()->first.toString() + "</program-id>"
 			"</irrigation>";
 
 	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimes())), expectedAdjustment));
@@ -176,7 +176,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 	const string xml =
 			"<irrigation>"
 				"<action>start-program</action>"
-				"<program-id>" + to_string(programListSample.getContainerPtr()->begin()->first) + "</program-id>"
+				"<program-id>" + programListSample.getContainerPtr()->begin()->first.toString() + "</program-id>"
 			"</irrigation>";
 
 	EXPECT_CALL(*mockWateringController, start(

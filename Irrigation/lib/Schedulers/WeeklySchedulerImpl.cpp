@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <ctime>
 #include <list>
+#include <sstream>
 #include <stdexcept>
 #include "Exceptions/Exceptions.h"
 #include "Utils/TimeConversion.h"

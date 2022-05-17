@@ -27,7 +27,7 @@ const ProgramContainer::mapped_type& ProgramContainer::at(const key_type& key) c
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("Program[" + to_string(key) + "] does not exist");
+		throw NoSuchElementException("Program[" + key.toString() + "] does not exist");
 	}
 
 	return it->second;
@@ -37,7 +37,7 @@ void ProgramContainer::erase(const key_type& key) {
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("Program[" + to_string(key) + "] does not exist");
+		throw NoSuchElementException("Program[" + key.toString() + "] does not exist");
 	}
 
 	container.erase(it);
@@ -45,7 +45,7 @@ void ProgramContainer::erase(const key_type& key) {
 
 ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, const mapped_type& value) {
 	if (container.end() != find_if(container.begin(), container.end(), findKey(key))) {
-		throw AlreadyExistException("Program[" + to_string(key) + "] already exists");
+		throw AlreadyExistException("Program[" + key.toString() + "] already exists");
 	}
 
 	container.push_back(make_pair(key, value));
@@ -55,7 +55,7 @@ ProgramContainer::value_type& ProgramContainer::insert(const key_type& key, cons
 list<ProgramDTO> ProgramContainer::toProgramDtoList() const {
 	list<ProgramDTO> programDtos;
 	for (const value_type& value : container) {
-		programDtos.push_back(value.second->toProgramDto().setId(value.first));
+		programDtos.push_back(value.second->toProgramDto().setId(value.first.getValue()));
 	}
 	return programDtos;
 }
@@ -76,20 +76,17 @@ void ProgramContainer::updateFromProgramDtoList(const list<ProgramDTO>& dtoList)
 	}
 }
 
-string to_string(const ProgramContainer& programContainer) {
-	ostringstream oss;
-	oss << programContainer;
-	return oss.str();
-}
+std::string ProgramContainer::toString() const {
+	std::ostringstream oss;
 
-ostream& operator<<(ostream& os, const ProgramContainer& programContainer) {
-	os << "[";
-	for (auto it = programContainer.begin(); it != programContainer.end(); ++it) {
-		if (it != programContainer.begin()) {
-			os << ", ";
+	oss << "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) {
+			oss << ", ";
 		}
-		os << "{" << to_string(it->first) << ", " << to_string(*it->second) << "}";
+		oss << "{" << it->first.toString() << ", " << it->second->toString() << "}";
 	}
-	os << "]";
-	return os;
+	oss << "]";
+
+	return oss.str();
 }

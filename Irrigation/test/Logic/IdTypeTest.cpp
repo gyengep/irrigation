@@ -9,39 +9,16 @@ TEST(IdTypeTest, defaultConst) {
 	IdType id1;
 	IdType id2;
 
-	const unsigned value1 = id1;
-	const unsigned value2 = id2;
-
-	EXPECT_THAT(value2, Eq(value1 + 1));
+	EXPECT_THAT(id2.getValue(), Eq(id1.getValue() + 1));
 }
 
 TEST(IdTypeTest, initConst) {
-	const unsigned refValue = IdType();
-
-	IdType id1(refValue + 50);
-	IdType id2;
-
-	const unsigned value1 = id1;
-	const unsigned value2 = id2;
-
-	EXPECT_THAT(value1, Eq(refValue + 50));
-	EXPECT_THAT(value2, Eq(value1 + 1));
-}
-
-TEST(IdTypeTest, initLess) {
-	const unsigned refValue = IdType();
-
-	IdType id1(refValue + 100);
-	IdType id2(refValue + 50);
+	IdType id1;
+	IdType id2(id1.getValue() + 50);
 	IdType id3;
 
-	const unsigned value1 = id1;
-	const unsigned value2 = id2;
-	const unsigned value3 = id3;
-
-	EXPECT_THAT(value1, Eq(refValue + 100));
-	EXPECT_THAT(value2, Eq(refValue + 50));
-	EXPECT_THAT(value3, Eq(refValue + 101));
+	EXPECT_THAT(id2.getValue(), Eq(id1.getValue() + 50));
+	EXPECT_THAT(id3.getValue(), Eq(id2.getValue() + 1));
 }
 
 TEST(IdTypeTest, fromString) {

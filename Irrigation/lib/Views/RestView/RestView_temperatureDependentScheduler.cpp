@@ -57,7 +57,7 @@ unique_ptr<HttpResponse> RestView::onPatchTemperatureDependentScheduler(const Ht
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].TemperatureDependentScheduler is modified: %s",
-						to_string(programId).c_str(),
+						programId.toString().c_str(),
 						logText.c_str());
 			}
 		}

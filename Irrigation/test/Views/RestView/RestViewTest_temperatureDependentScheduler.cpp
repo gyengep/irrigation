@@ -10,7 +10,7 @@ using namespace Dto2ObjectTest;
 
 
 string RestViewTest::createTemperatureDependentSchedulerUrl(IdType programId) {
-	return createUrl("/programs/" + to_string(programId) + "/schedulers/temperature-dependent");
+	return createUrl("/programs/" + programId.toString() + "/schedulers/temperature-dependent");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

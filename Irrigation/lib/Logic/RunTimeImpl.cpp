@@ -1,5 +1,7 @@
 #include "RunTimeImpl.h"
 #include "Exceptions/Exceptions.h"
+#include <iomanip>
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -68,4 +70,11 @@ void RunTimeImpl::updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) {
 
 		setSeconds(60 * minutes + seconds);
 	}
+}
+
+std::string RunTimeImpl::toString() const {
+	std::ostringstream oss;
+	oss << std::setfill('0') << std::setw(2) << (getSeconds() / 60) << ":";
+	oss << std::setfill('0') << std::setw(2) << (getSeconds() % 60);
+	return oss.str();
 }

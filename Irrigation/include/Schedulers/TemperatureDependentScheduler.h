@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <ostream>
 #include "json.hpp"
 #include "DTO/TemperatureDependentSchedulerDTO.h"
-#include "Schedulers/Scheduler.h"
+#include "Utils/OstreamInsert.h"
+#include "Scheduler.h"
 
 
 class TemperatureDependentScheduler : public Scheduler {
@@ -33,4 +33,4 @@ public:
 
 ////////////////////////////////////////////////////
 
-std::ostream& operator<<(std::ostream& os, const TemperatureDependentScheduler& scheduler);
+OSTREAM_INSERT(TemperatureDependentScheduler);

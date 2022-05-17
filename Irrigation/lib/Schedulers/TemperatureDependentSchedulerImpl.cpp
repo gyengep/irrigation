@@ -8,6 +8,7 @@
 #include <chrono>
 #include <iomanip>
 #include <limits>
+#include <sstream>
 #include <time.h>
 
 using namespace std;

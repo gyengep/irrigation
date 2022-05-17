@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <ostream>
 #include "DTO/EveryDaySchedulerDTO.h"
+#include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
 
 
@@ -26,7 +26,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::ostream& operator<<(std::ostream& os, const EveryDayScheduler& scheduler);
+OSTREAM_INSERT(EveryDayScheduler);
 
 ///////////////////////////////////////////////////////////////////////////////
 

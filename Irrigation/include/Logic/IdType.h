@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Utils/OstreamInsert.h"
 
 
 class IdType {
@@ -14,8 +15,14 @@ public:
 
 	IdType& operator= (IdType&&) = default;
 	IdType& operator= (const IdType&) = default;
-	operator unsigned() const { return id; }
+	bool operator== (const IdType& other) const;
 
-	friend std::string to_string(const IdType& idType);
+	unsigned getValue() const;
+	std::string toString() const;
+
 	static IdType from_string(const std::string& id);
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(IdType);

@@ -2,9 +2,10 @@
 #include <cstddef>
 #include <list>
 #include <memory>
+#include "DTO/StartTimeDTO.h"
+#include "Utils/OstreamInsert.h"
 #include "IdType.h"
 #include "StartTime.h"
-#include "DTO/StartTimeDTO.h"
 
 
 class StartTimeContainer {
@@ -57,6 +58,10 @@ public:
 	std::list<StartTimeDTO> toStartTimeDtoList() const;
 	void updateFromStartTimeDtoList(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const std::list<StartTimeDTO>& startTimeDtoList);
 
-	friend std::string to_string(const StartTimeContainer& startTimeContainer);
-	friend std::ostream& operator<<(std::ostream& os, const StartTimeContainer& startTimeContainer);
+	std::string toString() const;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(StartTimeContainer);
+

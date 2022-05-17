@@ -10,7 +10,7 @@ using namespace Dto2ObjectTest;
 
 
 string RestViewTest::createStartTimeListUrl(IdType programId) {
-	return createUrl("/programs/" + to_string(programId) + "/starttimes");
+	return createUrl("/programs/" + programId.toString() + "/starttimes");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ TEST_F(RestViewTest, postStartTimeList) {
 	const IdType startTimeId = irrigationDocument->getPrograms().at(programId)->getStartTimes().begin()->first;
 
 	checkResponseWithoutBody(response, 201);
-	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + to_string(programId) + "/starttimes/" + to_string(startTimeId) + "\r\n"));
+	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + programId.toString() + "/starttimes/" + startTimeId.toString() + "\r\n"));
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
 

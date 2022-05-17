@@ -28,7 +28,7 @@ StartTimeContainer::const_mapped_type StartTimeContainer::at(const key_type& key
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + to_string(key) + "] does not exist");
+		throw NoSuchElementException("StartTime[" + key.toString() + "] does not exist");
 	}
 
 	return it->second;
@@ -38,7 +38,7 @@ StartTimeContainer::mapped_type StartTimeContainer::at(const key_type& key) {
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + to_string(key) + "] does not exist");
+		throw NoSuchElementException("StartTime[" + key.toString() + "] does not exist");
 	}
 
 	return it->second;
@@ -48,7 +48,7 @@ void StartTimeContainer::erase(const key_type& key) {
 	auto it = find_if(container.begin(), container.end(), findKey(key));
 
 	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + to_string(key) + "] does not exist");
+		throw NoSuchElementException("StartTime[" + key.toString() + "] does not exist");
 	}
 
 	container.erase(it);
@@ -56,7 +56,7 @@ void StartTimeContainer::erase(const key_type& key) {
 
 StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
 	if (container.end() != find_if(container.begin(), container.end(), findKey(key))) {
-		throw AlreadyExistException("StartTime[" + to_string(key) + "] already exists");
+		throw AlreadyExistException("StartTime[" + key.toString() + "] already exists");
 	}
 
 	container.emplace_back(make_pair(key, value));
@@ -74,7 +74,7 @@ void StartTimeContainer::sort() {
 list<StartTimeDTO> StartTimeContainer::toStartTimeDtoList() const {
 	list<StartTimeDTO> startTimeDtoList;
 	for (const value_type& value : container) {
-		startTimeDtoList.push_back(value.second->toStartTimeDto().setId(value.first));
+		startTimeDtoList.push_back(value.second->toStartTimeDto().setId(value.first.getValue()));
 	}
 	return startTimeDtoList;
 }
@@ -95,20 +95,17 @@ void StartTimeContainer::updateFromStartTimeDtoList(const std::shared_ptr<StartT
 	}
 }
 
-string to_string(const StartTimeContainer& startTimeContainer) {
+std::string StartTimeContainer::toString() const {
 	ostringstream oss;
-	oss << startTimeContainer;
-	return oss.str();
-}
 
-ostream& operator<<(ostream& os, const StartTimeContainer& startTimeContainer) {
-	os << "[";
-	for (auto it = startTimeContainer.begin(); it != startTimeContainer.end(); ++it) {
-		if (it != startTimeContainer.begin()) {
-			os << ", ";
+	oss << "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) {
+			oss << ", ";
 		}
-		os << "{" << to_string(it->first) << ", " << to_string_short(*it->second) << "}";
+		oss << "{" << it->first.toString() << ", " << it->second->toShortString() << "}";
 	}
-	os << "]";
-	return os;
+	oss << "]";
+
+	return oss.str();
 }

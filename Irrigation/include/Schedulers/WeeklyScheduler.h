@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <ostream>
 #include "DTO/WeeklySchedulerDTO.h"
+#include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
 
 
@@ -45,7 +45,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::ostream& operator<<(std::ostream& os, const WeeklyScheduler& weeklyScheduler);
+OSTREAM_INSERT(WeeklyScheduler);
 
 ///////////////////////////////////////////////////////////////////////////////
 

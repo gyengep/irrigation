@@ -1,5 +1,7 @@
 #include "StartTimeImpl.h"
 #include "Exceptions/Exceptions.h"
+#include <iomanip>
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -63,4 +65,20 @@ void StartTimeImpl::updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) {
 
 		set(hour, minute);
 	}
+}
+
+std::string StartTimeImpl::toString() const {
+	std::ostringstream oss;
+	oss << "StartTime{";
+	oss << std::setfill('0') << std::setw(2) << getHours() << ":";
+	oss << std::setfill('0') << std::setw(2) << getMinutes();
+	oss << "}";
+	return oss.str();
+}
+
+std::string StartTimeImpl::toShortString() const {
+	std::ostringstream oss;
+	oss << std::setfill('0') << std::setw(2) << getHours() << ":";
+	oss << std::setfill('0') << std::setw(2) << getMinutes();
+	return oss.str();
 }

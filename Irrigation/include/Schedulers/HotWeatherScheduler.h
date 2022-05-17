@@ -2,9 +2,9 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include <ostream>
 #include "json.hpp"
 #include "DTO/HotWeatherSchedulerDTO.h"
+#include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
 
 
@@ -32,7 +32,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::ostream& operator<<(std::ostream& os, const HotWeatherScheduler& scheduler);
+OSTREAM_INSERT(HotWeatherScheduler);
 
 ///////////////////////////////////////////////////////////////////////////////
 

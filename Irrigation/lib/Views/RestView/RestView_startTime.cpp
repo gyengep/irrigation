@@ -62,12 +62,12 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 			irrigationDocument.getPrograms().at(programId)->getStartTimes().insert(startTimeId, startTime);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = to_string(*startTime);
+				const std::string logText = startTime->toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].StartTime[%s] is added: %s",
-						to_string(programId).c_str(),
-						to_string(startTimeId).c_str(),
+						programId.toString().c_str(),
+						startTimeId.toString().c_str(),
 						logText.c_str());
 			}
 		}
@@ -135,12 +135,12 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 			startTime->updateFromStartTimeDto(startTimeDto);
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = to_string(*startTime);
+				const std::string logText = startTime->toString();
 				lock.unlock();
 
 				LOGGER.debug("Program[%s].StartTime[%s] is modified: %s",
-						to_string(programId).c_str(),
-						to_string(startTimeId).c_str(),
+						programId.toString().c_str(),
+						startTimeId.toString().c_str(),
 						logText.c_str());
 			}
 		}
@@ -175,8 +175,8 @@ unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request,
 		}
 
 		LOGGER.debug("Program[%s].StartTime[%s] is deleted",
-				to_string(programId).c_str(),
-				to_string(startTimeId).c_str());
+				programId.toString().c_str(),
+				startTimeId.toString().c_str());
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").

@@ -1,9 +1,11 @@
 #pragma once
 #include <list>
 #include <memory>
+#include <string>
+#include "DTO/ProgramDTO.h"
+#include "Utils/OstreamInsert.h"
 #include "IdType.h"
 #include "Program.h"
-#include "DTO/ProgramDTO.h"
 
 
 class ProgramContainer {
@@ -53,6 +55,9 @@ public:
 	std::list<ProgramDTO> toProgramDtoList() const;
 	void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList);
 
-	friend std::string to_string(const ProgramContainer& programContainer);
-	friend std::ostream& operator<<(std::ostream& os, const ProgramContainer& programContainer);
+	std::string toString() const;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(ProgramContainer);

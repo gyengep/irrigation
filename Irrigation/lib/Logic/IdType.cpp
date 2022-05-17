@@ -21,10 +21,14 @@ IdType::IdType(unsigned id) :
 	lastUsedId = max(id, lastUsedId);
 }
 
-string to_string(const IdType& idType) {
-	ostringstream o;
-	o << (unsigned)idType;
-	return o.str();
+unsigned IdType::getValue() const {
+	return id;
+}
+
+std::string IdType::toString() const {
+	std::ostringstream oss;
+	oss << id;
+	return oss.str();
 }
 
 IdType IdType::from_string(const string& id) {
@@ -46,3 +50,8 @@ IdType IdType::from_string(const string& id) {
 
 	return result;
 }
+
+bool IdType::operator== (const IdType& other) const {
+	return (id == other.id);
+}
+

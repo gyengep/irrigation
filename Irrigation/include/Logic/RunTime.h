@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
-#include <ostream>
 #include <string>
 #include "DTO/RunTimeDTO.h"
+#include "Utils/OstreamInsert.h"
 
 
 class RunTime {
@@ -24,9 +24,12 @@ public:
 	virtual RunTimeDTO toRunTimeDto() const = 0;
 	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) = 0;
 
-	friend std::string to_string(const RunTime& runTime);
-	friend std::ostream& operator<<(std::ostream& os, const RunTime& runTime);
+	virtual std::string toString() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(RunTime);
 
 ///////////////////////////////////////////////////////////////////////////////
 
