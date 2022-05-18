@@ -144,13 +144,11 @@ TEST_F(RestViewTest, patchStartTimeInvalidContentType) {
 TEST_F(RestViewTest, deleteStartTime) {
 	const IdType programId;
 	const IdType startTimeId;
-	const shared_ptr<MockStartTimeContainer> mockStartTimeContainer(new MockStartTimeContainer());
+	const shared_ptr<MockStartTimeContainer> mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
 	const shared_ptr<Program> program = Program::Builder().setStartTimeContainer(mockStartTimeContainer).build();
 
 	EXPECT_CALL(*mockStartTimeContainer, erase(startTimeId));
-	EXPECT_CALL(*mockStartTimeContainer, insert(_, _)).Times(AnyNumber());
 
-	program->getStartTimes().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 	irrigationDocument->getPrograms().insert(programId, program);
 
 	Response response = executeRequest("DELETE", createStartTimeUrl(programId, startTimeId));

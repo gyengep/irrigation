@@ -19,6 +19,9 @@
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
 #include "Schedulers/WeeklySchedulerImpl.h"
 
+#include "RunTimeContainerImpl.h"
+#include "StartTimeContainerImpl.h"
+
 using namespace std;
 
 
@@ -52,10 +55,10 @@ Program::Program() :
 				TemperatureHandler::getInstance().getTemperatureHistory()
 				),
 		make_shared<WeeklySchedulerImpl>(),
-		make_shared<RunTimeContainer>(
+		make_shared<RunTimeContainerImpl>(
 				std::make_shared<RunTimeFactory>()
 				),
-		make_shared<StartTimeContainer>()
+		make_shared<StartTimeContainerImpl>()
 	)
 {
 }
@@ -357,13 +360,13 @@ shared_ptr<Program> Program::Builder::build() {
 	}
 
 	if (nullptr == runTimes) {
-		runTimes = std::make_shared<RunTimeContainer>(
+		runTimes = std::make_shared<RunTimeContainerImpl>(
 					std::make_shared<RunTimeFactory>()
 				);
 	}
 
 	if (nullptr == startTimes) {
-		startTimes = std::make_shared<StartTimeContainer>();
+		startTimes = std::make_shared<StartTimeContainerImpl>();
 	}
 
 	return std::make_shared<Program>(

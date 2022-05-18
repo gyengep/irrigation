@@ -1,19 +1,9 @@
 #include "StartTimeContainer.h"
-#include <algorithm>
-#include <sstream>
-#include "Exceptions/Exceptions.h"
-
-using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-StartTimeContainer::StartTimeContainer(initializer_list<StartTimeContainer::value_type> initializer) :
-	container(initializer)
-{
-}
-
 bool StartTimeContainer::operator== (const StartTimeContainer& other) const {
-	if (container.size() != other.container.size()) {
+	if (size() != other.size()) {
 		return false;
 	}
 
@@ -21,91 +11,6 @@ bool StartTimeContainer::operator== (const StartTimeContainer& other) const {
 		return (a.first == b.first) && (a.second->operator ==(*b.second));
 	};
 
-	return equal(container.begin(), container.end(), other.container.begin(), comp);
+	return equal(begin(), end(), other.begin(), comp);
 }
 
-StartTimeContainer::const_mapped_type StartTimeContainer::at(const key_type& key) const {
-	auto it = find_if(container.begin(), container.end(), findKey(key));
-
-	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + key.toString() + "] does not exist");
-	}
-
-	return it->second;
-}
-
-StartTimeContainer::mapped_type StartTimeContainer::at(const key_type& key) {
-	auto it = find_if(container.begin(), container.end(), findKey(key));
-
-	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + key.toString() + "] does not exist");
-	}
-
-	return it->second;
-}
-
-void StartTimeContainer::erase(const key_type& key) {
-	auto it = find_if(container.begin(), container.end(), findKey(key));
-
-	if (container.end() == it) {
-		throw NoSuchElementException("StartTime[" + key.toString() + "] does not exist");
-	}
-
-	container.erase(it);
-}
-
-StartTimeContainer::value_type& StartTimeContainer::insert(const key_type& key, const mapped_type& value) {
-	if (container.end() != find_if(container.begin(), container.end(), findKey(key))) {
-		throw AlreadyExistException("StartTime[" + key.toString() + "] already exists");
-	}
-
-	container.emplace_back(make_pair(key, value));
-	return container.back();
-}
-
-void StartTimeContainer::sort() {
-	auto comp = [](const value_type& a, const value_type& b) {
-		return a.second->operator <(*b.second);
-	};
-
-	container.sort(comp);
-}
-
-list<StartTimeDTO> StartTimeContainer::toStartTimeDtoList() const {
-	list<StartTimeDTO> startTimeDtoList;
-	for (const value_type& value : container) {
-		startTimeDtoList.push_back(value.second->toStartTimeDto().setId(value.first.getValue()));
-	}
-	return startTimeDtoList;
-}
-
-void StartTimeContainer::updateFromStartTimeDtoList(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const list<StartTimeDTO>& startTimeDtoList) {
-	container.clear();
-	for (const StartTimeDTO& startTimeDTO : startTimeDtoList) {
-		unique_ptr<IdType> id;
-		if (startTimeDTO.hasId()) {
-			id.reset(new IdType(startTimeDTO.getId()));
-		} else {
-			id.reset(new IdType());
-		}
-
-		StartTimePtr startTime = startTimeFactory->create();
-		startTime->updateFromStartTimeDto(startTimeDTO);
-		insert(IdType(*id), startTime);
-	}
-}
-
-std::string StartTimeContainer::toString() const {
-	ostringstream oss;
-
-	oss << "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) {
-			oss << ", ";
-		}
-		oss << "{" << it->first.toString() << ", " << it->second->toShortString() << "}";
-	}
-	oss << "]";
-
-	return oss.str();
-}

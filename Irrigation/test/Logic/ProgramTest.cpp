@@ -2,7 +2,7 @@
 #include "Logic/Program.h"
 #include "Logic/RunTime.h"
 #include "Logic/StartTime.h"
-#include "Logic/RunTimeContainer.h"
+#include "Logic/RunTimeContainerImpl.h"
 #include "Logic/StartTimeContainer.h"
 #include "Schedulers/WeeklyScheduler.h"
 #include "Utils/TimeConversion.h"
@@ -20,7 +20,7 @@ using ::testing::AnyNumber;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramTest, defaultConstructor) {
-	const RunTimeContainer expectedRunTimeContainer({
+	const RunTimeContainerImpl expectedRunTimeContainer({
 		RunTimeFactory().create(),
 		RunTimeFactory().create(),
 		RunTimeFactory().create(),

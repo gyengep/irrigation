@@ -1,5 +1,6 @@
 #include "WateringControllerTest.h"
 #include "Logic/RunTimeImpl.h"
+#include "Logic/RunTimeContainerImpl.h"
 #include "Hardware/Valves/GpioValve.h"
 #include "Hardware/Valves/ZoneHandlerImpl.h"
 #include <numeric>
@@ -50,14 +51,14 @@ TEST_F(WateringControllerTest, init) {
 }
 
 TEST_F(WateringControllerTest, startWithNotEmpty) {
-	const RunTimeContainer runTimes({
+	const RunTimeContainerImpl runTimes {
 		std::make_shared<RunTimeImpl>(1),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0)
-	});
+	};
 
 	wateringController->start(runTimes, 100);
 	this_thread::yield();
@@ -65,14 +66,14 @@ TEST_F(WateringControllerTest, startWithNotEmpty) {
 }
 
 TEST_F(WateringControllerTest, stop) {
-	const RunTimeContainer runTimes({
+	const RunTimeContainerImpl runTimes {
 		std::make_shared<RunTimeImpl>(1),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0),
 		std::make_shared<RunTimeImpl>(0)
-	});
+	};
 
 	wateringController->start(runTimes, 100);
 	this_thread::yield();
@@ -86,7 +87,7 @@ TEST_F(WateringControllerTest, stop) {
 TEST_F(WateringControllerTimingTest, check_TIMING) {
 	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
 	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
-	RunTimeContainer runTimeContainer(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i <runTimeContainer.size(); i++) {
 		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
@@ -123,7 +124,7 @@ TEST_F(WateringControllerTimingTest, check_TIMING) {
 TEST_F(WateringControllerTimingTest, checkWithZeroAndOtherTimes_TIMING) {
 	const vector<unsigned> expectedTimes { 0, 100, 0, 200, 300, 0 };
 	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
-	RunTimeContainer runTimeContainer(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i <runTimeContainer.size(); i++) {
 		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
@@ -155,7 +156,7 @@ TEST_F(WateringControllerTimingTest, checkWithAdjustment_TIMING) {
 	const float adjustment = 0.7f;
 	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
 	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
-	RunTimeContainer runTimeContainer(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i <runTimeContainer.size(); i++) {
 		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
@@ -190,7 +191,7 @@ TEST_F(WateringControllerTimingTest, checkWithAdjustment_TIMING) {
 }
 
 TEST_F(WateringControllerTimingTest, checkWithZeroTimes_TIMING) {
-	RunTimeContainer runTimeContainer(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
 	wateringController->start(runTimeContainer, 100);
 	while (wateringController->isWateringActive()) {
@@ -203,7 +204,7 @@ TEST_F(WateringControllerTimingTest, checkWithZeroTimes_TIMING) {
 
 TEST_F(WateringControllerTimingTest, checkWithZeroAdjustment_TIMING) {
 	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
-	RunTimeContainer runTimeContainer(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i <runTimeContainer.size(); i++) {
 		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
@@ -221,7 +222,7 @@ TEST_F(WateringControllerTimingTest, checkWithZeroAdjustment_TIMING) {
 TEST_F(WateringControllerTimingTest, startAndStartAgain) {
 	const vector<unsigned> expectedTimes1 { 200, 200, 200, 200, 200, 200 };
 	const vector<unsigned> expectedTimes2 { 100, 200, 300, 150, 250, 350 };
-	RunTimeContainer runTimeContainer(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
 	for (size_t i = 0; i <runTimeContainer.size(); i++) {
 		runTimeContainer.at(i)->setMilliSeconds(expectedTimes1[i]);

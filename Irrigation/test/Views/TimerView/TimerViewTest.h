@@ -1,7 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <memory>
-#include "Logic/RunTimeContainer.h"
+#include "Logic/RunTimeContainerImpl.h"
 #include "Model/IrrigationDocument.h"
 #include "Views/TimerView/TimerView.h"
 #include "Mocks/MockProgram.h"
@@ -18,8 +18,8 @@ protected:
 	static const std::tm timeinfo;
 	static const unsigned adjustment1 = 70;
 	static const unsigned adjustment2 = 80;
-	static const RunTimeContainer runTimes1;
-	static const RunTimeContainer runTimes2;
+	static const RunTimeContainerImpl runTimes1;
+	static const RunTimeContainerImpl runTimes2;
 
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<TimerView> view;

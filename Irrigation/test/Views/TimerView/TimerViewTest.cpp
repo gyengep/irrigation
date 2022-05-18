@@ -9,7 +9,7 @@ using namespace testing;
 
 const time_t TimerViewTest::rawtime = time(nullptr);
 const tm TimerViewTest::timeinfo = *localtime(&TimerViewTest::rawtime);
-const RunTimeContainer TimerViewTest::runTimes1 {
+const RunTimeContainerImpl TimerViewTest::runTimes1 {
 	std::make_shared<RunTimeImpl>(110),
 	std::make_shared<RunTimeImpl>(120),
 	std::make_shared<RunTimeImpl>(130),
@@ -18,7 +18,7 @@ const RunTimeContainer TimerViewTest::runTimes1 {
 	std::make_shared<RunTimeImpl>(160)
 };
 
-const RunTimeContainer TimerViewTest::runTimes2 {
+const RunTimeContainerImpl TimerViewTest::runTimes2 {
 	std::make_shared<RunTimeImpl>(210),
 	std::make_shared<RunTimeImpl>(220),
 	std::make_shared<RunTimeImpl>(230),

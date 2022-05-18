@@ -5,6 +5,15 @@
 
 class MockRunTimeContainer : public RunTimeContainer {
 public:
-	MockRunTimeContainer(const std::shared_ptr<RunTimeFactory>& runTimeFactory) : RunTimeContainer(runTimeFactory) {}
-	MOCK_METHOD1(updateFromRunTimeDtoList, void(const std::list<RunTimeDTO>& runTimeDtoList));
+	MOCK_CONST_METHOD0(begin, const_iterator());
+	MOCK_CONST_METHOD0(end, const_iterator());
+	MOCK_CONST_METHOD0(size, size_t());
+
+	MOCK_CONST_METHOD1(at, const_mapped_type(const key_type& key));
+	MOCK_METHOD1(at, mapped_type(const key_type& key));
+
+	MOCK_CONST_METHOD0(toRunTimeDtoList, std::list<RunTimeDTO>());
+	MOCK_METHOD1(updateFromRunTimeDtoList, void(const std::list<RunTimeDTO>&));
+
+	MOCK_CONST_METHOD0(toString, std::string());
 };

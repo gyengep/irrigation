@@ -12,6 +12,7 @@
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeContainer.h"
+#include "Logic/RunTimeContainerImpl.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include <ctime>
@@ -251,7 +252,7 @@ void RestView::onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigati
 
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
 
-	RunTimeContainer runTimes(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimes(std::make_shared<RunTimeFactory>());
 	runTimes.updateFromRunTimeDtoList(*irrigationActionDTO.runTimeDtoList);
 
 	irrigationDocument.getWateringController().start(

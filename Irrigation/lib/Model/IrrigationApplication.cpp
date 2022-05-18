@@ -13,8 +13,10 @@
 #include "Logic/ProgramContainer.h"
 #include "Logic/RunTimeImpl.h"
 #include "Logic/RunTimeContainer.h"
+#include "Logic/RunTimeContainerImpl.h"
 #include "Logic/StartTimeImpl.h"
 #include "Logic/StartTimeContainer.h"
+#include "Logic/StartTimeContainerImpl.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
@@ -245,7 +247,7 @@ void IrrigationApplication::setMyDefaults() {
 				50, 0,
 				100
 			)).
-			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(chrono::minutes(26)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(38)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(32)),
@@ -253,7 +255,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
-			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				{ IdType(), make_shared<StartTimeImpl>(4, 0) }
 			})).
 			build()
@@ -273,7 +275,7 @@ void IrrigationApplication::setMyDefaults() {
 				100, 0,
 				0
 			)).
-			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
@@ -281,7 +283,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
-			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				{ IdType(), make_shared<StartTimeImpl>(6, 0) }
 			})).
 			build()
@@ -298,7 +300,7 @@ void IrrigationApplication::setMyDefaults() {
 				TemperatureHandler::getInstance().getTemperatureHistory(),
 				chrono::hours(2), 33
 			)).
-			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(chrono::minutes(2) + chrono::seconds(30)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(3) + chrono::seconds(30)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(3)),
@@ -306,7 +308,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
-			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				{ IdType(), make_shared<StartTimeImpl>(12, 0) },
 				{ IdType(), make_shared<StartTimeImpl>(13, 0) },
 				{ IdType(), make_shared<StartTimeImpl>(14, 0) },
@@ -331,7 +333,7 @@ void IrrigationApplication::setMyDefaults() {
 				75, 75,
 				0
 			)).
-			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
@@ -339,7 +341,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(1)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0))
 			})).
-			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				{ IdType(), make_shared<StartTimeImpl>(7, 0) },
 				{ IdType(), make_shared<StartTimeImpl>(20, 0) }
 			})).
@@ -360,7 +362,7 @@ void IrrigationApplication::setMyDefaults() {
 				75, 75,
 				0
 			)).
-			setRunTimeContainer(shared_ptr<RunTimeContainer>(new RunTimeContainer {
+			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
@@ -368,7 +370,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(chrono::minutes(2))
 			})).
-			setStartTimeContainer(shared_ptr<StartTimeContainer>(new StartTimeContainer {
+			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				{ IdType(), make_shared<StartTimeImpl>(7, 10) },
 				{ IdType(), make_shared<StartTimeImpl>(20, 10) }
 			})).

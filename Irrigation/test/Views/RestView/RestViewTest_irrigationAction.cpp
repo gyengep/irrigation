@@ -19,14 +19,14 @@ string RestViewTest::createIrrigationActionUrl() {
 TEST_F(RestViewTest, patchIrrigationActionStart1) {
 	const unsigned expectedAdjustment = 50;
 	const shared_ptr<MockWateringController> mockWateringController(new MockWateringController());
-	const RunTimeContainer expectedRunTimeContainer({
+	const RunTimeContainerImpl expectedRunTimeContainer {
 		std::make_shared<RunTimeImpl>(15),
 		std::make_shared<RunTimeImpl>(30),
 		std::make_shared<RunTimeImpl>(45),
 		std::make_shared<RunTimeImpl>(60),
 		std::make_shared<RunTimeImpl>(75),
 		std::make_shared<RunTimeImpl>(90)
-	});
+	};
 
 	const string xml =
 			"<irrigation>"
@@ -60,14 +60,14 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 TEST_F(RestViewTest, patchIrrigationActionStart2) {
 	const unsigned expectedAdjustment = 70;
 	const shared_ptr<MockWateringController> mockWateringController(new MockWateringController());
-	const RunTimeContainer expectedRunTimeContainer({
+	const RunTimeContainerImpl expectedRunTimeContainer {
 		std::make_shared<RunTimeImpl>(0 * 60 + 9),
 		std::make_shared<RunTimeImpl>(1 * 60 + 8),
 		std::make_shared<RunTimeImpl>(2 * 60 + 7),
 		std::make_shared<RunTimeImpl>(3 * 60 + 6),
 		std::make_shared<RunTimeImpl>(4 * 60 + 5),
 		std::make_shared<RunTimeImpl>(5 * 60 + 4)
-	});
+	};
 
 	const string xml =
 			"<irrigation>"
@@ -100,14 +100,14 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 
 TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 	const shared_ptr<MockWateringController> mockWateringController(new MockWateringController());
-	const RunTimeContainer expectedRunTimeContainer({
+	const RunTimeContainerImpl expectedRunTimeContainer {
 		std::make_shared<RunTimeImpl>(15),
 		std::make_shared<RunTimeImpl>(30),
 		std::make_shared<RunTimeImpl>(45),
 		std::make_shared<RunTimeImpl>(60),
 		std::make_shared<RunTimeImpl>(75),
 		std::make_shared<RunTimeImpl>(90),
-	});
+	};
 
 	const string xml =
 			"<irrigation>"

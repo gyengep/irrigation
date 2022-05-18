@@ -20,33 +20,40 @@ public:
 	typedef typename container_type::const_iterator const_iterator;
 	typedef container_type::size_type				size_type;
 
-private:
-	container_type container;
-
-public:
-	RunTimeContainer(const std::shared_ptr<RunTimeFactory>& runTimeFactory);
+	RunTimeContainer() = default;
 	RunTimeContainer(RunTimeContainer&&) = delete;
-	RunTimeContainer(const RunTimeContainer& other) = delete;
-	RunTimeContainer(std::initializer_list<RunTimePtr> initializer);
+	RunTimeContainer(const RunTimeContainer&) = delete;
 	virtual ~RunTimeContainer() = default;
 
 	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
 	RunTimeContainer& operator= (const RunTimeContainer& other) = delete;
 	bool operator== (const RunTimeContainer& other) const;
 
-	const_iterator begin() const 		{ return container.begin(); }
-	const_iterator end() const 			{ return container.end(); }
-	size_t size() const 				{ return container.size(); }
+	virtual const_iterator begin() const = 0;
+	virtual const_iterator end() const = 0;
+	virtual size_t size() const = 0;
 
-	const_mapped_type at(const key_type& key) const;
-	mapped_type at(const key_type& key);
+	virtual const_mapped_type at(const key_type& key) const;
+	virtual mapped_type at(const key_type& key);
 
-	std::list<RunTimeDTO> toRunTimeDtoList() const;
+	virtual std::list<RunTimeDTO> toRunTimeDtoList() const;
 	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
 
-	std::string toString() const;
+	virtual std::string toString() const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
 OSTREAM_INSERT(RunTimeContainer);
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<RunTimeContainer> RunTimeContainerPtr;
+
+///////////////////////////////////////////////////////////////////////////////
+
+class RunTimeContainerFactory {
+public:
+	virtual ~RunTimeContainerFactory() = default;
+	virtual RunTimeContainerPtr create() const = 0;
+};

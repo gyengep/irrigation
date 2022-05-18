@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include "Logic/RunTime.h"
-#include "Logic/RunTimeContainer.h"
+#include "Logic/RunTimeContainerImpl.h"
 #include "SampleBase.h"
 #include "RunTimeSamples.h"
 
@@ -15,14 +15,14 @@ namespace Dto2ObjectTest {
 	class RunTimeListSample1 : public RunTimeListSample {
 	public:
 		RunTimeListSample1() : RunTimeListSample(
-			std::shared_ptr<RunTimeContainer>(new RunTimeContainer({
+			std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				RunTimeSample1().getObjectPtr(),
 				RunTimeSample2().getObjectPtr(),
 				RunTimeSample3().getObjectPtr(),
 				RunTimeSample4().getObjectPtr(),
 				RunTimeSample5().getObjectPtr(),
 				RunTimeSample6().getObjectPtr()
-			})),
+			}),
 			std::list<RunTimeDTO>({
 				RunTimeSample1().getDto().setId(0),
 				RunTimeSample2().getDto().setId(1),
@@ -37,14 +37,14 @@ namespace Dto2ObjectTest {
 	class RunTimeListSample2 : public RunTimeListSample {
 	public:
 		RunTimeListSample2() : RunTimeListSample(
-			std::shared_ptr<RunTimeContainer>(new RunTimeContainer({
+			std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				RunTimeSample6().getObjectPtr(),
 				RunTimeSample5().getObjectPtr(),
 				RunTimeSample4().getObjectPtr(),
 				RunTimeSample3().getObjectPtr(),
 				RunTimeSample2().getObjectPtr(),
 				RunTimeSample1().getObjectPtr()
-			})),
+			}),
 			std::list<RunTimeDTO>({
 				RunTimeSample6().getDto().setId(0),
 				RunTimeSample5().getDto().setId(1),
@@ -59,14 +59,14 @@ namespace Dto2ObjectTest {
 	class RunTimeListSample3 : public RunTimeListSample {
 	public:
 		RunTimeListSample3() : RunTimeListSample(
-			std::shared_ptr<RunTimeContainer>(new RunTimeContainer({
+			std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				RunTimeSample1().getObjectPtr(),
 				RunTimeSample3().getObjectPtr(),
 				RunTimeSample5().getObjectPtr(),
 				RunTimeSample2().getObjectPtr(),
 				RunTimeSample4().getObjectPtr(),
 				RunTimeSample6().getObjectPtr()
-			})),
+			}),
 			std::list<RunTimeDTO>({
 				RunTimeSample1().getDto().setId(0),
 				RunTimeSample3().getDto().setId(1),
@@ -81,14 +81,14 @@ namespace Dto2ObjectTest {
 	class RunTimeListSample4 : public RunTimeListSample {
 	public:
 		RunTimeListSample4() : RunTimeListSample(
-			std::shared_ptr<RunTimeContainer>(new RunTimeContainer({
+			std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				RunTimeSample3().getObjectPtr(),
 				RunTimeSample1().getObjectPtr(),
 				RunTimeSample6().getObjectPtr(),
 				RunTimeSample2().getObjectPtr(),
 				RunTimeSample4().getObjectPtr(),
 				RunTimeSample5().getObjectPtr()
-			})),
+			}),
 			std::list<RunTimeDTO>({
 				RunTimeSample3().getDto().setId(0),
 				RunTimeSample1().getDto().setId(1),

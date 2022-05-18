@@ -78,7 +78,7 @@ TEST_F(RestViewTest, getRunTimeListNotAcceptable) {
 
 void RestViewTest::testPatchRunTimeList(const RunTimeListSample& runTimeListSample) {
 	const IdType programId;
-	const shared_ptr<MockRunTimeContainer> mockRunTimeContainer(new MockRunTimeContainer(std::make_shared<RunTimeFactory>()));
+	const shared_ptr<MockRunTimeContainer> mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(mockRunTimeContainer).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
