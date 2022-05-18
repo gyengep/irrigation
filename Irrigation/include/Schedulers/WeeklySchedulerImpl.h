@@ -34,3 +34,11 @@ public:
 
 	virtual std::string toString() const override;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class WeeklySchedulerImplFactory : public WeeklySchedulerFactory {
+public:
+	virtual ~WeeklySchedulerImplFactory() = default;
+	virtual WeeklySchedulerPtr create() const = 0;
+};

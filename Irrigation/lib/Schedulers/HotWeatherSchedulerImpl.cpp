@@ -4,6 +4,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+HotWeatherSchedulerImplFactory::HotWeatherSchedulerImplFactory(const std::shared_ptr<TemperatureHistory>& temperatureHistory) :
+	temperatureHistory(temperatureHistory)
+{
+}
+
+HotWeatherSchedulerPtr HotWeatherSchedulerImplFactory::create() const {
+	return std::make_shared<HotWeatherSchedulerImpl>(temperatureHistory);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 HotWeatherSchedulerImpl::HotWeatherSchedulerImpl(const std::shared_ptr<TemperatureHistory>& temperatureHistory) :
 	HotWeatherSchedulerImpl(temperatureHistory, std::chrono::hours(2), 35)
 {

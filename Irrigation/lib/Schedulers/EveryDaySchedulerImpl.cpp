@@ -3,6 +3,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+EveryDaySchedulerPtr EveryDaySchedulerImplFactory::create() const {
+	return std::make_shared<EveryDaySchedulerImpl>();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 Scheduler::Result EveryDaySchedulerImpl::process(const time_t rawtime) {
 	return Scheduler::Result(true);
 }

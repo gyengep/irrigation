@@ -11,11 +11,24 @@
 #include <sstream>
 #include <time.h>
 
-using namespace std;
+///////////////////////////////////////////////////////////////////////////////
+
+TemperatureDependentSchedulerImplFactory::TemperatureDependentSchedulerImplFactory(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory) :
+	temperatureForecast(temperatureForecast),
+	temperatureHistory(temperatureHistory)
+{
+}
+
+TemperatureDependentSchedulerPtr TemperatureDependentSchedulerImplFactory::create() const {
+	return std::make_shared<TemperatureDependentSchedulerImpl>(
+			temperatureForecast,
+			temperatureHistory
+		);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(const shared_ptr<TemperatureForecast>& temperatureForecast, const shared_ptr<TemperatureHistory>& temperatureHistory) :
+TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
@@ -39,8 +52,8 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(const Tempe
 }
 
 TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
-		const shared_ptr<TemperatureForecast>& temperatureForecast,
-		const shared_ptr<TemperatureHistory>& temperatureHistory,
+		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 		float remainingCorrection,
 		unsigned minAdjustment, unsigned maxAdjustment,
 		unsigned trim) :
@@ -189,12 +202,12 @@ unsigned TemperatureDependentSchedulerImpl::calculateAdjustment(const unsigned r
 	unsigned result = requiredPercentForToday;
 
 	if (0 != result && nullptr != minAdjustment) {
-		result = max(result, *minAdjustment);
+		result = std::max(result, *minAdjustment);
 	}
 	oss << "\t\t\t" << std::setw(logIndentation) << "requiredPercent (min): " << toPercent(result) << " (min: " << optionalToString(minAdjustment) << ")" << std::endl;
 
 	if (nullptr != maxAdjustment) {
-		result = min(result, *maxAdjustment);
+		result = std::min(result, *maxAdjustment);
 	}
 
 	oss << "\t\t\t" << std::setw(logIndentation) << "requiredPercent (max): " << toPercent(result) << " (max: " << optionalToString(maxAdjustment) << ")" << std::endl;
@@ -205,11 +218,11 @@ unsigned TemperatureDependentSchedulerImpl::calculateAdjustment(const unsigned r
 Scheduler::Result TemperatureDependentSchedulerImpl::process(const time_t rawtime) {
 
 	if (nullptr == temperatureForecast) {
-		throw logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureForecast");
+		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureForecast");
 	}
 
 	if (nullptr == temperatureHistory) {
-		throw logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureHistory");
+		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureHistory");
 	}
 
 	const enum Day day = getLastRunDay(rawtime);

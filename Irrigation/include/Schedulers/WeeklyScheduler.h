@@ -33,12 +33,12 @@ public:
 	virtual void enableDay(size_t day, bool enable) = 0;
 	virtual bool isDayEnabled(size_t day) const = 0;
 
-	////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	virtual WeeklySchedulerDTO toWeeklySchedulerDto() const = 0;
 	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) = 0;
 
-	////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	virtual std::string toString() const = 0;
 };
@@ -51,3 +51,11 @@ OSTREAM_INSERT(WeeklyScheduler);
 
 typedef std::shared_ptr<WeeklyScheduler> WeeklySchedulerPtr;
 typedef std::shared_ptr<const WeeklyScheduler> ConstWeeklySchedulerPtr;
+
+///////////////////////////////////////////////////////////////////////////////
+
+class WeeklySchedulerFactory {
+public:
+	virtual ~WeeklySchedulerFactory() = default;
+	virtual WeeklySchedulerPtr create() const = 0;
+};

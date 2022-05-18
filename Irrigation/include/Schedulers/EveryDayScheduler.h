@@ -14,12 +14,12 @@ public:
 	EveryDayScheduler& operator= (const EveryDayScheduler&) = delete;
 	bool operator== (const EveryDayScheduler& other) const;
 
-	////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	virtual EveryDaySchedulerDTO toEveryDaySchedulerDto() const = 0;
 	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO) = 0;
 
-	////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	virtual std::string toString() const = 0;
 };
@@ -32,3 +32,11 @@ OSTREAM_INSERT(EveryDayScheduler);
 
 typedef std::shared_ptr<EveryDayScheduler> EveryDaySchedulerPtr;
 typedef std::shared_ptr<const EveryDayScheduler> ConstEveryDaySchedulerPtr;
+
+///////////////////////////////////////////////////////////////////////////////
+
+class EveryDaySchedulerFactory {
+public:
+	virtual ~EveryDaySchedulerFactory() = default;
+	virtual EveryDaySchedulerPtr create() const = 0;
+};

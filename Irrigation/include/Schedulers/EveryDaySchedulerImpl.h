@@ -20,3 +20,11 @@ public:
 
 	virtual std::string toString() const override;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class EveryDaySchedulerImplFactory : public EveryDaySchedulerFactory {
+public:
+	virtual ~EveryDaySchedulerImplFactory() = default;
+	virtual EveryDaySchedulerPtr create() const override;
+};

@@ -73,3 +73,16 @@ public:
 	virtual nlohmann::json saveTo() const override;
 	virtual void loadFrom(const nlohmann::json& json) override;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class TemperatureDependentSchedulerImplFactory : public TemperatureDependentSchedulerFactory {
+	const std::shared_ptr<TemperatureForecast> temperatureForecast;
+	const std::shared_ptr<TemperatureHistory> temperatureHistory;
+
+public:
+	TemperatureDependentSchedulerImplFactory(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
+
+	virtual ~TemperatureDependentSchedulerImplFactory() = default;
+	virtual TemperatureDependentSchedulerPtr create() const override;
+};
