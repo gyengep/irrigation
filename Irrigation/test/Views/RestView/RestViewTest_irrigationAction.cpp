@@ -150,7 +150,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 				"<program-id>" + programListSample.getContainerPtr()->begin()->first.toString() + "</program-id>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimes())), expectedAdjustment));
+	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimeContainer())), expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().
 			setProgramContainer(programListSample.getContainerPtr()).
@@ -180,7 +180,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 			"</irrigation>";
 
 	EXPECT_CALL(*mockWateringController, start(
-			Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimes())),
+			Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimeContainer())),
 			programListSample.getContainerPtr()->begin()->second->getAdjustment()
 		));
 

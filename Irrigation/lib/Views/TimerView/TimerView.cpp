@@ -99,11 +99,11 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 					std::ostringstream oss;
 					oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << toLocalTimeStr(rawTime, "%T") << std::endl;
 					oss << "adjustment: "<< scheduledResult->getAdjustment() << "%" << std::endl;
-					oss << "runTimes:   " << program->getRunTimes() << std::endl;
+					oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
 					EMAIL.send(topic, oss.str());
 				}
 
-				irrigationDocument.getWateringController().start(program->getRunTimes(), scheduledResult->getAdjustment());
+				irrigationDocument.getWateringController().start(program->getRunTimeContainer(), scheduledResult->getAdjustment());
 			} else {
 				const EmailTopic topic = EmailTopic::WATERING_SKIP;
 				if (EMAIL.isTopicEnabled(topic)) {

@@ -18,7 +18,7 @@ string RestViewTest::createTemperatureDependentSchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postTemperatureDependentScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("POST", createTemperatureDependentSchedulerUrl(programId), XmlWriter().save(TemperatureDependentSchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postTemperatureDependentScheduler) {
 
 void RestViewTest::testGetTemperatureDependentScheduler(const TemperatureDependentSchedulerSample& temperatureDependentSchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setTemperatureDependentScheduler(temperatureDependentSchedulerSample.getObjectPtr()).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setTemperatureDependentScheduler(temperatureDependentSchedulerSample.getObjectPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
@@ -62,7 +62,7 @@ TEST_F(RestViewTest, getTemperatureDependentSchedulerNotFound) {
 
 TEST_F(RestViewTest, getTemperatureDependentSchedulerAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createTemperatureDependentSchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -70,7 +70,7 @@ TEST_F(RestViewTest, getTemperatureDependentSchedulerAcceptable) {
 
 TEST_F(RestViewTest, getTemperatureDependentSchedulerNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createTemperatureDependentSchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -81,7 +81,7 @@ TEST_F(RestViewTest, getTemperatureDependentSchedulerNotAcceptable) {
 TEST_F(RestViewTest, patchTemperatureDependentScheduler) {
 	const IdType programId;
 	const shared_ptr<MockTemperatureDependentScheduler> mockTemperatureDependentScheduler(new MockTemperatureDependentScheduler());
-	const shared_ptr<Program> program = Program::Builder().setTemperatureDependentScheduler(mockTemperatureDependentScheduler).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setTemperatureDependentScheduler(mockTemperatureDependentScheduler).build();
 
 	const TemperatureDependentSchedulerSample1 temperatureDependentSchedulerSample;
 
@@ -102,7 +102,7 @@ TEST_F(RestViewTest, patchTemperatureDependentSchedulerNotFound) {
 TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createTemperatureDependentSchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -111,7 +111,7 @@ TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidXml) {
 TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createTemperatureDependentSchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -122,7 +122,7 @@ TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidContentType) {
 TEST_F(RestViewTest, deleteTemperatureDependentScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createTemperatureDependentSchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");

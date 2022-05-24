@@ -44,7 +44,7 @@ TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 			.WillOnce(Return(expectedDocumentDto));
 
 	irrigationDocument->setModified(true);
-	documentSaver->load(mockDtoReader, mockFileReader);
+	documentSaver->load(mockDtoReader, mockFileReader, ProgramImplFactory::Builder().build());
 
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
@@ -77,14 +77,14 @@ TEST_F(DocumentSaverTest, load) {
 			.Times(1)
 			.WillOnce(Return(expectedDocumentDto));
 
-	documentSaver->load(mockDtoReader, mockFileReader);
+	documentSaver->load(mockDtoReader, mockFileReader, ProgramImplFactory::Builder().build());
 }
 
 TEST_F(DocumentSaverTest, save) {
 	const string documentDtoAsText = "123456789";
 	const DocumentDTO documentDto = Dto2ObjectTest::DocumentSample4().getDto();
 
-	irrigationDocument->updateFromDocumentDto(Dto2ObjectTest::DocumentSample4().getDto());
+	irrigationDocument->updateFromDocumentDto(ProgramImplFactory::Builder().build(), Dto2ObjectTest::DocumentSample4().getDto());
 	irrigationDocument->setModified(true);
 
 	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(documentDto))

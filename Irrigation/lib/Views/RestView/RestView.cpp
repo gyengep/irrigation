@@ -274,7 +274,7 @@ void RestView::onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigat
 	const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
 
 	irrigationDocument.getWateringController().start(
-		program->getRunTimes(),
+		program->getRunTimeContainer(),
 		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : program->getAdjustment()
 	);
 }

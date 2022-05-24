@@ -20,3 +20,12 @@ public:
 	MOCK_METHOD1(loadFrom, void(const nlohmann::json& json));
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
+class MockHotWeatherSchedulerFactory : public HotWeatherSchedulerFactory {
+public:
+	virtual ~MockHotWeatherSchedulerFactory() = default;
+	virtual HotWeatherSchedulerPtr create() const override {
+		return std::make_shared<MockHotWeatherScheduler>();
+	}
+};

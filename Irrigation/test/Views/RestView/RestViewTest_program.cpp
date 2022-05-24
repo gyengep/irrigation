@@ -68,7 +68,7 @@ TEST_F(RestViewTest, getProgramNotFound) {
 
 TEST_F(RestViewTest, getProgramAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -76,7 +76,7 @@ TEST_F(RestViewTest, getProgramAcceptable) {
 
 TEST_F(RestViewTest, getProgramNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -106,7 +106,7 @@ TEST_F(RestViewTest, patchProgramNotFound) {
 TEST_F(RestViewTest, patchProgramInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -115,7 +115,7 @@ TEST_F(RestViewTest, patchProgramInvalidXml) {
 TEST_F(RestViewTest, patchProgramInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -138,7 +138,7 @@ TEST_F(RestViewTest, deleteProgram) {
 			mockShutdownManager,
 			"/tmp"
 		)));
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createProgramUrl(programId));
 	checkResponseWithoutBody(response, 200);

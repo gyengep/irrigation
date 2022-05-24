@@ -7,20 +7,8 @@
 #include "Email/EmailHandler.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioValve.h"
-#include "Hardware/Valves/ZoneHandlerImpl.h"
 #include "Logger/Logger.h"
-#include "Logic/Program.h"
-#include "Logic/ProgramContainer.h"
-#include "Logic/RunTimeImpl.h"
-#include "Logic/RunTimeContainer.h"
-#include "Logic/RunTimeContainerImpl.h"
-#include "Logic/StartTimeImpl.h"
-#include "Logic/StartTimeContainer.h"
-#include "Logic/StartTimeContainerImpl.h"
-#include "Logic/WateringController.h"
-#include "Model/IrrigationDocument.h"
-#include "Schedulers/TemperatureDependentSchedulerImpl.h"
-#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Logic/ProgramImplBuilder.h"
 #include "Utils/FileReaderWriterImpl.h"
 #include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
@@ -146,12 +134,7 @@ void IrrigationApplication::uninitTemperature() {
 }
 
 void IrrigationApplication::initDocument() {
-	irrigationDocument = std::make_shared<IrrigationDocument>(
-		std::make_shared<ProgramContainer>(),
-		std::make_shared<WateringController>(
-			std::make_shared<ZoneHandlerImpl>(GpioValve::getValves())
-		)
-	);
+	irrigationDocument = IrrigationDocument::Builder().build();
 
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,
@@ -165,7 +148,8 @@ void IrrigationApplication::initDocument() {
 		if (true) {
 			documentSaver->load(
 				make_shared<XmlReader>(),
-				make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
+				make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName()),
+				ProgramImplFactory::Builder().build()
 			);
 		} else {
 			setMyDefaults();
@@ -230,152 +214,4 @@ void IrrigationApplication::onTerminate() {
 	uninitShutdownManager();
 
 	LOGGER.info("Irrigation System stopped");
-}
-
-void IrrigationApplication::setMyDefaults() {
-	irrigationDocument->getPrograms().insert(
-		IdType(),
-		Program::Builder().
-			setName("fulocsolas").
-			setEnabled(true).
-			setAdjustment(100).
-			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				0.75f,
-				50, 0,
-				100
-			)).
-			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
-				std::make_shared<RunTimeImpl>(chrono::minutes(26)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(38)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(32)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0))
-			})).
-			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
-				{ IdType(), make_shared<StartTimeImpl>(4, 0) }
-			})).
-			build()
-		);
-
-	irrigationDocument->getPrograms().insert(
-		IdType(),
-		Program::Builder().
-			setName("buxus").
-			setEnabled(true).
-			setAdjustment(100).
-			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				1.0f,
-				100, 0,
-				0
-			)).
-			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(15)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0))
-			})).
-			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
-				{ IdType(), make_shared<StartTimeImpl>(6, 0) }
-			})).
-			build()
-		);
-
-	irrigationDocument->getPrograms().insert(
-		IdType(),
-		Program::Builder().
-			setName("kanikula").
-			setEnabled(true).
-			setAdjustment(100).
-			setSchedulerType(SchedulerType::HOT_WEATHER).
-			setHotWeatherScheduler(make_shared<HotWeatherSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				chrono::hours(2), 33
-			)).
-			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
-				std::make_shared<RunTimeImpl>(chrono::minutes(2) + chrono::seconds(30)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(3) + chrono::seconds(30)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(3)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0))
-			})).
-			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
-				{ IdType(), make_shared<StartTimeImpl>(12, 0) },
-				{ IdType(), make_shared<StartTimeImpl>(13, 0) },
-				{ IdType(), make_shared<StartTimeImpl>(14, 0) },
-				{ IdType(), make_shared<StartTimeImpl>(15, 0) },
-				{ IdType(), make_shared<StartTimeImpl>(16, 0) },
-				{ IdType(), make_shared<StartTimeImpl>(17, 0) }
-			})).
-			build()
-		);
-
-	irrigationDocument->getPrograms().insert(
-		IdType(),
-		Program::Builder().
-			setName("paradicsom").
-			setEnabled(true).
-			setAdjustment(100).
-			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				1.0f,
-				75, 75,
-				0
-			)).
-			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(1)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0))
-			})).
-			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
-				{ IdType(), make_shared<StartTimeImpl>(7, 0) },
-				{ IdType(), make_shared<StartTimeImpl>(20, 0) }
-			})).
-			build()
-		);
-
-	irrigationDocument->getPrograms().insert(
-		IdType(),
-		Program::Builder().
-			setName("virag").
-			setEnabled(true).
-			setAdjustment(100).
-			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				1.0f,
-				75, 75,
-				0
-			)).
-			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(chrono::minutes(2))
-			})).
-			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
-				{ IdType(), make_shared<StartTimeImpl>(7, 10) },
-				{ IdType(), make_shared<StartTimeImpl>(20, 10) }
-			})).
-			build()
-		);
-
-	irrigationDocument->setModified();
 }

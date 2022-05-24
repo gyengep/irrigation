@@ -21,7 +21,7 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			runTimeDtoList = irrigationDocument.getPrograms().at(programId)->getRunTimes().toRunTimeDtoList();
+			runTimeDtoList = irrigationDocument.getPrograms().at(programId)->getRunTimeContainer().toRunTimeDtoList();
 		}
 
 		return HttpResponse::Builder().
@@ -48,7 +48,7 @@ unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			RunTimeContainer& runTimes = irrigationDocument.getPrograms().at(programId)->getRunTimes();
+			RunTimeContainer& runTimes = irrigationDocument.getPrograms().at(programId)->getRunTimeContainer();
 
 			irrigationDocument.setModified();
 			runTimes.updateFromRunTimeDtoList(runTimeDtoList);

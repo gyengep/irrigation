@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
-#include "Logic/Program.h"
+#include "Logic/ProgramImpl.h"
+#include "Logic/ProgramImplBuilder.h"
 #include "HotWeatherSchedulerSamples.h"
 #include "TemperatureDependentSchedulerSamples.h"
 #include "WeeklySchedulerSamples.h"
@@ -14,7 +15,7 @@ namespace Dto2ObjectTest {
 	class ProgramSample : public ObjectSample<Program, ProgramDTO> {
 	public:
 		ProgramSample(const std::shared_ptr<Program>& objectPtr, ProgramDTO&& dto) : ObjectSample<Program, ProgramDTO>(objectPtr, std::move(dto)) {}
-		virtual std::shared_ptr<Program::Builder> createBuilder() const = 0;
+		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const = 0;
 	};
 
 
@@ -33,8 +34,8 @@ namespace Dto2ObjectTest {
 			)
 		) {}
 
-		virtual std::shared_ptr<Program::Builder> createBuilder() const override {
-			auto builder = std::make_shared<Program::Builder>();
+		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
+			auto builder = std::make_shared<ProgramImpl::Builder>();
 
 			builder->setEnabled(false).
 				setName("name1").
@@ -64,8 +65,8 @@ namespace Dto2ObjectTest {
 			)
 		) {}
 
-		virtual std::shared_ptr<Program::Builder> createBuilder() const override {
-			auto builder = std::make_shared<Program::Builder>();
+		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
+			auto builder = std::make_shared<ProgramImpl::Builder>();
 
 			builder->
 				setEnabled(true).
@@ -97,8 +98,8 @@ namespace Dto2ObjectTest {
 			)
 		) {}
 
-		virtual std::shared_ptr<Program::Builder> createBuilder() const override {
-			auto builder = std::make_shared<Program::Builder>();
+		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
+			auto builder = std::make_shared<ProgramImpl::Builder>();
 
 			builder->
 				setEnabled(false).
@@ -130,8 +131,8 @@ namespace Dto2ObjectTest {
 			)
 		) {}
 
-		virtual std::shared_ptr<Program::Builder> createBuilder() const override {
-			auto builder = std::make_shared<Program::Builder>();
+		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
+			auto builder = std::make_shared<ProgramImpl::Builder>();
 
 			builder->
 				setEnabled(true).

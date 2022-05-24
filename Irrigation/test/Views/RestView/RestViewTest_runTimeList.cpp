@@ -24,7 +24,7 @@ TEST_F(RestViewTest, postRunTimeList) {
 
 void RestViewTest::testGetRunTimeList(const RunTimeListSample& runTimeListSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(runTimeListSample.getContainerPtr()).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setRunTimeContainer(runTimeListSample.getContainerPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
@@ -54,7 +54,7 @@ TEST_F(RestViewTest, getRunTimeList4) {
 TEST_F(RestViewTest, getRunTimeListAcceptable) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 	Response response = executeRequest("GET", createRunTimeListUrl(programId), "Accept: application/xml");
 
 	checkResponseWithBody(response, 200, "application/xml");
@@ -68,7 +68,7 @@ TEST_F(RestViewTest, getRunTimeListNotFound) {
 TEST_F(RestViewTest, getRunTimeListNotAcceptable) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 	Response response = executeRequest("GET", createRunTimeListUrl(programId), "Accept: application/json");
 
 	checkErrorResponse(response, 406, "application/xml");
@@ -79,7 +79,7 @@ TEST_F(RestViewTest, getRunTimeListNotAcceptable) {
 void RestViewTest::testPatchRunTimeList(const RunTimeListSample& runTimeListSample) {
 	const IdType programId;
 	const shared_ptr<MockRunTimeContainer> mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
-	const shared_ptr<Program> program = Program::Builder().setRunTimeContainer(mockRunTimeContainer).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setRunTimeContainer(mockRunTimeContainer).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 

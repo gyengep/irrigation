@@ -2,9 +2,9 @@
 #include "Application.h"
 #include "ShutdownManagerImpl.h"
 #include "DTO/DocumentDTO.h"
+#include "Model/IrrigationDocument.h"
 #include "Temperature/TemperatureHandler.h"
 
-class IrrigationDocument;
 class DocumentSaver;
 
 

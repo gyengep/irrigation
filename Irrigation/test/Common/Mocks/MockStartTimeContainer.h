@@ -21,5 +21,14 @@ public:
 	MOCK_METHOD2(updateFromStartTimeDtoList, void(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const std::list<StartTimeDTO>& startTimeDtoList));
 
 	MOCK_CONST_METHOD0(toString, std::string());
+};
 
+///////////////////////////////////////////////////////////////////////////////
+
+class MockStartTimeContainerFactory : public StartTimeContainerFactory {
+public:
+	virtual ~MockStartTimeContainerFactory() = default;
+	virtual StartTimeContainerPtr create() const override {
+		return std::make_shared<MockStartTimeContainer>();
+	}
 };

@@ -18,7 +18,7 @@ string RestViewTest::createHotWeatherSchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postHotWeatherScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("POST", createHotWeatherSchedulerUrl(programId), XmlWriter().save(HotWeatherSchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postHotWeatherScheduler) {
 
 void RestViewTest::testGetHotWeatherScheduler(const HotWeatherSchedulerSample& hotWeatherSchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setHotWeatherScheduler(hotWeatherSchedulerSample.getObjectPtr()).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setHotWeatherScheduler(hotWeatherSchedulerSample.getObjectPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
@@ -62,7 +62,7 @@ TEST_F(RestViewTest, getHotWeatherSchedulerNotFound) {
 
 TEST_F(RestViewTest, getHotWeatherSchedulerAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createHotWeatherSchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -70,7 +70,7 @@ TEST_F(RestViewTest, getHotWeatherSchedulerAcceptable) {
 
 TEST_F(RestViewTest, getHotWeatherSchedulerNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createHotWeatherSchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -81,7 +81,7 @@ TEST_F(RestViewTest, getHotWeatherSchedulerNotAcceptable) {
 TEST_F(RestViewTest, patchHotWeatherScheduler) {
 	const IdType programId;
 	const shared_ptr<MockHotWeatherScheduler> mockHotWeatherScheduler(new MockHotWeatherScheduler());
-	const shared_ptr<Program> program = Program::Builder().setHotWeatherScheduler(mockHotWeatherScheduler).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setHotWeatherScheduler(mockHotWeatherScheduler).build();
 
 	const HotWeatherSchedulerSample1 hotWeatherSchedulerSample;
 
@@ -102,7 +102,7 @@ TEST_F(RestViewTest, patchHotWeatherSchedulerNotFound) {
 TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createHotWeatherSchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -111,7 +111,7 @@ TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidXml) {
 TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createHotWeatherSchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -122,7 +122,7 @@ TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidContentType) {
 TEST_F(RestViewTest, deleteHotWeatherScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createHotWeatherSchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");

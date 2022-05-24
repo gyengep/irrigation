@@ -53,7 +53,7 @@ public:
 	const mapped_type& at(const key_type& key) const;
 
 	std::list<ProgramDTO> toProgramDtoList() const;
-	void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList);
+	void updateFromProgramDtoList(const std::shared_ptr<ProgramFactory>& programFactory, const std::list<ProgramDTO>& programDtoList);
 
 	std::string toString() const;
 };

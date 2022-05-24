@@ -20,6 +20,15 @@ public:
 
 	MOCK_CONST_METHOD0(saveTo, nlohmann::json());
 	MOCK_METHOD1(loadFrom, void(const nlohmann::json& json));
+};
 
+///////////////////////////////////////////////////////////////////////////////
+
+class MockTemperatureDependentSchedulerFactory : public TemperatureDependentSchedulerFactory {
+public:
+	virtual ~MockTemperatureDependentSchedulerFactory() = default;
+	virtual TemperatureDependentSchedulerPtr create() const override {
+		return std::make_shared<MockTemperatureDependentScheduler>();
+	}
 };
 

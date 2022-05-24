@@ -15,6 +15,14 @@ public:
 	MOCK_METHOD1(updateFromWeeklySchedulerDto, void(const WeeklySchedulerDTO&));
 
 	MOCK_CONST_METHOD0(toString, std::string());
-
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
+class MockWeeklySchedulerFactory : public WeeklySchedulerFactory {
+public:
+	virtual ~MockWeeklySchedulerFactory() = default;
+	virtual WeeklySchedulerPtr create() const override {
+		return std::make_shared<MockWeeklyScheduler>();
+	}
+};

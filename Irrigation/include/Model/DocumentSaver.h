@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "Logic/Program.h"
 #include "Utils/Runnable.h"
 #include "Utils/Thread.h"
 
@@ -32,7 +33,7 @@ public:
 	virtual ~DocumentSaver();
 
 	void saveIfModified();
-	void load(std::shared_ptr<DtoReader> dtoReader, std::shared_ptr<FileReader> fileReader);
+	void load(const std::shared_ptr<DtoReader>& dtoReader, const std::shared_ptr<FileReader>& fileReader, const std::shared_ptr<ProgramFactory>& programFactory);
 
 	void startTimer();
 	void stopTimer();

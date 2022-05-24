@@ -17,3 +17,13 @@ public:
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class MockRunTimeContainerFactory : public RunTimeContainerFactory {
+public:
+	virtual ~MockRunTimeContainerFactory() = default;
+	virtual RunTimeContainerPtr create() const override {
+		return std::make_shared<MockRunTimeContainer>();
+	}
+};

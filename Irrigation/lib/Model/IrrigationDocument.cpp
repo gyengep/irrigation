@@ -2,9 +2,7 @@
 #include "Configuration.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
-#include "Logic/RunTime.h"
 #include "Logic/RunTimeContainer.h"
-#include "Logic/StartTime.h"
 #include "Logic/StartTimeContainer.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
@@ -12,13 +10,29 @@
 #include <fstream>
 #include <iomanip>
 
+
+#include "Hardware/Valves/GpioValve.h"
+#include "Hardware/Valves/ZoneHandlerImpl.h"
+#include "Logic/ProgramImpl.h"
+#include "Logic/ProgramImplBuilder.h"
+#include "Logic/RunTimeContainerImpl.h"
+#include "Logic/StartTimeContainerImpl.h"
+#include "Schedulers/EveryDaySchedulerImpl.h"
+#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/WeeklySchedulerImpl.h"
+#include "Temperature/TemperatureHandler.h"
+
 using namespace std;
 
 
 IrrigationDocument::IrrigationDocument(
-		shared_ptr<ProgramContainer> programContainer,
-		shared_ptr<WateringController> wateringController) :
+	const std::shared_ptr<ProgramContainer>& programContainer,
+	const std::shared_ptr<ProgramFactory>& programFactory,
+	const std::shared_ptr<WateringController>& wateringController
+) :
 	programs(programContainer),
+	programFactory(programFactory),
 	wateringController(wateringController),
 	modified(false)
 {
@@ -35,13 +49,19 @@ void IrrigationDocument::unlock() const {
 	mtx.unlock();
 }
 
+std::pair<IdType, ProgramPtr> IrrigationDocument::createProgram(const ProgramDTO& programDto) {
+	ProgramPtr program = programFactory->create();
+	program->updateFromProgramDto(programDto);
+	return programs->insert(IdType(), program);
+}
+
 DocumentDTO IrrigationDocument::toDocumentDto() const {
 	return DocumentDTO(programs->toProgramDtoList());
 }
 
-void IrrigationDocument::updateFromDocumentDto(const DocumentDTO& documentDTO) {
+void IrrigationDocument::updateFromDocumentDto(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO) {
 	if (documentDTO.hasPrograms()) {
-		programs->updateFromProgramDtoList(documentDTO.getPrograms());
+		programs->updateFromProgramDtoList(programFactory, documentDTO.getPrograms());
 	}
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
@@ -61,12 +81,17 @@ IrrigationDocument::Builder::Builder() {
 IrrigationDocument::Builder::~Builder() {
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramContainer(shared_ptr<ProgramContainer> programContainer) {
+IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramContainer(const std::shared_ptr<ProgramContainer>& programContainer) {
 	this->programContainer = programContainer;
 	return *this;
 }
 
-IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(shared_ptr<WateringController> wateringController) {
+IrrigationDocument::Builder& IrrigationDocument::Builder::setProgramFactory(const std::shared_ptr<ProgramFactory>& programFactory) {
+	this->programFactory = programFactory;
+	return *this;
+}
+
+IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(const std::shared_ptr<WateringController>& wateringController) {
 	this->wateringController = wateringController;
 	return *this;
 }
@@ -74,16 +99,24 @@ IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(
 shared_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
 
 	if (nullptr == programContainer) {
-		programContainer.reset(new ProgramContainer());
+		programContainer = std::make_shared<ProgramContainer>();
+	}
+
+	if (nullptr == programFactory) {
+		programFactory = ProgramImplFactory::Builder().build();
 	}
 
 	if (nullptr == wateringController) {
-		wateringController.reset(new WateringController());
+		wateringController = std::make_shared<WateringController>(
+				std::make_shared<ZoneHandlerImpl>(GpioValve::getValves())
+			);
 	}
 
-	return shared_ptr<IrrigationDocument>(new IrrigationDocument(
-			programContainer,
-			wateringController));
+	return std::make_shared<IrrigationDocument>(
+		programContainer,
+		programFactory,
+		wateringController
+	);
 }
 
 nlohmann::json IrrigationDocument::saveTo() const {

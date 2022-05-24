@@ -40,24 +40,24 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 
 	try {
 		const ProgramDTO programDto = dtoReader->loadProgram(string(request.getUploadData()->data(), request.getUploadData()->size()));
-		const shared_ptr<Program> program(new Program(programDto));
-		const IdType programId;
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.setModified();
-			irrigationDocument.getPrograms().insert(programId, program);
+		unique_lock<IrrigationDocument> lock(irrigationDocument);
+		irrigationDocument.setModified();
 
-			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = program->toString();
-				lock.unlock();
+		const auto result = irrigationDocument.createProgram(programDto);
+		const IdType programId = result.first;
+		const ProgramPtr program = result.second;
 
-				LOGGER.debug("Program[%s] is added: %s",
-						programId.toString().c_str(),
-						logText.c_str());
-			}
+		if (LOGGER.isLoggable(LogLevel::DEBUG)) {
+			const std::string logText = program->toString();
+			lock.unlock();
+
+			LOGGER.debug("Program[%s] is added: %s",
+					programId.toString().c_str(),
+					logText.c_str());
+		} else {
+			lock.unlock();
 		}
-
 
 		return HttpResponse::Builder().
 				setStatus(201, "Created").

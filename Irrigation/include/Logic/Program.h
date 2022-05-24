@@ -2,20 +2,16 @@
 #include <ctime>
 #include <memory>
 #include <string>
-#include <vector>
 #include "json.hpp"
 #include "DTO/ProgramDTO.h"
 #include "Schedulers/Scheduler.h"
+#include "Schedulers/EveryDayScheduler.h"
+#include "Schedulers/HotWeatherScheduler.h"
+#include "Schedulers/TemperatureDependentScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 #include "Utils/OstreamInsert.h"
-#include "RunTime.h"
 #include "RunTimeContainer.h"
-#include "StartTime.h"
 #include "StartTimeContainer.h"
-
-class EveryDayScheduler;
-class HotWeatherScheduler;
-class TemperatureDependentScheduler;
-class WeeklyScheduler;
 
 
 class ScheduledResult {
@@ -34,79 +30,53 @@ public:
 
 class Program {
 public:
-	class Builder;
-
-protected:
-	bool enabled;
-	std::string name;
-	unsigned adjustment;
-	SchedulerType schedulerType;
-	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
-	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
-	std::shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler;
-	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
-	std::shared_ptr<Scheduler> currentScheduler;
-	std::shared_ptr<RunTimeContainer> runTimes;
-	std::shared_ptr<StartTimeContainer> startTimes;
-
-public:
-	Program();
-	Program(Program&&) = default;
+	Program() = default;
+	Program(Program&&) = delete;
 	Program(const Program&) = delete;
-	Program(bool enabled, const std::string& name,
-		unsigned adjustment,
-		SchedulerType schedulerType,
-		const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
-		const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
-		const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
-		const std::shared_ptr<WeeklyScheduler>& weeklyScheduler,
-		const std::shared_ptr<RunTimeContainer>& runTimes,
-		const std::shared_ptr<StartTimeContainer>& startTimes);
-	Program(const ProgramDTO& programDTO);
 
-	virtual ~Program();
+	virtual ~Program() = default;
 
 	Program& operator= (Program&&) = delete;
 	Program& operator= (const Program&) = delete;
 	bool operator== (const Program&) const;
 
-	void setEnabled(bool enabled);
-	bool isEnabled() const;
+	virtual void setEnabled(bool enabled) = 0;
+	virtual void setName(const std::string& name) = 0;
+	virtual void setAdjustment(unsigned adjustment) = 0;
+	virtual void setSchedulerType(SchedulerType schedulerType) = 0;
 
-	void setName(const std::string& name);
-	const std::string& getName() const;
+	virtual bool isEnabled() const = 0;
+	virtual const std::string& getName() const = 0;
+	virtual unsigned getAdjustment() const = 0;
+	virtual SchedulerType getSchedulerType() const = 0;
 
-	void setAdjustment(unsigned adjustment);
-	unsigned getAdjustment() const;
-
-	void setSchedulerType(SchedulerType schedulerType);
-	SchedulerType getSchedulerType() const;
-
-	virtual std::unique_ptr<ScheduledResult> isScheduled(const std::time_t rawtime);
+	virtual std::unique_ptr<ScheduledResult> isScheduled(const std::time_t rawtime) = 0;
 //	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
-	virtual Scheduler& getCurrentScheduler() { return *currentScheduler; }
+	virtual Scheduler& getCurrentScheduler() = 0;
 
-	const EveryDayScheduler& getEveryDayScheduler() const { return *everyDayScheduler; }
-	const HotWeatherScheduler& getHotWeatherScheduler() const { return *hotWeatherScheduler; }
-	const TemperatureDependentScheduler& getTemperatureDependentScheduler() const { return *temperatureDependentScheduler; }
-	const WeeklyScheduler& getWeeklyScheduler() const { return *weeklyScheduler; }
-	const RunTimeContainer& getRunTimes() const { return *runTimes; }
-	const StartTimeContainer& getStartTimes() const { return *startTimes; }
+	virtual const EveryDayScheduler& getEveryDayScheduler() const = 0;
+	virtual const HotWeatherScheduler& getHotWeatherScheduler() const = 0;
+	virtual const TemperatureDependentScheduler& getTemperatureDependentScheduler() const = 0;
+	virtual const WeeklyScheduler& getWeeklyScheduler() const = 0;
+	virtual const RunTimeContainer& getRunTimeContainer() const = 0;
+	virtual const StartTimeContainer& getStartTimeContainer() const = 0;
 
-	EveryDayScheduler& getEveryDayScheduler() { return *everyDayScheduler; }
-	HotWeatherScheduler& getHotWeatherScheduler() { return *hotWeatherScheduler; }
-	TemperatureDependentScheduler& getTemperatureDependentScheduler() { return *temperatureDependentScheduler; }
-	WeeklyScheduler& getWeeklyScheduler() { return *weeklyScheduler; }
-	RunTimeContainer& getRunTimes() { return *runTimes; }
-	StartTimeContainer& getStartTimes() { return *startTimes; }
+	virtual EveryDayScheduler& getEveryDayScheduler() = 0;
+	virtual HotWeatherScheduler& getHotWeatherScheduler() = 0;
+	virtual TemperatureDependentScheduler& getTemperatureDependentScheduler() = 0;
+	virtual WeeklyScheduler& getWeeklyScheduler() = 0;
+	virtual RunTimeContainer& getRunTimeContainer() = 0;
+	virtual StartTimeContainer& getStartTimeContainer() = 0;
 
-	ProgramDTO toProgramDto() const;
-	virtual void updateFromProgramDto(const ProgramDTO& programDTO);
+	virtual std::pair<IdType, StartTimePtr> createStartTime(const StartTimeDTO& startTimeDto) = 0;
 
-	std::string toString() const;
+	virtual ProgramDTO toProgramDto() const = 0;
+	virtual void updateFromProgramDto(const ProgramDTO& programDTO) = 0;
 
-	nlohmann::json saveTo() const;
-	void loadFrom(const nlohmann::json& values);
+	virtual std::string toString() const = 0;
+
+	virtual nlohmann::json saveTo() const = 0;
+	virtual void loadFrom(const nlohmann::json& values) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,33 +86,12 @@ OSTREAM_INSERT(Program);
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef std::shared_ptr<Program> ProgramPtr;
+typedef std::shared_ptr<const Program> ConstProgramPtr;
 
-class Program::Builder {
-	bool enabled;
-	std::string name;
-	unsigned adjustment;
-	SchedulerType schedulerType;
-	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
-	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
-	std::shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler;
-	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
-	std::shared_ptr<RunTimeContainer> runTimes;
-	std::shared_ptr<StartTimeContainer> startTimes;
+///////////////////////////////////////////////////////////////////////////////
 
+class ProgramFactory {
 public:
-	Builder();
-	~Builder();
-
-	Builder& setEnabled(bool enabled);
-	Builder& setName(const std::string& name);
-	Builder& setAdjustment(unsigned adjustment);
-	Builder& setSchedulerType(SchedulerType schedulerType);
-	Builder& setEveryDayScheduler(const std::shared_ptr<EveryDayScheduler>& everyDayScheduler);
-	Builder& setHotWeatherScheduler(const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler);
-	Builder& setTemperatureDependentScheduler(const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler);
-	Builder& setWeeklyScheduler(const std::shared_ptr<WeeklyScheduler>& weeklyScheduler);
-	Builder& setRunTimeContainer(const std::shared_ptr<RunTimeContainer>& runTimes);
-	Builder& setStartTimeContainer(const std::shared_ptr<StartTimeContainer>& startTimes);
-
-	ProgramPtr build();
+	virtual ~ProgramFactory() = default;
+	virtual ProgramPtr create() const = 0;
 };

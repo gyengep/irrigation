@@ -72,11 +72,11 @@ void DocumentSaver::saveIfModified() {
 	}
 }
 
-void DocumentSaver::load(shared_ptr<DtoReader> dtoReader, shared_ptr<FileReader> fileReader) {
+void DocumentSaver::load(const std::shared_ptr<DtoReader>& dtoReader, const std::shared_ptr<FileReader>& fileReader, const std::shared_ptr<ProgramFactory>& programFactory) {
 	const string documentDtoAsText = fileReader->read();
 	const DocumentDTO documentDto = dtoReader->loadDocument(documentDtoAsText);
 
 	unique_lock<IrrigationDocument> lock(*irrigationDocument);
-	irrigationDocument->updateFromDocumentDto(documentDto);
+	irrigationDocument->updateFromDocumentDto(programFactory, documentDto);
 	irrigationDocument->setModified(false);
 }

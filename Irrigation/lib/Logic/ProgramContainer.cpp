@@ -60,7 +60,7 @@ list<ProgramDTO> ProgramContainer::toProgramDtoList() const {
 	return programDtos;
 }
 
-void ProgramContainer::updateFromProgramDtoList(const list<ProgramDTO>& dtoList) {
+void ProgramContainer::updateFromProgramDtoList(const std::shared_ptr<ProgramFactory>& programFactory, const std::list<ProgramDTO>& dtoList) {
 	container.clear();
 	for (const ProgramDTO& dto : dtoList) {
 		unique_ptr<IdType> id;
@@ -70,7 +70,7 @@ void ProgramContainer::updateFromProgramDtoList(const list<ProgramDTO>& dtoList)
 			id.reset(new IdType());
 		}
 
-		shared_ptr<Program> program = Program::Builder().build();
+		ProgramPtr program = programFactory->create();
 		program->updateFromProgramDto(dto);
 		insert(IdType(*id), program);
 	}

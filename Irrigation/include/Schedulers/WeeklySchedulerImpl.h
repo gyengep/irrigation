@@ -40,5 +40,5 @@ public:
 class WeeklySchedulerImplFactory : public WeeklySchedulerFactory {
 public:
 	virtual ~WeeklySchedulerImplFactory() = default;
-	virtual WeeklySchedulerPtr create() const = 0;
+	virtual WeeklySchedulerPtr create() const override;
 };

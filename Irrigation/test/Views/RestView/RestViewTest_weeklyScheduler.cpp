@@ -18,7 +18,7 @@ string RestViewTest::createWeeklySchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postWeeklyScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("POST", createWeeklySchedulerUrl(programId), XmlWriter().save(WeeklySchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -28,7 +28,7 @@ TEST_F(RestViewTest, postWeeklyScheduler) {
 
 void RestViewTest::testGetWeeklyScheduler(const WeeklySchedulerSample& weeklySchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = Program::Builder().setWeeklyScheduler(weeklySchedulerSample.getObjectPtr()).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setWeeklyScheduler(weeklySchedulerSample.getObjectPtr()).build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
@@ -62,7 +62,7 @@ TEST_F(RestViewTest, getWeeklySchedulerNotFound) {
 
 TEST_F(RestViewTest, getWeeklySchedulerAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createWeeklySchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -70,7 +70,7 @@ TEST_F(RestViewTest, getWeeklySchedulerAcceptable) {
 
 TEST_F(RestViewTest, getWeeklySchedulerNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createWeeklySchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -81,7 +81,7 @@ TEST_F(RestViewTest, getWeeklySchedulerNotAcceptable) {
 TEST_F(RestViewTest, patchWeeklyScheduler) {
 	const IdType programId;
 	const shared_ptr<MockWeeklyScheduler> mockWeeklyScheduler(new MockWeeklyScheduler());
-	const shared_ptr<Program> program = Program::Builder().setWeeklyScheduler(mockWeeklyScheduler).build();
+	const shared_ptr<Program> program = ProgramImpl::Builder().setWeeklyScheduler(mockWeeklyScheduler).build();
 
 	const WeeklySchedulerSample1 weeklySchedulerSample;
 
@@ -102,7 +102,7 @@ TEST_F(RestViewTest, patchWeeklySchedulerNotFound) {
 TEST_F(RestViewTest, patchWeeklySchedulerInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createWeeklySchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -111,7 +111,7 @@ TEST_F(RestViewTest, patchWeeklySchedulerInvalidXml) {
 TEST_F(RestViewTest, patchWeeklySchedulerInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createWeeklySchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -122,7 +122,7 @@ TEST_F(RestViewTest, patchWeeklySchedulerInvalidContentType) {
 TEST_F(RestViewTest, deleteWeeklyScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, shared_ptr<Program>(new Program()));
+	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createWeeklySchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");
