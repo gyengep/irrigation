@@ -41,5 +41,20 @@ public:
 
 	MOCK_CONST_METHOD0(saveTo, nlohmann::json());
 	MOCK_METHOD1(loadFrom, void(const nlohmann::json& values));
+};
 
+///////////////////////////////////////////////////////////////////////////////
+
+class MockProgramFactory : public ProgramFactory {
+public:
+	mutable std::vector<std::shared_ptr<MockProgram>> mockPrograms;
+	mutable size_t index = 0;
+
+	virtual ProgramPtr create() const {
+		if (index >= mockPrograms.size()) {
+			throw std::runtime_error("MockProgramFactory no more item");
+		}
+
+		return mockPrograms[index++];
+	}
 };

@@ -125,12 +125,14 @@ TEST_F(RestViewTest, patchProgramInvalidContentType) {
 
 TEST_F(RestViewTest, deleteProgram) {
 	const IdType programId;
-	const shared_ptr<MockProgramContainer> programContainer(new MockProgramContainer());
+	const auto mockProgramContainer = std::make_shared<MockProgramContainer>();
 
-	EXPECT_CALL(*programContainer, erase(programId));
-	EXPECT_CALL(*programContainer, insert(_, _)).Times(AnyNumber());
+	EXPECT_CALL(*mockProgramContainer, erase(programId));
 
-	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programContainer).build();
+	irrigationDocument = IrrigationDocument::Builder().
+			setProgramContainer(mockProgramContainer).
+			build();
+
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
@@ -138,7 +140,6 @@ TEST_F(RestViewTest, deleteProgram) {
 			mockShutdownManager,
 			"/tmp"
 		)));
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createProgramUrl(programId));
 	checkResponseWithoutBody(response, 200);

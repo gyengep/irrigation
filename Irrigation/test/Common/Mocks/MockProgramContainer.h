@@ -1,24 +1,24 @@
 #pragma once
 #include <gmock/gmock.h>
+#include <vector>
 #include "Logic/ProgramContainer.h"
 
 
 class MockProgramContainer : public ProgramContainer {
 public:
-
-	MockProgramContainer() {
-		ON_CALL(*this, insert(testing::_, testing::_)).WillByDefault(testing::Invoke(this, &MockProgramContainer::insertToProgramContainer));
-		ON_CALL(*this, erase(testing::_)).WillByDefault(testing::Invoke(this, &MockProgramContainer::eraseFromStartTimeContainer));
-	}
-
-	value_type& insertToProgramContainer(const key_type& key, const mapped_type& value) {
-		return ProgramContainer::insert(key, value);
-	}
-
-	void eraseFromStartTimeContainer(const key_type& key) {
-		ProgramContainer::erase(key);
-	}
-
 	MOCK_METHOD2(insert, value_type&(const key_type& key, const mapped_type& value));
 	MOCK_METHOD1(erase, void(const key_type& key));
+
+	MOCK_CONST_METHOD0(begin, const_iterator());
+	MOCK_CONST_METHOD0(end, const_iterator());
+	MOCK_CONST_METHOD0(size, size_t());
+	MOCK_CONST_METHOD0(empty, bool());
+
+	MOCK_CONST_METHOD1(at, const_mapped_type(const key_type& key));
+	MOCK_METHOD1(at, mapped_type(const key_type& key));
+
+	MOCK_CONST_METHOD0(toProgramDtoList, std::list<ProgramDTO>());
+	MOCK_METHOD2(updateFromProgramDtoList, void(const std::shared_ptr<ProgramFactory>& programFactory, const std::list<ProgramDTO>& programDtoList));
+
+	MOCK_CONST_METHOD0(toString, std::string());
 };

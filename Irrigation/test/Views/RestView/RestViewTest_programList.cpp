@@ -14,7 +14,7 @@ string RestViewTest::createProgramListUrl() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 TEST_F(RestViewTest, postProgramList) {
 	shared_ptr<MockProgramContainer> mockProgramContainer(new MockProgramContainer());
 
@@ -37,7 +37,7 @@ TEST_F(RestViewTest, postProgramList) {
 	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + programId.toString() + "\r\n"));
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
-
+*/
 TEST_F(RestViewTest, postProgramListInvalidXml) {
 	const Response response = executeRequest("POST", createProgramListUrl(), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");

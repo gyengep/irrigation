@@ -15,6 +15,7 @@
 #include "Hardware/Valves/ZoneHandlerImpl.h"
 #include "Logic/ProgramImpl.h"
 #include "Logic/ProgramImplBuilder.h"
+#include "Logic/ProgramContainerImpl.h"
 #include "Logic/RunTimeContainerImpl.h"
 #include "Logic/StartTimeContainerImpl.h"
 #include "Schedulers/EveryDaySchedulerImpl.h"
@@ -99,7 +100,7 @@ IrrigationDocument::Builder& IrrigationDocument::Builder::setWateringController(
 shared_ptr<IrrigationDocument> IrrigationDocument::Builder::build() {
 
 	if (nullptr == programContainer) {
-		programContainer = std::make_shared<ProgramContainer>();
+		programContainer = std::make_shared<ProgramContainerImpl>();
 	}
 
 	if (nullptr == programFactory) {
