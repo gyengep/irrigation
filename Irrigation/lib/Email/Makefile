@@ -19,8 +19,13 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDES	    = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
-ARFLAGS         = r 
+INCLUDES            = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
+ARFLAGS             = r 
+SENDINBLUE_SMTP_KEY = $(shell printenv SENDINBLUE_SMTP_KEY)
+
+ifndef SENDINBLUE_SMTP_KEY
+$(error Error! SENDINBLUE_SMTP_KEY is not set)
+endif
 
 include ../../common.mk
 
@@ -43,12 +48,13 @@ print:
 	@echo OBJECTS: $(OBJECTS)
 	@echo DEPENDS: $(DEPENDS)
 	@echo TARGET: $(TARGET)
+	@echo SENDINBLUE_SMTP_KEY: $(SENDINBLUE_SMTP_KEY)
 
 -include $(DEPENDS)
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.$(SRC_EXT) 
 	@mkdir -p $(OBJECT_DIR)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $< -Dsendinblue_smtp_key=\"$(SENDINBLUE_SMTP_KEY)\"
 	
 $(TARGET):	$(OBJECTS)
 	@mkdir -p $(TARGET_DIR)

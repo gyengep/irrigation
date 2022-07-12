@@ -1,21 +1,13 @@
 #include <gmock/gmock.h>
-#include "Email/CurlEmailSender.h"
+#include "Email/EmailSender.h"
 
 using namespace std;
 using namespace testing;
 
 
-TEST(CurlEmailSenderTest, send) {
+TEST(EmailSenderTest, send) {
 
-	CurlEmailSender curlEmailSender(
-		EmailSender::Properties(
-			"smtp://smtp-relay.sendinblue.com:587",
-			"gyengep@gmail.com",
-			"xsmtpsib-e4af58c44223465ac88102a1c3368208faabdc46620f4cbabfcf6eeb229be03d-wMPC3bL2QxWyFkXY"
-		)
-	);
-
-	curlEmailSender.send(
+	EmailSender::create()->send(
 		Email(
 			Email::Contact("Irrigation System", "irrigation.gyengep@gmail.com"),
 			std::list<Email::Contact>{ Email::Contact("Gyenge Peter", "gyengep@gmail.com") },

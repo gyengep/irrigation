@@ -3,10 +3,12 @@
 
 
 class CurlEmailSender : public EmailSender {
-	const EmailSender::Properties properties;
+	const std::string url;
+	const std::string username;
+	const std::string password;
 
 public:
-	CurlEmailSender(const EmailSender::Properties& properties);
+	CurlEmailSender(const std::string& url, const std::string& username, const std::string& password);
 	virtual ~CurlEmailSender();
 
 	virtual void send(const Email& email) override;

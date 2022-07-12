@@ -8,24 +8,27 @@
 
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
 
-EmailSender::Properties::Properties(const std::string& url, const std::string& username, const std::string& password) :
+string getSendInBlueSmtpKey() {
+	// sendinblue_smtp_key is set in makefile
+	return sendinblue_smtp_key;
+}
+
+std::shared_ptr<EmailSender> EmailSender::create() {
+	return std::make_shared<CurlEmailSender>(
+		"smtp://smtp-relay.sendinblue.com:587",
+		"gyengep@gmail.com",
+		getSendInBlueSmtpKey()
+	);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+CurlEmailSender::CurlEmailSender(const std::string& url, const std::string& username, const std::string& password) :
 	url(url),
 	username(username),
 	password(password)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-std::shared_ptr<EmailSender> EmailSender::create(const Properties& properties) {
-	return std::make_shared<CurlEmailSender>(properties);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-CurlEmailSender::CurlEmailSender(const EmailSender::Properties& properties) :
-	properties(properties)
 {
 }
 
@@ -58,9 +61,9 @@ void CurlEmailSender::send(const Email& email) {
 	char errbuf[CURL_ERROR_SIZE] = {0};
 
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, errbuf);
-	curl_easy_setopt(curl.get(), CURLOPT_URL, properties.url.c_str());
-    curl_easy_setopt(curl.get(), CURLOPT_USERNAME, properties.username.c_str());
-    curl_easy_setopt(curl.get(), CURLOPT_PASSWORD, properties.password.c_str());
+	curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl.get(), CURLOPT_USERNAME, username.c_str());
+    curl_easy_setopt(curl.get(), CURLOPT_PASSWORD, password.c_str());
 	curl_easy_setopt(curl.get(), CURLOPT_MAIL_FROM, email.from.address.c_str());
 	curl_easy_setopt(curl.get(), CURLOPT_MAIL_RCPT, recipients);
 	curl_easy_setopt(curl.get(), CURLOPT_USE_SSL, CURLUSESSL_ALL);
