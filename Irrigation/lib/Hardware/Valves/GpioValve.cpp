@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const std::vector<std::shared_ptr<Valve>> GpioValve::valves({
+const std::vector<std::shared_ptr<GpioValve>> GpioValve::valves({
 	std::make_shared<GpioValve>(VALVE0_PIN),
 	std::make_shared<GpioValve>(VALVE1_PIN),
 	std::make_shared<GpioValve>(VALVE2_PIN),
@@ -23,8 +23,8 @@ void GpioValve::init() {
 		throw runtime_error("GPIO initialization FAILED");
 	}
 
-	for (const GpioValve& valve : valves) {
-		pinMode(valve.pin, OUTPUT);
+	for (const auto& valve : valves) {
+		pinMode(valve->pin, OUTPUT);
 	}
 }
 
@@ -37,7 +37,7 @@ void GpioValve::init() {
 
 
 std::vector<std::shared_ptr<Valve>> GpioValve::getValves() {
-	return valves;
+	return std::vector<std::shared_ptr<Valve>>(valves.begin(), valves.end());
 }
 
 

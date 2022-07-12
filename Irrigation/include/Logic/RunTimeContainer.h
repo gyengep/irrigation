@@ -33,13 +33,13 @@ public:
 	virtual const_iterator end() const = 0;
 	virtual size_t size() const = 0;
 
-	virtual const_mapped_type at(const key_type& key) const;
-	virtual mapped_type at(const key_type& key);
+	virtual const_mapped_type at(const key_type& key) const = 0;
+	virtual mapped_type at(const key_type& key) = 0;
 
-	virtual std::list<RunTimeDTO> toRunTimeDtoList() const;
-	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList);
+	virtual std::list<RunTimeDTO> toRunTimeDtoList() const = 0;
+	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) = 0;
 
-	virtual std::string toString() const;
+	virtual std::string toString() const = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

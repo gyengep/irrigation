@@ -5,7 +5,7 @@
 
 
 class GpioValve: public Valve {
-	static const std::vector<std::shared_ptr<Valve>> valves;
+	static const std::vector<std::shared_ptr<GpioValve>> valves;
 
 	const int pin;
 

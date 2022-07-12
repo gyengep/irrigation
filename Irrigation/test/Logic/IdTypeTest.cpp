@@ -23,7 +23,7 @@ TEST(IdTypeTest, initConst) {
 
 TEST(IdTypeTest, fromString) {
 	EXPECT_THAT(IdType::from_string("1234"), Eq(1234));
-	EXPECT_THAT(IdType::from_string("4294967295"), Eq(4294967295));
+	EXPECT_THAT(IdType::from_string("98765"), Eq(98765));
 }
 
 TEST(IdTypeTest, fromStringInvalid) {
