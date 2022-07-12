@@ -10,6 +10,6 @@ Enable One-Wire interface
 One-wire is a single-wire communication bus typically used to connect sensors to the Pi.
 The Raspberry Pi supports one-wire on any GPIO pin, but the default is GPIO 4.
 To enable the one-wire interface you need to add the following line to /boot/config.txt, before rebooting your Pi:
-  dtoverlay=w1-gpio
+  - dtoverlay=w1-gpio
 or
-  dtoverlay=w1-gpio,gpiopin=x
+  - dtoverlay=w1-gpio,gpiopin=x
