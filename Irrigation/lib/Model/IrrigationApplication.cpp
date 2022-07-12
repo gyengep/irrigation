@@ -57,7 +57,11 @@ void IrrigationApplication::initEmail() {
 	EmailHandler::init(
 			Email::Contact("Irrigation System", "irrigation.gyengep@gmail.com"),
 			Email::Contact("Gyenge Peter", "gyengep@gmail.com"),
-			EmailSender::create(EmailSender::Properties("smtp://smtp-relay.sendinblue.com:587", "gyengep@gmail.com", "4E2mpRhqI3NfwPc8")),
+			EmailSender::create(EmailSender::Properties(
+					"smtp://smtp-relay.sendinblue.com:587",
+					"gyengep@gmail.com",
+					"xsmtpsib-e4af58c44223465ac88102a1c3368208faabdc46620f4cbabfcf6eeb229be03d-wMPC3bL2QxWyFkXY"
+				)),
 			std::vector<std::chrono::milliseconds> {
 					chrono::minutes(1), chrono::minutes(2), chrono::minutes(5),
 					chrono::minutes(15), chrono::minutes(30), chrono::minutes(60)

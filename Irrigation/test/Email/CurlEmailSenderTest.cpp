@@ -11,7 +11,7 @@ TEST(CurlEmailSenderTest, send) {
 		EmailSender::Properties(
 			"smtp://smtp-relay.sendinblue.com:587",
 			"gyengep@gmail.com",
-			"4E2mpRhqI3NfwPc8"
+			"xsmtpsib-e4af58c44223465ac88102a1c3368208faabdc46620f4cbabfcf6eeb229be03d-wMPC3bL2QxWyFkXY"
 		)
 	);
 
