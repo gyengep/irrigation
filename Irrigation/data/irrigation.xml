@@ -2,8 +2,8 @@
 <irrigation>
 	<programs>
 		<program id="7">
-			<name>fulocsolas</name>
-			<disabled>false</disabled>
+			<name>Fűlocsolás</name>
+			<enabled>true</enabled>
 			<adjustment>100</adjustment>
 			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
@@ -12,20 +12,8 @@
 					<period>7200</period>
 					<temperature>35</temperature>
 				</scheduler>
-				<scheduler type="periodic">
-					<days />
-					<periodStartDate>
-						<year>1970</year>
-						<month>1</month>
-						<day>1</day>
-					</periodStartDate>
-				</scheduler>
 				<scheduler type="temperature-dependent">
-					<remaining-a>0.75</remaining-a>
-					<forecast-a>1</forecast-a>
-					<forecast-b>0</forecast-b>
-					<history-a>1</history-a>
-					<history-b>0</history-b>
+					<remaining-correction>0.75</remaining-correction>
 					<min-adjustment>50</min-adjustment>
 					<max-adjustment>0</max-adjustment>
 					<trim>100</trim>
@@ -76,8 +64,8 @@
 			</starttimes>
 		</program>
 		<program id="9">
-			<name>buxus</name>
-			<disabled>false</disabled>
+			<name>Buxus</name>
+			<enabled>true</enabled>
 			<adjustment>100</adjustment>
 			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
@@ -86,20 +74,8 @@
 					<period>7200</period>
 					<temperature>35</temperature>
 				</scheduler>
-				<scheduler type="periodic">
-					<days />
-					<periodStartDate>
-						<year>1970</year>
-						<month>1</month>
-						<day>1</day>
-					</periodStartDate>
-				</scheduler>
 				<scheduler type="temperature-dependent">
-					<remaining-a>1</remaining-a>
-					<forecast-a>1</forecast-a>
-					<forecast-b>0</forecast-b>
-					<history-a>1</history-a>
-					<history-b>0</history-b>
+					<remaining-correction>1</remaining-correction>
 					<min-adjustment>100</min-adjustment>
 					<max-adjustment>0</max-adjustment>
 					<trim>0</trim>
@@ -150,8 +126,8 @@
 			</starttimes>
 		</program>
 		<program id="16">
-			<name>kanikula</name>
-			<disabled>false</disabled>
+			<name>Kánikula</name>
+			<enabled>true</enabled>
 			<adjustment>100</adjustment>
 			<schedulertype>hot-weather</schedulertype>
 			<schedulers>
@@ -160,21 +136,9 @@
 					<period>7200</period>
 					<temperature>33</temperature>
 				</scheduler>
-				<scheduler type="periodic">
-					<days />
-					<periodStartDate>
-						<year>1970</year>
-						<month>1</month>
-						<day>1</day>
-					</periodStartDate>
-				</scheduler>
 				<scheduler type="temperature-dependent">
-					<remaining-a>1</remaining-a>
-					<forecast-a>1</forecast-a>
-					<forecast-b>0</forecast-b>
-					<history-a>1</history-a>
-					<history-b>0</history-b>
-					<min-adjustment>100</min-adjustment>
+					<remaining-correction>1</remaining-correction>
+					<min-adjustment>0</min-adjustment>
 					<max-adjustment>0</max-adjustment>
 					<trim>0</trim>
 				</scheduler>
@@ -244,8 +208,8 @@
 			</starttimes>
 		</program>
 		<program id="19">
-			<name>paradicsom</name>
-			<disabled>false</disabled>
+			<name>Paradicsom</name>
+			<enabled>true</enabled>
 			<adjustment>100</adjustment>
 			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
@@ -254,20 +218,8 @@
 					<period>7200</period>
 					<temperature>35</temperature>
 				</scheduler>
-				<scheduler type="periodic">
-					<days />
-					<periodStartDate>
-						<year>1970</year>
-						<month>1</month>
-						<day>1</day>
-					</periodStartDate>
-				</scheduler>
 				<scheduler type="temperature-dependent">
-					<remaining-a>1</remaining-a>
-					<forecast-a>1</forecast-a>
-					<forecast-b>0</forecast-b>
-					<history-a>1</history-a>
-					<history-b>0</history-b>
+					<remaining-correction>1</remaining-correction>
 					<min-adjustment>75</min-adjustment>
 					<max-adjustment>75</max-adjustment>
 					<trim>0</trim>
@@ -322,8 +274,8 @@
 			</starttimes>
 		</program>
 		<program id="22">
-			<name>virag</name>
-			<disabled>false</disabled>
+			<name>Virág</name>
+			<enabled>true</enabled>
 			<adjustment>100</adjustment>
 			<schedulertype>temperature-dependent</schedulertype>
 			<schedulers>
@@ -332,20 +284,8 @@
 					<period>7200</period>
 					<temperature>35</temperature>
 				</scheduler>
-				<scheduler type="periodic">
-					<days />
-					<periodStartDate>
-						<year>1970</year>
-						<month>1</month>
-						<day>1</day>
-					</periodStartDate>
-				</scheduler>
 				<scheduler type="temperature-dependent">
-					<remaining-a>1</remaining-a>
-					<forecast-a>1</forecast-a>
-					<forecast-b>0</forecast-b>
-					<history-a>1</history-a>
-					<history-b>0</history-b>
+					<remaining-correction>1</remaining-correction>
 					<min-adjustment>75</min-adjustment>
 					<max-adjustment>75</max-adjustment>
 					<trim>0</trim>

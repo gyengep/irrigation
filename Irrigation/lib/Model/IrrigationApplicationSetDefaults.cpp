@@ -14,7 +14,7 @@ void IrrigationApplication::setMyDefaults() {
 	irrigationDocument->getPrograms().insert(
 		IdType(),
 		ProgramImpl::Builder().
-			setName("fulocsolas").
+			setName("Fűlocsolás").
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
@@ -42,7 +42,7 @@ void IrrigationApplication::setMyDefaults() {
 	irrigationDocument->getPrograms().insert(
 		IdType(),
 		ProgramImpl::Builder().
-			setName("buxus").
+			setName("Buxus").
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
@@ -70,7 +70,7 @@ void IrrigationApplication::setMyDefaults() {
 	irrigationDocument->getPrograms().insert(
 		IdType(),
 		ProgramImpl::Builder().
-			setName("kanikula").
+			setName("Kánikula").
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::HOT_WEATHER).
@@ -100,7 +100,7 @@ void IrrigationApplication::setMyDefaults() {
 	irrigationDocument->getPrograms().insert(
 		IdType(),
 		ProgramImpl::Builder().
-			setName("paradicsom").
+			setName("Paradicsom").
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
@@ -129,7 +129,7 @@ void IrrigationApplication::setMyDefaults() {
 	irrigationDocument->getPrograms().insert(
 		IdType(),
 		ProgramImpl::Builder().
-			setName("virag").
+			setName("Virág").
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
