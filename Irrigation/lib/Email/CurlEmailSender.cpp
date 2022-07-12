@@ -63,6 +63,7 @@ void CurlEmailSender::send(const Email& email) {
     curl_easy_setopt(curl.get(), CURLOPT_PASSWORD, properties.password.c_str());
 	curl_easy_setopt(curl.get(), CURLOPT_MAIL_FROM, email.from.address.c_str());
 	curl_easy_setopt(curl.get(), CURLOPT_MAIL_RCPT, recipients);
+	curl_easy_setopt(curl.get(), CURLOPT_USE_SSL, CURLUSESSL_ALL);
 	curl_easy_setopt(curl.get(), CURLOPT_READFUNCTION, CurlStringReader::readFunction);
 	curl_easy_setopt(curl.get(), CURLOPT_READDATA, &curlStringReader);
 	curl_easy_setopt(curl.get(), CURLOPT_UPLOAD, 1L);
