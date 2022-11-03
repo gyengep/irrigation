@@ -4,23 +4,17 @@
 #include "ProgramDTO.h"
 #include "RunTimeDTO.h"
 #include "StartTimeDTO.h"
-#include "EveryDaySchedulerDTO.h"
-#include "HotWeatherSchedulerDTO.h"
-#include "TemperatureDependentSchedulerDTO.h"
-#include "WeeklySchedulerDTO.h"
+#include "SchedulersDTO.h"
 #include "DtoMacros.h"
 
 
 #define PROGRAM_DTO_MEMBERS																			\
 	DTO_MEMBER_INIT(ProgramDTO, unsigned, Id);														\
-	DTO_MEMBER_COPY(ProgramDTO, bool, Enabled);													\
+	DTO_MEMBER_COPY(ProgramDTO, bool, Enabled);														\
 	DTO_MEMBER_COPY(ProgramDTO, std::string, Name);													\
 	DTO_MEMBER_COPY(ProgramDTO, unsigned, Adjustment);												\
 	DTO_MEMBER_COPY(ProgramDTO, std::string, SchedulerType);										\
-	DTO_MEMBER_MOVE(ProgramDTO, EveryDaySchedulerDTO, EveryDayScheduler);							\
-	DTO_MEMBER_MOVE(ProgramDTO, HotWeatherSchedulerDTO, HotWeatherScheduler);						\
-	DTO_MEMBER_MOVE(ProgramDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler);	\
-	DTO_MEMBER_MOVE(ProgramDTO, WeeklySchedulerDTO, WeeklyScheduler);								\
+	DTO_MEMBER_MOVE(ProgramDTO, SchedulersDTO, Schedulers);											\
 	DTO_MEMBER_MOVE(ProgramDTO, std::list<RunTimeDTO>, RunTimes);									\
 	DTO_MEMBER_MOVE(ProgramDTO, std::list<StartTimeDTO>, StartTimes)
 
@@ -33,10 +27,7 @@ CREATE_DTO_CLASS(ProgramDTO)
 	ProgramDTO(bool Enabled, const std::string& Name,
 			unsigned Adjustment,
 			const std::string& SchedulerType,
-			EveryDaySchedulerDTO&& EveryDayScheduler,
-			HotWeatherSchedulerDTO&& HotWeatherScheduler,
-			TemperatureDependentSchedulerDTO&& TemperatureDependentScheduler,
-			WeeklySchedulerDTO&& WeeklyScheduler,
+			SchedulersDTO&& Schedulers,
 			std::list<RunTimeDTO>&& RunTimes,
 			std::list<StartTimeDTO>&& StartTimes)
 	{

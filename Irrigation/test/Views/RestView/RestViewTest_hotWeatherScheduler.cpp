@@ -28,7 +28,14 @@ TEST_F(RestViewTest, postHotWeatherScheduler) {
 
 void RestViewTest::testGetHotWeatherScheduler(const HotWeatherSchedulerSample& hotWeatherSchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = ProgramImpl::Builder().setHotWeatherScheduler(hotWeatherSchedulerSample.getObjectPtr()).build();
+	const shared_ptr<Program> program =
+		ProgramImpl::Builder()
+			.setSchedulerContainer(
+				SchedulerContainerImpl::Builder()
+					.setHotWeatherScheduler(hotWeatherSchedulerSample.getObjectPtr())
+					.build()
+			)
+			.build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
@@ -81,7 +88,14 @@ TEST_F(RestViewTest, getHotWeatherSchedulerNotAcceptable) {
 TEST_F(RestViewTest, patchHotWeatherScheduler) {
 	const IdType programId;
 	const shared_ptr<MockHotWeatherScheduler> mockHotWeatherScheduler(new MockHotWeatherScheduler());
-	const shared_ptr<Program> program = ProgramImpl::Builder().setHotWeatherScheduler(mockHotWeatherScheduler).build();
+	const shared_ptr<Program> program =
+		ProgramImpl::Builder()
+			.setSchedulerContainer(
+				SchedulerContainerImpl::Builder()
+					.setHotWeatherScheduler(mockHotWeatherScheduler)
+					.build()
+			)
+			.build();
 
 	const HotWeatherSchedulerSample1 hotWeatherSchedulerSample;
 

@@ -24,7 +24,7 @@ using namespace testing;
 using namespace Dto2ObjectTest;
 
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	ProgramDTO(true, "Abcdefg", 56, "weekly",
 		EveryDaySchedulerDTO(),
@@ -65,7 +65,7 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 		})
 	).setId(25),
 }));
-
+*/
 void IrrigationDocumentTest::SetUp() {
 	irrigationDocument = IrrigationDocument::Builder().build();
 }

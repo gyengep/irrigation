@@ -4,6 +4,7 @@
 #include "Logic/RunTimeContainerImpl.h"
 #include "Logic/StartTimeImpl.h"
 #include "Logic/StartTimeContainerImpl.h"
+#include "Logic/SchedulerContainerImplBuilder.h"
 #include "Logic/WateringController.h"
 #include "Schedulers/HotWeatherSchedulerImpl.h"
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
@@ -18,13 +19,16 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				0.75f,
-				50, 0,
-				100
-			)).
+			setSchedulerContainer(SchedulerContainerImpl::Builder().
+				setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
+					TemperatureHandler::getInstance().getTemperatureForecast(),
+					TemperatureHandler::getInstance().getTemperatureHistory(),
+					0.75f,
+					50, 0,
+					100
+				)).
+				build()
+			).
 			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(26)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(38)),
@@ -46,13 +50,16 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				1.0f,
-				100, 0,
-				0
-			)).
+			setSchedulerContainer(SchedulerContainerImpl::Builder().
+				setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
+					TemperatureHandler::getInstance().getTemperatureForecast(),
+					TemperatureHandler::getInstance().getTemperatureHistory(),
+					1.0f,
+					100, 0,
+					0
+				)).
+				build()
+			).
 			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
@@ -74,10 +81,13 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::HOT_WEATHER).
-			setHotWeatherScheduler(std::make_shared<HotWeatherSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				std::chrono::hours(2), 33
-			)).
+			setSchedulerContainer(SchedulerContainerImpl::Builder().
+				setHotWeatherScheduler(std::make_shared<HotWeatherSchedulerImpl>(
+					TemperatureHandler::getInstance().getTemperatureHistory(),
+					std::chrono::hours(2), 33
+				)).
+				build()
+			).
 			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(2) + std::chrono::seconds(30)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(3) + std::chrono::seconds(30)),
@@ -104,13 +114,16 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				1.0f,
-				75, 75,
-				0
-			)).
+			setSchedulerContainer(SchedulerContainerImpl::Builder().
+				setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
+					TemperatureHandler::getInstance().getTemperatureForecast(),
+					TemperatureHandler::getInstance().getTemperatureHistory(),
+					1.0f,
+					75, 75,
+					0
+				)).
+				build()
+			).
 			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
@@ -133,13 +146,16 @@ void IrrigationApplication::setMyDefaults() {
 			setEnabled(true).
 			setAdjustment(100).
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT).
-			setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory(),
-				1.0f,
-				75, 75,
-				0
-			)).
+			setSchedulerContainer(SchedulerContainerImpl::Builder().
+				setTemperatureDependentScheduler(std::make_shared<TemperatureDependentSchedulerImpl>(
+					TemperatureHandler::getInstance().getTemperatureForecast(),
+					TemperatureHandler::getInstance().getTemperatureHistory(),
+					1.0f,
+					75, 75,
+					0
+				)).
+				build()
+			).
 			setRunTimeContainer(std::make_shared<RunTimeContainerImpl>(std::initializer_list<RunTimePtr> {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),

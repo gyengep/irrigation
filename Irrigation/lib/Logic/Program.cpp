@@ -28,8 +28,7 @@ bool Program::operator== (const Program& other) const {
 		getName() == other.getName() &&
 		getAdjustment() == other.getAdjustment() &&
 		getSchedulerType() == other.getSchedulerType() &&
-		getEveryDayScheduler() == other.getEveryDayScheduler() &&
-		getWeeklyScheduler() == other.getWeeklyScheduler() &&
+		//getSchedulerContainer() == other.getSchedulerContainer() &&
 		getRunTimeContainer() == other.getRunTimeContainer() &&
 		getStartTimeContainer() == other.getStartTimeContainer()
 	);

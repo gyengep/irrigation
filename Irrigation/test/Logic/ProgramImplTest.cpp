@@ -1,6 +1,5 @@
-#include <gmock/gmock.h>
-#include "Logic/ProgramImplBuilder.h"
 #include "ProgramImplTest.h"
+#include "Logic/ProgramImplBuilder.h"
 
 using namespace testing;
 using ::testing::Return;
@@ -9,19 +8,13 @@ using ::testing::AnyNumber;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramImplTest, defaultConstructor) {
-	const auto mockEveryDayScheduler = std::make_shared<MockEveryDayScheduler>();
-	const auto mockHotWeatherScheduler = std::make_shared<MockHotWeatherScheduler>();
-	const auto mockTemperatureDependentScheduler = std::make_shared<MockTemperatureDependentScheduler>();
-	const auto mockWeeklyScheduler = std::make_shared<MockWeeklyScheduler>();
+	const auto mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	const auto mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const auto mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
 	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>();
 
 	const ProgramImpl program(
-		mockEveryDayScheduler,
-		mockHotWeatherScheduler,
-		mockTemperatureDependentScheduler,
-		mockWeeklyScheduler,
+		mockSchedulerContainer,
 		mockRunTimeContainer,
 		mockStartTimeContainer,
 		mockStartTimeFactory
@@ -31,10 +24,7 @@ TEST(ProgramImplTest, defaultConstructor) {
 	EXPECT_THAT(program.getName(), Eq(""));
 	EXPECT_THAT(program.getAdjustment(), Eq(100));
 	EXPECT_THAT(program.getSchedulerType(), Eq(SchedulerType::WEEKLY));
-	EXPECT_THAT(&program.getEveryDayScheduler(), Eq(mockEveryDayScheduler.get()));
-	EXPECT_THAT(&program.getHotWeatherScheduler(), Eq(mockHotWeatherScheduler.get()));
-	EXPECT_THAT(&program.getTemperatureDependentScheduler(), Eq(mockTemperatureDependentScheduler.get()));
-	EXPECT_THAT(&program.getWeeklyScheduler(), Eq(mockWeeklyScheduler.get()));
+	EXPECT_THAT(&program.getSchedulerContainer(), Eq(mockSchedulerContainer.get()));
 	EXPECT_THAT(&program.getRunTimeContainer(), Eq(mockRunTimeContainer.get()));
 	EXPECT_THAT(&program.getStartTimeContainer(), Eq(mockStartTimeContainer.get()));
 }
@@ -45,20 +35,14 @@ TEST(ProgramImplTest, parametrizedConstructor) {
 	const unsigned adjustment = 78;
 	const SchedulerType schedulerType = SchedulerType::EVERY_DAY;
 
-	const auto mockEveryDayScheduler = std::make_shared<MockEveryDayScheduler>();
-	const auto mockHotWeatherScheduler = std::make_shared<MockHotWeatherScheduler>();
-	const auto mockTemperatureDependentScheduler = std::make_shared<MockTemperatureDependentScheduler>();
-	const auto mockWeeklyScheduler = std::make_shared<MockWeeklyScheduler>();
+	const auto mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	const auto mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const auto mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
 	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>();
 
 	const ProgramImpl program(
 		enabled, name, adjustment, schedulerType,
-		mockEveryDayScheduler,
-		mockHotWeatherScheduler,
-		mockTemperatureDependentScheduler,
-		mockWeeklyScheduler,
+		mockSchedulerContainer,
 		mockRunTimeContainer,
 		mockStartTimeContainer,
 		mockStartTimeFactory
@@ -68,10 +52,7 @@ TEST(ProgramImplTest, parametrizedConstructor) {
 	EXPECT_THAT(program.getName(), Eq(name));
 	EXPECT_THAT(program.getAdjustment(), Eq(adjustment));
 	EXPECT_THAT(program.getSchedulerType(), Eq(schedulerType));
-	EXPECT_THAT(&program.getEveryDayScheduler(), Eq(mockEveryDayScheduler.get()));
-	EXPECT_THAT(&program.getHotWeatherScheduler(), Eq(mockHotWeatherScheduler.get()));
-	EXPECT_THAT(&program.getTemperatureDependentScheduler(), Eq(mockTemperatureDependentScheduler.get()));
-	EXPECT_THAT(&program.getWeeklyScheduler(), Eq(mockWeeklyScheduler.get()));
+	EXPECT_THAT(&program.getSchedulerContainer(), Eq(mockSchedulerContainer.get()));
 	EXPECT_THAT(&program.getRunTimeContainer(), Eq(mockRunTimeContainer.get()));
 	EXPECT_THAT(&program.getStartTimeContainer(), Eq(mockStartTimeContainer.get()));
 }
@@ -408,20 +389,14 @@ TEST(ProgramImplTest, isScheduled_disabled) {
 
 
 void ProgramImplUpdateFromOrToDtoTest::SetUp() {
-	mockEveryDayScheduler = std::make_shared<StrictMock<MockEveryDayScheduler>>();
-	mockHotWeatherScheduler = std::make_shared<StrictMock<MockHotWeatherScheduler>>();
-	mockTemperatureDependentScheduler = std::make_shared<StrictMock<MockTemperatureDependentScheduler>>();
-	mockWeeklyScheduler = std::make_shared<StrictMock<MockWeeklyScheduler>>();
+	mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 	mockRunTimeContainer = std::make_shared<StrictMock<MockRunTimeContainer>>();
 	mockStartTimeContainer = std::make_shared<StrictMock<MockStartTimeContainer>>();
 	mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>();
 
 	program = std::make_shared<ProgramImpl>(
 		defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType,
-		mockEveryDayScheduler,
-		mockHotWeatherScheduler,
-		mockTemperatureDependentScheduler,
-		mockWeeklyScheduler,
+		mockSchedulerContainer,
 		mockRunTimeContainer,
 		mockStartTimeContainer,
 		mockStartTimeFactory
@@ -433,10 +408,7 @@ void ProgramImplUpdateFromOrToDtoTest::TearDown() {
 
 
 TEST_F(ProgramImplUpdateFromOrToDtoTest, toDto1) {
-	EXPECT_CALL(*mockEveryDayScheduler, toEveryDaySchedulerDto()).Times(1).WillOnce(Return(EveryDaySchedulerDTO()));
-	EXPECT_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).Times(1).WillOnce(Return(expectedHotWeatherSchedulerDTO1));
-	EXPECT_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).Times(1).WillOnce(Return(expectedTemperatureDependentSchedulerDto1));
-	EXPECT_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).Times(1).WillOnce(Return(expectedWeeklySchedulerDto1));
+	EXPECT_CALL(*mockSchedulerContainer, toSchedulersDto()).Times(1).WillOnce(Return(expectedSchedulersDTO1));
 	EXPECT_CALL(*mockRunTimeContainer, toRunTimeDtoList()).Times(1).WillOnce(Return(expectedRunTimeDtoList1));
 	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1).WillOnce(Return(expectedStartTimeDtoList1));
 
@@ -449,10 +421,7 @@ TEST_F(ProgramImplUpdateFromOrToDtoTest, toDto1) {
 }
 
 TEST_F(ProgramImplUpdateFromOrToDtoTest, toDto2) {
-	EXPECT_CALL(*mockEveryDayScheduler, toEveryDaySchedulerDto()).Times(1).WillOnce(Return(EveryDaySchedulerDTO()));
-	EXPECT_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).Times(1).WillOnce(Return(expectedHotWeatherSchedulerDTO2));
-	EXPECT_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).Times(1).WillOnce(Return(expectedTemperatureDependentSchedulerDto2));
-	EXPECT_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).Times(1).WillOnce(Return(expectedWeeklySchedulerDto2));
+	EXPECT_CALL(*mockSchedulerContainer, toSchedulersDto()).Times(1).WillOnce(Return(expectedSchedulersDTO2));
 	EXPECT_CALL(*mockRunTimeContainer, toRunTimeDtoList()).Times(1).WillOnce(Return(expectedRunTimeDtoList2));
 	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1).WillOnce(Return(expectedStartTimeDtoList2));
 
@@ -503,36 +472,14 @@ TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_SchedulerType) {
 	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, expectedSchedulerType2);
 }
 
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_HotWeatherScheduler) {
-	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO1)).Times(1);
-	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO2)).Times(1);
+TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_SchedulerContainer) {
+	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO1)).Times(1);
+	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO2)).Times(1);
 
 	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setHotWeatherScheduler(HotWeatherSchedulerDTO(expectedHotWeatherSchedulerDTO1)));
+	program->updateFromProgramDto(ProgramDTO().setSchedulers(SchedulersDTO(expectedSchedulersDTO1)));
 	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setHotWeatherScheduler(HotWeatherSchedulerDTO(expectedHotWeatherSchedulerDTO2)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_TemperatureDependentScheduler) {
-	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto1)).Times(1);
-	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto2)).Times(1);
-
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(expectedTemperatureDependentSchedulerDto1)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(expectedTemperatureDependentSchedulerDto2)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_WeeklyScheduler) {
-	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto1)).Times(1);
-	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto2)).Times(1);
-
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklySchedulerDto1)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklySchedulerDto2)));
+	program->updateFromProgramDto(ProgramDTO().setSchedulers(SchedulersDTO(expectedSchedulersDTO2)));
 	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
 }
 
@@ -559,13 +506,8 @@ TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_StartTimeContainer) {
 }
 
 TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_all) {
-	EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(EveryDaySchedulerDTO())).Times(2);
-	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO1)).Times(1);
-	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO2)).Times(1);
-	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto1)).Times(1);
-	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto2)).Times(1);
-	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto1)).Times(1);
-	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto2)).Times(1);
+	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO1)).Times(1);
+	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO2)).Times(1);
 	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList1)).Times(1);
 	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList2)).Times(1);
 	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(mockStartTimeFactory, expectedStartTimeDtoList1)).Times(1);

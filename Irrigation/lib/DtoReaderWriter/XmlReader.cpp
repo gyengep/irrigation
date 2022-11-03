@@ -66,23 +66,7 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	}
 
 	if ((tmpNode = node.child("schedulers")) != nullptr) {
-		xml_node schedulerNode;
-
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "every-day")) != nullptr) {
-			program.setEveryDayScheduler(loadEveryDayScheduler(schedulerNode));
-		}
-
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "hot-weather")) != nullptr) {
-			program.setHotWeatherScheduler(loadHotWeatherScheduler(schedulerNode));
-		}
-
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "temperature-dependent")) != nullptr) {
-			program.setTemperatureDependentScheduler(loadTemperatureDependentScheduler(schedulerNode));
-		}
-
-		if ((schedulerNode = tmpNode.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
-			program.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
-		}
+		program.setSchedulers(loadSchedulers(tmpNode));
 	}
 
 	if ((tmpNode = node.child("runtimes")) != nullptr) {
@@ -94,6 +78,29 @@ ProgramDTO XmlReader::loadProgram(const xml_node& node) const {
 	}
 
 	return program;
+}
+
+SchedulersDTO XmlReader::loadSchedulers(const xml_node& node) const {
+	SchedulersDTO schedulers;
+	xml_node schedulerNode;
+
+	if ((schedulerNode = node.find_child_by_attribute("scheduler", "type", "every-day")) != nullptr) {
+		schedulers.setEveryDayScheduler(loadEveryDayScheduler(schedulerNode));
+	}
+
+	if ((schedulerNode = node.find_child_by_attribute("scheduler", "type", "hot-weather")) != nullptr) {
+		schedulers.setHotWeatherScheduler(loadHotWeatherScheduler(schedulerNode));
+	}
+
+	if ((schedulerNode = node.find_child_by_attribute("scheduler", "type", "temperature-dependent")) != nullptr) {
+		schedulers.setTemperatureDependentScheduler(loadTemperatureDependentScheduler(schedulerNode));
+	}
+
+	if ((schedulerNode = node.find_child_by_attribute("scheduler", "type", "weekly")) != nullptr) {
+		schedulers.setWeeklyScheduler(loadWeeklyScheduler(schedulerNode));
+	}
+
+	return schedulers;
 }
 
 EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const xml_node& node) const {
@@ -353,6 +360,21 @@ StartTimeDTO XmlReader::loadStartTime(const string& text) const {
 	}
 
 	return loadStartTime(node);
+}
+
+SchedulersDTO XmlReader::loadSchedulers(const std::string& text) const {
+	const char* tagName = "schedulers";
+
+	unique_ptr<xml_document> doc(new xml_document());
+	loadFromString(doc.get(), text);
+
+	const xml_node node = doc->child(tagName);
+
+	if (node == nullptr) {
+		throw RequiredTagMissing("The 'schedulers' element tag not found");
+	}
+
+	return loadSchedulers(node);
 }
 
 EveryDaySchedulerDTO XmlReader::loadEveryDayScheduler(const string& text) const {

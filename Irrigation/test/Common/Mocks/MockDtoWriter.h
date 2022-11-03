@@ -10,6 +10,7 @@ public:
 	MOCK_METHOD3(save, std::string(const ProgramDTO& program, const std::string& piName, const std::string& piValue));
 	MOCK_METHOD1(save, std::string(const RunTimeDTO& runTime));
 	MOCK_METHOD1(save, std::string(const StartTimeDTO& startTime));
+	MOCK_METHOD1(save, std::string(const SchedulersDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const EveryDaySchedulerDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const HotWeatherSchedulerDTO& scheduler));
 	MOCK_METHOD1(save, std::string(const TemperatureDependentSchedulerDTO& scheduler));

@@ -17,21 +17,15 @@ TEST(DocumentDTOTest, defaultConstructor) {
 TEST(DocumentDTOTest, parametrizedConstructor) {
 	const list<ProgramDTO> expectedPrograms({
 		ProgramDTO(true, "abc", 83, "sch1",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>({ RunTimeDTO() }),
 				list<StartTimeDTO>()
-				),
+			),
 		ProgramDTO(false, "123", 125, "sch2",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>(),
 				list<StartTimeDTO>({ StartTimeDTO()})
-				)
+			)
 	});
 
 	DocumentDTO documentDTO(move(list<ProgramDTO>(expectedPrograms)));
@@ -43,18 +37,12 @@ TEST(DocumentDTOTest, parametrizedConstructor) {
 TEST(DocumentDTOTest, copyConstructor) {
 	const list<ProgramDTO> expectedPrograms({
 		ProgramDTO(true, "abc", 83, "sch1",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>({ RunTimeDTO() }),
 				list<StartTimeDTO>()
 				),
 		ProgramDTO(false, "123", 125, "sch2",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>(),
 				list<StartTimeDTO>({ StartTimeDTO()})
 				)
@@ -70,18 +58,12 @@ TEST(DocumentDTOTest, copyConstructor) {
 TEST(DocumentDTOTest, moveConstructor) {
 	const list<ProgramDTO> expectedPrograms({
 		ProgramDTO(true, "abc", 83, "sch1",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>({ RunTimeDTO() }),
 				list<StartTimeDTO>()
 				),
 		ProgramDTO(false, "123", 125, "sch2",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>(),
 				list<StartTimeDTO>({ StartTimeDTO()})
 				)
@@ -99,18 +81,12 @@ TEST(DocumentDTOTest, moveConstructor) {
 CHECK_DTO_FUNCTIONS(DocumentDTO, list<ProgramDTO>, Programs,
 	list<ProgramDTO>({
 		ProgramDTO(true, "abc", 83, "sch1",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>({ RunTimeDTO() }),
 				list<StartTimeDTO>()
 				),
 		ProgramDTO(false, "123", 125, "sch2",
-				EveryDaySchedulerDTO(),
-				HotWeatherSchedulerDTO(),
-				TemperatureDependentSchedulerDTO(),
-				WeeklySchedulerDTO(),
+				SchedulersDTO(),
 				list<RunTimeDTO>(),
 				list<StartTimeDTO>({ StartTimeDTO()})
 				)
@@ -129,20 +105,14 @@ TEST(DocumentDTOTest, equalsOperator) {
 	CHECK_DTO_EQUALS_MOVE(list<ProgramDTO>, Programs,
 			list<ProgramDTO>({
 				ProgramDTO(true, "abc", 83, "sch1",
-						EveryDaySchedulerDTO(),
-						HotWeatherSchedulerDTO(),
-						TemperatureDependentSchedulerDTO(),
-						WeeklySchedulerDTO(),
+						SchedulersDTO(),
 						list<RunTimeDTO>({ RunTimeDTO() }),
 						list<StartTimeDTO>()
 					)
 			}),
 			list<ProgramDTO>({
 				ProgramDTO(false, "123", 125, "sch2",
-						EveryDaySchedulerDTO(),
-						HotWeatherSchedulerDTO(),
-						TemperatureDependentSchedulerDTO(),
-						WeeklySchedulerDTO(),
+						SchedulersDTO(),
 						list<RunTimeDTO>(),
 						list<StartTimeDTO>({ StartTimeDTO()})
 					)

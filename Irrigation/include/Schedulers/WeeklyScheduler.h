@@ -30,6 +30,8 @@ public:
 	WeeklyScheduler& operator= (const WeeklyScheduler&) = delete;
 	bool operator== (const WeeklyScheduler& other) const;
 
+	///////////////////////////////////////////////////////////////////////////
+
 	virtual void enableDay(size_t day, bool enable) = 0;
 	virtual bool isDayEnabled(size_t day) const = 0;
 

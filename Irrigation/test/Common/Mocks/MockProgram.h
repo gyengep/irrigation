@@ -18,17 +18,11 @@ public:
 	MOCK_METHOD1(isScheduled, std::unique_ptr<ScheduledResult>(const std::time_t rawtime));
 	MOCK_METHOD0(getCurrentScheduler, Scheduler&());
 
-	MOCK_CONST_METHOD0(getEveryDayScheduler, const EveryDayScheduler& ());
-	MOCK_CONST_METHOD0(getHotWeatherScheduler, const HotWeatherScheduler&());
-	MOCK_CONST_METHOD0(getTemperatureDependentScheduler, const TemperatureDependentScheduler&());
-	MOCK_CONST_METHOD0(getWeeklyScheduler, const WeeklyScheduler&());
+	MOCK_CONST_METHOD0(getSchedulerContainer, const SchedulerContainer& ());
 	MOCK_CONST_METHOD0(getRunTimeContainer, const RunTimeContainer&());
 	MOCK_CONST_METHOD0(getStartTimeContainer, const StartTimeContainer&());
 
-	MOCK_METHOD0(getEveryDayScheduler, EveryDayScheduler&());
-	MOCK_METHOD0(getHotWeatherScheduler, HotWeatherScheduler&());
-	MOCK_METHOD0(getTemperatureDependentScheduler, TemperatureDependentScheduler&());
-	MOCK_METHOD0(getWeeklyScheduler, WeeklyScheduler&());
+	MOCK_METHOD0(getSchedulerContainer, SchedulerContainer& ());
 	MOCK_METHOD0(getRunTimeContainer, RunTimeContainer&());
 	MOCK_METHOD0(getStartTimeContainer, StartTimeContainer&());
 

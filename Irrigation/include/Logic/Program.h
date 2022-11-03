@@ -4,14 +4,10 @@
 #include <string>
 #include "json.hpp"
 #include "DTO/ProgramDTO.h"
-#include "Schedulers/Scheduler.h"
-#include "Schedulers/EveryDayScheduler.h"
-#include "Schedulers/HotWeatherScheduler.h"
-#include "Schedulers/TemperatureDependentScheduler.h"
-#include "Schedulers/WeeklyScheduler.h"
 #include "Utils/OstreamInsert.h"
 #include "RunTimeContainer.h"
 #include "StartTimeContainer.h"
+#include "SchedulerContainer.h"
 
 
 class ScheduledResult {
@@ -54,17 +50,11 @@ public:
 //	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
 	virtual Scheduler& getCurrentScheduler() = 0;
 
-	virtual const EveryDayScheduler& getEveryDayScheduler() const = 0;
-	virtual const HotWeatherScheduler& getHotWeatherScheduler() const = 0;
-	virtual const TemperatureDependentScheduler& getTemperatureDependentScheduler() const = 0;
-	virtual const WeeklyScheduler& getWeeklyScheduler() const = 0;
+	virtual const SchedulerContainer& getSchedulerContainer() const = 0;
 	virtual const RunTimeContainer& getRunTimeContainer() const = 0;
 	virtual const StartTimeContainer& getStartTimeContainer() const = 0;
 
-	virtual EveryDayScheduler& getEveryDayScheduler() = 0;
-	virtual HotWeatherScheduler& getHotWeatherScheduler() = 0;
-	virtual TemperatureDependentScheduler& getTemperatureDependentScheduler() = 0;
-	virtual WeeklyScheduler& getWeeklyScheduler() = 0;
+	virtual SchedulerContainer& getSchedulerContainer() = 0;
 	virtual RunTimeContainer& getRunTimeContainer() = 0;
 	virtual StartTimeContainer& getStartTimeContainer() = 0;
 

@@ -12,6 +12,12 @@ class HotWeatherScheduler : public Scheduler {
 public:
 	virtual ~HotWeatherScheduler() = default;
 
+	HotWeatherScheduler& operator= (HotWeatherScheduler&&) = delete;
+	HotWeatherScheduler& operator= (const HotWeatherScheduler&) = delete;
+	bool operator== (const HotWeatherScheduler& other) const;
+
+	///////////////////////////////////////////////////////////////////////////
+
 	virtual void setMinTemperature(float minTemperature) = 0;
 	virtual void setPeriod(const std::chrono::seconds& period) = 0;
 

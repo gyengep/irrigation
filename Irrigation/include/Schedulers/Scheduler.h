@@ -1,5 +1,6 @@
 #pragma once
 #include <ctime>
+#include <memory>
 #include <string>
 
 
@@ -31,4 +32,12 @@ public:
 
 	virtual ~Scheduler() = default;
 	virtual Result process(const std::time_t rawtime) = 0;
+
+	virtual std::string toString() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<Scheduler> SchedulerPtr;
+typedef std::shared_ptr<const Scheduler> ConstSchedulerPtr;
+

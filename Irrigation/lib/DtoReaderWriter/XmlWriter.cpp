@@ -62,30 +62,8 @@ void XmlWriter::saveProgram(xml_node* parent, const ProgramDTO& program, bool in
 	}
 
 	if (includeContainers) {
-		if (program.hasEveryDayScheduler() || program.hasHotWeatherScheduler() ||
-				program.hasTemperatureDependentScheduler() || program.hasWeeklyScheduler()) {
-
-			xml_node schedulersListNode = node.append_child("schedulers");
-
-			if (program.hasEveryDayScheduler()) {
-				const EveryDaySchedulerDTO& scheduler = program.getEveryDayScheduler();
-				saveEveryDayScheduler(&schedulersListNode, scheduler);
-			}
-
-			if (program.hasHotWeatherScheduler()) {
-				const HotWeatherSchedulerDTO& scheduler = program.getHotWeatherScheduler();
-				saveHotWeatherScheduler(&schedulersListNode, scheduler);
-			}
-
-			if (program.hasTemperatureDependentScheduler()) {
-				const TemperatureDependentSchedulerDTO& scheduler = program.getTemperatureDependentScheduler();
-				saveTemperatureDependentScheduler(&schedulersListNode, scheduler);
-			}
-
-			if (program.hasWeeklyScheduler()) {
-				const WeeklySchedulerDTO& scheduler = program.getWeeklyScheduler();
-				saveWeeklyScheduler(&schedulersListNode, scheduler);
-			}
+		if (program.hasSchedulers()) {
+			saveSchedulers(&node, program.getSchedulers());
 		}
 
 		if (program.hasRunTimes()) {
@@ -143,6 +121,30 @@ void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDTO& startTime) {
 
 	if (startTime.hasId()) {
 		node.append_attribute("id").set_value(startTime.getId());
+	}
+}
+
+void XmlWriter::saveSchedulers(xml_node* parent, const SchedulersDTO& schedulers) {
+	xml_node schedulersListNode = parent->append_child("schedulers");
+
+	if (schedulers.hasEveryDayScheduler()) {
+		const EveryDaySchedulerDTO& everyDayScheduler = schedulers.getEveryDayScheduler();
+		saveEveryDayScheduler(&schedulersListNode, everyDayScheduler);
+	}
+
+	if (schedulers.hasHotWeatherScheduler()) {
+		const HotWeatherSchedulerDTO& hotWeatherScheduler = schedulers.getHotWeatherScheduler();
+		saveHotWeatherScheduler(&schedulersListNode, hotWeatherScheduler);
+	}
+
+	if (schedulers.hasTemperatureDependentScheduler()) {
+		const TemperatureDependentSchedulerDTO& temperatureDependentScheduler = schedulers.getTemperatureDependentScheduler();
+		saveTemperatureDependentScheduler(&schedulersListNode, temperatureDependentScheduler);
+	}
+
+	if (schedulers.hasWeeklyScheduler()) {
+		const WeeklySchedulerDTO& weeklyScheduler = schedulers.getWeeklyScheduler();
+		saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
 	}
 }
 
@@ -261,6 +263,12 @@ string XmlWriter::save(const StartTimeDTO& startTime) {
 string XmlWriter::save(const list<StartTimeDTO>& startTimes) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveStartTimeList(doc.get(), startTimes);
+	return toString(doc.get(), humanReadable);
+}
+
+string XmlWriter::save(const SchedulersDTO& schedulers) {
+	unique_ptr<xml_document> doc(new xml_document());
+	saveSchedulers(doc.get(), schedulers);
 	return toString(doc.get(), humanReadable);
 }
 

@@ -54,8 +54,8 @@ TEST_F(ProgramReaderTest, programSchedulerType) {
 	testProgramRead(programSample_schedulerType, reader);
 }
 
-TEST_F(ProgramReaderTest, programWeeklyScheduler) {
-	testProgramRead(programSample_weeklyScheduler, reader);
+TEST_F(ProgramReaderTest, programSchedulers) {
+	testProgramRead(programSample_schedulers, reader);
 }
 
 TEST_F(ProgramReaderTest, programRunTimes) {
@@ -96,8 +96,8 @@ TEST_F(ProgramWriterTest, programSchedulerType) {
 	testProgramWrite(programSample_schedulerType, writer);
 }
 
-TEST_F(ProgramWriterTest, programWeeklyScheduler) {
-	testProgramWrite(programSample_weeklyScheduler, writer);
+TEST_F(ProgramWriterTest, programSchedulers) {
+	testProgramWrite(programSample_schedulers, writer);
 }
 
 TEST_F(ProgramWriterTest, programRunTimes) {

@@ -9,6 +9,7 @@ public:
 	MOCK_CONST_METHOD1(loadProgram, ProgramDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadRunTime, RunTimeDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadStartTime, StartTimeDTO(const std::string&));
+	MOCK_CONST_METHOD1(loadSchedulers, SchedulersDTO(const std::string& text));
 	MOCK_CONST_METHOD1(loadEveryDayScheduler, EveryDaySchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadHotWeatherScheduler, HotWeatherSchedulerDTO(const std::string&));
 	MOCK_CONST_METHOD1(loadTemperatureDependentScheduler, TemperatureDependentSchedulerDTO(const std::string&));

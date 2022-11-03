@@ -28,7 +28,14 @@ TEST_F(RestViewTest, postWeeklyScheduler) {
 
 void RestViewTest::testGetWeeklyScheduler(const WeeklySchedulerSample& weeklySchedulerSample) {
 	const IdType programId;
-	const shared_ptr<Program> program = ProgramImpl::Builder().setWeeklyScheduler(weeklySchedulerSample.getObjectPtr()).build();
+	const shared_ptr<Program> program =
+		ProgramImpl::Builder()
+			.setSchedulerContainer(
+				SchedulerContainerImpl::Builder()
+					.setWeeklyScheduler(weeklySchedulerSample.getObjectPtr())
+					.build()
+			)
+			.build();
 
 	irrigationDocument->getPrograms().insert(programId, program);
 
@@ -81,7 +88,14 @@ TEST_F(RestViewTest, getWeeklySchedulerNotAcceptable) {
 TEST_F(RestViewTest, patchWeeklyScheduler) {
 	const IdType programId;
 	const shared_ptr<MockWeeklyScheduler> mockWeeklyScheduler(new MockWeeklyScheduler());
-	const shared_ptr<Program> program = ProgramImpl::Builder().setWeeklyScheduler(mockWeeklyScheduler).build();
+	const shared_ptr<Program> program =
+		ProgramImpl::Builder()
+			.setSchedulerContainer(
+				SchedulerContainerImpl::Builder()
+					.setWeeklyScheduler(mockWeeklyScheduler)
+					.build()
+			)
+			.build();
 
 	const WeeklySchedulerSample1 weeklySchedulerSample;
 

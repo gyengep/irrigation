@@ -20,7 +20,7 @@ unique_ptr<HttpResponse> RestView::onGetTemperatureDependentScheduler(const Http
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			temperatureDependentSchedulerDto = irrigationDocument.getPrograms().at(programId)->getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto();
+			temperatureDependentSchedulerDto = irrigationDocument.getPrograms().at(programId)->getSchedulerContainer().getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto();
 		}
 
 		return HttpResponse::Builder().
@@ -47,7 +47,7 @@ unique_ptr<HttpResponse> RestView::onPatchTemperatureDependentScheduler(const Ht
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			TemperatureDependentScheduler& temperatureDependentScheduler = irrigationDocument.getPrograms().at(programId)->getTemperatureDependentScheduler();
+			TemperatureDependentScheduler& temperatureDependentScheduler = irrigationDocument.getPrograms().at(programId)->getSchedulerContainer().getTemperatureDependentScheduler();
 
 			irrigationDocument.setModified();
 			temperatureDependentScheduler.updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);

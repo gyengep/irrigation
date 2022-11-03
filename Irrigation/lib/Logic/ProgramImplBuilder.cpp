@@ -1,10 +1,8 @@
 #include "ProgramImplBuilder.h"
-#include "Logic/RunTimeContainerImpl.h"
-#include "Logic/StartTimeContainerImpl.h"
-#include "Schedulers/EveryDaySchedulerImpl.h"
-#include "Schedulers/HotWeatherSchedulerImpl.h"
-#include "Schedulers/TemperatureDependentSchedulerImpl.h"
-#include "Schedulers/WeeklySchedulerImpl.h"
+#include "SchedulerContainerImpl.h"
+#include "SchedulerContainerImplBuilder.h"
+#include "RunTimeContainerImpl.h"
+#include "StartTimeContainerImpl.h"
 #include "Temperature/TemperatureHandler.h"
 
 
@@ -36,23 +34,8 @@ ProgramImpl::Builder& ProgramImpl::Builder::setSchedulerType(SchedulerType sched
 	return *this;
 }
 
-ProgramImpl::Builder& ProgramImpl::Builder::setEveryDayScheduler(const std::shared_ptr<EveryDayScheduler>& everyDayScheduler) {
-	this->everyDayScheduler = everyDayScheduler;
-	return *this;
-}
-
-ProgramImpl::Builder& ProgramImpl::Builder::setHotWeatherScheduler(const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler) {
-	this->hotWeatherScheduler = hotWeatherScheduler;
-	return *this;
-}
-
-ProgramImpl::Builder& ProgramImpl::Builder::setTemperatureDependentScheduler(const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler) {
-	this->temperatureDependentScheduler = temperatureDependentScheduler;
-	return *this;
-}
-
-ProgramImpl::Builder& ProgramImpl::Builder::setWeeklyScheduler(const std::shared_ptr<WeeklyScheduler>& weeklyScheduler) {
-	this->weeklyScheduler = weeklyScheduler;
+ProgramImpl::Builder& ProgramImpl::Builder::setSchedulerContainer(const std::shared_ptr<SchedulerContainer>& schedulerContainer) {
+	this->schedulerContainer = schedulerContainer;
 	return *this;
 }
 
@@ -73,25 +56,8 @@ ProgramImpl::Builder& ProgramImpl::Builder::setStartTimeFactory(const std::share
 
 ProgramPtr ProgramImpl::Builder::build() {
 
-	if (nullptr == everyDayScheduler) {
-		everyDayScheduler = std::make_shared<EveryDaySchedulerImpl>();
-	}
-
-	if (nullptr == hotWeatherScheduler) {
-		hotWeatherScheduler = std::make_shared<HotWeatherSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureHistory()
-			);
-	}
-
-	if (nullptr == temperatureDependentScheduler) {
-		temperatureDependentScheduler = std::make_shared<TemperatureDependentSchedulerImpl>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory()
-			);
-	}
-
-	if (nullptr == weeklyScheduler) {
-		weeklyScheduler = std::make_shared<WeeklySchedulerImpl>();
+	if (nullptr == schedulerContainer) {
+		schedulerContainer = SchedulerContainerImpl::Builder().build();
 	}
 
 	if (nullptr == runTimeContainer) {
@@ -113,10 +79,7 @@ ProgramPtr ProgramImpl::Builder::build() {
 			name,
 			adjustment,
 			schedulerType,
-			everyDayScheduler,
-			hotWeatherScheduler,
-			temperatureDependentScheduler,
-			weeklyScheduler,
+			schedulerContainer,
 			runTimeContainer,
 			startTimeContainer,
 			startTimeFactory
@@ -128,23 +91,8 @@ ProgramPtr ProgramImpl::Builder::build() {
 ProgramImplFactory::Builder::Builder() {
 }
 
-ProgramImplFactory::Builder& ProgramImplFactory::Builder::setEveryDaySchedulerFactory(const std::shared_ptr<EveryDaySchedulerFactory>& everyDaySchedulerFactory) {
-	this->everyDaySchedulerFactory = everyDaySchedulerFactory;
-	return *this;
-}
-
-ProgramImplFactory::Builder& ProgramImplFactory::Builder::setHotWeatherSchedulerFactory(const std::shared_ptr<HotWeatherSchedulerFactory>& hotWeatherSchedulerFactory) {
-	this->hotWeatherSchedulerFactory = hotWeatherSchedulerFactory;
-	return *this;
-}
-
-ProgramImplFactory::Builder& ProgramImplFactory::Builder::setTemperatureDependentSchedulerFactory(const std::shared_ptr<TemperatureDependentSchedulerFactory>& temperatureDependentSchedulerFactory) {
-	this->temperatureDependentSchedulerFactory = temperatureDependentSchedulerFactory;
-	return *this;
-}
-
-ProgramImplFactory::Builder& ProgramImplFactory::Builder::setWeeklySchedulerFactory(const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory) {
-	this->weeklySchedulerFactory = weeklySchedulerFactory;
+ProgramImplFactory::Builder& ProgramImplFactory::Builder::setSchedulerContainerFactory(const std::shared_ptr<SchedulerContainerFactory>& schedulerContainerFactory) {
+	this->schedulerContainerFactory = schedulerContainerFactory;
 	return *this;
 }
 
@@ -164,25 +112,8 @@ ProgramImplFactory::Builder& ProgramImplFactory::Builder::setStartTimeFactory(co
 }
 
 std::shared_ptr<ProgramFactory> ProgramImplFactory::Builder::build() {
-	if (nullptr == everyDaySchedulerFactory) {
-		everyDaySchedulerFactory = std::make_shared<EveryDaySchedulerImplFactory>();
-	}
-
-	if (nullptr == hotWeatherSchedulerFactory) {
-		hotWeatherSchedulerFactory = std::make_shared<HotWeatherSchedulerImplFactory>(
-				TemperatureHandler::getInstance().getTemperatureHistory()
-			);
-	}
-
-	if (nullptr == temperatureDependentSchedulerFactory) {
-		temperatureDependentSchedulerFactory = std::make_shared<TemperatureDependentSchedulerImplFactory>(
-				TemperatureHandler::getInstance().getTemperatureForecast(),
-				TemperatureHandler::getInstance().getTemperatureHistory()
-			);
-	}
-
-	if (nullptr == weeklySchedulerFactory) {
-		weeklySchedulerFactory = std::make_shared<WeeklySchedulerImplFactory>();
+	if (nullptr == schedulerContainerFactory) {
+		schedulerContainerFactory = SchedulerContainerImplFactory::Builder().build();
 	}
 
 	if (nullptr == runTimeContainerFactory) {
@@ -200,10 +131,7 @@ std::shared_ptr<ProgramFactory> ProgramImplFactory::Builder::build() {
 	}
 
 	return std::make_shared<ProgramImplFactory>(
-			everyDaySchedulerFactory,
-			hotWeatherSchedulerFactory,
-			temperatureDependentSchedulerFactory,
-			weeklySchedulerFactory,
+			schedulerContainerFactory,
 			runTimeContainerFactory,
 			startTimeContainerFactory,
 			startTimeFactory

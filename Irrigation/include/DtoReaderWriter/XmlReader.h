@@ -24,6 +24,7 @@ protected:
 	std::list<ProgramDTO> loadProgramList(const pugi::xml_node& node) const;
 	std::list<RunTimeDTO> loadRunTimeList(const pugi::xml_node& node) const;
 	std::list<StartTimeDTO> loadStartTimeList(const pugi::xml_node& node) const;
+	SchedulersDTO loadSchedulers(const pugi::xml_node& node) const;
 
 public:
 	virtual DocumentDTO loadDocument(const std::string& text) const override;
@@ -37,4 +38,5 @@ public:
 	virtual std::list<ProgramDTO> loadProgramList(const std::string& text) const override;
 	virtual std::list<RunTimeDTO> loadRunTimeList(const std::string& text) const override;
 	virtual std::list<StartTimeDTO> loadStartTimeList(const std::string& text) const override;
+	virtual SchedulersDTO loadSchedulers(const std::string& text) const override;
 };

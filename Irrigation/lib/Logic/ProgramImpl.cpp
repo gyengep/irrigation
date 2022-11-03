@@ -12,18 +12,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgramImplFactory::ProgramImplFactory(
-	const std::shared_ptr<EveryDaySchedulerFactory>& everyDaySchedulerFactory,
-	const std::shared_ptr<HotWeatherSchedulerFactory>& hotWeatherSchedulerFactory,
-	const std::shared_ptr<TemperatureDependentSchedulerFactory>& temperatureDependentSchedulerFactory,
-	const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory,
+	const std::shared_ptr<SchedulerContainerFactory>& schedulerContainerFactory,
 	const std::shared_ptr<RunTimeContainerFactory>& runTimeContainerFactory,
 	const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory,
 	const std::shared_ptr<StartTimeFactory>& startTimeFactory
 ) :
-	everyDaySchedulerFactory(everyDaySchedulerFactory),
-	hotWeatherSchedulerFactory(hotWeatherSchedulerFactory),
-	temperatureDependentSchedulerFactory(temperatureDependentSchedulerFactory),
-	weeklySchedulerFactory(weeklySchedulerFactory),
+	schedulerContainerFactory(schedulerContainerFactory),
 	runTimeContainerFactory(runTimeContainerFactory),
 	startTimeContainerFactory(startTimeContainerFactory),
 	startTimeFactory(startTimeFactory)
@@ -32,10 +26,7 @@ ProgramImplFactory::ProgramImplFactory(
 
 ProgramPtr ProgramImplFactory::create() const {
 	return std::make_shared<ProgramImpl>(
-		everyDaySchedulerFactory->create(),
-		hotWeatherSchedulerFactory->create(),
-		temperatureDependentSchedulerFactory->create(),
-		weeklySchedulerFactory->create(),
+		schedulerContainerFactory->create(),
 		runTimeContainerFactory->create(),
 		startTimeContainerFactory->create(),
 		startTimeFactory
@@ -45,19 +36,13 @@ ProgramPtr ProgramImplFactory::create() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgramImpl::ProgramImpl(
-	const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
-	const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
-	const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
-	const std::shared_ptr<WeeklyScheduler>& weeklyScheduler,
+	const std::shared_ptr<SchedulerContainer>& schedulerContainer,
 	const std::shared_ptr<RunTimeContainer>& runTimeContainer,
 	const std::shared_ptr<StartTimeContainer>& startTimeContainer,
 	const std::shared_ptr<StartTimeFactory>& startTimeFactory
 ) : ProgramImpl(
 		true, "", 100, SchedulerType::WEEKLY,
-		everyDayScheduler,
-		hotWeatherScheduler,
-		temperatureDependentScheduler,
-		weeklyScheduler,
+		schedulerContainer,
 		runTimeContainer,
 		startTimeContainer,
 		startTimeFactory
@@ -67,10 +52,7 @@ ProgramImpl::ProgramImpl(
 
 ProgramImpl::ProgramImpl(
 	bool enabled, const std::string& name, unsigned adjustment, SchedulerType schedulerType,
-	const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
-	const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
-	const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
-	const std::shared_ptr<WeeklyScheduler>& weeklyScheduler,
+	const std::shared_ptr<SchedulerContainer>& schedulerContainer,
 	const std::shared_ptr<RunTimeContainer>& runTimeContainer,
 	const std::shared_ptr<StartTimeContainer>& startTimeContainer,
 	const std::shared_ptr<StartTimeFactory>& startTimeFactory
@@ -78,41 +60,12 @@ ProgramImpl::ProgramImpl(
 	enabled(enabled),
 	name(name),
 	adjustment(adjustment),
-	everyDayScheduler(everyDayScheduler),
-	hotWeatherScheduler(hotWeatherScheduler),
-	temperatureDependentScheduler(temperatureDependentScheduler),
-	weeklyScheduler(weeklyScheduler),
+	schedulerContainer(schedulerContainer),
 	runTimeContainer(runTimeContainer),
 	startTimeContainer(startTimeContainer),
 	startTimeFactory(startTimeFactory)
 {
 	setSchedulerType(schedulerType);
-}
-
-void ProgramImpl::setSchedulerType(SchedulerType schedulerType) {
-
-	switch (schedulerType) {
-	case SchedulerType::EVERY_DAY:
-		currentScheduler = everyDayScheduler;
-		break;
-	case SchedulerType::HOT_WEATHER:
-		currentScheduler = hotWeatherScheduler;
-		break;
-	case SchedulerType::TEMPERATURE_DEPENDENT:
-		currentScheduler = temperatureDependentScheduler;
-		break;
-	case SchedulerType::WEEKLY:
-		currentScheduler = weeklyScheduler;
-		break;
-	default:
-		throw std::invalid_argument("ProgramImpl::setSchedulerType(): unknown SchedulerType " + std::to_string(static_cast<unsigned>(schedulerType)));
-	}
-
-	this->schedulerType = schedulerType;
-}
-
-SchedulerType ProgramImpl::getSchedulerType(void) const {
-	return schedulerType;
 }
 
 std::unique_ptr<ScheduledResult> ProgramImpl::isScheduled(const std::time_t rawtime) {
@@ -159,10 +112,7 @@ std::pair<IdType, StartTimePtr> ProgramImpl::createStartTime(const StartTimeDTO&
 ProgramDTO ProgramImpl::toProgramDto() const {
 	return ProgramDTO(enabled, name, adjustment,
 			to_string(getSchedulerType()),
-			getEveryDayScheduler().toEveryDaySchedulerDto(),
-			getHotWeatherScheduler().toHotWeatherSchedulerDto(),
-			getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto(),
-			getWeeklyScheduler().toWeeklySchedulerDto(),
+			getSchedulerContainer().toSchedulersDto(),
 			getRunTimeContainer().toRunTimeDtoList(),
 			getStartTimeContainer().toStartTimeDtoList()
 		);
@@ -200,20 +150,8 @@ void ProgramImpl::updateFromProgramDto(const ProgramDTO& programDTO) {
 		}
 	}
 
-	if (programDTO.hasEveryDayScheduler()) {
-		everyDayScheduler->updateFromEveryDaySchedulerDto(programDTO.getEveryDayScheduler());
-	}
-
-	if (programDTO.hasHotWeatherScheduler()) {
-		hotWeatherScheduler->updateFromHotWeatherSchedulerDto(programDTO.getHotWeatherScheduler());
-	}
-
-	if (programDTO.hasTemperatureDependentScheduler()) {
-		temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(programDTO.getTemperatureDependentScheduler());
-	}
-
-	if (programDTO.hasWeeklyScheduler()) {
-		weeklyScheduler->updateFromWeeklySchedulerDto(programDTO.getWeeklyScheduler());
+	if (programDTO.hasSchedulers()) {
+		schedulerContainer->updateFromSchedulersDto(programDTO.getSchedulers());
 	}
 
 	if (programDTO.hasRunTimes()) {
@@ -233,11 +171,7 @@ std::string ProgramImpl::toString() const {
 	oss << "enabled=" << to_string(isEnabled()) << ", ";
 	oss << "adjustment=\"" << getAdjustment() << "\", ";
 	oss << "schedulerType=\"" << to_string(getSchedulerType()) << "\", ";
-	oss << "schedulers=[" <<
-			getEveryDayScheduler().toString() << ", " <<
-			getHotWeatherScheduler().toString() << ", " <<
-			getTemperatureDependentScheduler().toString() << ", " <<
-			getWeeklyScheduler().toString() << "], ";
+	oss << "schedulers=" << getSchedulerContainer().toString() << ", ";
 	oss << "runTimes=" << getRunTimeContainer().toString() << ", ";
 	oss << "startTimes=" << getStartTimeContainer().toString();
 	oss << "}";
@@ -247,19 +181,19 @@ std::string ProgramImpl::toString() const {
 
 nlohmann::json ProgramImpl::saveTo() const {
 	nlohmann::json result;
-	result["temperatureDependent"] = temperatureDependentScheduler->saveTo();
-	result["hotWeather"] = hotWeatherScheduler->saveTo();
+	result["temperatureDependent"] = getSchedulerContainer().getTemperatureDependentScheduler().saveTo();
+	result["hotWeather"] = getSchedulerContainer().getHotWeatherScheduler().saveTo();
 	return result;
 }
 
 void ProgramImpl::loadFrom(const nlohmann::json& values) {
 	auto it = values.find("temperatureDependent");
 	if (values.end() != it) {
-		temperatureDependentScheduler->loadFrom(it.value());
+		getSchedulerContainer().getTemperatureDependentScheduler().loadFrom(it.value());
 	}
 
 	it = values.find("hotWeather");
 	if (values.end() != it) {
-		hotWeatherScheduler->loadFrom(it.value());
+		getSchedulerContainer().getHotWeatherScheduler().loadFrom(it.value());
 	}
 }

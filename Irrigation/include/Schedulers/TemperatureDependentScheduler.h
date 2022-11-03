@@ -11,6 +11,12 @@ class TemperatureDependentScheduler : public Scheduler {
 public:
 	virtual ~TemperatureDependentScheduler() = default;
 
+	TemperatureDependentScheduler& operator= (TemperatureDependentScheduler&&) = delete;
+	TemperatureDependentScheduler& operator= (const TemperatureDependentScheduler&) = delete;
+	bool operator== (const TemperatureDependentScheduler& other) const;
+
+	///////////////////////////////////////////////////////////////////////////
+
 	virtual void setRemainingCorrection(float a) = 0;
 	virtual void setMinAdjustment(unsigned minAdjustment) = 0;
 	virtual void setMaxAdjustment(unsigned maxAdjustment) = 0;
