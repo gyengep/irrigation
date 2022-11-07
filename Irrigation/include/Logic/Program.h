@@ -27,14 +27,7 @@ public:
 class Program {
 public:
 	Program() = default;
-	Program(Program&&) = delete;
-	Program(const Program&) = delete;
-
 	virtual ~Program() = default;
-
-	Program& operator= (Program&&) = delete;
-	Program& operator= (const Program&) = delete;
-	bool operator== (const Program&) const;
 
 	virtual void setEnabled(bool enabled) = 0;
 	virtual void setName(const std::string& name) = 0;

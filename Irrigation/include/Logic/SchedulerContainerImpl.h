@@ -18,15 +18,12 @@ private:
 	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
 
 public:
-	SchedulerContainerImpl(SchedulerContainerImpl&&) = delete;
-	SchedulerContainerImpl(const SchedulerContainerImpl& other) = delete;
 	SchedulerContainerImpl(
 			const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
 			const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
 			const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
 			const std::shared_ptr<WeeklyScheduler>& weeklyScheduler
 		);
-	SchedulerContainerImpl();
 	virtual ~SchedulerContainerImpl() = default;
 
 	const_iterator begin() const 		{ return container.begin(); }
@@ -53,12 +50,6 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-
-class EveryDaySchedulerFactory;
-class HotWeatherSchedulerFactory;
-class TemperatureDependentSchedulerFactory;
-class WeeklySchedulerFactory;
-
 
 class SchedulerContainerImplFactory : public SchedulerContainerFactory {
 public:

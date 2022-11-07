@@ -1,5 +1,5 @@
 #pragma once
-#include <cstddef>
+#include <chrono>
 #include <list>
 #include <memory>
 #include <string>
@@ -21,13 +21,7 @@ public:
 	typedef container_type::size_type				size_type;
 
 	RunTimeContainer() = default;
-	RunTimeContainer(RunTimeContainer&&) = delete;
-	RunTimeContainer(const RunTimeContainer&) = delete;
 	virtual ~RunTimeContainer() = default;
-
-	RunTimeContainer& operator= (RunTimeContainer&&) = delete;
-	RunTimeContainer& operator= (const RunTimeContainer& other) = delete;
-	bool operator== (const RunTimeContainer& other) const;
 
 	virtual const_iterator begin() const = 0;
 	virtual const_iterator end() const = 0;
@@ -40,6 +34,9 @@ public:
 	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) = 0;
 
 	virtual std::string toString() const = 0;
+	virtual std::list<std::chrono::seconds> toDurations() const = 0;
+
+	static std::list<std::chrono::seconds> toDurations(const std::list<RunTimeDTO>& runTimeDtoList);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
-#include <gmock/gmock.h>
-#include "Logic/SchedulerContainerImplBuilder.h"
 #include "SchedulerContainerImplTest.h"
+#include "Logic/SchedulerContainerImplBuilder.h"
+#include <gmock/gmock.h>
 
 using namespace testing;
 using ::testing::Return;
@@ -85,11 +85,11 @@ TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, toDto2) {
 }
 
 
-TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_empty) {
+TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, updateFromDto_empty) {
 	schedulerContainer->updateFromSchedulersDto(SchedulersDTO());
 }
 
-TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_partial_HotWeatherScheduler) {
+TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, updateFromDto_partial_HotWeatherScheduler) {
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO1)).Times(1);
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO2)).Times(1);
 
@@ -97,7 +97,7 @@ TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_partial_HotWeatherSc
 	schedulerContainer->updateFromSchedulersDto(SchedulersDTO().setHotWeatherScheduler(HotWeatherSchedulerDTO(expectedHotWeatherSchedulerDTO2)));
 }
 
-TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_partial_TemperatureDependentScheduler) {
+TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, updateFromDto_partial_TemperatureDependentScheduler) {
 	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto1)).Times(1);
 	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto2)).Times(1);
 
@@ -105,7 +105,7 @@ TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_partial_TemperatureD
 	schedulerContainer->updateFromSchedulersDto(SchedulersDTO().setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(expectedTemperatureDependentSchedulerDto2)));
 }
 
-TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_partial_WeeklyScheduler) {
+TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, updateFromDto_partial_WeeklyScheduler) {
 	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto1)).Times(1);
 	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto2)).Times(1);
 
@@ -113,7 +113,7 @@ TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_partial_WeeklySchedu
 	schedulerContainer->updateFromSchedulersDto(SchedulersDTO().setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklySchedulerDto2)));
 }
 
-TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, fromDto_all) {
+TEST_F(SchedulerContainerImplUpdateFromOrToDtoTest, updateFromDto_all) {
 	EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(EveryDaySchedulerDTO())).Times(2);
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO1)).Times(1);
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO2)).Times(1);

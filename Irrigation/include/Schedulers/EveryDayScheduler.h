@@ -8,11 +8,8 @@
 
 class EveryDayScheduler : public Scheduler {
 public:
+	EveryDayScheduler() = default;
 	virtual ~EveryDayScheduler() = default;
-
-	EveryDayScheduler& operator= (EveryDayScheduler&&) = delete;
-	EveryDayScheduler& operator= (const EveryDayScheduler&) = delete;
-	bool operator== (const EveryDayScheduler& other) const;
 
 	///////////////////////////////////////////////////////////////////////////
 

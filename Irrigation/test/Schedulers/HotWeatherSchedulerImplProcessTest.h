@@ -4,7 +4,7 @@
 #include "Schedulers/HotWeatherSchedulerImpl.h"
 
 
-class HotWeatherSchedulerImplTest : public ::testing::Test {
+class HotWeatherSchedulerImplProcessTest : public ::testing::Test {
 protected:
 
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;

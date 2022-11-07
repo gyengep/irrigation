@@ -5,29 +5,29 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimePtr RunTimeFactory::create() const {
+RunTimePtr RunTimeImplFactory::create() const {
 	return std::make_shared<RunTimeImpl>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeImpl::RunTimeImpl() : RunTimeImpl(0) {
-}
-
-RunTimeImpl::RunTimeImpl(unsigned seconds) :
-	milliSeconds(seconds * 1000)
+RunTimeImpl::RunTimeImpl() :
+	RunTimeImpl(0)
 {
 }
 
-RunTimeImpl::RunTimeImpl(const std::chrono::seconds& seconds) : RunTimeImpl(seconds.count()) {
+RunTimeImpl::RunTimeImpl(const std::chrono::seconds& seconds) :
+	RunTimeImpl(seconds.count())
+{
+}
+
+RunTimeImpl::RunTimeImpl(unsigned seconds) :
+	seconds(seconds)
+{
 }
 
 unsigned RunTimeImpl::getSeconds() const {
-	return milliSeconds / 1000;
-}
-
-unsigned RunTimeImpl::getMilliSeconds() const {
-	return milliSeconds;
+	return seconds;
 }
 
 void RunTimeImpl::setSeconds(unsigned seconds) {
@@ -37,17 +37,11 @@ void RunTimeImpl::setSeconds(unsigned seconds) {
 				", while actual value is " + std::to_string(seconds));
 	}
 
-	this->milliSeconds = seconds * 1000;
+	this->seconds = seconds;
 }
 
-void RunTimeImpl::setMilliSeconds(unsigned milliSeconds) {
-	if (milliSeconds > maxSeconds * 1000) {
-		throw ValueOutOfBoundsException(
-				"RunTimeImpl value shall not be greater than " + std::to_string(maxSeconds * 1000) + " ms" +
-				", while actual value is " + std::to_string(milliSeconds));
-	}
-
-	this->milliSeconds = milliSeconds;
+std::chrono::seconds RunTimeImpl::toDuration() const {
+	return std::chrono::seconds(seconds);
 }
 
 RunTimeDTO RunTimeImpl::toRunTimeDto() const {

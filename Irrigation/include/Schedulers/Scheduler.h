@@ -30,6 +30,7 @@ public:
 		friend std::ostream& operator<<(std::ostream& os, const Result& result);
 	};
 
+	Scheduler() = default;
 	virtual ~Scheduler() = default;
 	virtual Result process(const std::time_t rawtime) = 0;
 

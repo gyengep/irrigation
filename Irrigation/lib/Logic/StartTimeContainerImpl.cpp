@@ -57,7 +57,7 @@ StartTimeContainerImpl::value_type& StartTimeContainerImpl::insert(const key_typ
 
 void StartTimeContainerImpl::sort() {
 	auto comp = [](const value_type& a, const value_type& b) {
-		return a.second->operator <(*b.second);
+		return a.second->less(*b.second);
 	};
 
 	container.sort(comp);

@@ -11,12 +11,9 @@ class WeeklySchedulerImpl : public WeeklyScheduler {
 	std::vector<bool> days;
 
 	void checkIndex(size_t day) const;
-	bool onProcess(const std::time_t rawtime) const;
 
 public:
 	WeeklySchedulerImpl();
-	WeeklySchedulerImpl(WeeklySchedulerImpl&&) = default;
-	WeeklySchedulerImpl(const WeeklySchedulerImpl&) = default;
 	WeeklySchedulerImpl(std::initializer_list<bool> initializer);
 	virtual ~WeeklySchedulerImpl();
 

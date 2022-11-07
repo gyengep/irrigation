@@ -22,13 +22,7 @@ public:
 	};
 
 	WeeklyScheduler() = default;
-	WeeklyScheduler(WeeklyScheduler&&) = default;
-	WeeklyScheduler(const WeeklyScheduler&) = default;
 	virtual ~WeeklyScheduler() = default;
-
-	WeeklyScheduler& operator= (WeeklyScheduler&&) = delete;
-	WeeklyScheduler& operator= (const WeeklyScheduler&) = delete;
-	bool operator== (const WeeklyScheduler& other) const;
 
 	///////////////////////////////////////////////////////////////////////////
 

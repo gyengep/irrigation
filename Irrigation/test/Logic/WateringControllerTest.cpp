@@ -4,6 +4,7 @@
 #include "Hardware/Valves/GpioValve.h"
 #include "Hardware/Valves/ZoneHandlerImpl.h"
 #include <numeric>
+#include <iterator>
 
 using namespace std;
 using namespace testing;
@@ -51,13 +52,13 @@ TEST_F(WateringControllerTest, init) {
 }
 
 TEST_F(WateringControllerTest, startWithNotEmpty) {
-	const RunTimeContainerImpl runTimes {
-		std::make_shared<RunTimeImpl>(1),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0)
+	const std::list<std::chrono::milliseconds> runTimes {
+		std::chrono::milliseconds(1),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0)
 	};
 
 	wateringController->start(runTimes, 100);
@@ -66,13 +67,13 @@ TEST_F(WateringControllerTest, startWithNotEmpty) {
 }
 
 TEST_F(WateringControllerTest, stop) {
-	const RunTimeContainerImpl runTimes {
-		std::make_shared<RunTimeImpl>(1),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0),
-		std::make_shared<RunTimeImpl>(0)
+	const std::list<std::chrono::milliseconds> runTimes {
+		std::chrono::milliseconds(1),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0)
 	};
 
 	wateringController->start(runTimes, 100);
@@ -85,15 +86,18 @@ TEST_F(WateringControllerTest, stop) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(WateringControllerTimingTest, check_TIMING) {
-	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
-	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
-	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
+	const std::list<std::chrono::milliseconds> runTimes {
+		 std::chrono::milliseconds(100),
+		 std::chrono::milliseconds(200),
+		 std::chrono::milliseconds(300),
+		 std::chrono::milliseconds(150),
+		 std::chrono::milliseconds(250),
+		 std::chrono::milliseconds(350)
+	};
 
-	for (size_t i = 0; i <runTimeContainer.size(); i++) {
-		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
-	}
+	const std::chrono::milliseconds sumOfTimes = accumulate(runTimes.begin(), runTimes.end(), std::chrono::milliseconds(0));
 
-	wateringController->start(runTimeContainer, 100);
+	wateringController->start(runTimes, 100);
 	this_thread::yield();
 
 	const auto startTime = chrono::steady_clock::now();
@@ -112,25 +116,29 @@ TEST_F(WateringControllerTimingTest, check_TIMING) {
 	EXPECT_THAT(calls[5].second, Eq(5));
 	EXPECT_THAT(calls[6].second, Eq(ZoneHandler::invalidZoneId));
 
-	EXPECT_THAT(endTime - startTime, AllOf(Gt(chrono::milliseconds(sumOfTimes)), Le(chrono::milliseconds(sumOfTimes) * 1.2f)));
-	EXPECT_THAT(calls[1].first - calls[0].first, AllOf(Gt(chrono::milliseconds(expectedTimes[0])), Le(chrono::milliseconds(expectedTimes[0]) * 1.2f)));
-	EXPECT_THAT(calls[2].first - calls[1].first, AllOf(Gt(chrono::milliseconds(expectedTimes[1])), Le(chrono::milliseconds(expectedTimes[1]) * 1.2f)));
-	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(chrono::milliseconds(expectedTimes[2])), Le(chrono::milliseconds(expectedTimes[2]) * 1.2f)));
-	EXPECT_THAT(calls[4].first - calls[3].first, AllOf(Gt(chrono::milliseconds(expectedTimes[3])), Le(chrono::milliseconds(expectedTimes[3]) * 1.2f)));
-	EXPECT_THAT(calls[5].first - calls[4].first, AllOf(Gt(chrono::milliseconds(expectedTimes[4])), Le(chrono::milliseconds(expectedTimes[4]) * 1.2f)));
-	EXPECT_THAT(calls[6].first - calls[5].first, AllOf(Gt(chrono::milliseconds(expectedTimes[5])), Le(chrono::milliseconds(expectedTimes[5]) * 1.2f)));
+	EXPECT_THAT(endTime - startTime, AllOf(Gt(sumOfTimes), Le(sumOfTimes * 1.2f)));
+
+	EXPECT_THAT(calls[1].first - calls[0].first, AllOf(Gt(*next(runTimes.begin(), 0)), Le(*next(runTimes.begin(), 0) * 1.2f)));
+	EXPECT_THAT(calls[2].first - calls[1].first, AllOf(Gt(*next(runTimes.begin(), 1)), Le(*next(runTimes.begin(), 1) * 1.2f)));
+	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(*next(runTimes.begin(), 2)), Le(*next(runTimes.begin(), 2) * 1.2f)));
+	EXPECT_THAT(calls[4].first - calls[3].first, AllOf(Gt(*next(runTimes.begin(), 3)), Le(*next(runTimes.begin(), 3) * 1.2f)));
+	EXPECT_THAT(calls[5].first - calls[4].first, AllOf(Gt(*next(runTimes.begin(), 4)), Le(*next(runTimes.begin(), 4) * 1.2f)));
+	EXPECT_THAT(calls[6].first - calls[5].first, AllOf(Gt(*next(runTimes.begin(), 5)), Le(*next(runTimes.begin(), 5) * 1.2f)));
 }
 
 TEST_F(WateringControllerTimingTest, checkWithZeroAndOtherTimes_TIMING) {
-	const vector<unsigned> expectedTimes { 0, 100, 0, 200, 300, 0 };
-	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
-	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
+	const std::list<std::chrono::milliseconds> runTimes {
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(100),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(300),
+		std::chrono::milliseconds(0)
+	};
 
-	for (size_t i = 0; i <runTimeContainer.size(); i++) {
-		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
-	}
+	const std::chrono::milliseconds sumOfTimes = accumulate(runTimes.begin(), runTimes.end(), std::chrono::milliseconds(0));
 
-	wateringController->start(runTimeContainer, 100);
+	wateringController->start(runTimes, 100);
 	this_thread::yield();
 
 	const auto startTime = chrono::steady_clock::now();
@@ -147,22 +155,26 @@ TEST_F(WateringControllerTimingTest, checkWithZeroAndOtherTimes_TIMING) {
 	EXPECT_THAT(calls[3].second, Eq(ZoneHandler::invalidZoneId));
 
 	EXPECT_THAT(endTime - startTime, AllOf(Gt(chrono::milliseconds(sumOfTimes)), Le(chrono::milliseconds(sumOfTimes) * 1.2f)));
-	EXPECT_THAT(calls[1].first - calls[0].first, AllOf(Gt(chrono::milliseconds(expectedTimes[1])), Le(chrono::milliseconds(expectedTimes[1]) * 1.2f)));
-	EXPECT_THAT(calls[2].first - calls[1].first, AllOf(Gt(chrono::milliseconds(expectedTimes[3])), Le(chrono::milliseconds(expectedTimes[3]) * 1.2f)));
-	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(chrono::milliseconds(expectedTimes[4])), Le(chrono::milliseconds(expectedTimes[4]) * 1.2f)));
+	EXPECT_THAT(calls[1].first - calls[0].first, AllOf(Gt(*next(runTimes.begin(), 1)), Le(*next(runTimes.begin(), 1) * 1.2f)));
+	EXPECT_THAT(calls[2].first - calls[1].first, AllOf(Gt(*next(runTimes.begin(), 3)), Le(*next(runTimes.begin(), 3) * 1.2f)));
+	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(*next(runTimes.begin(), 4)), Le(*next(runTimes.begin(), 4) * 1.2f)));
 }
 
 TEST_F(WateringControllerTimingTest, checkWithAdjustment_TIMING) {
 	const float adjustment = 0.7f;
-	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
-	const unsigned sumOfTimes = accumulate(expectedTimes.begin(), expectedTimes.end(), 0);
-	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
 
-	for (size_t i = 0; i <runTimeContainer.size(); i++) {
-		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
-	}
+	const std::list<std::chrono::milliseconds> runTimes {
+		std::chrono::milliseconds(100),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(300),
+		std::chrono::milliseconds(150),
+		std::chrono::milliseconds(250),
+		std::chrono::milliseconds(350)
+	};
 
-	wateringController->start(runTimeContainer, 100 * adjustment);
+	const std::chrono::milliseconds sumOfTimes = accumulate(runTimes.begin(), runTimes.end(), std::chrono::milliseconds(0));
+
+	wateringController->start(runTimes, 100 * adjustment);
 	this_thread::yield();
 
 	const auto startTime = chrono::steady_clock::now();
@@ -182,18 +194,25 @@ TEST_F(WateringControllerTimingTest, checkWithAdjustment_TIMING) {
 	EXPECT_THAT(calls[6].second, Eq(ZoneHandler::invalidZoneId));
 
 	EXPECT_THAT(endTime - startTime, AllOf(Gt(chrono::milliseconds(sumOfTimes) * adjustment), Le(chrono::milliseconds(sumOfTimes) * adjustment * 1.2f)));
-	EXPECT_THAT(calls[1].first - calls[0].first, AllOf(Gt(chrono::milliseconds(expectedTimes[0]) * adjustment), Le(chrono::milliseconds(expectedTimes[0]) * adjustment * 1.2f)));
-	EXPECT_THAT(calls[2].first - calls[1].first, AllOf(Gt(chrono::milliseconds(expectedTimes[1]) * adjustment), Le(chrono::milliseconds(expectedTimes[1]) * adjustment * 1.2f)));
-	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(chrono::milliseconds(expectedTimes[2]) * adjustment), Le(chrono::milliseconds(expectedTimes[2]) * adjustment * 1.2f)));
-	EXPECT_THAT(calls[4].first - calls[3].first, AllOf(Gt(chrono::milliseconds(expectedTimes[3]) * adjustment), Le(chrono::milliseconds(expectedTimes[3]) * adjustment * 1.2f)));
-	EXPECT_THAT(calls[5].first - calls[4].first, AllOf(Gt(chrono::milliseconds(expectedTimes[4]) * adjustment), Le(chrono::milliseconds(expectedTimes[4]) * adjustment * 1.2f)));
-	EXPECT_THAT(calls[6].first - calls[5].first, AllOf(Gt(chrono::milliseconds(expectedTimes[5]) * adjustment), Le(chrono::milliseconds(expectedTimes[5]) * adjustment * 1.2f)));
+	EXPECT_THAT(calls[1].first - calls[0].first, AllOf(Gt(*next(runTimes.begin(), 0) * adjustment), Le(*next(runTimes.begin(), 0) * adjustment * 1.2f)));
+	EXPECT_THAT(calls[2].first - calls[1].first, AllOf(Gt(*next(runTimes.begin(), 1) * adjustment), Le(*next(runTimes.begin(), 1) * adjustment * 1.2f)));
+	EXPECT_THAT(calls[3].first - calls[2].first, AllOf(Gt(*next(runTimes.begin(), 2) * adjustment), Le(*next(runTimes.begin(), 2) * adjustment * 1.2f)));
+	EXPECT_THAT(calls[4].first - calls[3].first, AllOf(Gt(*next(runTimes.begin(), 3) * adjustment), Le(*next(runTimes.begin(), 3) * adjustment * 1.2f)));
+	EXPECT_THAT(calls[5].first - calls[4].first, AllOf(Gt(*next(runTimes.begin(), 4) * adjustment), Le(*next(runTimes.begin(), 4) * adjustment * 1.2f)));
+	EXPECT_THAT(calls[6].first - calls[5].first, AllOf(Gt(*next(runTimes.begin(), 5) * adjustment), Le(*next(runTimes.begin(), 5) * adjustment * 1.2f)));
 }
 
 TEST_F(WateringControllerTimingTest, checkWithZeroTimes_TIMING) {
-	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
+	const std::list<std::chrono::milliseconds> runTimes {
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0),
+		std::chrono::milliseconds(0)
+	};
 
-	wateringController->start(runTimeContainer, 100);
+	wateringController->start(runTimes, 100);
 	while (wateringController->isWateringActive()) {
 		this_thread::yield();
 	}
@@ -203,14 +222,16 @@ TEST_F(WateringControllerTimingTest, checkWithZeroTimes_TIMING) {
 }
 
 TEST_F(WateringControllerTimingTest, checkWithZeroAdjustment_TIMING) {
-	const vector<unsigned> expectedTimes { 100, 200, 300, 150, 250, 350 };
-	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
+	const std::list<std::chrono::milliseconds> runTimes {
+		std::chrono::milliseconds(100),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(300),
+		std::chrono::milliseconds(150),
+		std::chrono::milliseconds(250),
+		std::chrono::milliseconds(350)
+	};
 
-	for (size_t i = 0; i <runTimeContainer.size(); i++) {
-		runTimeContainer.at(i)->setMilliSeconds(expectedTimes[i]);
-	}
-
-	wateringController->start(runTimeContainer, 0);
+	wateringController->start(runTimes, 0);
 	while (wateringController->isWateringActive()) {
 		this_thread::yield();
 	}
@@ -220,22 +241,28 @@ TEST_F(WateringControllerTimingTest, checkWithZeroAdjustment_TIMING) {
 }
 
 TEST_F(WateringControllerTimingTest, startAndStartAgain) {
-	const vector<unsigned> expectedTimes1 { 200, 200, 200, 200, 200, 200 };
-	const vector<unsigned> expectedTimes2 { 100, 200, 300, 150, 250, 350 };
-	RunTimeContainerImpl runTimeContainer(std::make_shared<RunTimeFactory>());
+	const std::list<std::chrono::milliseconds> runTimes1 {
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(200)
+	};
 
-	for (size_t i = 0; i <runTimeContainer.size(); i++) {
-		runTimeContainer.at(i)->setMilliSeconds(expectedTimes1[i]);
-	}
+	const std::list<std::chrono::milliseconds> runTimes2 {
+		std::chrono::milliseconds(100),
+		std::chrono::milliseconds(200),
+		std::chrono::milliseconds(300),
+		std::chrono::milliseconds(150),
+		std::chrono::milliseconds(250),
+		std::chrono::milliseconds(350)
+	};
 
-	wateringController->start(runTimeContainer, 100);
+	wateringController->start(runTimes1, 100);
 	this_thread::sleep_for(chrono::milliseconds(300));
 
-	for (size_t i = 0; i <runTimeContainer.size(); i++) {
-		runTimeContainer.at(i)->setMilliSeconds(expectedTimes2[i]);
-	}
-
-	wateringController->start(runTimeContainer, 100);
+	wateringController->start(runTimes2, 100);
 	while (wateringController->isWateringActive()) {
 		this_thread::yield();
 	}

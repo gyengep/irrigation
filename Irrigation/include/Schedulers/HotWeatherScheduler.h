@@ -10,11 +10,8 @@
 
 class HotWeatherScheduler : public Scheduler {
 public:
+	HotWeatherScheduler() = default;
 	virtual ~HotWeatherScheduler() = default;
-
-	HotWeatherScheduler& operator= (HotWeatherScheduler&&) = delete;
-	HotWeatherScheduler& operator= (const HotWeatherScheduler&) = delete;
-	bool operator== (const HotWeatherScheduler& other) const;
 
 	///////////////////////////////////////////////////////////////////////////
 

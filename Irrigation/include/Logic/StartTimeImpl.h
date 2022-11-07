@@ -9,10 +9,11 @@ class StartTimeImpl : public StartTime {
 
 public:
 	StartTimeImpl();
-	StartTimeImpl(StartTimeImpl&&) = delete;
-	StartTimeImpl(const StartTimeImpl&) = delete;
 	StartTimeImpl(unsigned hour, unsigned minute);
 	virtual ~StartTimeImpl();
+
+	virtual bool less(const StartTime& other) const override;
+	virtual bool equals(unsigned hour, unsigned minute, unsigned second) const override;
 
 	virtual void set(unsigned hour, unsigned minute) override;
 
@@ -24,4 +25,12 @@ public:
 
 	virtual std::string toString() const override;
 	virtual std::string toShortString() const override;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class StartTimeImplFactory : public StartTimeFactory {
+public:
+	virtual ~StartTimeImplFactory() = default;
+	virtual StartTimePtr create() const override;
 };

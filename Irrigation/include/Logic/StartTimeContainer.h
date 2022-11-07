@@ -1,5 +1,4 @@
 #pragma once
-#include <cstddef>
 #include <list>
 #include <memory>
 #include "DTO/StartTimeDTO.h"
@@ -19,14 +18,7 @@ public:
 	typedef container_type::size_type				size_type;
 
 	StartTimeContainer() = default;
-	StartTimeContainer(StartTimeContainer&&) = delete;
-	StartTimeContainer(const StartTimeContainer& other) = delete;
-
 	virtual ~StartTimeContainer() = default;
-
-	StartTimeContainer& operator= (StartTimeContainer&&) = delete;
-	StartTimeContainer& operator= (const StartTimeContainer&) = delete;
-	bool operator== (const StartTimeContainer& other) const;
 
 	virtual const_iterator begin() const = 0;
 	virtual const_iterator end() const = 0;

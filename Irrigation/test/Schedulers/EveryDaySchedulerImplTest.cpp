@@ -17,6 +17,8 @@ TEST(EveryDaySchedulerImplTest, isDayScheduled) {
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 10)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 11)), Eq(Scheduler::Result(true, false, 0)));
 
+	///////////////////////////////////////////////////////////////////////////
+
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 12)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 13)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 14)), Eq(Scheduler::Result(true, false, 0)));
@@ -24,6 +26,8 @@ TEST(EveryDaySchedulerImplTest, isDayScheduled) {
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 16)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 17)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 18)), Eq(Scheduler::Result(true, false, 0)));
+
+	///////////////////////////////////////////////////////////////////////////
 
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 19)), Eq(Scheduler::Result(true, false, 0)));
 	EXPECT_THAT(scheduler.process(fromLocalTime(2018, 11, 20)), Eq(Scheduler::Result(true, false, 0)));
@@ -62,7 +66,6 @@ TEST(EveryDaySchedulerImplTest, toEveryDaySchedulerDto) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(EveryDaySchedulerImplTest, updateFromEveryDaySchedulerDto) {
-	EveryDaySchedulerImpl actual;
-	actual.updateFromEveryDaySchedulerDto(EveryDaySchedulerDTO());
+TEST(EveryDaySchedulerImplTest, updateFromDto) {
+	EveryDaySchedulerImpl().updateFromEveryDaySchedulerDto(EveryDaySchedulerDTO());
 }

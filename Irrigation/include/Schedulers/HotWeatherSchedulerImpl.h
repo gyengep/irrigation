@@ -15,15 +15,19 @@ class HotWeatherSchedulerImpl : public HotWeatherScheduler {
 	float minTemperature;
 
 public:
-	HotWeatherSchedulerImpl(const std::shared_ptr<TemperatureHistory>& temperatureHistory);
-	HotWeatherSchedulerImpl(HotWeatherSchedulerImpl&&) = default;
-	HotWeatherSchedulerImpl(const HotWeatherSchedulerImpl&) = default;
+	HotWeatherSchedulerImpl(
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory
+		);
 	HotWeatherSchedulerImpl(
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
-			const std::chrono::seconds& period, float minTemperature
+			const std::chrono::seconds& period,
+			float minTemperature
 		);
 
 	virtual ~HotWeatherSchedulerImpl();
+
+	float getMinTemperature() const;
+	unsigned getPeriod() const;
 
 	void setMinTemperature(float minTemperature) override;
 	void setPeriod(const std::chrono::seconds& period) override;

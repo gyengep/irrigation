@@ -19,13 +19,13 @@ string RestViewTest::createIrrigationActionUrl() {
 TEST_F(RestViewTest, patchIrrigationActionStart1) {
 	const unsigned expectedAdjustment = 50;
 	const shared_ptr<MockWateringController> mockWateringController(new MockWateringController());
-	const RunTimeContainerImpl expectedRunTimeContainer {
-		std::make_shared<RunTimeImpl>(15),
-		std::make_shared<RunTimeImpl>(30),
-		std::make_shared<RunTimeImpl>(45),
-		std::make_shared<RunTimeImpl>(60),
-		std::make_shared<RunTimeImpl>(75),
-		std::make_shared<RunTimeImpl>(90)
+	const std::list<std::chrono::seconds> expectedDurations {
+		std::chrono::seconds(15),
+		std::chrono::seconds(30),
+		std::chrono::seconds(45),
+		std::chrono::seconds(60),
+		std::chrono::seconds(75),
+		std::chrono::seconds(90)
 	};
 
 	const string xml =
@@ -42,7 +42,7 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 				"</runtimes>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(expectedRunTimeContainer)), expectedAdjustment));
+	EXPECT_CALL(*mockWateringController, start(expectedDurations, expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
@@ -60,13 +60,13 @@ TEST_F(RestViewTest, patchIrrigationActionStart1) {
 TEST_F(RestViewTest, patchIrrigationActionStart2) {
 	const unsigned expectedAdjustment = 70;
 	const shared_ptr<MockWateringController> mockWateringController(new MockWateringController());
-	const RunTimeContainerImpl expectedRunTimeContainer {
-		std::make_shared<RunTimeImpl>(0 * 60 + 9),
-		std::make_shared<RunTimeImpl>(1 * 60 + 8),
-		std::make_shared<RunTimeImpl>(2 * 60 + 7),
-		std::make_shared<RunTimeImpl>(3 * 60 + 6),
-		std::make_shared<RunTimeImpl>(4 * 60 + 5),
-		std::make_shared<RunTimeImpl>(5 * 60 + 4)
+	const std::list<std::chrono::seconds> expectedDurations {
+		std::chrono::minutes(0) + std::chrono::seconds(9),
+		std::chrono::minutes(1) + std::chrono::seconds(8),
+		std::chrono::minutes(2) + std::chrono::seconds(7),
+		std::chrono::minutes(3) + std::chrono::seconds(6),
+		std::chrono::minutes(4) + std::chrono::seconds(5),
+		std::chrono::minutes(5) + std::chrono::seconds(4),
 	};
 
 	const string xml =
@@ -83,7 +83,7 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 				"</runtimes>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(expectedRunTimeContainer)), expectedAdjustment));
+	EXPECT_CALL(*mockWateringController, start(expectedDurations, expectedAdjustment));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
@@ -100,13 +100,13 @@ TEST_F(RestViewTest, patchIrrigationActionStart2) {
 
 TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 	const shared_ptr<MockWateringController> mockWateringController(new MockWateringController());
-	const RunTimeContainerImpl expectedRunTimeContainer {
-		std::make_shared<RunTimeImpl>(15),
-		std::make_shared<RunTimeImpl>(30),
-		std::make_shared<RunTimeImpl>(45),
-		std::make_shared<RunTimeImpl>(60),
-		std::make_shared<RunTimeImpl>(75),
-		std::make_shared<RunTimeImpl>(90),
+	const std::list<std::chrono::seconds> expectedDurations {
+		std::chrono::seconds(15),
+		std::chrono::seconds(30),
+		std::chrono::seconds(45),
+		std::chrono::seconds(60),
+		std::chrono::seconds(75),
+		std::chrono::seconds(90)
 	};
 
 	const string xml =
@@ -122,7 +122,7 @@ TEST_F(RestViewTest, patchIrrigationActionStartWithoutAdjustment) {
 				"</runtimes>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(expectedRunTimeContainer)), 100));
+	EXPECT_CALL(*mockWateringController, start(expectedDurations, 100));
 
 	irrigationDocument = IrrigationDocument::Builder().setWateringController(mockWateringController).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
@@ -150,7 +150,13 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithAdjustment) {
 				"<program-id>" + programListSample.getContainerPtr()->begin()->first.toString() + "</program-id>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimeContainer())), expectedAdjustment));
+	EXPECT_CALL(
+		*mockWateringController,
+		start(
+			programListSample.getContainerPtr()->begin()->second->getRunTimeContainer().toDurations(),
+			expectedAdjustment
+		)
+	);
 
 	irrigationDocument = IrrigationDocument::Builder().
 			setProgramContainer(programListSample.getContainerPtr()).
@@ -179,10 +185,13 @@ TEST_F(RestViewTest, patchIrrigationActionStartProgramWithoutAdjustment) {
 				"<program-id>" + programListSample.getContainerPtr()->begin()->first.toString() + "</program-id>"
 			"</irrigation>";
 
-	EXPECT_CALL(*mockWateringController, start(
-			Eq(std::ref(programListSample.getContainerPtr()->begin()->second->getRunTimeContainer())),
+	EXPECT_CALL(
+		*mockWateringController,
+		start(
+			programListSample.getContainerPtr()->begin()->second->getRunTimeContainer().toDurations(),
 			programListSample.getContainerPtr()->begin()->second->getAdjustment()
-		));
+		)
+	);
 
 	irrigationDocument = IrrigationDocument::Builder().
 			setProgramContainer(programListSample.getContainerPtr()).

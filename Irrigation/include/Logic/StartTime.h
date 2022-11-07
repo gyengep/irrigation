@@ -8,15 +8,10 @@
 class StartTime {
 public:
 	StartTime() = default;
-	StartTime(StartTime&&) = delete;
-	StartTime(const StartTime&) = delete;
 	virtual ~StartTime() = default;
 
-	StartTime& operator= (StartTime&&) = delete;
-	StartTime& operator= (const StartTime&) = delete;
-	bool equals(unsigned hour, unsigned minute, unsigned second) const;
-	bool operator< (const StartTime& other) const;
-	bool operator== (const StartTime& other) const;
+	virtual bool less(const StartTime& other) const = 0;
+	virtual bool equals(unsigned hour, unsigned minute, unsigned second) const = 0;
 
 	virtual void set(unsigned hour, unsigned minute) = 0;
 
@@ -44,5 +39,5 @@ typedef std::shared_ptr<const StartTime> ConstStartTimePtr;
 class StartTimeFactory {
 public:
 	virtual ~StartTimeFactory() = default;
-	virtual StartTimePtr create() const;
+	virtual StartTimePtr create() const = 0;
 };

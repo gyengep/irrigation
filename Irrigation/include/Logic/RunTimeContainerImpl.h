@@ -1,9 +1,7 @@
 #pragma once
-#include <cstddef>
 #include <list>
 #include <memory>
 #include <string>
-#include <vector>
 #include "DTO/RunTimeDTO.h"
 #include "RunTimeContainer.h"
 
@@ -13,8 +11,6 @@ class RunTimeContainerImpl : public RunTimeContainer {
 
 public:
 	RunTimeContainerImpl(const std::shared_ptr<RunTimeFactory>& runTimeFactory);
-	RunTimeContainerImpl(RunTimeContainerImpl&&) = delete;
-	RunTimeContainerImpl(const RunTimeContainerImpl& other) = delete;
 	RunTimeContainerImpl(std::initializer_list<RunTimePtr> initializer);
 	virtual ~RunTimeContainerImpl() = default;
 
@@ -29,6 +25,7 @@ public:
 	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) override;
 
 	virtual std::string toString() const override;
+	virtual std::list<std::chrono::seconds> toDurations() const override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

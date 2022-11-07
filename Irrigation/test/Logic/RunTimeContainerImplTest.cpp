@@ -1,37 +1,34 @@
-#include <gmock/gmock.h>
-#include <memory>
+#include "Logic/RunTimeContainerImpl.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
-#include "Logic/RunTimeContainerImpl.h"
-#include "Logic/RunTimeImpl.h"
 #include "Mocks/MockRunTime.h"
+#include <gmock/gmock.h>
+#include <memory>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeContainerImplTest, defaultConstructor) {
-	const RunTimeImpl expected(0);
-	const RunTimeContainerImpl runTimes(std::make_shared<RunTimeFactory>());
+	const std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+	const RunTimeContainerImpl runTimes(mockRunTimeFactory);
 
-	ASSERT_THAT(runTimes, SizeIs(6));
+	ASSERT_THAT(runTimes, SizeIs(mockRunTimeFactory->mockRunTimes.size()));
 
-	EXPECT_THAT(runTimes.at(0), Pointee(Eq(std::ref(expected))));
-	EXPECT_THAT(runTimes.at(1), Pointee(Eq(std::ref(expected))));
-	EXPECT_THAT(runTimes.at(2), Pointee(Eq(std::ref(expected))));
-	EXPECT_THAT(runTimes.at(3), Pointee(Eq(std::ref(expected))));
-	EXPECT_THAT(runTimes.at(4), Pointee(Eq(std::ref(expected))));
-	EXPECT_THAT(runTimes.at(5), Pointee(Eq(std::ref(expected))));
+	for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); ++i) {
+		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
+		EXPECT_THAT(next(runTimes.begin(), i)->second, Eq(*next(mockRunTimeFactory->mockRunTimes.begin(), i)));
+	}
 }
 
 TEST(RunTimeContainerImplTest, initializerConstructor) {
 	const std::initializer_list<RunTimePtr> initializer {
-		std::make_shared<RunTimeImpl>(10),
-		std::make_shared<RunTimeImpl>(11),
-		std::make_shared<RunTimeImpl>(12),
-		std::make_shared<RunTimeImpl>(13),
-		std::make_shared<RunTimeImpl>(14),
-		std::make_shared<RunTimeImpl>(15)
+		std::make_shared<MockRunTime>(),
+		std::make_shared<MockRunTime>(),
+		std::make_shared<MockRunTime>(),
+		std::make_shared<MockRunTime>(),
+		std::make_shared<MockRunTime>(),
+		std::make_shared<MockRunTime>()
 	};
 
 	const RunTimeContainerImpl runTimes(initializer);
@@ -40,146 +37,43 @@ TEST(RunTimeContainerImplTest, initializerConstructor) {
 
 	for (size_t i = 0; i < initializer.size(); ++i) {
 		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
-		EXPECT_THAT(next(runTimes.begin(), i)->second.get(), next(initializer.begin(), i)->get());
-		EXPECT_THAT(next(runTimes.begin(), i)->second->getSeconds(), 10 + i);
+		EXPECT_THAT(next(runTimes.begin(), i)->second, Eq(*next(initializer.begin(), i)));
 	}
 }
 
 TEST(RunTimeContainerImplTest, initializerConstructorWithWrongInitializer) {
 	EXPECT_THROW(
 		RunTimeContainerImpl({
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>()
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>()
 		}),
 		std::logic_error
 	);
 
 	EXPECT_THROW(
 		RunTimeContainerImpl({
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>(),
-			std::make_shared<RunTimeImpl>()
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>(),
+			std::make_shared<MockRunTime>()
 		}),
 		std::logic_error
 	);
 }
 
-TEST(RunTimeContainerImplTest, equalsOperator) {
-	const RunTimeContainerImpl actual({
-		std::make_shared<RunTimeImpl>(10),
-		std::make_shared<RunTimeImpl>(11),
-		std::make_shared<RunTimeImpl>(12),
-		std::make_shared<RunTimeImpl>(13),
-		std::make_shared<RunTimeImpl>(14),
-		std::make_shared<RunTimeImpl>(15)
-	});
-
-	{
-		const RunTimeContainerImpl otherSameAsActaul({
-			std::make_shared<RunTimeImpl>(10),
-			std::make_shared<RunTimeImpl>(11),
-			std::make_shared<RunTimeImpl>(12),
-			std::make_shared<RunTimeImpl>(13),
-			std::make_shared<RunTimeImpl>(14),
-			std::make_shared<RunTimeImpl>(15)
-		});
-
-		EXPECT_TRUE(actual == otherSameAsActaul);
-	}
-
-	{
-		const RunTimeContainerImpl other1({
-			std::make_shared<RunTimeImpl>(0),
-			std::make_shared<RunTimeImpl>(11),
-			std::make_shared<RunTimeImpl>(12),
-			std::make_shared<RunTimeImpl>(13),
-			std::make_shared<RunTimeImpl>(14),
-			std::make_shared<RunTimeImpl>(15)
-		});
-
-		EXPECT_FALSE(actual == other1);
-	}
-
-	{
-		const RunTimeContainerImpl other2({
-			std::make_shared<RunTimeImpl>(10),
-			std::make_shared<RunTimeImpl>(0),
-			std::make_shared<RunTimeImpl>(12),
-			std::make_shared<RunTimeImpl>(13),
-			std::make_shared<RunTimeImpl>(14),
-			std::make_shared<RunTimeImpl>(15)
-		});
-
-		EXPECT_FALSE(actual == other2);
-	}
-
-	{
-		const RunTimeContainerImpl other3({
-			std::make_shared<RunTimeImpl>(10),
-			std::make_shared<RunTimeImpl>(11),
-			std::make_shared<RunTimeImpl>(0),
-			std::make_shared<RunTimeImpl>(13),
-			std::make_shared<RunTimeImpl>(14),
-			std::make_shared<RunTimeImpl>(15)
-		});
-
-		EXPECT_FALSE(actual == other3);
-	}
-
-	{
-		const RunTimeContainerImpl other4({
-			std::make_shared<RunTimeImpl>(10),
-			std::make_shared<RunTimeImpl>(11),
-			std::make_shared<RunTimeImpl>(12),
-			std::make_shared<RunTimeImpl>(0),
-			std::make_shared<RunTimeImpl>(14),
-			std::make_shared<RunTimeImpl>(15)
-		});
-
-		EXPECT_FALSE(actual == other4);
-	}
-
-	{
-		const RunTimeContainerImpl other5({
-			std::make_shared<RunTimeImpl>(10),
-			std::make_shared<RunTimeImpl>(11),
-			std::make_shared<RunTimeImpl>(12),
-			std::make_shared<RunTimeImpl>(13),
-			std::make_shared<RunTimeImpl>(0),
-			std::make_shared<RunTimeImpl>(15)
-		});
-
-		EXPECT_FALSE(actual == other5);
-	}
-
-	{
-		const RunTimeContainerImpl other6({
-			std::make_shared<RunTimeImpl>(10),
-			std::make_shared<RunTimeImpl>(11),
-			std::make_shared<RunTimeImpl>(12),
-			std::make_shared<RunTimeImpl>(13),
-			std::make_shared<RunTimeImpl>(14),
-			std::make_shared<RunTimeImpl>(0)
-		});
-
-		EXPECT_FALSE(actual == other6);
-	}
-}
-
 TEST(RunTimeContainerImplTest, size) {
-	RunTimeContainerImpl runTimes(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
 	EXPECT_THAT(runTimes, SizeIs(ZoneHandler::getZoneCount()));
 }
 
 TEST(RunTimeContainerImplTest, id) {
-	RunTimeContainerImpl runTimes(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
 		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
@@ -187,16 +81,64 @@ TEST(RunTimeContainerImplTest, id) {
 }
 
 TEST(RunTimeContainerImplTest, at) {
-	RunTimeContainerImpl runTimes(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
 
 	for (size_t i = 0; i < runTimes.size(); ++i) {
-		EXPECT_THAT(runTimes.at(i).get(), Eq(next(runTimes.begin(), i)->second.get()));
+		EXPECT_THAT(runTimes.at(i), Eq(next(runTimes.begin(), i)->second));
 	}
 }
 
 TEST(RunTimeContainerImplTest, atInvalid) {
-	RunTimeContainerImpl runTimes(std::make_shared<RunTimeFactory>());
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
 	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
+}
+
+TEST(RunTimeContainerImplTest, toDurations) {
+	auto mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+
+	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[0], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(0)));
+	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[1], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(50)));
+	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[2], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(12)));
+	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[3], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(130)));
+	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[4], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(23)));
+	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[5], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(60)));
+
+	EXPECT_THAT(
+			RunTimeContainerImpl(mockRunTimeFactory).toDurations(),
+			ContainerEq(std::list<std::chrono::seconds> {
+				std::chrono::seconds(0),
+				std::chrono::seconds(50),
+				std::chrono::seconds(12),
+				std::chrono::seconds(130),
+				std::chrono::seconds(23),
+				std::chrono::seconds(60)
+			})
+		);
+}
+
+TEST(RunTimeContainerImplTest, toDurationsStatic) {
+	EXPECT_THAT(
+			RunTimeContainer::toDurations(
+				std::list<RunTimeDTO>{
+					RunTimeDTO(0, 0),
+					RunTimeDTO(0, 12),
+					RunTimeDTO(1, 25),
+					RunTimeDTO(0, 33),
+					RunTimeDTO(5, 27),
+					RunTimeDTO(3, 10)
+				}
+			),
+			ContainerEq(
+				std::list<std::chrono::seconds>{
+					std::chrono::minutes(0) + std::chrono::seconds(0),
+					std::chrono::minutes(0) + std::chrono::seconds(12),
+					std::chrono::minutes(1) + std::chrono::seconds(25),
+					std::chrono::minutes(0) + std::chrono::seconds(33),
+					std::chrono::minutes(5) + std::chrono::seconds(27),
+					std::chrono::minutes(3) + std::chrono::seconds(10),
+				}
+			)
+		);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,7 +146,7 @@ TEST(RunTimeContainerImplTest, atInvalid) {
 #define RUN_TIME_DTO(i)  	RunTimeDTO().setMinutes(10 + i).setSeconds(20 + i)
 
 
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList) {
+TEST(RunTimeContainerImplTest, updateFromDtoList) {
 	const std::list<RunTimeDTO> runTimeDtoList {
 		RUN_TIME_DTO(4).setId(0),
 		RUN_TIME_DTO(5).setId(1),
@@ -214,59 +156,46 @@ TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList) {
 		RUN_TIME_DTO(9).setId(5)
 	};
 
-	std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>();
+	std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
 
 	for (size_t i = 0; i < runTimeDtoList.size(); ++i) {
-		mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
-
-		EXPECT_CALL(*mockRunTimeFactory->mockRunTimes.back(), updateFromRunTimeDto(*next(runTimeDtoList.begin(), i)))
+		EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[i], updateFromRunTimeDto(*next(runTimeDtoList.begin(), i)))
 			.Times(1);
 	}
 
-	RunTimeContainerImpl runTimeContainer(mockRunTimeFactory);
-	EXPECT_THAT(runTimeContainer.size(), Eq(6));
+	RunTimeContainerImpl runTimes(mockRunTimeFactory);
+	EXPECT_THAT(runTimes, SizeIs(6));
 
-	runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList);
-	ASSERT_THAT(runTimeContainer.size(), Eq(runTimeDtoList.size()));
+	runTimes.updateFromRunTimeDtoList(runTimeDtoList);
+	ASSERT_THAT(runTimes, SizeIs(runTimeDtoList.size()));
 
-	for (size_t i = 0; i < runTimeDtoList.size(); ++i) {
-		const IdType id = next(runTimeDtoList.begin(), i)->getId();
-
-		ASSERT_NO_THROW(runTimeContainer.at(id));
-		EXPECT_THAT(runTimeContainer.at(id).get(), Eq(mockRunTimeFactory->mockRunTimes[i].get()));
+	for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); ++i) {
+		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
+		EXPECT_THAT(next(runTimes.begin(), i)->second, Eq(*next(mockRunTimeFactory->mockRunTimes.begin(), i)));
 	}
 }
 
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_zeroItem) {
+TEST(RunTimeContainerImplTest, updateFromDtoList_zeroItem) {
 	const std::list<RunTimeDTO> runTimeDtoList({
 	});
 
-	EXPECT_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
+
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 }
 
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_oneItem) {
+TEST(RunTimeContainerImplTest, updateFromDtoList_oneItem) {
 	const std::list<RunTimeDTO> runTimeDtoList({
 		RunTimeDTO()
 	});
 
-	EXPECT_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
+
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 }
 
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_lessThanExpectedCountOfItems) {
+TEST(RunTimeContainerImplTest, updateFromDtoList_lessThanExpectedCountOfItems) {
 	const std::list<RunTimeDTO> runTimeDtoList({
-		RunTimeDTO(),
-		RunTimeDTO(),
-		RunTimeDTO(),
-		RunTimeDTO(),
-		RunTimeDTO()
-	});
-
-	EXPECT_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
-}
-
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_expectedCountOfItems) {
-	const std::list<RunTimeDTO> runTimeDtoList({
-		RunTimeDTO(),
 		RunTimeDTO(),
 		RunTimeDTO(),
 		RunTimeDTO(),
@@ -274,12 +203,13 @@ TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_expectedCountOfItems) {
 		RunTimeDTO()
 	});
 
-	EXPECT_NO_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList));
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
+
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 }
 
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_moreThanExpectedCountOfItems) {
+TEST(RunTimeContainerImplTest, updateFromDtoList_expectedCountOfItems) {
 	const std::list<RunTimeDTO> runTimeDtoList({
-		RunTimeDTO(),
 		RunTimeDTO(),
 		RunTimeDTO(),
 		RunTimeDTO(),
@@ -288,10 +218,34 @@ TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_moreThanExpectedCountOfI
 		RunTimeDTO()
 	});
 
-	EXPECT_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+	const std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+	RunTimeContainerImpl runTimes(mockRunTimeFactory);
+
+	for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); ++i) {
+		EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[i], updateFromRunTimeDto(_))
+			.Times(1);
+	}
+
+	EXPECT_NO_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList));
 }
 
-TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_expectedCountOfItemsWithWrongId) {
+TEST(RunTimeContainerImplTest, updateFromDtoList_moreThanExpectedCountOfItems) {
+	const std::list<RunTimeDTO> runTimeDtoList({
+		RunTimeDTO(),
+		RunTimeDTO(),
+		RunTimeDTO(),
+		RunTimeDTO(),
+		RunTimeDTO(),
+		RunTimeDTO(),
+		RunTimeDTO()
+	});
+
+	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
+
+	EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+}
+
+TEST(RunTimeContainerImplTest, updateFromDtoList_expectedCountOfItemsWithWrongId) {
 	{
 		const std::list<RunTimeDTO> runTimeDtoList({
 			RunTimeDTO().setId(5),
@@ -302,7 +256,15 @@ TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_expectedCountOfItemsWith
 			RunTimeDTO().setId(0)
 		});
 
-		EXPECT_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+		const std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+		RunTimeContainerImpl runTimes(mockRunTimeFactory);
+
+		for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); ++i) {
+			EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[i], updateFromRunTimeDto(_))
+				.Times(Between(0, 1));
+		}
+
+		EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 	}
 
 	{
@@ -315,22 +277,21 @@ TEST(RunTimeContainerImplTest, updateFromRunTimeDtoList_expectedCountOfItemsWith
 			RunTimeDTO()
 		});
 
-		EXPECT_THROW(RunTimeContainerImpl(std::make_shared<RunTimeFactory>()).updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
+		const std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+		RunTimeContainerImpl runTimes(mockRunTimeFactory);
+
+		for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); ++i) {
+			EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[i], updateFromRunTimeDto(_))
+				.Times(Between(0, 1));
+		}
+
+		EXPECT_THROW(runTimes.updateFromRunTimeDtoList(runTimeDtoList), IllegalArgumentException);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeContainerImplTest, toRunTimeDtoList) {
-	const std::initializer_list<RunTimeContainerImpl::mapped_type> initializer {
-		std::make_shared<StrictMock<MockRunTime>>(),
-		std::make_shared<StrictMock<MockRunTime>>(),
-		std::make_shared<StrictMock<MockRunTime>>(),
-		std::make_shared<StrictMock<MockRunTime>>(),
-		std::make_shared<StrictMock<MockRunTime>>(),
-		std::make_shared<StrictMock<MockRunTime>>()
-	};
-
 	const std::list<RunTimeDTO> expected {
 		RUN_TIME_DTO(0).setId(0),
 		RUN_TIME_DTO(1).setId(1),
@@ -340,14 +301,14 @@ TEST(RunTimeContainerImplTest, toRunTimeDtoList) {
 		RUN_TIME_DTO(5).setId(5)
 	};
 
-	for (size_t i = 0; i < initializer.size(); i++) {
-		MockRunTime* mockRunTime = dynamic_cast<MockRunTime*>(next(initializer.begin(), i)->get());
+	const std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+	RunTimeContainerImpl runTimes(mockRunTimeFactory);
 
-		ASSERT_THAT(mockRunTime, Not(IsNull()));
-		EXPECT_CALL(*mockRunTime, toRunTimeDto())
+	for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); i++) {
+		EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[i], toRunTimeDto())
 			.Times(1)
 			.WillOnce(Return(RUN_TIME_DTO(i)));
 	}
 
-	EXPECT_THAT(RunTimeContainerImpl(initializer).toRunTimeDtoList(), ContainerEq(expected));
+	EXPECT_THAT(runTimes.toRunTimeDtoList(), ContainerEq(expected));
 }

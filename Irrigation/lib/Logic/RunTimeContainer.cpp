@@ -1,15 +1,12 @@
 #include "RunTimeContainer.h"
 
-///////////////////////////////////////////////////////////////////////////////
 
-bool RunTimeContainer::operator== (const RunTimeContainer& other) const {
-	if (size() != other.size()) {
-		return false;
+std::list<std::chrono::seconds> RunTimeContainer::toDurations(const std::list<RunTimeDTO>& runTimeDtoList) {
+	std::list<std::chrono::seconds> result;
+
+	for (auto it = runTimeDtoList.begin(); runTimeDtoList.end() != it; ++it) {
+		result.push_back(RunTime::toDuration(*it));
 	}
 
-	auto comp = [](const value_type& a, const value_type& b) {
-		return (a.first == b.first) && (a.second->operator ==(*b.second));
-	};
-
-	return equal(begin(), end(), other.begin(), comp);
+	return result;
 }

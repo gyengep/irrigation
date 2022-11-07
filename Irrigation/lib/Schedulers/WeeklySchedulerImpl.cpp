@@ -54,14 +54,11 @@ bool WeeklySchedulerImpl::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-bool WeeklySchedulerImpl::onProcess(const time_t rawtime) const {
+Scheduler::Result WeeklySchedulerImpl::process(const std::time_t rawtime) {
 	const size_t weekDay = toLocalTime(rawtime).tm_wday;
 	checkIndex(weekDay);
-	return days[(weekDay + 6) % 7];
-}
 
-Scheduler::Result WeeklySchedulerImpl::process(const std::time_t rawtime) {
-	return Scheduler::Result(onProcess(rawtime));
+	return Scheduler::Result(days[(weekDay + 6) % 7]);
 }
 
 WeeklySchedulerDTO WeeklySchedulerImpl::toWeeklySchedulerDto() const {

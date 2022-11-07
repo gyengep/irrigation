@@ -103,7 +103,7 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 					EMAIL.send(topic, oss.str());
 				}
 
-				irrigationDocument.getWateringController().start(program->getRunTimeContainer(), scheduledResult->getAdjustment());
+				irrigationDocument.getWateringController().start(program->getRunTimeContainer().toDurations(), scheduledResult->getAdjustment());
 			} else {
 				const EmailTopic topic = EmailTopic::WATERING_SKIP;
 				if (EMAIL.isTopicEnabled(topic)) {

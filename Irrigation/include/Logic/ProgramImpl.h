@@ -43,9 +43,6 @@ public:
 		const std::shared_ptr<StartTimeFactory>& startTimeFactory
 	);
 
-	ProgramImpl(ProgramImpl&&) = default;
-	ProgramImpl(const ProgramImpl&) = delete;
-
 	virtual ~ProgramImpl() = default;
 
 	virtual void setEnabled(bool enabled) override						{ this->enabled = enabled; }

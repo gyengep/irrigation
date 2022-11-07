@@ -5,6 +5,9 @@
 
 class MockStartTime : public StartTime {
 public:
+	MOCK_CONST_METHOD1(less, bool(const StartTime& other));
+	MOCK_CONST_METHOD3(equals, bool(unsigned hour, unsigned minute, unsigned second));
+
 	MOCK_METHOD2(set, void(unsigned hour, unsigned minute));
 
 	MOCK_CONST_METHOD0(getHours, unsigned());
@@ -23,6 +26,12 @@ class MockStartTimeFactory : public StartTimeFactory {
 public:
 	mutable std::vector<std::shared_ptr<MockStartTime>> mockStartTimes;
 	mutable size_t index = 0;
+
+	MockStartTimeFactory(unsigned size) {
+		for (unsigned i = 0; i < size; i++) {
+			mockStartTimes.emplace_back(std::make_shared<testing::StrictMock<MockStartTime>>());
+		}
+	}
 
 	virtual StartTimePtr create() const {
 		if (index >= mockStartTimes.size()) {

@@ -11,8 +11,6 @@
 #include "Schedulers/WeeklyScheduler.h"
 
 
-
-
 class SchedulerContainer {
 public:
 
@@ -25,13 +23,7 @@ public:
 	typedef container_type::size_type				size_type;
 
 	SchedulerContainer() = default;
-	SchedulerContainer(SchedulerContainer&&) = delete;
-	SchedulerContainer(const SchedulerContainer&) = delete;
 	virtual ~SchedulerContainer() = default;
-
-	SchedulerContainer& operator= (SchedulerContainer&&) = delete;
-	SchedulerContainer& operator= (const SchedulerContainer& other) = delete;
-	//bool operator== (const SchedulerContainer& other) const;
 
 	virtual const_iterator begin() const = 0;
 	virtual const_iterator end() const = 0;

@@ -17,12 +17,6 @@ TEST(RunTimeImplTest, parametrizedConstructor) {
 	EXPECT_THAT(runTime.getSeconds(), Eq(10));
 }
 
-TEST(RunTimeImplTest, equalsOperator) {
-	EXPECT_TRUE(RunTimeImpl(10) == RunTimeImpl(10));
-	EXPECT_FALSE(RunTimeImpl(10) == RunTimeImpl(11));
-	EXPECT_FALSE(RunTimeImpl(11) == RunTimeImpl(10));
-}
-
 TEST(RunTimeImplTest, setValue) {
 	RunTimeImpl runTime;
 
@@ -40,6 +34,18 @@ TEST(RunTimeImplTest, setValueMax) {
 	EXPECT_THROW(runTime.setSeconds(24 * 60 * 60 + 1), ValueOutOfBoundsException);
 }
 
+TEST(RunTimeImplTest, toDuration) {
+	EXPECT_THAT(RunTimeImpl(0).toDuration(), Eq(std::chrono::seconds(0)));
+	EXPECT_THAT(RunTimeImpl(12).toDuration(), Eq(std::chrono::seconds(12)));
+	EXPECT_THAT(RunTimeImpl(85).toDuration(), Eq(std::chrono::seconds(85)));
+}
+
+TEST(RunTimeImplTest, toDurationStatic) {
+	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 0)), Eq(std::chrono::seconds(0)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 12)), Eq(std::chrono::seconds(12)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(1, 25)), Eq(std::chrono::seconds(85)));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeImplTest, toRunTimeDto) {
@@ -52,51 +58,70 @@ TEST(RunTimeImplTest, toRunTimeDto) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(RunTimeImplTest, partialUpdateFromRunTimeDto_empty) {
-	const RunTimeImpl expected(25);
+TEST(RunTimeImplTest, updateFromDto_empty) {
+	const unsigned expectedSeconds1 = 25;
 
-	RunTimeImpl actual(25);
+	RunTimeImpl actual(expectedSeconds1);
 	actual.updateFromRunTimeDto(RunTimeDTO());
 
-	EXPECT_THAT(actual, Eq(std::ref(expected)));
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedSeconds1));
 }
 
-TEST(RunTimeImplTest, partialUpdateFromRunTimeDto_seconds) {
-	const RunTimeImpl expected1(39);
-	const RunTimeImpl expected2(97);
+TEST(RunTimeImplTest, updateFromDto_partial_seconds) {
+	const unsigned expectedSeconds1 = 39;
+	const unsigned expectedSeconds2 = 97;
 
 	RunTimeImpl actual;
 
-	actual.updateFromRunTimeDto(RunTimeDTO().setSeconds(39));
-	EXPECT_THAT(actual, Eq(std::ref(expected1)));
+	actual.updateFromRunTimeDto(RunTimeDTO().setSeconds(expectedSeconds1));
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedSeconds1));
 
-	actual.updateFromRunTimeDto(RunTimeDTO().setSeconds(97));
-	EXPECT_THAT(actual, Eq(std::ref(expected2)));
+	actual.updateFromRunTimeDto(RunTimeDTO().setSeconds(expectedSeconds2));
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedSeconds2));
 }
 
-TEST(RunTimeImplTest, partialUpdateFromRunTimeDto_minutes) {
-	const RunTimeImpl expected1(600);
-	const RunTimeImpl expected2(900);
+TEST(RunTimeImplTest, updateFromDto_partial_minutes) {
+	const unsigned expectedMinutes1 = 10;
+	const unsigned expectedMinutes2 = 15;
 
 	RunTimeImpl actual;
 
-	actual.updateFromRunTimeDto(RunTimeDTO().setMinutes(10));
-	EXPECT_THAT(actual, Eq(std::ref(expected1)));
+	actual.updateFromRunTimeDto(
+		RunTimeDTO().
+			setMinutes(expectedMinutes1)
+	);
 
-	actual.updateFromRunTimeDto(RunTimeDTO().setMinutes(15));
-	EXPECT_THAT(actual, Eq(std::ref(expected2)));
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedMinutes1 * 60));
+
+	actual.updateFromRunTimeDto(
+		RunTimeDTO().
+			setMinutes(expectedMinutes2)
+	);
+
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedMinutes2 * 60));
 }
 
-TEST(RunTimeImplTest, partialUpdateFromRunTimeDto_all) {
-	const RunTimeImpl expected1(605);
-	const RunTimeImpl expected2(910);
+TEST(RunTimeImplTest, updateFromDto_all) {
+	const unsigned expectedMinutes1 = 10;
+	const unsigned expectedSeconds1 = 5;
+	const unsigned expectedMinutes2 = 15;
+	const unsigned expectedSeconds2 = 10;
 
 	RunTimeImpl actual;
 
-	actual.updateFromRunTimeDto(RunTimeDTO().setMinutes(10).setSeconds(5));
-	EXPECT_THAT(actual, Eq(std::ref(expected1)));
+	actual.updateFromRunTimeDto(
+		RunTimeDTO().
+			setMinutes(expectedMinutes1).
+			setSeconds(expectedSeconds1)
+	);
 
-	actual.updateFromRunTimeDto(RunTimeDTO().setMinutes(15).setSeconds(10));
-	EXPECT_THAT(actual, Eq(std::ref(expected2)));
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedMinutes1 * 60 + expectedSeconds1));
+
+	actual.updateFromRunTimeDto(
+		RunTimeDTO().
+			setMinutes(expectedMinutes2).
+			setSeconds(expectedSeconds2)
+	);
+
+	EXPECT_THAT(actual.getSeconds(), Eq(expectedMinutes2 * 60 + expectedSeconds2));
 }
-

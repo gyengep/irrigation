@@ -1,7 +1,7 @@
 #pragma once
-#include <cstddef>
 #include <list>
 #include <memory>
+#include <string>
 #include "DTO/StartTimeDTO.h"
 #include "StartTimeContainer.h"
 
@@ -22,8 +22,6 @@ class StartTimeContainerImpl : public StartTimeContainer {
 
 public:
 	StartTimeContainerImpl() = default;
-	StartTimeContainerImpl(StartTimeContainerImpl&&) = default;
-	StartTimeContainerImpl(const StartTimeContainerImpl& other) = delete;
 	StartTimeContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~StartTimeContainerImpl() = default;
 

@@ -11,7 +11,7 @@ TEST(ProgramImplTest, defaultConstructor) {
 	const auto mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	const auto mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const auto mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
-	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>();
+	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>(0);
 
 	const ProgramImpl program(
 		mockSchedulerContainer,
@@ -38,7 +38,7 @@ TEST(ProgramImplTest, parametrizedConstructor) {
 	const auto mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	const auto mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const auto mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
-	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>();
+	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>(0);
 
 	const ProgramImpl program(
 		enabled, name, adjustment, schedulerType,
@@ -56,156 +56,6 @@ TEST(ProgramImplTest, parametrizedConstructor) {
 	EXPECT_THAT(&program.getRunTimeContainer(), Eq(mockRunTimeContainer.get()));
 	EXPECT_THAT(&program.getStartTimeContainer(), Eq(mockStartTimeContainer.get()));
 }
-
-TEST(ProgramImplTest, equalsOperator) {
-	ProgramPtr programPtr1 = ProgramImpl::Builder().build();
-	ProgramPtr programPtr2 = ProgramImpl::Builder().build();
-
-	Program& program1 = *programPtr1;
-	Program& program2 = *programPtr2;
-
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-}
-
-TEST(ProgramImplTest, equalsOperator_name) {
-	const std::string name1("abcdefghijk");
-	const std::string name2("98765");
-
-	ProgramPtr programPtr1 = ProgramImpl::Builder().build();
-	ProgramPtr programPtr2 = ProgramImpl::Builder().build();
-
-	Program& program1 = *programPtr1;
-	Program& program2 = *programPtr2;
-
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-
-	program1.setName(name1);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program2.setName(name2);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program1.setName(name2);
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-}
-
-TEST(ProgramImplTest, equalsOperator_schedulerType) {
-	const SchedulerType schedulerType1 = SchedulerType::EVERY_DAY;
-	const SchedulerType schedulerType2 = SchedulerType::WEEKLY;
-
-	ProgramPtr programPtr1 = ProgramImpl::Builder().build();
-	ProgramPtr programPtr2 = ProgramImpl::Builder().build();
-
-	Program& program1 = *programPtr1;
-	Program& program2 = *programPtr2;
-
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-
-	program1.setSchedulerType(schedulerType1);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program2.setSchedulerType(schedulerType2);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program1.setSchedulerType(schedulerType2);
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-}
-
-TEST(ProgramImplTest, equalsOperator_adjustment) {
-	const unsigned adjustment1 = 80;
-	const unsigned adjustment2 = 90;
-
-	ProgramPtr programPtr1 = ProgramImpl::Builder().build();
-	ProgramPtr programPtr2 = ProgramImpl::Builder().build();
-
-	Program& program1 = *programPtr1;
-	Program& program2 = *programPtr2;
-
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-
-	program1.setAdjustment(adjustment1);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program2.setAdjustment(adjustment2);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program1.setAdjustment(adjustment2);
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-}
-
-TEST(ProgramImplTest, equalsOperator_enabled) {
-	const bool enabled1 = false;
-	const bool enabled2 = true;
-
-	ProgramPtr programPtr1 = ProgramImpl::Builder().build();
-	ProgramPtr programPtr2 = ProgramImpl::Builder().build();
-
-	Program& program1 = *programPtr1;
-	Program& program2 = *programPtr2;
-
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-
-	program1.setEnabled(enabled1);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program2.setEnabled(enabled2);
-	EXPECT_FALSE(program1 == program2);
-	EXPECT_FALSE(program2 == program1);
-
-	program1.setEnabled(enabled2);
-	EXPECT_TRUE(program1 == program2);
-	EXPECT_TRUE(program2 == program1);
-}
-/*
-	{
-		auto program1 = ProgramImpl::Builder().setWeeklyScheduler(WeeklySchedulerSample2().getObjectPtr()).build();
-		auto program2 = ProgramImpl::Builder().setWeeklyScheduler(WeeklySchedulerSample3().getObjectPtr()).build();
-		auto program3 = ProgramImpl::Builder().setWeeklyScheduler(WeeklySchedulerSample3().getObjectPtr()).build();
-
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
-		EXPECT_TRUE(*program2 == *program3);
-		EXPECT_TRUE(*program3 == *program2);
-	}
-
-	{
-		auto program1 = ProgramImpl::Builder().setRunTimeContainer(RunTimeListSample2().getContainerPtr()).build();
-		auto program2 = ProgramImpl::Builder().setRunTimeContainer(RunTimeListSample3().getContainerPtr()).build();
-		auto program3 = ProgramImpl::Builder().setRunTimeContainer(RunTimeListSample3().getContainerPtr()).build();
-
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
-		EXPECT_TRUE(*program2 == *program3);
-		EXPECT_TRUE(*program3 == *program2);
-	}
-
-	{
-		auto program1 = ProgramImpl::Builder().setStartTimeContainer(StartTimeListSample2().getContainerPtr()).build();
-		auto program2 = ProgramImpl::Builder().setStartTimeContainer(StartTimeListSample3().getContainerPtr()).build();
-		auto program3 = ProgramImpl::Builder().setStartTimeContainer(StartTimeListSample3().getContainerPtr()).build();
-
-		EXPECT_FALSE(*program1 == *program2);
-		EXPECT_FALSE(*program2 == *program1);
-		EXPECT_TRUE(*program2 == *program3);
-		EXPECT_TRUE(*program3 == *program2);
-	}
-}
-*/
 
 TEST(ProgramImplTest, setEnabled) {
 	const bool expected1 = true;
@@ -392,7 +242,7 @@ void ProgramImplUpdateFromOrToDtoTest::SetUp() {
 	mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 	mockRunTimeContainer = std::make_shared<StrictMock<MockRunTimeContainer>>();
 	mockStartTimeContainer = std::make_shared<StrictMock<MockStartTimeContainer>>();
-	mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>();
+	mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>(0);
 
 	program = std::make_shared<ProgramImpl>(
 		defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType,

@@ -4,7 +4,7 @@
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Logic/Program.h"
-#include "Logic/StartTime.h"
+#include "Logic/StartTimeImpl.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/StartTimeContainer.h"
 #include "Model/IrrigationDocument.h"
@@ -53,7 +53,7 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 		const IdType programId = getProgramId(pathParameters);
 		const IdType startTimeId;
 
-		StartTimePtr startTime = StartTimeFactory().create();
+		StartTimePtr startTime = StartTimeImplFactory().create();
 		startTime->updateFromStartTimeDto(startTimeDto);
 
 		{

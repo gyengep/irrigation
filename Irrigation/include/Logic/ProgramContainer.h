@@ -19,13 +19,7 @@ public:
 	typedef container_type::size_type				size_type;
 
 	ProgramContainer() = default;
-	ProgramContainer(ProgramContainer&&) = delete;
-	ProgramContainer(const ProgramContainer&) = delete;
 	virtual ~ProgramContainer() = default;
-
-	ProgramContainer& operator= (ProgramContainer&&) = delete;
-	ProgramContainer& operator= (const ProgramContainer&) = delete;
-	bool operator== (const ProgramContainer& other) const;
 
 	virtual value_type& insert(const key_type& key, const mapped_type& value) = 0;
 	virtual void erase(const key_type& key) = 0;

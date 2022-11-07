@@ -36,9 +36,10 @@ class TemperatureDependentSchedulerImpl : public TemperatureDependentScheduler {
 	static std::string optionalToString(const std::unique_ptr<unsigned>& value);
 
 public:
-	TemperatureDependentSchedulerImpl(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
-	TemperatureDependentSchedulerImpl(TemperatureDependentSchedulerImpl&&) = default;
-	TemperatureDependentSchedulerImpl(const TemperatureDependentSchedulerImpl& other);
+	TemperatureDependentSchedulerImpl(
+			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory
+		);
 	TemperatureDependentSchedulerImpl(
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
@@ -81,7 +82,10 @@ class TemperatureDependentSchedulerImplFactory : public TemperatureDependentSche
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
 public:
-	TemperatureDependentSchedulerImplFactory(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory);
+	TemperatureDependentSchedulerImplFactory(
+			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+			const std::shared_ptr<TemperatureHistory>& temperatureHistory
+		);
 
 	virtual ~TemperatureDependentSchedulerImplFactory() = default;
 	virtual TemperatureDependentSchedulerPtr create() const override;

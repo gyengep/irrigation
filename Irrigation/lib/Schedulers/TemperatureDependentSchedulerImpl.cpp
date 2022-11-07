@@ -28,7 +28,10 @@ TemperatureDependentSchedulerPtr TemperatureDependentSchedulerImplFactory::creat
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory) :
+TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
+	const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+	const std::shared_ptr<TemperatureHistory>& temperatureHistory
+) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
@@ -41,22 +44,13 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(const std::
 {
 }
 
-TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(const TemperatureDependentSchedulerImpl& other) :
-	TemperatureDependentSchedulerImpl(other.temperatureForecast,
-			other.temperatureHistory,
-			other.remainingCorrection,
-			other.minAdjustment ? *other.minAdjustment : 0,
-			other.maxAdjustment ? *other.maxAdjustment : 0,
-			other.trim ? *other.trim : 0)
-{
-}
-
 TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
-		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
-		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
-		float remainingCorrection,
-		unsigned minAdjustment, unsigned maxAdjustment,
-		unsigned trim) :
+	const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+	const std::shared_ptr<TemperatureHistory>& temperatureHistory,
+	float remainingCorrection,
+	unsigned minAdjustment, unsigned maxAdjustment,
+	unsigned trim
+) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),

@@ -34,7 +34,22 @@ WateringController::~WateringController() {
 	}
 }
 
-void WateringController::start(const RunTimeContainer& runTimes, unsigned adjustmentPercent) {
+void WateringController::start(const std::list<std::chrono::seconds>& runTimes, unsigned adjustmentPercent) {
+	std::list<std::chrono::milliseconds> result;
+
+	for (auto it = runTimes.begin(); runTimes.end() != it; ++it) {
+		result.emplace_back(*it);
+	}
+
+	start(result, adjustmentPercent);
+}
+
+void WateringController::start(const std::list<std::chrono::milliseconds>& runTimes, unsigned adjustmentPercent) {
+
+	if (runTimes.size() != ZoneHandler::getZoneCount()) {
+		throw std::runtime_error("Number of durations has to be " + std::to_string(ZoneHandler::getZoneCount()));
+	}
+
 	unique_lock<mutex> lock(mtx);
 
 	if (workerThread.joinable()) {
@@ -77,16 +92,17 @@ void WateringController::stop() {
 	LOGGER.info("Irrigation stopped");
 }
 
-void WateringController::workerFunc(const vector<RunTimePtr> runTimes) {
+void WateringController::workerFunc(const std::list<std::chrono::milliseconds> durations) {
 	unique_lock<mutex> lock(mtx);
 
-	for (size_t i = 0; i < zoneHandler->getZoneCount(); ++i) {
+	size_t i = 0;
+	for (auto it = durations.begin(); durations.end() != it; ++it, ++i) {
 
-		if (runTimes[i]->getMilliSeconds() > 0) {
+		if (*it > std::chrono::milliseconds(0)) {
 			zoneHandler->activate(i);
 			LOGGER.debug("Zone[%u] activated", i);
 
-			condition.wait_for(lock, chrono::milliseconds(runTimes[i]->getMilliSeconds()), [this]{ return stopped; });
+			condition.wait_for(lock, *it, [this]{ return stopped; });
 			if (stopped) {
 				zoneHandler->deactivate();
 				active = false;
@@ -112,16 +128,11 @@ size_t WateringController::getActiveZoneId() const {
 	return zoneHandler->getActiveId();
 }
 
-vector<RunTimePtr> WateringController::adjustRunTimes(const RunTimeContainer& runTimes, unsigned adjustmentPercent) {
-	vector<RunTimePtr> adjustedRunTimes;
+std::list<std::chrono::milliseconds> WateringController::adjustRunTimes(const std::list<std::chrono::milliseconds>& runTimes, unsigned adjustmentPercent) {
+	std::list<std::chrono::milliseconds> adjustedRunTimes;
 
-	adjustedRunTimes.reserve(runTimes.size());
-
-	for (size_t i = 0; i < runTimes.size(); ++i) {
-		unsigned adjustedMilliSeconds = runTimes.at(i)->getMilliSeconds() * adjustmentPercent / 100;
-
-		adjustedRunTimes.push_back(RunTimeFactory().create());
-		adjustedRunTimes.back()->setMilliSeconds(adjustedMilliSeconds);
+	for (auto it = runTimes.begin(); runTimes.end() != it; ++it) {
+		adjustedRunTimes.emplace_back((*it) * adjustmentPercent / 100);
 	}
 
 	return adjustedRunTimes;

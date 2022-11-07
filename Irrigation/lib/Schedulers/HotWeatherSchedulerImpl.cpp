@@ -42,6 +42,14 @@ void HotWeatherSchedulerImpl::setPeriod(const std::chrono::seconds& period) {
 	this->periodInSeconds = period.count();
 }
 
+float HotWeatherSchedulerImpl::getMinTemperature() const {
+	return minTemperature;
+}
+
+unsigned HotWeatherSchedulerImpl::getPeriod() const {
+	return periodInSeconds;
+}
+
 Scheduler::Result HotWeatherSchedulerImpl::process(const std::time_t rawtime) {
 
 	const DateTime dateTime(rawtime);

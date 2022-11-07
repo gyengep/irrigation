@@ -9,11 +9,8 @@
 
 class TemperatureDependentScheduler : public Scheduler {
 public:
+	TemperatureDependentScheduler() = default;
 	virtual ~TemperatureDependentScheduler() = default;
-
-	TemperatureDependentScheduler& operator= (TemperatureDependentScheduler&&) = delete;
-	TemperatureDependentScheduler& operator= (const TemperatureDependentScheduler&) = delete;
-	bool operator== (const TemperatureDependentScheduler& other) const;
 
 	///////////////////////////////////////////////////////////////////////////
 

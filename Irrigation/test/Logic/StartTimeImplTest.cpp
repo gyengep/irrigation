@@ -27,39 +27,6 @@ TEST(StartTimeImplTest, parametrizedConstructor_invalid) {
 	EXPECT_THROW(StartTimeImpl(23, 60), ValueOutOfBoundsException);
 }
 
-TEST(StartTimeImplTest, equalsOperator) {
-	const unsigned hour = 15;
-	const unsigned minute = 25;
-
-	const StartTimeImpl startTime(15, 25);
-
-	EXPECT_FALSE(StartTimeImpl() == startTime);
-	EXPECT_TRUE(StartTimeImpl(hour, minute) == startTime);
-	EXPECT_FALSE(StartTimeImpl(hour, minute + 1) == startTime);
-	EXPECT_FALSE(StartTimeImpl(hour, minute - 1) == startTime);
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute) == startTime);
-	EXPECT_FALSE(StartTimeImpl(hour - 1, minute) == startTime);
-}
-
-TEST(StartTimeImplTest, lessOperator) {
-	const unsigned hour = 15;
-	const unsigned minute = 25;
-
-	const StartTimeImpl startTime(hour, minute);
-
-	EXPECT_TRUE(StartTimeImpl(hour - 1, minute - 1) < startTime);
-	EXPECT_TRUE(StartTimeImpl(hour - 1, minute) < startTime);
-	EXPECT_TRUE(StartTimeImpl(hour - 1, minute + 1) < startTime);
-
-	EXPECT_TRUE(StartTimeImpl(hour, minute - 1) < startTime);
-	EXPECT_FALSE(StartTimeImpl(hour, minute) < startTime);
-	EXPECT_FALSE(StartTimeImpl(hour, minute + 1) < startTime);
-
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute - 1) < startTime);
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute) < startTime);
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute + 1) < startTime);
-}
-
 TEST(StartTimeImplTest, equals) {
 	const unsigned hour = 15;
 	const unsigned minute = 25;
@@ -74,6 +41,25 @@ TEST(StartTimeImplTest, equals) {
 	EXPECT_FALSE(startTime.equals(hour, minute + 1, 0));
 	EXPECT_FALSE(startTime.equals(hour - 1, minute, 0));
 	EXPECT_FALSE(startTime.equals(hour + 1, minute, 0));
+}
+
+TEST(StartTimeImplTest, less) {
+	const unsigned hour = 15;
+	const unsigned minute = 25;
+
+	const StartTimeImpl startTime(hour, minute);
+
+	EXPECT_TRUE(StartTimeImpl(hour - 1, minute - 1).less(startTime));
+	EXPECT_TRUE(StartTimeImpl(hour - 1, minute).less(startTime));
+	EXPECT_TRUE(StartTimeImpl(hour - 1, minute + 1).less(startTime));
+
+	EXPECT_TRUE(StartTimeImpl(hour, minute - 1).less(startTime));
+	EXPECT_FALSE(StartTimeImpl(hour, minute).less(startTime));
+	EXPECT_FALSE(StartTimeImpl(hour, minute + 1).less(startTime));
+
+	EXPECT_FALSE(StartTimeImpl(hour + 1, minute - 1).less(startTime));
+	EXPECT_FALSE(StartTimeImpl(hour + 1, minute).less(startTime));
+	EXPECT_FALSE(StartTimeImpl(hour + 1, minute + 1).less(startTime));
 }
 
 TEST(StartTimeImplTest, set) {
@@ -107,50 +93,89 @@ TEST(StartTimeImplTest, toStartTimeDto) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(StartTimeImplTest, partialUpdateFromStartTimeDto_empty) {
-	const StartTimeImpl expected(11, 12);
+TEST(StartTimeImplTest, updateFromDto_empty) {
+	const unsigned expectedHours = 15;
+	const unsigned expectedMinutes = 16;
 
-	StartTimeImpl actual(11, 12);
-	actual.updateFromStartTimeDto(StartTimeDTO());
+	StartTimeImpl actual(expectedHours, expectedMinutes);
 
-	EXPECT_THAT(actual, Eq(std::ref(expected)));
+	actual.updateFromStartTimeDto(
+		StartTimeDTO()
+	);
+
+	EXPECT_THAT(actual.getHours(), Eq(expectedHours));
+	EXPECT_THAT(actual.getMinutes(), Eq(expectedMinutes));
 }
 
-TEST(StartTimeImplTest, partialUpdateFromStartTimeDto_minutes) {
-	const StartTimeImpl expected1(0, 20);
-	const StartTimeImpl expected2(0, 30);
+TEST(StartTimeImplTest, updateFromDto_partial_minutes) {
+	const unsigned expectedMinutes1 = 20;
+	const unsigned expectedMinutes2 = 30;
 
 	StartTimeImpl actual(15, 16);
 
-	actual.updateFromStartTimeDto(StartTimeDTO().setMinutes(20));
-	EXPECT_THAT(actual, Eq(std::ref(expected1)));
+	actual.updateFromStartTimeDto(
+		StartTimeDTO().
+			setMinutes(expectedMinutes1)
+	);
 
-	actual.updateFromStartTimeDto(StartTimeDTO().setMinutes(30));
-	EXPECT_THAT(actual, Eq(std::ref(expected2)));
+	EXPECT_THAT(actual.getHours(), Eq(0));
+	EXPECT_THAT(actual.getMinutes(), Eq(expectedMinutes1));
+
+	actual.updateFromStartTimeDto(
+		StartTimeDTO().
+			setMinutes(expectedMinutes2)
+	);
+
+	EXPECT_THAT(actual.getHours(), Eq(0));
+	EXPECT_THAT(actual.getMinutes(), Eq(expectedMinutes2));
 }
 
-TEST(StartTimeImplTest, partialUpdateFromStartTimeDto_hours) {
-	const StartTimeImpl expected1(9, 0);
-	const StartTimeImpl expected2(20, 0);
+TEST(StartTimeImplTest, updateFromDto_partial_hours) {
+	const unsigned expectedHours1 = 9;
+	const unsigned expectedHours2 = 18;
 
 	StartTimeImpl actual(15, 16);
 
-	actual.updateFromStartTimeDto(StartTimeDTO().setHours(9));
-	EXPECT_THAT(actual, Eq(std::ref(expected1)));
+	actual.updateFromStartTimeDto(
+		StartTimeDTO().
+			setHours(expectedHours1)
+	);
 
-	actual.updateFromStartTimeDto(StartTimeDTO().setHours(20));
-	EXPECT_THAT(actual, Eq(std::ref(expected2)));
+	EXPECT_THAT(actual.getHours(), Eq(expectedHours1));
+	EXPECT_THAT(actual.getMinutes(), Eq(0));
+
+	actual.updateFromStartTimeDto(
+		StartTimeDTO().
+			setHours(expectedHours2)
+	);
+
+	EXPECT_THAT(actual.getHours(), Eq(expectedHours2));
+	EXPECT_THAT(actual.getMinutes(), Eq(0));
 }
 
-TEST(StartTimeImplTest, partialUpdateFromStartTimeDto_all) {
-	const StartTimeImpl expected1(9, 31);
-	const StartTimeImpl expected2(20, 41);
+TEST(StartTimeImplTest, updateFromDto_all) {
+	const unsigned expectedHours1 = 9;
+	const unsigned expectedMinutes1 = 20;
+	const unsigned expectedHours2 = 18;
+	const unsigned expectedMinutes2 = 30;
 
 	StartTimeImpl actual(15, 16);
 
-	actual.updateFromStartTimeDto(StartTimeDTO().setHours(9).setMinutes(31));
-	EXPECT_THAT(actual, Eq(std::ref(expected1)));
+	actual.updateFromStartTimeDto(
+		StartTimeDTO().
+			setHours(expectedHours1).
+			setMinutes(expectedMinutes1)
+	);
 
-	actual.updateFromStartTimeDto(StartTimeDTO().setHours(20).setMinutes(41));
-	EXPECT_THAT(actual, Eq(std::ref(expected2)));
+	EXPECT_THAT(actual.getHours(), Eq(expectedHours1));
+	EXPECT_THAT(actual.getMinutes(), Eq(expectedMinutes1));
+
+	actual.updateFromStartTimeDto(
+		StartTimeDTO().
+			setHours(expectedHours2).
+			setMinutes(expectedMinutes2)
+	);
+
+	EXPECT_THAT(actual.getHours(), Eq(expectedHours2));
+	EXPECT_THAT(actual.getMinutes(), Eq(expectedMinutes2));
 }

@@ -1,7 +1,9 @@
 #include "ProgramImplBuilder.h"
 #include "SchedulerContainerImpl.h"
 #include "SchedulerContainerImplBuilder.h"
+#include "RunTimeImpl.h"
 #include "RunTimeContainerImpl.h"
+#include "StartTimeImpl.h"
 #include "StartTimeContainerImpl.h"
 #include "Temperature/TemperatureHandler.h"
 
@@ -62,7 +64,7 @@ ProgramPtr ProgramImpl::Builder::build() {
 
 	if (nullptr == runTimeContainer) {
 		runTimeContainer = std::make_shared<RunTimeContainerImpl>(
-				std::make_shared<RunTimeFactory>()
+				std::make_shared<RunTimeImplFactory>()
 			);
 	}
 
@@ -71,7 +73,7 @@ ProgramPtr ProgramImpl::Builder::build() {
 	}
 
 	if (nullptr == startTimeFactory) {
-		startTimeFactory = std::make_shared<StartTimeFactory>();
+		startTimeFactory = std::make_shared<StartTimeImplFactory>();
 	}
 
 	return std::make_shared<ProgramImpl>(
@@ -118,7 +120,7 @@ std::shared_ptr<ProgramFactory> ProgramImplFactory::Builder::build() {
 
 	if (nullptr == runTimeContainerFactory) {
 		runTimeContainerFactory = std::make_shared<RunTimeContainerImplFactory>(
-				std::make_shared<RunTimeFactory>()
+				std::make_shared<RunTimeImplFactory>()
 			);
 	}
 
@@ -127,7 +129,7 @@ std::shared_ptr<ProgramFactory> ProgramImplFactory::Builder::build() {
 	}
 
 	if (nullptr == startTimeFactory) {
-		startTimeFactory = std::make_shared<StartTimeFactory>();
+		startTimeFactory = std::make_shared<StartTimeImplFactory>();
 	}
 
 	return std::make_shared<ProgramImplFactory>(

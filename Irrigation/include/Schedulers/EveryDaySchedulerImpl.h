@@ -5,8 +5,6 @@
 class EveryDaySchedulerImpl : public EveryDayScheduler {
 public:
 	EveryDaySchedulerImpl() = default;
-	EveryDaySchedulerImpl(EveryDaySchedulerImpl&&) = default;
-	EveryDaySchedulerImpl(const EveryDaySchedulerImpl&) = default;
 	virtual ~EveryDaySchedulerImpl() = default;
 
 	virtual Scheduler::Result process(const std::time_t rawtime) override;

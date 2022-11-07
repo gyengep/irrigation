@@ -1,7 +1,16 @@
 #include "RunTime.h"
 
-///////////////////////////////////////////////////////////////////////////////
 
-bool RunTime::operator== (const RunTime& other) const {
-	return (getMilliSeconds() == other.getMilliSeconds());
+std::chrono::seconds RunTime::toDuration(const RunTimeDTO& runTimeDTO) {
+	std::chrono::seconds result(0);
+
+	if (runTimeDTO.hasMinutes()) {
+		result += std::chrono::minutes(runTimeDTO.getMinutes());
+	}
+
+	if (runTimeDTO.hasSeconds()) {
+		result += std::chrono::seconds(runTimeDTO.getSeconds());
+	}
+
+	return result;
 }

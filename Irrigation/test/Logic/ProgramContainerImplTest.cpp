@@ -34,56 +34,6 @@ TEST(ProgramContainerImplImplTest, initializerConstructor) {
 	}
 }
 
-TEST(ProgramContainerImplImplTest, equalsOperator) {
-	{
-		ProgramContainerImpl container1;
-		ProgramContainerImpl container2;
-
-		EXPECT_TRUE(container1 == container2);
-		EXPECT_TRUE(container2 == container1);
-
-		container1.insert(1000, ProgramSample2().getObjectPtr());
-		EXPECT_FALSE(container1 == container2);
-		EXPECT_FALSE(container2 == container1);
-
-		container2.insert(1000, ProgramSample2().getObjectPtr());
-		EXPECT_TRUE(container1 == container2);
-		EXPECT_TRUE(container2 == container1);
-	}
-
-	{
-		ProgramContainerImpl container1;
-		ProgramContainerImpl container2;
-
-		container1.insert(1000, ProgramSample2().getObjectPtr());
-		container2.insert(1001, ProgramSample2().getObjectPtr());
-		EXPECT_FALSE(container1 == container2);
-		EXPECT_FALSE(container2 == container1);
-	}
-
-	{
-		ProgramContainerImpl container1;
-		ProgramContainerImpl container2;
-
-		container1.insert(1000, ProgramSample2().getObjectPtr());
-		container2.insert(1000, ProgramSample3().getObjectPtr());
-		EXPECT_FALSE(container1 == container2);
-		EXPECT_FALSE(container2 == container1);
-	}
-
-	{
-		ProgramContainerImpl container1;
-		ProgramContainerImpl container2;
-
-		container1.insert(1000, ProgramSample2().getObjectPtr());
-		container1.insert(1001, ProgramSample3().getObjectPtr());
-		container2.insert(1001, ProgramSample3().getObjectPtr());
-		container2.insert(1000, ProgramSample2().getObjectPtr());
-		EXPECT_FALSE(container1 == container2);
-		EXPECT_FALSE(container2 == container1);
-	}
-}
-
 TEST(ProgramContainerImplImplTest, size) {
 	ProgramContainerImpl programs;
 	EXPECT_THAT(programs, SizeIs(0));
