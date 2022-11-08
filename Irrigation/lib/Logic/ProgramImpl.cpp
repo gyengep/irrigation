@@ -72,14 +72,14 @@ Scheduler& ProgramImpl::getCurrentScheduler() {
 	return *getSchedulerContainer().at(schedulerType);
 }
 
-std::unique_ptr<ScheduledResult> ProgramImpl::isScheduled(const std::time_t rawtime) {
+std::unique_ptr<ScheduledResult> ProgramImpl::isScheduled(const DateTime& dateTime) {
 	if (enabled) {
 		for (const auto& startTimeAndIdPair : getStartTimeContainer()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
-			struct tm timeinfo = toLocalTime(rawtime);
+			const LocalDateTime localDateTime(dateTime);
 
-			if (startTime.equals(timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec)) {
-				const Scheduler::Result result = getCurrentScheduler().process(rawtime);
+			if (startTime.equals(localDateTime.getHours(), localDateTime.getMinutes(), localDateTime.getSeconds())) {
+				const Scheduler::Result result = getCurrentScheduler().process(dateTime);
 
 				unsigned adjustment = 0;
 

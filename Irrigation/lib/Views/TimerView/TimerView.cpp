@@ -18,6 +18,7 @@ TimerView::TimerView(IrrigationDocument& irrigationDocument) :
 	View(irrigationDocument),
 	period(seconds(1)),
 	maxTardiness(seconds(1)),
+	expectedLocalDateTime(DateTime::epoch()),
 	irrigationDocument(irrigationDocument)
 {
 }
@@ -28,7 +29,7 @@ TimerView::~TimerView() {
 void TimerView::initialize() {
 	LOGGER.debug("TimerView initializing...");
 
-	expectedSystemTime = system_clock::now() + period;
+	expectedLocalDateTime = DateTime::now() + period;
 
 	auto referenceRunnbale = std::make_shared<ReferenceRunnable>(*this);
 	auto fixedRateSchedulerRunnable = std::make_shared<FixedRateSchedulerRunnable>(
@@ -57,15 +58,15 @@ void TimerView::run() {
 	LOGGER.trace("TimerView::run()");
 #endif
 
-	if (!checkSystemTime(expectedSystemTime)) {
-		expectedSystemTime = system_clock::now();
+	if (!checkExpectedDateTime(expectedLocalDateTime)) {
+		expectedLocalDateTime = DateTime::now();
 	}
 
-	checkProgramScheduled(system_clock::to_time_t(expectedSystemTime));
-	expectedSystemTime += period;
+	checkProgramScheduled(expectedLocalDateTime);
+	expectedLocalDateTime = expectedLocalDateTime + period;
 }
 
-void TimerView::checkProgramScheduled(const time_t rawTime) {
+void TimerView::checkProgramScheduled(const LocalDateTime& localDateTime) {
 	lock_guard<IrrigationDocument> lock(irrigationDocument);
 
 	if (!irrigationDocument.getWateringController().isWateringActive()) {
@@ -76,16 +77,16 @@ void TimerView::checkProgramScheduled(const time_t rawTime) {
 			const auto& id = programAndIdPair.first;
 			const auto& program = programAndIdPair.second;
 
-			if (processProgramScheduled(id, program, rawTime)) {
+			if (processProgramScheduled(id, program, localDateTime)) {
 				break;
 			}
 		}
 	}
 }
 
-bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const time_t rawTime) {
+bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const LocalDateTime& localDateTime) {
 	try {
-		const auto scheduledResult = program->isScheduled(rawTime);
+		const auto scheduledResult = program->isScheduled(localDateTime);
 
 		if (scheduledResult->isScheduled()) {
 			if (0 < scheduledResult->getAdjustment()) {
@@ -97,7 +98,7 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 				const EmailTopic topic = EmailTopic::WATERING_START;
 				if (EMAIL.isTopicEnabled(topic)) {
 					std::ostringstream oss;
-					oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << toLocalTimeStr(rawTime, "%T") << std::endl;
+					oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
 					oss << "adjustment: "<< scheduledResult->getAdjustment() << "%" << std::endl;
 					oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
 					EMAIL.send(topic, oss.str());
@@ -108,7 +109,7 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 				const EmailTopic topic = EmailTopic::WATERING_SKIP;
 				if (EMAIL.isTopicEnabled(topic)) {
 					std::ostringstream oss;
-					oss << "The " << program->getName() << " is skipped by the " << to_string(program->getSchedulerType()) << " scheduler at " << toLocalTimeStr(rawTime, "%T") << std::endl;
+					oss << "The " << program->getName() << " is skipped by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
 					EMAIL.send(topic, oss.str());
 				}
 			}
@@ -124,16 +125,15 @@ bool TimerView::processProgramScheduled(const IdType& idType, const std::shared_
 	return false;
 }
 
-bool TimerView::checkSystemTime(const system_clock::time_point& expectedSystemTime) {
-	const seconds actualDiff = duration_cast<seconds>(system_clock::now() - expectedSystemTime);
+bool TimerView::checkExpectedDateTime(const LocalDateTime& expectedLocalDateTime) {
+	const LocalDateTime now = LocalDateTime::now();
+	const seconds actualDiff = (now - expectedLocalDateTime);
 
-	if (abs(actualDiff) > seconds(1)) {
-		const time_t previousTime = system_clock::to_time_t(expectedSystemTime);
-		const time_t currentTime = system_clock::to_time_t(system_clock::now());
+	if (actualDiff > seconds(1) || actualDiff < seconds(-1)) {
 
 		LOGGER.warning("Time is changed! from %s to %s",
-				toLocalTimeStr(previousTime, "%Y.%m.%d %H:%M:%S").c_str(),
-				toLocalTimeStr(currentTime, "%Y.%m.%d %H:%M:%S").c_str()
+				expectedLocalDateTime.toString("%Y.%m.%d %H:%M:%S").c_str(),
+				now.toString("%Y.%m.%d %H:%M:%S").c_str()
 			);
 
 		return false;

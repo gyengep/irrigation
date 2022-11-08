@@ -7,7 +7,7 @@ public:
 	EveryDaySchedulerImpl() = default;
 	virtual ~EveryDaySchedulerImpl() = default;
 
-	virtual Scheduler::Result process(const std::time_t rawtime) override;
+	virtual Scheduler::Result process(const DateTime& dateTime) override;
 
 	////////////////////////////////////////////////////////////
 

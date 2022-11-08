@@ -15,7 +15,7 @@ public:
 	MOCK_CONST_METHOD0(getAdjustment, unsigned());
 	MOCK_CONST_METHOD0(getSchedulerType, SchedulerType());
 
-	MOCK_METHOD1(isScheduled, std::unique_ptr<ScheduledResult>(const std::time_t rawtime));
+	MOCK_METHOD1(isScheduled, std::unique_ptr<ScheduledResult>(const DateTime& dateTime));
 	MOCK_METHOD0(getCurrentScheduler, Scheduler&());
 
 	MOCK_CONST_METHOD0(getSchedulerContainer, const SchedulerContainer& ());

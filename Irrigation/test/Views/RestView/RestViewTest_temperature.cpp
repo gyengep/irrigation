@@ -51,7 +51,7 @@ TEST_F(RestViewTest, getTemperature) {
 	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -66,7 +66,7 @@ TEST_F(RestViewTest, getTemperatureWithTimeFormat) {
 	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -80,7 +80,7 @@ TEST_F(RestViewTest, getTemperatureAcceptable) {
 	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -110,7 +110,7 @@ TEST_F(RestViewTest, getTomorrowTemperature) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -130,7 +130,7 @@ TEST_F(RestViewTest, getTomorrowTemperatureWithDatetimeFormat) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -150,7 +150,7 @@ TEST_F(RestViewTest, getTomorrowTemperatureAcceptable) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -170,7 +170,7 @@ TEST_F(RestViewTest, getTomorrowTemperatureNotFound) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 	const LocalDateTime from(2021, 5, 30, 0, 0, 0);
@@ -195,7 +195,7 @@ TEST_F(RestViewTest, getTodayTemperature) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -220,7 +220,7 @@ TEST_F(RestViewTest, getTodayTemperatureWithDatetimeFormat) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -245,7 +245,7 @@ TEST_F(RestViewTest, getTodayTemperatureAcceptable) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -270,7 +270,7 @@ TEST_F(RestViewTest, getTodayTemperature_HistoryNotFound) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
@@ -287,7 +287,7 @@ TEST_F(RestViewTest, getTodayTemperature_ForecastNotFound) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
@@ -314,7 +314,7 @@ TEST_F(RestViewTest, getYesterdayTemperature) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -334,7 +334,7 @@ TEST_F(RestViewTest, getYesterdayTemperatureWithDatetimeFormat) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -354,7 +354,7 @@ TEST_F(RestViewTest, getYesterdayTemperatureAcceptable) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
@@ -374,7 +374,7 @@ TEST_F(RestViewTest, getYesterdayTemperatureNotFound) {
 	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 

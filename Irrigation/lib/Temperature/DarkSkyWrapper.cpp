@@ -114,7 +114,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> DarkSkyWrapper::parseTemperat
 			throw runtime_error("temperature not found");
 		}
 
-		const DateTime dateTime(timeIt->get<time_t>());
+		const DateTime dateTime = DateTime::create(timeIt->get<time_t>());
 		const float temp = tempIt->get<float>();
 
 		result.push_back(ValuesWithTimes(dateTime, dateTime.addHours(1), temp, temp));

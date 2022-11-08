@@ -1,5 +1,4 @@
 #include <gmock/gmock.h>
-#include <ctime>
 #include "Utils/TimeConversion.h"
 
 using namespace std;
@@ -138,73 +137,6 @@ TEST(TimeConverterTest, absMilliseconds) {
 	EXPECT_THAT(abs(chrono::milliseconds(-8)), Eq(chrono::milliseconds(8)));
 	EXPECT_THAT(abs(chrono::milliseconds(80000000000)), Eq(chrono::milliseconds(80000000000)));
 	EXPECT_THAT(abs(chrono::milliseconds(-80000000000)), Eq(chrono::milliseconds(80000000000)));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(GetElapsedDaysSinceEpochTest, getDays) {
-	const int monthLengthsLeapYears[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-	const int monthLengthsNotLeapYears[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-	int elapsedDays = 0;
-
-	for (int year = 1970; year < 2038; year++) {
-		const int* monthLengths;
-
-		if (0 == (year % 4)) {
-			monthLengths = monthLengthsLeapYears;
-		} else {
-			monthLengths = monthLengthsNotLeapYears;
-		}
-
-		for (int month = 1; month <= 12; month++) {
-			for (int dayOfMonth = 1; dayOfMonth <= monthLengths[month - 1]; dayOfMonth++) {
-				const tm timeinfo = toCalendarTime(year, month, dayOfMonth);
-				ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
-				elapsedDays++;
-			}
-		}
-	}
-}
-
-TEST(GetElapsedDaysSinceEpochTest, getHoursWinter) {
-	tm timeinfo = toCalendarTime(2018, 12, 10);
-	const int elapsedDays = getElapsedDaysSinceEpoch(timeinfo);
-
-	for (int hour = 0; hour < 24; hour++) {
-		for (int min = 0; min < 60; min++) {
-			for (int sec = 0; sec < 60; sec++) {
-				timeinfo = toCalendarTime(2018, 12, 10, hour, min, sec);
-				ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
-			}
-		}
-	}
-
-	timeinfo = toCalendarTime(2018, 12, 9, 23, 59, 59);
-	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays - 1);
-
-	timeinfo = toCalendarTime(2018, 12, 11, 0, 0, 0);
-	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays + 1);
-}
-
-TEST(GetElapsedDaysSinceEpochTest, getHoursSummer) {
-	tm timeinfo = toCalendarTime(2018, 6, 10);
-	const int elapsedDays = getElapsedDaysSinceEpoch(timeinfo);
-
-	for (int hour = 0; hour < 24; hour++) {
-		for (int min = 0; min < 60; min++) {
-			for (int sec = 0; sec < 60; sec++) {
-				timeinfo = toCalendarTime(2018, 6, 10, hour, min, sec);
-				ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays);
-			}
-		}
-	}
-
-	timeinfo = toCalendarTime(2018, 6, 9, 23, 59, 59);
-	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays - 1);
-
-	timeinfo = toCalendarTime(2018, 6, 11, 0, 0, 0);
-	ASSERT_THAT(getElapsedDaysSinceEpoch(timeinfo), elapsedDays + 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

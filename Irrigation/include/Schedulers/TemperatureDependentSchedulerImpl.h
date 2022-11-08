@@ -4,24 +4,24 @@
 #include "DTO/TemperatureDependentSchedulerDTO.h"
 #include "Temperature/TemperatureForecast.h"
 #include "Temperature/TemperatureHistory.h"
+#include "Utils/DateTime.h"
 #include "TemperatureDependentScheduler.h"
 
 
 class TemperatureDependentSchedulerImpl : public TemperatureDependentScheduler {
-	static const std::time_t oneDayInSeconds = 24 * 60 * 60;
 	static const size_t logIndentation = 50;
 
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
 	enum class Day { YESTERDAY, TODAY, OTHER };
-	enum Day getLastRunDay(const time_t rawtime) const;
+	enum Day getLastRunDay(const LocalDateTime& localDateTime) const;
 	static std::string dayToString(enum Day day);
 
 
 	int remainingPercent;
 	unsigned requiredPercentForToday;
-	std::time_t lastRun;
+	LocalDateTime lastRun;
 	float remainingCorrection;
 	std::unique_ptr<unsigned> minAdjustment;
 	std::unique_ptr<unsigned> maxAdjustment;
@@ -29,8 +29,8 @@ class TemperatureDependentSchedulerImpl : public TemperatureDependentScheduler {
 
 	int calculateRemainingPercentOther(const int remainingPercent, std::ostringstream& oss) const;
 	int calculateRemainingPercentToday(const int remainingPercent, std::ostringstream& oss) const;
-	int calculateRemainingPercentYesterday(const int remainingPercent, const std::time_t rawtime, std::ostringstream& oss) const;
-	unsigned calculateRequiredPercentForToday(const int remainingPercent, const std::time_t rawtime, std::ostringstream& oss) const;
+	int calculateRemainingPercentYesterday(const int remainingPercent, const DateTime& dateTime, std::ostringstream& oss) const;
+	unsigned calculateRequiredPercentForToday(const int remainingPercent, const DateTime& dateTime, std::ostringstream& oss) const;
 	unsigned calculateAdjustment(const unsigned requiredPercentForToday, std::ostringstream& oss) const;
 
 	static std::string optionalToString(const std::unique_ptr<unsigned>& value);
@@ -55,10 +55,10 @@ public:
 	virtual void trimAdjustmentOver(unsigned percent) override;
 
 	unsigned getRemainingPercent() const { return remainingPercent; }
-	unsigned getRequiredPercentForNextDay(const std::time_t rawTime, float* temp = nullptr) const;
-	unsigned getRequiredPercentForPreviousDay(const std::time_t rawTime, float* temp = nullptr) const;
+	unsigned getRequiredPercentForNextDay(const DateTime& dateTime, float* temp = nullptr) const;
+	unsigned getRequiredPercentForPreviousDay(const DateTime& dateTime, float* temp = nullptr) const;
 
-	virtual Scheduler::Result process(const std::time_t rawtime) override;
+	virtual Scheduler::Result process(const DateTime& dateTime) override;
 
 	////////////////////////////////////////////////////
 

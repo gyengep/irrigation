@@ -1,6 +1,5 @@
 #include "WeeklySchedulerImpl.h"
 #include <algorithm>
-#include <ctime>
 #include <list>
 #include <sstream>
 #include <stdexcept>
@@ -54,11 +53,10 @@ bool WeeklySchedulerImpl::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-Scheduler::Result WeeklySchedulerImpl::process(const std::time_t rawtime) {
-	const size_t weekDay = toLocalTime(rawtime).tm_wday;
+Scheduler::Result WeeklySchedulerImpl::process(const DateTime& dateTime) {
+	const size_t weekDay = LocalDateTime(dateTime).getDayOfWeek();
 	checkIndex(weekDay);
-
-	return Scheduler::Result(days[(weekDay + 6) % 7]);
+	return Scheduler::Result(days[weekDay]);
 }
 
 WeeklySchedulerDTO WeeklySchedulerImpl::toWeeklySchedulerDto() const {

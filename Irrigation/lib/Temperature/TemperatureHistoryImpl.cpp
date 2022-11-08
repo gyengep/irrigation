@@ -74,6 +74,6 @@ void TemperatureHistoryImpl::onTemperatureUpdated(const DateTime& dateTime, floa
 	LOGGER.debug("Temperature history is updated with new value: %s", toCelsius(temperature).c_str());
 
 	temperatureHistoryRepository->add(TemperatureHistoryRepository::Sample(dateTime, temperature));
-	temperatureHistoryRepository->removeOlder(dateTime.add(-historyLength));
+	temperatureHistoryRepository->removeOlder(dateTime - historyLength);
 	temperatureHistoryRepository->removeNewer(dateTime);
 }

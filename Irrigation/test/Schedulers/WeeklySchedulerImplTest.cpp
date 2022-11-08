@@ -9,16 +9,12 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void checkDay(std::tm& timeinfo, Scheduler& scheduler, bool expectedResult) {
+void checkDay(int year, int month, int day, Scheduler& scheduler, bool expectedResult) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
-
-				timeinfo.tm_hour = hour;
-				timeinfo.tm_min = min;
-				timeinfo.tm_sec = sec;
-
-				ASSERT_THAT(scheduler.process(mktime(&timeinfo)), Eq(Scheduler::Result(expectedResult, false, 0)));
+				const LocalDateTime localDateTime(year, month, day, hour, min, sec);
+				ASSERT_THAT(scheduler.process(localDateTime), Eq(Scheduler::Result(expectedResult, false, 0)));
 			}
 		}
 	}
@@ -99,10 +95,11 @@ TEST(WeeklySchedulerImplTest, isDayScheduled) {
 
 	scheduler.enableDay(WeeklySchedulerImpl::WEDNESDAY, true);
 
+	const int year = 2018;
+	const int month = 11;
+
 	for (int day = 19; day < 26; day++) {
-		tm timeinfo = toCalendarTime(2018, 11, day);
-		timeinfo.tm_wday = (day-18) % 7;
-		checkDay(timeinfo, scheduler, 21 == day);
+		checkDay(year, month, day, scheduler, 21 == day);
 	}
 
 	scheduler.enableDay(WeeklySchedulerImpl::WEDNESDAY, false);
@@ -110,9 +107,7 @@ TEST(WeeklySchedulerImplTest, isDayScheduled) {
 	scheduler.enableDay(WeeklySchedulerImpl::SUNDAY, true);
 
 	for (int day = 19; day < 26; day++) {
-		tm timeinfo = toCalendarTime(2018, 11, day);
-		timeinfo.tm_wday = (day-18) % 7;
-		checkDay(timeinfo, scheduler, 22 == day || 25 == day);
+		checkDay(year, month, day, scheduler, 22 == day || 25 == day);
 	}
 }
 

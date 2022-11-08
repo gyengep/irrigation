@@ -26,7 +26,7 @@ void CsvTemperatureHistoryRepository::load() {
 
 		while ((result = csvReader->read()) != nullptr) {
 			if (result->size() == 2) {
-				add_withoutLock(CsvTemperatureHistoryRepository::Sample(DateTime(stoul(result->at(0))), stof(result->at(1))));
+				add_withoutLock(CsvTemperatureHistoryRepository::Sample(DateTime::create(stoul(result->at(0))), stof(result->at(1))));
 			} else {
 				LOGGER.warning("TemperatureHistoryRepository loaded invalid line");
 			}
@@ -47,7 +47,7 @@ void CsvTemperatureHistoryRepository::save() {
 
 		for (const auto& sample : samples) {
 			csvWriter->append(std::vector<std::string>{
-				std::to_string(sample.dateTime.toRawtime()),
+				std::to_string(sample.dateTime.toRawTime()),
 				temperatureToString(sample.temperature)
 			});
 		}

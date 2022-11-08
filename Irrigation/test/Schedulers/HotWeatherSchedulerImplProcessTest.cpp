@@ -21,7 +21,7 @@ TEST_F(HotWeatherSchedulerImplProcessTest, process) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 25)));
 
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, processHighTemp) {
@@ -31,7 +31,7 @@ TEST_F(HotWeatherSchedulerImplProcessTest, processHighTemp) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
 
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, processLowTemp) {
@@ -41,7 +41,7 @@ TEST_F(HotWeatherSchedulerImplProcessTest, processLowTemp) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 24)));
 
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(false, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(false, false, 0)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, period1Hours) {
@@ -50,7 +50,7 @@ TEST_F(HotWeatherSchedulerImplProcessTest, period1Hours) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 13, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
 
-	scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0));
+	scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, period3Hours) {
@@ -59,7 +59,7 @@ TEST_F(HotWeatherSchedulerImplProcessTest, period3Hours) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 11, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
 
-	scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0));
+	scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, lastRun1Hour) {
@@ -73,9 +73,9 @@ TEST_F(HotWeatherSchedulerImplProcessTest, lastRun1Hour) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 15, 0, 0), LocalDateTime(2019, 8, 7, 16, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 28)));
 
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 15, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 16, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 15, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 16, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, lastRun2Hour) {
@@ -89,8 +89,8 @@ TEST_F(HotWeatherSchedulerImplProcessTest, lastRun2Hour) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 14, 0, 0), LocalDateTime(2019, 8, 7, 16, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 28)));
 
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 15, 0, 0)), Eq(Scheduler::Result(false, false, 0)));
-	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 7, 16, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 15, 0, 0)), Eq(Scheduler::Result(false, false, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 16, 0, 0)), Eq(Scheduler::Result(true, false, 0)));
 }
 

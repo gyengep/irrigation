@@ -15,7 +15,6 @@
 #include "Logic/RunTimeContainerImpl.h"
 #include "Logic/WateringController.h"
 #include "Model/IrrigationDocument.h"
-#include <ctime>
 #include <cstring>
 #include <fstream>
 

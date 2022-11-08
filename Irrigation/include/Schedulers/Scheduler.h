@@ -1,7 +1,7 @@
 #pragma once
-#include <ctime>
 #include <memory>
 #include <string>
+#include "Utils/DateTime.h"
 
 
 enum class SchedulerType {
@@ -32,7 +32,7 @@ public:
 
 	Scheduler() = default;
 	virtual ~Scheduler() = default;
-	virtual Result process(const std::time_t rawtime) = 0;
+	virtual Result process(const DateTime& dateTime) = 0;
 
 	virtual std::string toString() const = 0;
 };

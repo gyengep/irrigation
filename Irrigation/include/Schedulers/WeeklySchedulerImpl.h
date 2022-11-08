@@ -1,5 +1,4 @@
 #pragma once
-#include <ctime>
 #include <vector>
 #include "DTO/WeeklySchedulerDTO.h"
 #include "WeeklyScheduler.h"
@@ -20,7 +19,7 @@ public:
 	virtual void enableDay(size_t day, bool enable) override;
 	virtual bool isDayEnabled(size_t day) const override;
 
-	virtual Scheduler::Result process(const std::time_t rawtime) override;
+	virtual Scheduler::Result process(const DateTime& dateTime) override;
 
 	////////////////////////////////////////////////////////////
 

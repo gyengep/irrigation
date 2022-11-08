@@ -39,6 +39,72 @@ TEST(LocalDateTimeTest, init) {
 	EXPECT_THAT(dateTime.getSeconds(), Eq(expectedSecond));
 }
 
+TEST(UtcDateTimeTest, dayOfWeek) {
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33, 28).getDayOfWeek(), Eq(6)); // SUN
+	EXPECT_THAT(UtcDateTime(2021, 5, 17, 8, 33, 28).getDayOfWeek(), Eq(0)); // MON
+	EXPECT_THAT(UtcDateTime(2021, 5, 18, 8, 33, 28).getDayOfWeek(), Eq(1)); // TUE
+	EXPECT_THAT(UtcDateTime(2021, 5, 19, 8, 33, 28).getDayOfWeek(), Eq(2)); // WED
+	EXPECT_THAT(UtcDateTime(2021, 5, 20, 8, 33, 28).getDayOfWeek(), Eq(3)); // THU
+	EXPECT_THAT(UtcDateTime(2021, 5, 21, 8, 33, 28).getDayOfWeek(), Eq(4)); // FRI
+	EXPECT_THAT(UtcDateTime(2021, 5, 22, 8, 33, 28).getDayOfWeek(), Eq(5)); // SAT
+	EXPECT_THAT(UtcDateTime(2021, 5, 23, 8, 33, 28).getDayOfWeek(), Eq(6)); // SUN
+	EXPECT_THAT(UtcDateTime(2021, 5, 24, 8, 33, 28).getDayOfWeek(), Eq(0)); // MON
+}
+
+TEST(LocalDateTimeTest, dayOfWeek) {
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33, 28).getDayOfWeek(), Eq(6)); // SUN
+	EXPECT_THAT(LocalDateTime(2021, 5, 17, 8, 33, 28).getDayOfWeek(), Eq(0)); // MON
+	EXPECT_THAT(LocalDateTime(2021, 5, 18, 8, 33, 28).getDayOfWeek(), Eq(1)); // TUE
+	EXPECT_THAT(LocalDateTime(2021, 5, 19, 8, 33, 28).getDayOfWeek(), Eq(2)); // WED
+	EXPECT_THAT(LocalDateTime(2021, 5, 20, 8, 33, 28).getDayOfWeek(), Eq(3)); // THU
+	EXPECT_THAT(LocalDateTime(2021, 5, 21, 8, 33, 28).getDayOfWeek(), Eq(4)); // FRI
+	EXPECT_THAT(LocalDateTime(2021, 5, 22, 8, 33, 28).getDayOfWeek(), Eq(5)); // SAT
+	EXPECT_THAT(LocalDateTime(2021, 5, 23, 8, 33, 28).getDayOfWeek(), Eq(6)); // SUN
+	EXPECT_THAT(LocalDateTime(2021, 5, 24, 8, 33, 28).getDayOfWeek(), Eq(0)); // MON
+}
+
+TEST(UtcDateTimeTest, diff) {
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33, 28) -     UtcDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::seconds(0)));
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33, 28 + 5) - UtcDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::seconds(5)));
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33, 28) -     UtcDateTime(2021, 5, 16, 8, 33, 28 + 5), Eq(std::chrono::seconds(-5)));
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33 + 3, 28) - UtcDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::minutes(3)));
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33, 28) -     UtcDateTime(2021, 5, 16, 8, 33 + 3, 28), Eq(std::chrono::minutes(-3)));
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8 + 7, 33, 28) - UtcDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::hours(7)));
+	EXPECT_THAT(UtcDateTime(2021, 5, 16, 8, 33, 28) -     UtcDateTime(2021, 5, 16, 8 + 7, 33, 28), Eq(std::chrono::hours(-7)));
+}
+
+TEST(LocalDateTimeTest, diff) {
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33, 28) -     LocalDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::seconds(0)));
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33, 28 + 5) - LocalDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::seconds(5)));
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33, 28) -     LocalDateTime(2021, 5, 16, 8, 33, 28 + 5), Eq(std::chrono::seconds(-5)));
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33 + 3, 28) - LocalDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::minutes(3)));
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33, 28) -     LocalDateTime(2021, 5, 16, 8, 33 + 3, 28), Eq(std::chrono::minutes(-3)));
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8 + 7, 33, 28) - LocalDateTime(2021, 5, 16, 8, 33, 28), Eq(std::chrono::hours(7)));
+	EXPECT_THAT(LocalDateTime(2021, 5, 16, 8, 33, 28) -     LocalDateTime(2021, 5, 16, 8 + 7, 33, 28), Eq(std::chrono::hours(-7)));
+}
+
+TEST(UtcDateTimeTest, operatorPlus) {
+	const UtcDateTime dateTime(2021, 5, 16, 8, 33, 28);
+
+	EXPECT_THAT(dateTime + std::chrono::seconds(5), Eq(UtcDateTime(2021, 5, 16, 8, 33, 28 + 5)));
+	EXPECT_THAT(dateTime - std::chrono::seconds(5), Eq(UtcDateTime(2021, 5, 16, 8, 33, 28 - 5)));
+	EXPECT_THAT(dateTime + std::chrono::minutes(6), Eq(UtcDateTime(2021, 5, 16, 8, 33 + 6, 28)));
+	EXPECT_THAT(dateTime - std::chrono::minutes(6), Eq(UtcDateTime(2021, 5, 16, 8, 33 - 6, 28)));
+	EXPECT_THAT(dateTime + std::chrono::hours(7),   Eq(UtcDateTime(2021, 5, 16, 8 + 7, 33, 28)));
+	EXPECT_THAT(dateTime - std::chrono::hours(7),   Eq(UtcDateTime(2021, 5, 16, 8 - 7, 33, 28)));
+}
+
+TEST(LocalDateTimeTest, operatorPlus) {
+	const LocalDateTime dateTime(2021, 5, 16, 8, 33, 28);
+
+	EXPECT_THAT(dateTime + std::chrono::seconds(5), Eq(LocalDateTime(2021, 5, 16, 8, 33, 28 + 5)));
+	EXPECT_THAT(dateTime - std::chrono::seconds(5), Eq(LocalDateTime(2021, 5, 16, 8, 33, 28 - 5)));
+	EXPECT_THAT(dateTime + std::chrono::minutes(6), Eq(LocalDateTime(2021, 5, 16, 8, 33 + 6, 28)));
+	EXPECT_THAT(dateTime - std::chrono::minutes(6), Eq(LocalDateTime(2021, 5, 16, 8, 33 - 6, 28)));
+	EXPECT_THAT(dateTime + std::chrono::hours(7),   Eq(LocalDateTime(2021, 5, 16, 8 + 7, 33, 28)));
+	EXPECT_THAT(dateTime - std::chrono::hours(7),   Eq(LocalDateTime(2021, 5, 16, 8 - 7, 33, 28)));
+}
+
 TEST(UtcDateTimeTest, toString) {
 	UtcDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
 
@@ -685,122 +751,3 @@ TEST(LocalDateTimeTest, addSeconds) {
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
-
-TEST(UtcDateTimeTest, add) {
-	const UtcDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
-
-	{
-		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::seconds());
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-
-	{
-		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(10));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 10));
-	}
-
-	{
-		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(-10));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28 - 10));
-	}
-
-	{
-		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::minutes(15));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 15));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-
-	{
-		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::hours(25));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
-		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-}
-
-TEST(LocalDateTimeTest, add) {
-	const LocalDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
-
-	{
-		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::seconds());
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-
-	{
-		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(10));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 10));
-	}
-
-	{
-		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(-10));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28 - 10));
-	}
-
-	{
-		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::minutes(15));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 15));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-
-	{
-		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::hours(25));
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
-		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-}
-

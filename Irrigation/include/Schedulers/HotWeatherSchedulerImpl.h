@@ -10,8 +10,8 @@
 class HotWeatherSchedulerImpl : public HotWeatherScheduler {
 	const std::shared_ptr<TemperatureHistory> temperatureHistory;
 
-	std::time_t lastRun;
-	unsigned periodInSeconds;
+	DateTime lastRun;
+	std::chrono::seconds period;
 	float minTemperature;
 
 public:
@@ -32,7 +32,7 @@ public:
 	void setMinTemperature(float minTemperature) override;
 	void setPeriod(const std::chrono::seconds& period) override;
 
-	virtual Result process(const std::time_t rawtime) override;
+	virtual Result process(const DateTime& dateTime) override;
 
 	////////////////////////////////////////////////////////////
 

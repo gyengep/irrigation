@@ -1,9 +1,9 @@
 #pragma once
-#include <ctime>
 #include <memory>
 #include <string>
 #include "json.hpp"
 #include "DTO/ProgramDTO.h"
+#include "Utils/DateTime.h"
 #include "RunTimeContainer.h"
 #include "StartTimeContainer.h"
 #include "SchedulerContainer.h"
@@ -53,7 +53,7 @@ public:
 	virtual unsigned getAdjustment() const override						{ return adjustment; }
 	SchedulerType getSchedulerType() const override 					{ return schedulerType; }
 
-	virtual std::unique_ptr<ScheduledResult> isScheduled(const std::time_t rawtime) override;
+	virtual std::unique_ptr<ScheduledResult> isScheduled(const DateTime& dateTime) override;
 	virtual Scheduler& getCurrentScheduler() override;
 
 	virtual const SchedulerContainer& getSchedulerContainer() const 	{ return *schedulerContainer; }

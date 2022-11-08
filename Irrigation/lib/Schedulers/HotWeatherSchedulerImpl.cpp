@@ -25,8 +25,8 @@ HotWeatherSchedulerImpl::HotWeatherSchedulerImpl(
 		const std::chrono::seconds& period, float minTemperature
 	) :
 	temperatureHistory(temperatureHistory),
-	lastRun(0),
-	periodInSeconds(period.count()),
+	lastRun(DateTime::epoch()),
+	period(period),
 	minTemperature(minTemperature)
 {
 }
@@ -39,7 +39,7 @@ void HotWeatherSchedulerImpl::setMinTemperature(float minTemperature) {
 }
 
 void HotWeatherSchedulerImpl::setPeriod(const std::chrono::seconds& period) {
-	this->periodInSeconds = period.count();
+	this->period = period;
 }
 
 float HotWeatherSchedulerImpl::getMinTemperature() const {
@@ -47,15 +47,12 @@ float HotWeatherSchedulerImpl::getMinTemperature() const {
 }
 
 unsigned HotWeatherSchedulerImpl::getPeriod() const {
-	return periodInSeconds;
+	return period.count();
 }
 
-Scheduler::Result HotWeatherSchedulerImpl::process(const std::time_t rawtime) {
-
-	const DateTime dateTime(rawtime);
-
-	const auto historyValues = temperatureHistory->getTemperatureHistory(dateTime.addSeconds(-periodInSeconds), dateTime);
-	const bool periodIsOk = (lastRun + periodInSeconds <= rawtime);
+Scheduler::Result HotWeatherSchedulerImpl::process(const DateTime& dateTime) {
+	const auto historyValues = temperatureHistory->getTemperatureHistory(dateTime - period, dateTime);
+	const bool periodIsOk = ((lastRun + period) <= dateTime);
 	const bool temperatureIsOk = (historyValues.avg >= minTemperature);
 
 	if (LOGGER.isLoggable(LogLevel::TRACE)) {
@@ -67,12 +64,12 @@ Scheduler::Result HotWeatherSchedulerImpl::process(const std::time_t rawtime) {
 		oss << "avg: " << historyValues.avg << "  ";
 		oss << (temperatureIsOk ? "OK" : "SKIPPED") << "\n";
 
-		oss << "\tlast run: " << ((rawtime - lastRun) / 60) << " minutes ago  " << (periodIsOk ? "OK" : "SKIPPED");
+		oss << "\tlast run: " << std::chrono::duration_cast<std::chrono::minutes>(dateTime - lastRun).count() << " minutes ago  " << (periodIsOk ? "OK" : "SKIPPED");
 		LOGGER.trace(oss.str().c_str());
 	}
 
 	if (periodIsOk && temperatureIsOk) {
-		lastRun = rawtime;
+		lastRun = dateTime;
 		return Scheduler::Result(true);
 	}
 
@@ -81,19 +78,19 @@ Scheduler::Result HotWeatherSchedulerImpl::process(const std::time_t rawtime) {
 
 nlohmann::json HotWeatherSchedulerImpl::saveTo() const {
 	nlohmann::json j;
-	j["lastRun"] = lastRun;
+	j["lastRun"] = lastRun.toRawTime();
 	return j;
 }
 
 void HotWeatherSchedulerImpl::loadFrom(const nlohmann::json& values) {
 	auto it = values.find("lastRun");
 	if (values.end() != it) {
-		lastRun = it.value();
+		lastRun = DateTime::create(it.value());
 	}
 }
 
 HotWeatherSchedulerDTO HotWeatherSchedulerImpl::toHotWeatherSchedulerDto() const {
-	return HotWeatherSchedulerDTO(periodInSeconds, minTemperature);
+	return HotWeatherSchedulerDTO(getPeriod(), minTemperature);
 }
 
 void HotWeatherSchedulerImpl::updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) {
@@ -109,7 +106,7 @@ void HotWeatherSchedulerImpl::updateFromHotWeatherSchedulerDto(const HotWeatherS
 std::string HotWeatherSchedulerImpl::toString() const {
 	std::ostringstream oss;
 	oss << "HotWeatherScheduler{";
-	oss << "periodInSeconds=" << periodInSeconds << ", ";
+	oss << "periodInSeconds=" << period.count() << ", ";
 	oss << "minTemperature=" << minTemperature;
 	oss << "}";
 	return oss.str();

@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <limits>
 #include <sstream>
-#include <time.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -36,7 +35,7 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
 	requiredPercentForToday(0),
-	lastRun(0),
+	lastRun(DateTime::epoch()),
 	remainingCorrection(1.0f),
 	minAdjustment(),
 	maxAdjustment(),
@@ -55,7 +54,7 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
 	requiredPercentForToday(0),
-	lastRun(0),
+	lastRun(DateTime::epoch()),
 	remainingCorrection(remainingCorrection)
 {
 	setMinAdjustment(minAdjustment);
@@ -67,10 +66,8 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 TemperatureDependentSchedulerImpl::~TemperatureDependentSchedulerImpl() {
 }
 
-unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForNextDay(const time_t now, float* temp) const {
-	const DateTime dateTime(now);
-
-	const float temperature = temperatureForecast->getTemperatureForecast(dateTime, dateTime.addSeconds(oneDayInSeconds - 1)).max;
+unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForNextDay(const DateTime& dateTime, float* temp) const {
+	const float temperature = temperatureForecast->getTemperatureForecast(dateTime, dateTime + std::chrono::hours(24) - std::chrono::seconds(1)).max;
 	const unsigned result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	if (nullptr != temp) {
@@ -80,10 +77,8 @@ unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForNextDay(const t
 	return result;
 }
 
-unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForPreviousDay(const time_t now, float* temp) const {
-	const DateTime dateTime(now);
-
-	const float temperature = temperatureHistory->getTemperatureHistory(dateTime.addSeconds(-oneDayInSeconds), dateTime.addSeconds(-1)).max;
+unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForPreviousDay(const DateTime& dateTime, float* temp) const {
+	const float temperature = temperatureHistory->getTemperatureHistory(dateTime - std::chrono::hours(24), dateTime - std::chrono::seconds(1)).max;
 	const unsigned result = TemperatureToPercent::getInstance().getRequiredPercentFromTemperature(temperature);
 
 	if (nullptr != temp) {
@@ -93,17 +88,25 @@ unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForPreviousDay(con
 	return result;
 }
 
-enum TemperatureDependentSchedulerImpl::Day TemperatureDependentSchedulerImpl::getLastRunDay(const time_t rawtime) const {
-	const unsigned currentDaysSinceEpoch = getElapsedDaysSinceEpoch(toLocalTime(rawtime));
-	const unsigned lastRunDaySinceEpoch = getElapsedDaysSinceEpoch(toLocalTime(lastRun));
+enum TemperatureDependentSchedulerImpl::Day TemperatureDependentSchedulerImpl::getLastRunDay(const LocalDateTime& localDateTime) const {
 
-	if (currentDaysSinceEpoch == lastRunDaySinceEpoch) {
+	if (localDateTime.getYears() == lastRun.getYears() &&
+		localDateTime.getMonths() == lastRun.getMonths() &&
+		localDateTime.getDays() == lastRun.getDays())
+	{
 		return Day::TODAY;
-	} else if (currentDaysSinceEpoch == (lastRunDaySinceEpoch + 1)) {
-		return Day::YESTERDAY;
-	} else {
-		return Day::OTHER;
 	}
+
+	LocalDateTime oneDayEarlier = localDateTime.addDays(-1);
+
+	if (oneDayEarlier.getYears() == lastRun.getYears() &&
+		oneDayEarlier.getMonths() == lastRun.getMonths() &&
+		oneDayEarlier.getDays() == lastRun.getDays())
+	{
+		return Day::YESTERDAY;
+	}
+
+	return Day::OTHER;
 }
 
 std::string TemperatureDependentSchedulerImpl::dayToString(enum Day day) {
@@ -138,12 +141,12 @@ int TemperatureDependentSchedulerImpl::calculateRemainingPercentToday(const int 
 	return result;
 }
 
-int TemperatureDependentSchedulerImpl::calculateRemainingPercentYesterday(const int remainingPercent, const std::time_t rawtime, std::ostringstream& oss) const {
+int TemperatureDependentSchedulerImpl::calculateRemainingPercentYesterday(const int remainingPercent, const DateTime& dateTime, std::ostringstream& oss) const {
 	oss << "\t\t" << std::setw(logIndentation) << "Calculate remainingPercent" << std::endl;
 	oss << "\t\t\t" << std::setw(logIndentation) << "remainingPercent from previous run: " << toPercent(remainingPercent) << std::endl;
 
 	float temperature = 0.0f;
-	unsigned yesterdayUsage = getRequiredPercentForPreviousDay(rawtime, &temperature);
+	unsigned yesterdayUsage = getRequiredPercentForPreviousDay(dateTime, &temperature);
 
 	oss << "\t\t\t" << std::setw(logIndentation) << "yesterday usage: " << toPercent(yesterdayUsage) << " (" << toCelsius(temperature) << ")" << std::endl;
 
@@ -163,12 +166,12 @@ int TemperatureDependentSchedulerImpl::calculateRemainingPercentYesterday(const 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned TemperatureDependentSchedulerImpl::calculateRequiredPercentForToday(const int remainingPercent, const std::time_t rawtime, std::ostringstream& oss) const {
+unsigned TemperatureDependentSchedulerImpl::calculateRequiredPercentForToday(const int remainingPercent, const DateTime& dateTime, std::ostringstream& oss) const {
 	oss << "\t\t" << std::setw(logIndentation) << "Calculate requiredPercentForToday" << std::endl;
 	oss << "\t\t\t" << std::setw(logIndentation) << "remainingPercent: " << toPercent(remainingPercent) << std::endl;
 
 	float temperature = 0.0f;
-	unsigned forecastedUsage = getRequiredPercentForNextDay(rawtime, &temperature);
+	unsigned forecastedUsage = getRequiredPercentForNextDay(dateTime, &temperature);
 
 	oss << "\t\t\t" << std::setw(logIndentation) << "forecasted usage: " << toPercent(forecastedUsage) << " (" << toCelsius(temperature) << ")" << std::endl;
 
@@ -209,7 +212,7 @@ unsigned TemperatureDependentSchedulerImpl::calculateAdjustment(const unsigned r
 	return result;
 }
 
-Scheduler::Result TemperatureDependentSchedulerImpl::process(const time_t rawtime) {
+Scheduler::Result TemperatureDependentSchedulerImpl::process(const DateTime& dateTime) {
 
 	if (nullptr == temperatureForecast) {
 		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureForecast");
@@ -219,14 +222,14 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const time_t rawtim
 		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureHistory");
 	}
 
-	const enum Day day = getLastRunDay(rawtime);
-	lastRun = rawtime;
+	const enum Day day = getLastRunDay(dateTime);
+	lastRun = dateTime;
 
 	std::ostringstream oss;
 	oss.setf(std::ios::left, std::ios::adjustfield);
 
 	oss << "TemperatureDependentSchedulerImpl::process()" << std::endl;
-	oss << "\t" << std::setw(logIndentation) << "last run: " << dayToString(day) << " (" << toLocalTimeStr(lastRun, "%F %T") << ")" << std::endl;
+	oss << "\t" << std::setw(logIndentation) << "last run: " << dayToString(day) << " (" << lastRun.toString("%F %T") << ")" << std::endl;
 	oss << "\t" << std::setw(logIndentation) << "remainingPercent from previous run: " << toPercent(remainingPercent) << std::endl;
 	oss << "\t" << std::setw(logIndentation) << "requiredPercentForToday from previous run: " << toPercent(requiredPercentForToday) << std::endl;
 
@@ -235,7 +238,7 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const time_t rawtim
 		remainingPercent = calculateRemainingPercentToday(remainingPercent, oss);
 		break;
 	case Day::YESTERDAY:
-		remainingPercent = calculateRemainingPercentYesterday(remainingPercent, rawtime, oss);
+		remainingPercent = calculateRemainingPercentYesterday(remainingPercent, dateTime, oss);
 		break;
 	case Day::OTHER:
 		remainingPercent = calculateRemainingPercentOther(remainingPercent, oss);
@@ -247,7 +250,7 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const time_t rawtim
 
 
 	if (Day::YESTERDAY == day || Day::OTHER == day) {
-		requiredPercentForToday = calculateRequiredPercentForToday(remainingPercent, rawtime, oss);
+		requiredPercentForToday = calculateRequiredPercentForToday(remainingPercent, dateTime, oss);
 	}
 	oss << "\t" << std::setw(logIndentation) << "requiredPercentForToday: " << toPercent(requiredPercentForToday) << std::endl;
 
@@ -274,7 +277,7 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const time_t rawtim
 nlohmann::json TemperatureDependentSchedulerImpl::saveTo() const {
 	nlohmann::json j;
 	j["remainingPercent"] = remainingPercent;
-	j["lastRun"] = lastRun;
+	j["lastRun"] = lastRun.toRawTime();
 	return j;
 }
 
@@ -289,7 +292,7 @@ void TemperatureDependentSchedulerImpl::loadFrom(const nlohmann::json& values) {
 	{
 		auto it = values.find("lastRun");
 		if (values.end() != it) {
-			lastRun = it.value();
+			lastRun = DateTime::create(it.value());
 		}
 	}
 }

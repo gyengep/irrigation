@@ -4,6 +4,7 @@
 #include "DocumentView/View.h"
 #include "Logic/IdType.h"
 #include "Logic/Program.h"
+#include "Utils/DateTime.h"
 #include "Utils/Thread.h"
 
 #ifndef FRIEND_TEST
@@ -22,15 +23,15 @@ class TimerView : public View, public Runnable {
 
 	const std::chrono::seconds period;
 	const std::chrono::seconds maxTardiness;
-	std::chrono::system_clock::time_point expectedSystemTime;
+	LocalDateTime expectedLocalDateTime;
 
 	IrrigationDocument& irrigationDocument;
 	std::unique_ptr<Thread> timerThread;
 
-	void checkProgramScheduled(const time_t rawTime);
-	bool processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const time_t rawTime);
+	void checkProgramScheduled(const LocalDateTime& localDateTime);
+	bool processProgramScheduled(const IdType& idType, const std::shared_ptr<Program>& program, const LocalDateTime& localDateTime);
 
-	static bool checkSystemTime(const std::chrono::system_clock::time_point& expectedSystemTime);
+	static bool checkExpectedDateTime(const LocalDateTime& expectedLocalDateTime);
 
 public:
 	TimerView(IrrigationDocument& irrigationDocument);

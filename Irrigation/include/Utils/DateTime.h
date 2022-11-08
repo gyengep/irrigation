@@ -26,8 +26,9 @@ class DateTime {
 protected:
 	std::time_t rawtime;
 
-public:
 	DateTime(const std::time_t& rawtime);
+
+public:
 	virtual ~DateTime() = default;
 
 	DateTime& operator=(const DateTime& other);
@@ -39,14 +40,20 @@ public:
 	bool operator<(const DateTime& other) const;
 	bool operator>(const DateTime& other) const;
 
-	DateTime add(const std::chrono::seconds& seconds) const;
+	DateTime operator+(const std::chrono::seconds& seconds) const;
+	DateTime operator-(const std::chrono::seconds& seconds) const;
+	std::chrono::seconds operator-(const DateTime& other) const;
+
 	DateTime addHours(int hours) const;
 	DateTime addMinutes(int minutes) const;
 	DateTime addSeconds(int seconds) const;
 
-	const std::time_t& toRawtime() const { return rawtime; }
+	const std::time_t& toRawTime() const { return rawtime; }
 
 	static DateTime now();
+	static DateTime epoch();
+	static DateTime create(const std::time_t& rawtime);
+
 	static void setTimefunc(const std::shared_ptr<Timefunc>& timefunc);
 	static void resetTimefunc();
 };
@@ -63,7 +70,7 @@ private:
 
 	std::tm* getTimeinfo() const;
 
-	static std::time_t toRawTime(const std::shared_ptr<Converter>& converter, int years, int months, int days, int hours, int minutes, int seconds);
+	static std::time_t createRawTime(const std::shared_ptr<Converter>& converter, int years, int months, int days, int hours, int minutes, int seconds);
 
 protected:
 	ZonedDateTime(const std::shared_ptr<Converter>& converter, const DateTime& other);
@@ -82,6 +89,7 @@ public:
 	int getHours() const;
 	int getMinutes() const;
 	int getSeconds() const;
+	int getDayOfWeek() const;
 
 	std::string toString() const;
 	std::string toString(const char* format) const;
@@ -106,6 +114,7 @@ class LocalDateTime : public ZonedDateTime {
 public:
 	LocalDateTime(const DateTime& other);
 	LocalDateTime(const LocalDateTime& other);
+	LocalDateTime(int years, int months, int days);
 	LocalDateTime(int years, int months, int days, int hours, int minutes, int seconds);
 	virtual ~LocalDateTime() = default;
 

@@ -85,24 +85,6 @@ std::string toLocalTimeStr(const time_t& rawTime, const char* formatStr) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned getElapsedDaysSinceEpoch(const tm& timeinfo) {
-	struct tm timeinfoCopy = timeinfo;
-	const time_t rawtime = timegm(&timeinfoCopy);
-	if (rawtime == (time_t)-1) {
-		throw runtime_error(string("Invalid timeinfo:") +
-				" year: " + to_string(timeinfo.tm_year) +
-				" month: " + to_string(timeinfo.tm_mon) +
-				" day: " + to_string(timeinfo.tm_mday) +
-				" hour: " + to_string(timeinfo.tm_hour) +
-				" min: " + to_string(timeinfo.tm_min) +
-				" sec: " + to_string(timeinfo.tm_sec));
-	}
-
-	return rawtime / (60 * 60 * 24);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 pair<time_t, time_t> getPreviousPeriod(const time_t& rawTime, const seconds& periodLength) {
 	const time_t periodInSeconds = periodLength.count();
 

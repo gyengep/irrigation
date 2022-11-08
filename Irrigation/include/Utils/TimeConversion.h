@@ -36,7 +36,5 @@ public:
 std::chrono::seconds abs(const std::chrono::seconds& t);
 std::chrono::milliseconds abs(const std::chrono::milliseconds& t);
 
-unsigned getElapsedDaysSinceEpoch(const std::tm& timeinfo);
-
 std::pair<std::time_t, std::time_t> getPreviousPeriod(const std::time_t& rawTime, const std::chrono::seconds& periodLength);
 std::pair<std::time_t, std::time_t> getCurrentPeriod(const std::time_t& rawTime, const std::chrono::seconds& periodLength);

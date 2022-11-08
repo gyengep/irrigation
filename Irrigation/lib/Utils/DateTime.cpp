@@ -25,20 +25,28 @@ DateTime& DateTime::operator=(const DateTime& other) {
 	return *this;
 }
 
-DateTime DateTime::add(const std::chrono::seconds& seconds) const {
+DateTime DateTime::operator+(const std::chrono::seconds& seconds) const {
 	return DateTime(rawtime + seconds.count());
 }
 
+DateTime DateTime::operator-(const std::chrono::seconds& seconds) const {
+	return DateTime(rawtime - seconds.count());
+}
+
+std::chrono::seconds DateTime::operator-(const DateTime& other) const {
+	return std::chrono::seconds(rawtime - other.rawtime);
+}
+
 DateTime DateTime::addHours(int hours) const {
-	return add(std::chrono::hours(hours));
+	return this->operator+(std::chrono::hours(hours));
 }
 
 DateTime DateTime::addMinutes(int minutes) const {
-	return add(std::chrono::minutes(minutes));
+	return this->operator+(std::chrono::minutes(minutes));
 }
 
 DateTime DateTime::addSeconds(int seconds) const {
-	return add(std::chrono::seconds(seconds));
+	return this->operator+(std::chrono::seconds(seconds));
 }
 
 bool DateTime::operator==(const DateTime& other) const {
@@ -69,6 +77,14 @@ DateTime DateTime::now() {
 	return DateTime(timefunc->getTime());
 }
 
+DateTime DateTime::epoch() {
+	return DateTime(0);
+}
+
+DateTime DateTime::create(const std::time_t& rawtime) {
+	return DateTime(rawtime);
+}
+
 void DateTime::setTimefunc(const std::shared_ptr<Timefunc>& timefunc) {
 	if (nullptr == timefunc) {
 		throw std::invalid_argument("DateTime::setTimefunc() nullptr == timefunc");
@@ -92,7 +108,7 @@ ZonedDateTime::ZonedDateTime(const std::shared_ptr<Converter>& converter, const 
 }
 
 ZonedDateTime::ZonedDateTime(const std::shared_ptr<Converter>& converter, int years, int months, int days, int hours, int minutes, int seconds) :
-	DateTime(toRawTime(converter, years, months, days, hours, minutes, seconds)),
+	DateTime(createRawTime(converter, years, months, days, hours, minutes, seconds)),
 	converter(converter),
 	timeinfo()
 {
@@ -107,7 +123,7 @@ ZonedDateTime& ZonedDateTime::operator=(const ZonedDateTime& other) {
 	return *this;
 }
 
-std::time_t ZonedDateTime::toRawTime(const std::shared_ptr<Converter>& converter, int years, int months, int days, int hours, int minutes, int seconds) {
+std::time_t ZonedDateTime::createRawTime(const std::shared_ptr<Converter>& converter, int years, int months, int days, int hours, int minutes, int seconds) {
 	checkDate(years, months, days);
 	checkTime(hours, minutes, seconds);
 
@@ -162,6 +178,10 @@ int ZonedDateTime::getDays() const {
 	return getTimeinfo()->tm_mday;
 }
 
+int ZonedDateTime::getDayOfWeek() const {
+	return (getTimeinfo()->tm_wday + 6) % 7;
+}
+
 int ZonedDateTime::getHours() const {
 	return getTimeinfo()->tm_hour;
 }
@@ -182,7 +202,7 @@ DateTime ZonedDateTime::addDays(int days) const {
 	timeinfo.tm_mday += days;
 	timeinfo.tm_isdst = -1;
 
-	return DateTime(converter->fromTimeinfo(&timeinfo));
+	return DateTime::create(converter->fromTimeinfo(&timeinfo));
 }
 
 void ZonedDateTime::checkDate(int years, int months, int days) {
@@ -244,10 +264,15 @@ LocalDateTime::LocalDateTime(const DateTime& other) :
 {
 }
 
-LocalDateTime::LocalDateTime(int years, int months, int days, int hours, int minutes, int seconds) :
-	ZonedDateTime(std::make_shared<LocalDateTime::Converter>(), years, months, days, hours, minutes, seconds)
-{
-}
+ LocalDateTime::LocalDateTime(int years, int months, int days) :
+ 	ZonedDateTime(std::make_shared<LocalDateTime::Converter>(), years, months, days, 0, 0, 0)
+ {
+ }
+
+ LocalDateTime::LocalDateTime(int years, int months, int days, int hours, int minutes, int seconds) :
+ 	ZonedDateTime(std::make_shared<LocalDateTime::Converter>(), years, months, days, hours, minutes, seconds)
+ {
+ }
 
 LocalDateTime& LocalDateTime::operator=(const LocalDateTime& other) {
 	if (this != &other) {
