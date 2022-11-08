@@ -1,5 +1,7 @@
 #include "ProgramImplTest.h"
 #include "Logic/ProgramImplBuilder.h"
+#include "Logic/StartTimeImpl.h"
+#include "Utils/TimeConversion.h"
 
 using namespace testing;
 using ::testing::Return;
@@ -108,22 +110,27 @@ TEST(ProgramImplTest, setSchedulerType) {
 	program->setSchedulerType(expected2);
 	EXPECT_THAT(program->getSchedulerType(), Eq(expected2));
 }
-/*
-TEST(ProgramImplTest, isScheduled1) {
-	MockProgram program;
-	MockScheduler scheduler;
 
-	EXPECT_CALL(program, getCurrentScheduler()).
-			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, process(_)).
+TEST(ProgramImplTest, isScheduled1) {
+	std::shared_ptr<MockScheduler> mockScheduler = std::make_shared<StrictMock<MockScheduler>>();
+	std::shared_ptr<MockSchedulerContainer> mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
+
+	EXPECT_CALL(*mockScheduler, process(_)).
 			Times(4).
 			WillRepeatedly(Return(Scheduler::Result(false, false, 0)));
 
-	program.setAdjustment(76);
-	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
-	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
-	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
-	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
+	EXPECT_CALL(*mockSchedulerContainer, at(_)).
+			WillRepeatedly(Return(mockScheduler));
+
+	ProgramPtr program = ProgramImpl::Builder().
+			setSchedulerContainer(mockSchedulerContainer).
+			build();
+
+	program->setAdjustment(76);
+	program->getStartTimeContainer().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program->getStartTimeContainer().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program->getStartTimeContainer().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program->getStartTimeContainer().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -136,27 +143,32 @@ TEST(ProgramImplTest, isScheduled1) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, 0)));
+				ASSERT_THAT(program->isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, 0)));
 			}
 		}
 	}
 }
 
 TEST(ProgramImplTest, isScheduled2) {
-	MockProgram program;
-	MockScheduler scheduler;
+	std::shared_ptr<MockScheduler> mockScheduler = std::make_shared<StrictMock<MockScheduler>>();
+	std::shared_ptr<MockSchedulerContainer> mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 
-	EXPECT_CALL(program, getCurrentScheduler()).
-			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, process(_)).
+	EXPECT_CALL(*mockScheduler, process(_)).
 			Times(4).
 			WillRepeatedly(Return(Scheduler::Result(true, false, 0)));
 
-	program.setAdjustment(76);
-	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
-	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
-	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
-	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
+	EXPECT_CALL(*mockSchedulerContainer, at(_)).
+			WillRepeatedly(Return(mockScheduler));
+
+	ProgramPtr program = ProgramImpl::Builder().
+			setSchedulerContainer(mockSchedulerContainer).
+			build();
+
+	program->setAdjustment(76);
+	program->getStartTimeContainer().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program->getStartTimeContainer().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program->getStartTimeContainer().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program->getStartTimeContainer().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -168,27 +180,32 @@ TEST(ProgramImplTest, isScheduled2) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, expectedResult ? 76 : 0)));
+				ASSERT_THAT(program->isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, expectedResult ? 76 : 0)));
 			}
 		}
 	}
 }
 
 TEST(ProgramImplTest, isScheduled3) {
-	MockProgram program;
-	MockScheduler scheduler;
+	std::shared_ptr<MockScheduler> mockScheduler = std::make_shared<StrictMock<MockScheduler>>();
+	std::shared_ptr<MockSchedulerContainer> mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 
-	EXPECT_CALL(program, getCurrentScheduler()).
-			WillRepeatedly(ReturnRef(scheduler));
-	EXPECT_CALL(scheduler, process(_)).
+	EXPECT_CALL(*mockScheduler, process(_)).
 			Times(4).
 			WillRepeatedly(Return(Scheduler::Result(true, true, 25)));
 
-	program.setAdjustment(76);
-	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
-	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
-	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
-	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
+	EXPECT_CALL(*mockSchedulerContainer, at(_)).
+			WillRepeatedly(Return(mockScheduler));
+
+	ProgramPtr program = ProgramImpl::Builder().
+			setSchedulerContainer(mockSchedulerContainer).
+			build();
+
+	program->setAdjustment(76);
+	program->getStartTimeContainer().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program->getStartTimeContainer().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program->getStartTimeContainer().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program->getStartTimeContainer().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
@@ -200,32 +217,35 @@ TEST(ProgramImplTest, isScheduled3) {
 				expectedResult |= (hour == 20 && min == 15 && sec == 0);
 
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
+				ASSERT_THAT(program->isScheduled(rawTime), Pointee(ScheduledResult(expectedResult, expectedResult ? 0.25f * 0.76f * 100.0f : 0)));
 			}
 		}
 	}
 }
 
 TEST(ProgramImplTest, isScheduled_disabled) {
-	MockProgram program;
-	MockScheduler scheduler;
+	std::shared_ptr<MockSchedulerContainer> mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 
-	program.setEnabled(false);
-	program.getStartTimes().insert(0, std::make_shared<StartTimeImpl>(4, 0));
-	program.getStartTimes().insert(1, std::make_shared<StartTimeImpl>(6, 0));
-	program.getStartTimes().insert(2, std::make_shared<StartTimeImpl>(6, 30));
-	program.getStartTimes().insert(3, std::make_shared<StartTimeImpl>(20, 15));
+	ProgramPtr program = ProgramImpl::Builder().
+			setSchedulerContainer(mockSchedulerContainer).
+			build();
+
+	program->setEnabled(false);
+	program->getStartTimeContainer().insert(0, std::make_shared<StartTimeImpl>(4, 0));
+	program->getStartTimeContainer().insert(1, std::make_shared<StartTimeImpl>(6, 0));
+	program->getStartTimeContainer().insert(2, std::make_shared<StartTimeImpl>(6, 30));
+	program->getStartTimeContainer().insert(3, std::make_shared<StartTimeImpl>(20, 15));
 
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				const time_t rawTime = fromLocalTime(2018, 5, 27, hour, min, sec);
-				ASSERT_THAT(program.isScheduled(rawTime), Pointee(ScheduledResult(false, 0)));
+				ASSERT_THAT(program->isScheduled(rawTime), Pointee(ScheduledResult(false, 0)));
 			}
 		}
 	}
 }
-*/
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

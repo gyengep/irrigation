@@ -1,6 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <memory>
+#include "Mocks/MockScheduler.h"
 #include "Mocks/MockSchedulerContainer.h"
 #include "Mocks/MockRunTimeContainer.h"
 #include "Mocks/MockStartTime.h"

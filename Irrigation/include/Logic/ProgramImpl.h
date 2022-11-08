@@ -25,8 +25,6 @@ private:
 	const std::shared_ptr<StartTimeContainer> startTimeContainer;
 	const std::shared_ptr<StartTimeFactory> startTimeFactory;
 
-	std::shared_ptr<Scheduler> currentScheduler;
-
 public:
 	ProgramImpl(
 		const std::shared_ptr<SchedulerContainer>& schedulerContainer,
@@ -56,8 +54,7 @@ public:
 	SchedulerType getSchedulerType() const override 					{ return schedulerType; }
 
 	virtual std::unique_ptr<ScheduledResult> isScheduled(const std::time_t rawtime) override;
-//	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
-	virtual Scheduler& getCurrentScheduler() override 					{ return *currentScheduler; }
+	virtual Scheduler& getCurrentScheduler() override;
 
 	virtual const SchedulerContainer& getSchedulerContainer() const 	{ return *schedulerContainer; }
 	virtual const RunTimeContainer& getRunTimeContainer() const 		{ return *runTimeContainer; }

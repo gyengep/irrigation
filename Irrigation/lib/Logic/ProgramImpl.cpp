@@ -60,12 +60,16 @@ ProgramImpl::ProgramImpl(
 	enabled(enabled),
 	name(name),
 	adjustment(adjustment),
+	schedulerType(schedulerType),
 	schedulerContainer(schedulerContainer),
 	runTimeContainer(runTimeContainer),
 	startTimeContainer(startTimeContainer),
 	startTimeFactory(startTimeFactory)
 {
-	setSchedulerType(schedulerType);
+}
+
+Scheduler& ProgramImpl::getCurrentScheduler() {
+	return *getSchedulerContainer().at(schedulerType);
 }
 
 std::unique_ptr<ScheduledResult> ProgramImpl::isScheduled(const std::time_t rawtime) {
