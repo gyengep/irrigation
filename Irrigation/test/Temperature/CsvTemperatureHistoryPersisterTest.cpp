@@ -23,13 +23,13 @@ TEST(CsvTemperatureHistoryRepositoryTest, add) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 5), 50.f));
 
 	EXPECT_THAT(temperatureHistoryRepository.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.0f)
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 5), 50.0f)
 		)
 	);
 }
@@ -46,14 +46,14 @@ TEST(CsvTemperatureHistoryRepositoryTest, addExisting) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 30.f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 5), 50.f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 30.f));
 
 	EXPECT_THAT(temperatureHistoryRepository.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 30.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 50.0f)
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 30.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 5), 50.0f)
 		)
 	);
 }
@@ -70,18 +70,18 @@ TEST(CsvTemperatureHistoryRepositoryTest, removeNewer) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 30.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 4), 25.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5), 35.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 12.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 3), 30.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 4), 25.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 5), 35.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 3), 12.0f));
 
-	temperatureHistoryRepository.removeNewer(LocalDateTime::create(2021, 6, 1, 22, 33, 3));
+	temperatureHistoryRepository.removeNewer(LocalDateTime(2021, 6, 1, 22, 33, 3));
 
 	EXPECT_THAT(temperatureHistoryRepository.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 12.0f)
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 3), 12.0f)
 		)
 	);
 }
@@ -98,18 +98,18 @@ TEST(CsvTemperatureHistoryRepositoryTest, removeOlder) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 5),  124.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 6),  105.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 25), 85.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 24), 65.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 34, 5), 45.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 5),  124.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 6),  105.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 25), 85.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 24), 65.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 34, 5), 45.0f));
 
-	temperatureHistoryRepository.removeOlder(LocalDateTime::create(2021, 6, 1, 22, 33, 25));
+	temperatureHistoryRepository.removeOlder(LocalDateTime(2021, 6, 1, 22, 33, 25));
 
 	EXPECT_THAT(temperatureHistoryRepository.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 25), 85.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 34, 5), 45.0f)
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 25), 85.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 34, 5), 45.0f)
 		)
 	);
 }
@@ -126,25 +126,25 @@ TEST(CsvTemperatureHistoryRepositoryTest, getBetween) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 1), 10.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 30.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 7), 70.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 8), 80.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 9), 90.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 13), 130.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 14), 140.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 15), 150.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 1), 10.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 3), 30.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 7), 70.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 8), 80.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 9), 90.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 13), 130.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 14), 140.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 15), 150.0f));
 
 	EXPECT_THAT(
 		temperatureHistoryRepository.getBetween(
-				LocalDateTime::create(2021, 6, 1, 22, 33, 8),
-				LocalDateTime::create(2021, 6, 1, 22, 33, 14)),
+				LocalDateTime(2021, 6, 1, 22, 33, 8),
+				LocalDateTime(2021, 6, 1, 22, 33, 14)),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 8), 80.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 9), 90.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 13), 130.0f),
-			TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 14), 140.0f)
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 8), 80.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 9), 90.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 13), 130.0f),
+			TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 14), 140.0f)
 		)
 	);
 }
@@ -161,17 +161,17 @@ TEST(CsvTemperatureHistoryRepositoryTest, getBetweenNotExisting) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 1), 10.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 2), 20.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 3), 30.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 13), 130.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 14), 140.0f));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime::create(2021, 6, 1, 22, 33, 15), 150.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 1), 10.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 2), 20.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 3), 30.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 13), 130.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 14), 140.0f));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(LocalDateTime(2021, 6, 1, 22, 33, 15), 150.0f));
 
 	EXPECT_THAT(
 			temperatureHistoryRepository.getBetween(
-					LocalDateTime::create(2021, 6, 1, 22, 33, 5),
-					LocalDateTime::create(2021, 6, 1, 22, 33, 10)),
+					LocalDateTime(2021, 6, 1, 22, 33, 5),
+					LocalDateTime(2021, 6, 1, 22, 33, 10)),
 			IsEmpty()
 		);
 }
@@ -203,9 +203,9 @@ TEST(CsvTemperatureHistoryRepositoryTest, load) {
 
 	EXPECT_THAT(temperatureHistoryRepository.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 3), 25.0f),
-			TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 4), 30.0f),
-			TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 5), 35.0f)
+			TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 3), 25.0f),
+			TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 4), 30.0f),
+			TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 5), 35.0f)
 		)
 	);
 }
@@ -235,7 +235,7 @@ TEST(CsvTemperatureHistoryRepositoryTest, loadInvalid) {
 
 	EXPECT_THAT(temperatureHistoryRepository.getAll(),
 		UnorderedElementsAre(
-			TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 3), 35.0f)
+			TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 3), 35.0f)
 		)
 	);
 }
@@ -258,9 +258,9 @@ TEST(CsvTemperatureHistoryRepositoryTest, save) {
 			std::make_shared<MockCsvWriterFactory>(mockCsvWriter)
 		);
 
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 3), 25));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 4), 30));
-	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(UtcDateTime::create(2021, 6, 1, 20, 56, 5), 35));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 3), 25));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 4), 30));
+	temperatureHistoryRepository.add(TemperatureHistoryRepository::Sample(UtcDateTime(2021, 6, 1, 20, 56, 5), 35));
 
 	temperatureHistoryRepository.save();
 }

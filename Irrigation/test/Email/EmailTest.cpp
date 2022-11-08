@@ -68,7 +68,7 @@ TEST(EmailTest, toString1) {
 			std::list<Email::Contact>(),
 			"MySubject",
 			"MyMessage",
-			LocalDateTime::create(2019, 11, 25, 8, 8, 9)
+			LocalDateTime(2019, 11, 25, 8, 8, 9)
 		);
 
 	EXPECT_THAT(email.toString(), Eq(expectedMessage));
@@ -89,7 +89,7 @@ TEST(EmailTest, toString2) {
 			std::list<Email::Contact>(),
 			"MySubject",
 			"MyMessage",
-			LocalDateTime::create(2020, 1, 17, 17, 37, 48)
+			LocalDateTime(2020, 1, 17, 17, 37, 48)
 		);
 
 	EXPECT_THAT(email.toString(), Eq(expectedMessage));
@@ -111,7 +111,7 @@ TEST(EmailTest, toString3) {
 			std::list<Email::Contact>{Email::Contact("qwert2", "2_9876543")},
 			"MySubject",
 			"MyMessage",
-			LocalDateTime::create(2020, 8, 26, 22, 34, 53)
+			LocalDateTime(2020, 8, 26, 22, 34, 53)
 		);
 
 	EXPECT_THAT(email.toString(), Eq(expectedMessage));

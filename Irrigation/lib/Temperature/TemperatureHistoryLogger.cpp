@@ -54,12 +54,12 @@ void TemperatureHistoryLogger::start() {
 
 	auto func = [this] {
 		const LocalDateTime oneHourEarlier = LocalDateTime::now().addHours(-1);
-		const auto from = LocalDateTime::create(
+		const LocalDateTime from(
 				oneHourEarlier.getYears(), oneHourEarlier.getMonths(), oneHourEarlier.getDays(),
 				oneHourEarlier.getHours(), 0, 0
 			);
 
-		const auto to = LocalDateTime::create(
+		const LocalDateTime to(
 				oneHourEarlier.getYears(), oneHourEarlier.getMonths(), oneHourEarlier.getDays(),
 				oneHourEarlier.getHours(), 59, 59
 			);

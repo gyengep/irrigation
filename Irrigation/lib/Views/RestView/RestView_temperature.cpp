@@ -41,8 +41,8 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureYesterday(const HttpRequ
 		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
 
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(-1);
-		const LocalDateTime from = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
-		const LocalDateTime to = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
+		const LocalDateTime from(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
+		const LocalDateTime to(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
 		const auto historyValues = temperatureHistory->getTemperatureHistory(from, to);
 
 		return HttpResponse::Builder().
@@ -62,8 +62,8 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureToday(const HttpRequest&
 		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
 
 		const LocalDateTime now = LocalDateTime::now();
-		const LocalDateTime from = LocalDateTime::create(now.getYears(), now.getMonths(), now.getDays(), 0, 0, 0);
-		const LocalDateTime to = LocalDateTime::create(now.getYears(), now.getMonths(), now.getDays(), 23, 59, 59);
+		const LocalDateTime from(now.getYears(), now.getMonths(), now.getDays(), 0, 0, 0);
+		const LocalDateTime to(now.getYears(), now.getMonths(), now.getDays(), 23, 59, 59);
 
 		const auto historyValues = temperatureHistory->getTemperatureHistory(from, now);
 		const auto forecastValues = temperatureForecast->getTemperatureForecast(now, to);
@@ -90,8 +90,8 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureTomorrow(const HttpReque
 		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
 
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(1);
-		const LocalDateTime from = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
-		const LocalDateTime to = LocalDateTime::create(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
+		const LocalDateTime from(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
+		const LocalDateTime to(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
 		const auto forecastValues = temperatureForecast->getTemperatureForecast(from, to);
 
 		return HttpResponse::Builder().

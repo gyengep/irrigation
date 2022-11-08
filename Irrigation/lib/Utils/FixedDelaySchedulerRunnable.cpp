@@ -87,7 +87,7 @@ EveryHourSchedulerRunnable::~EveryHourSchedulerRunnable() {
 }
 
 bool EveryHourSchedulerRunnable::skipRun() {
-	const auto now = LocalDateTime::now();
+	const LocalDateTime now = DateTime::now();
 
 	bool differentHour = false;
 

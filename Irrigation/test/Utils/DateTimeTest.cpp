@@ -3,134 +3,155 @@
 
 using namespace testing;
 
+const int expectedYear   = 2021;
+const int expectedMonth  = 5;
+const int expectedDay    = 18;
+const int expectedHour   = 8;
+const int expectedMinute = 33;
+const int expectedSecond = 28;
+
+
+TEST(DateTimeTest, init) {
+	DateTime now1 = DateTime::now();
+	const DateTime now2(DateTime::now());
+	const DateTime now3(now2);
+}
 
 TEST(UtcDateTimeTest, init) {
-	UtcDateTime dateTime(1621326808);
+	UtcDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
 
-	EXPECT_THAT(dateTime.getYears(), Eq(2021));
-	EXPECT_THAT(dateTime.getMonths(), Eq(5));
-	EXPECT_THAT(dateTime.getDays(), Eq(18));
-	EXPECT_THAT(dateTime.getHours(), Eq(8));
-	EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-	EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	EXPECT_THAT(dateTime.getYears(), Eq(expectedYear));
+	EXPECT_THAT(dateTime.getMonths(), Eq(expectedMonth));
+	EXPECT_THAT(dateTime.getDays(), Eq(expectedDay));
+	EXPECT_THAT(dateTime.getHours(), Eq(expectedHour));
+	EXPECT_THAT(dateTime.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(dateTime.getSeconds(), Eq(expectedSecond));
 }
 
 TEST(LocalDateTimeTest, init) {
-	LocalDateTime dateTime(1621326808);
+	LocalDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
 
-	EXPECT_THAT(dateTime.getYears(), Eq(2021));
-	EXPECT_THAT(dateTime.getMonths(), Eq(5));
-	EXPECT_THAT(dateTime.getDays(), Eq(18));
-	EXPECT_THAT(dateTime.getHours(), Eq(10));
-	EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-	EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	EXPECT_THAT(dateTime.getYears(), Eq(expectedYear));
+	EXPECT_THAT(dateTime.getMonths(), Eq(expectedMonth));
+	EXPECT_THAT(dateTime.getDays(), Eq(expectedDay));
+	EXPECT_THAT(dateTime.getHours(), Eq(expectedHour));
+	EXPECT_THAT(dateTime.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(dateTime.getSeconds(), Eq(expectedSecond));
 }
 
 TEST(UtcDateTimeTest, toString) {
-	UtcDateTime dateTime(1621326808);
+	UtcDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
 
 	EXPECT_THAT(dateTime.toString("%Y-%m-%d %H:%M:%S"), Eq("2021-05-18 08:33:28"));
 }
 
 TEST(LocalDateTimeTest, toString) {
-	LocalDateTime dateTime(1621326808);
+	LocalDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
 
-	EXPECT_THAT(dateTime.toString("%Y-%m-%d %H:%M:%S"), Eq("2021-05-18 10:33:28"));
+	EXPECT_THAT(dateTime.toString("%Y-%m-%d %H:%M:%S"), Eq("2021-05-18 08:33:28"));
 }
 
-TEST(UtcDateTimeTest, create) {
-	UtcDateTime dateTime = UtcDateTime::create(2021, 5, 18, 8, 33, 28);
+TEST(UtcDateTimeTest, initInvalid) {
+	EXPECT_NO_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond));
 
-	EXPECT_TRUE(dateTime == UtcDateTime(1621326808));
-}
-
-TEST(LocalDateTimeTest, create) {
-	LocalDateTime dateTime = LocalDateTime::create(2021, 5, 18, 10, 33, 28);
-
-	EXPECT_TRUE(dateTime == UtcDateTime(1621326808));
-}
-
-TEST(UtcDateTimeTest, createInvalid) {
-	EXPECT_NO_THROW(UtcDateTime::create(2021, 5, 18, 10, 33, 28));
-
-	EXPECT_THROW(UtcDateTime::create(2021, 0, 18, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 13, 18, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 2, 0, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 2, 29, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 4, 0, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 4, 31, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 0, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 32, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 18, -1, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 18, 24, 33, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 18, 8, -1, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 18, 8, 60, 28), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 18, 8, 33, -1), std::runtime_error);
-	EXPECT_THROW(UtcDateTime::create(2021, 5, 18, 8, 33, 60), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 0,  expectedDay, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 13, expectedDay, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 2, 0,  expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 2, 29, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 4, 0,  expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 4, 31, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 5, 0,  expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, 5, 32, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, -1, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, 24, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, -1, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, 60, expectedSecond), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, -1), std::runtime_error);
+	EXPECT_THROW(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, 60), std::runtime_error);
 }
 
 TEST(LocalDateTimeTest, createInvalid) {
-	EXPECT_NO_THROW(LocalDateTime::create(2021, 5, 18, 10, 33, 28));
+	EXPECT_NO_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond));
 
-	EXPECT_THROW(LocalDateTime::create(2021, 0, 18, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 13, 18, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 2, 0, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 2, 29, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 4, 0, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 4, 31, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 0, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 32, 8, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, -1, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, 24, 33, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, 8, -1, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, 8, 60, 28), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, 8, 33, -1), std::runtime_error);
-	EXPECT_THROW(LocalDateTime::create(2021, 5, 18, 8, 33, 60), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 0,  expectedDay, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 13, expectedDay, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 2, 0,  expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 2, 29, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 4, 0,  expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 4, 31, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 5, 0,  expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, 5, 32, expectedHour, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, -1, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, 24, expectedMinute, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, -1, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, 60, expectedSecond), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, -1), std::runtime_error);
+	EXPECT_THROW(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, 60), std::runtime_error);
 }
 
 TEST(UtcDateTimeTest, isEqual) {
-	EXPECT_FALSE(UtcDateTime(1621326807) == UtcDateTime(1621326808));
-	EXPECT_TRUE(UtcDateTime(1621326808) == UtcDateTime(1621326808));
-	EXPECT_FALSE(UtcDateTime(1621326809) == UtcDateTime(1621326808));
+	UtcDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
+
+	EXPECT_FALSE(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond - 1) == dateTime);
+	EXPECT_TRUE(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond) == dateTime);
+	EXPECT_FALSE(UtcDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond + 1) == dateTime);
 }
 
 TEST(LocalDateTimeTest, isEqual) {
-	EXPECT_FALSE(LocalDateTime(1621326807) == LocalDateTime(1621326808));
-	EXPECT_TRUE(LocalDateTime(1621326808) == LocalDateTime(1621326808));
-	EXPECT_FALSE(LocalDateTime(1621326809) == LocalDateTime(1621326808));
+	LocalDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
+
+	EXPECT_FALSE(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond - 1) == dateTime);
+	EXPECT_TRUE(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond) == dateTime);
+	EXPECT_FALSE(LocalDateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond + 1) == dateTime);
 }
 
-TEST(UtcDateTimeTest, equal) {
-	UtcDateTime dateTime(1621326808);
+TEST(UtcDateTimeTest, equalsOperator) {
+	const UtcDateTime dateTimeToCopy(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
+	UtcDateTime dateTime(2019, 1, 1, 0, 0, 0);
 
-	EXPECT_TRUE(dateTime == UtcDateTime(1621326808));
-	EXPECT_FALSE(dateTime == UtcDateTime(1622615547));
-	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-05-18T08:33:28+0000");
+	EXPECT_THAT(dateTime.getYears(), Not(Eq(expectedYear)));
+	EXPECT_THAT(dateTime.getMonths(), Not(Eq(expectedMonth)));
+	EXPECT_THAT(dateTime.getDays(), Not(Eq(expectedDay)));
+	EXPECT_THAT(dateTime.getHours(), Not(Eq(expectedHour)));
+	EXPECT_THAT(dateTime.getMinutes(), Not(Eq(expectedMinute)));
+	EXPECT_THAT(dateTime.getSeconds(), Not(Eq(expectedSecond)));
 
-	dateTime = LocalDateTime(1622615547);
+	dateTime = dateTimeToCopy;
 
-	EXPECT_FALSE(dateTime == UtcDateTime(1621326808));
-	EXPECT_TRUE(dateTime == UtcDateTime(1622615547));
-	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-06-02T06:32:27+0000");
+	EXPECT_THAT(dateTime.getYears(), Eq(expectedYear));
+	EXPECT_THAT(dateTime.getMonths(), Eq(expectedMonth));
+	EXPECT_THAT(dateTime.getDays(), Eq(expectedDay));
+	EXPECT_THAT(dateTime.getHours(), Eq(expectedHour));
+	EXPECT_THAT(dateTime.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(dateTime.getSeconds(), Eq(expectedSecond));
 }
 
-TEST(LocalDateTimeTest, equal) {
-	LocalDateTime dateTime(1621326808);
+TEST(LocalDateTimeTest, equalsOperator) {
+	const LocalDateTime dateTimeToCopy(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
+	LocalDateTime dateTime(2019, 1, 1, 0, 0, 0);
 
-	EXPECT_TRUE(dateTime == LocalDateTime(1621326808));
-	EXPECT_FALSE(dateTime == LocalDateTime(1622615547));
-	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-05-18T10:33:28+0200");
+	EXPECT_THAT(dateTime.getYears(), Not(Eq(expectedYear)));
+	EXPECT_THAT(dateTime.getMonths(), Not(Eq(expectedMonth)));
+	EXPECT_THAT(dateTime.getDays(), Not(Eq(expectedDay)));
+	EXPECT_THAT(dateTime.getHours(), Not(Eq(expectedHour)));
+	EXPECT_THAT(dateTime.getMinutes(), Not(Eq(expectedMinute)));
+	EXPECT_THAT(dateTime.getSeconds(), Not(Eq(expectedSecond)));
 
-	dateTime = LocalDateTime(1622615547);
+	dateTime = dateTimeToCopy;
 
-	EXPECT_FALSE(dateTime == LocalDateTime(1621326808));
-	EXPECT_TRUE(dateTime == LocalDateTime(1622615547));
-	EXPECT_THAT(dateTime.toString("%Y-%m-%dT%H:%M:%S%z"), "2021-06-02T08:32:27+0200");
+	EXPECT_THAT(dateTime.getYears(), Eq(expectedYear));
+	EXPECT_THAT(dateTime.getMonths(), Eq(expectedMonth));
+	EXPECT_THAT(dateTime.getDays(), Eq(expectedDay));
+	EXPECT_THAT(dateTime.getHours(), Eq(expectedHour));
+	EXPECT_THAT(dateTime.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(dateTime.getSeconds(), Eq(expectedSecond));
 }
 
 TEST(UtcDateTimeTest, addDays) {
+	const UtcDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addDays(0);
+		UtcDateTime dateTime = dateTimeDefault.addDays(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
@@ -142,54 +163,44 @@ TEST(UtcDateTimeTest, addDays) {
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addDays(1);
+		UtcDateTime dateTime = dateTimeDefault.addDays(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addDays(21);
+		UtcDateTime dateTime = dateTimeDefault.addDays(21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(6));
-		EXPECT_THAT(dateTime.getDays(), Eq(8));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5 + 1));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 - 10));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addDays(-21);
+		UtcDateTime dateTime = dateTimeDefault.addDays(-21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(4));
-		EXPECT_THAT(dateTime.getDays(), Eq(27));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5 - 1));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 9));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-
-	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addDays(0);
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-
 	}
 }
 
 TEST(UtcDateTimeTest, addDaysDST) {
+	const UtcDateTime dateTimeDefault(2021, 3, 27, 9, 20, 21);
+
 	{
-		UtcDateTime dateTime = UtcDateTime(1616836821).addDays(0);
+		UtcDateTime dateTime = dateTimeDefault.addDays(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(3));
@@ -200,70 +211,72 @@ TEST(UtcDateTimeTest, addDaysDST) {
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1616836821).addDays(1);
+		UtcDateTime dateTime = dateTimeDefault.addDays(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(3));
-		EXPECT_THAT(dateTime.getDays(), Eq(28));
+		EXPECT_THAT(dateTime.getDays(), Eq(27 + 1));
 		EXPECT_THAT(dateTime.getHours(), Eq(9));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(20));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(21));
 	}
 
-	EXPECT_TRUE(UtcDateTime(1616836821).addDays(1) == UtcDateTime(1616836821).addHours(24));
+	EXPECT_TRUE(dateTimeDefault.addDays(1) == dateTimeDefault.addHours(24));
 }
 
 TEST(LocalDateTimeTest, addDays) {
+	const LocalDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addDays(0);
+		LocalDateTime dateTime = dateTimeDefault.addDays(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addDays(1);
+		LocalDateTime dateTime = dateTimeDefault.addDays(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addDays(21);
+		LocalDateTime dateTime = dateTimeDefault.addDays(21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(6));
-		EXPECT_THAT(dateTime.getDays(), Eq(8));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5 + 1));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 - 10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addDays(-21);
+		LocalDateTime dateTime = dateTimeDefault.addDays(-21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(4));
-		EXPECT_THAT(dateTime.getDays(), Eq(27));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5 - 1));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 9));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
 
 TEST(LocalDateTimeTest, addDaysDST1) {
-	const std::time_t rawtime = 1616836821;
+	const LocalDateTime dateTimeDefault(2021, 3, 27, 10, 20, 21);
 
 	{
-		LocalDateTime dateTime = LocalDateTime(rawtime).addDays(0);
+		LocalDateTime dateTime = dateTimeDefault.addDays(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(3));
@@ -274,24 +287,24 @@ TEST(LocalDateTimeTest, addDaysDST1) {
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(rawtime).addDays(1);
+		LocalDateTime dateTime = dateTimeDefault.addDays(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(3));
-		EXPECT_THAT(dateTime.getDays(), Eq(28));
+		EXPECT_THAT(dateTime.getDays(), Eq(27 + 1));
 		EXPECT_THAT(dateTime.getHours(), Eq(10));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(20));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(21));
 	}
 
-	EXPECT_TRUE(LocalDateTime(rawtime).addDays(1) == LocalDateTime(rawtime).addHours(23));
+	EXPECT_TRUE(dateTimeDefault.addDays(1) == dateTimeDefault.addHours(23));
 }
 
 TEST(LocalDateTimeTest, addDaysDST2) {
-	const std::time_t rawtime = 1635582021;
+	const LocalDateTime dateTimeDefault(2021, 10, 30, 10, 20, 21);
 
 	{
-		LocalDateTime dateTime = LocalDateTime(rawtime).addDays(0);
+		LocalDateTime dateTime = dateTimeDefault.addDays(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(10));
@@ -302,22 +315,24 @@ TEST(LocalDateTimeTest, addDaysDST2) {
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(rawtime).addDays(1);
+		LocalDateTime dateTime = dateTimeDefault.addDays(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(10));
-		EXPECT_THAT(dateTime.getDays(), Eq(31));
+		EXPECT_THAT(dateTime.getDays(), Eq(30 + 1));
 		EXPECT_THAT(dateTime.getHours(), Eq(10));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(20));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(21));
 	}
 
-	EXPECT_TRUE(LocalDateTime(rawtime).addDays(1) == LocalDateTime(rawtime).addHours(25));
+	EXPECT_TRUE(dateTimeDefault.addDays(1) == dateTimeDefault.addHours(25));
 }
 
 TEST(UtcDateTimeTest, addHours) {
+	const UtcDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addHours(0);
+		UtcDateTime dateTime = dateTimeDefault.addHours(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
@@ -325,44 +340,43 @@ TEST(UtcDateTimeTest, addHours) {
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addHours(1);
+		UtcDateTime dateTime = dateTimeDefault.addHours(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(9));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addHours(21);
+		UtcDateTime dateTime = dateTimeDefault.addHours(21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
-		EXPECT_THAT(dateTime.getHours(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
+		EXPECT_THAT(dateTime.getHours(), Eq((8 + 21) % 24));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addHours(72);
+		UtcDateTime dateTime = dateTimeDefault.addHours(72);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(21));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 3));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addHours(-21);
+		UtcDateTime dateTime = dateTimeDefault.addHours(-21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
@@ -374,66 +388,70 @@ TEST(UtcDateTimeTest, addHours) {
 }
 
 TEST(LocalDateTimeTest, addHours) {
+	const LocalDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addHours(0);
+		LocalDateTime dateTime = dateTimeDefault.addHours(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addHours(1);
+		LocalDateTime dateTime = dateTimeDefault.addHours(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(11));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addHours(21);
+		LocalDateTime dateTime = dateTimeDefault.addHours(21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
-		EXPECT_THAT(dateTime.getHours(), Eq(7));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 - 3));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addHours(72);
+		LocalDateTime dateTime = dateTimeDefault.addHours(72);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(21));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 3));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addHours(-21);
+		LocalDateTime dateTime = dateTimeDefault.addHours(-21);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(17));
-		EXPECT_THAT(dateTime.getHours(), Eq(13));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 - 1));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 3));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
 
 TEST(UtcDateTimeTest, addMinutes) {
+	const UtcDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addMinutes(0);
+		UtcDateTime dateTime = dateTimeDefault.addMinutes(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
@@ -444,44 +462,44 @@ TEST(UtcDateTimeTest, addMinutes) {
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addMinutes(1);
+		UtcDateTime dateTime = dateTimeDefault.addMinutes(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(34));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 1));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addMinutes(150);
+		UtcDateTime dateTime = dateTimeDefault.addMinutes(150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(11));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(3));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 3));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 - 30));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addMinutes(-150);
+		UtcDateTime dateTime = dateTimeDefault.addMinutes(-150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(6));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(3));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 - 2));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 - 30));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addMinutes(60 * 24);
+		UtcDateTime dateTime = dateTimeDefault.addMinutes(60 * 24);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
@@ -489,59 +507,61 @@ TEST(UtcDateTimeTest, addMinutes) {
 }
 
 TEST(LocalDateTimeTest, addMinutes) {
+	const LocalDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addMinutes(0);
+		LocalDateTime dateTime = dateTimeDefault.addMinutes(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addMinutes(1);
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(34));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-	}
-
-	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addMinutes(150);
-
-		EXPECT_THAT(dateTime.getYears(), Eq(2021));
-		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(13));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(3));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
-
-	}
-
-	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addMinutes(-150);
+		LocalDateTime dateTime = dateTimeDefault.addMinutes(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(3));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 1));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addMinutes(60 * 24);
+		LocalDateTime dateTime = dateTimeDefault.addMinutes(150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 3));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 - 30));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+
+	}
+
+	{
+		LocalDateTime dateTime = dateTimeDefault.addMinutes(-150);
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 - 2));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 - 30));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
+	}
+
+	{
+		LocalDateTime dateTime = dateTimeDefault.addMinutes(60 * 24);
+
+		EXPECT_THAT(dateTime.getYears(), Eq(2021));
+		EXPECT_THAT(dateTime.getMonths(), Eq(5));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 
@@ -549,8 +569,10 @@ TEST(LocalDateTimeTest, addMinutes) {
 }
 
 TEST(UtcDateTimeTest, addSeconds) {
+	const UtcDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addSeconds(0);
+		UtcDateTime dateTime = dateTimeDefault.addSeconds(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
@@ -561,110 +583,114 @@ TEST(UtcDateTimeTest, addSeconds) {
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addSeconds(1);
+		UtcDateTime dateTime = dateTimeDefault.addSeconds(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(29));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 1));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addSeconds(150);
+		UtcDateTime dateTime = dateTimeDefault.addSeconds(150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(35));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(58));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 2));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 30));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addSeconds(-150);
+		UtcDateTime dateTime = dateTimeDefault.addSeconds(-150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(30));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(58));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 - 3));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 30));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).addSeconds(60 * 60);
+		UtcDateTime dateTime = dateTimeDefault.addSeconds(60 * 60);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(9));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
 
 TEST(LocalDateTimeTest, addSeconds) {
+	const LocalDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addSeconds(0);
+		LocalDateTime dateTime = dateTimeDefault.addSeconds(0);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addSeconds(1);
+		LocalDateTime dateTime = dateTimeDefault.addSeconds(1);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(29));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 1));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addSeconds(150);
+		LocalDateTime dateTime = dateTimeDefault.addSeconds(150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(35));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(58));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 2));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 30));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addSeconds(-150);
+		LocalDateTime dateTime = dateTimeDefault.addSeconds(-150);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(30));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(58));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 - 3));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 30));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).addSeconds(60 * 60);
+		LocalDateTime dateTime = dateTimeDefault.addSeconds(60 * 60);
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(11));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
 
 TEST(UtcDateTimeTest, add) {
+	const UtcDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::seconds());
+		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::seconds());
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
@@ -675,103 +701,106 @@ TEST(UtcDateTimeTest, add) {
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::seconds(10));
+		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(10));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(38));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 10));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::seconds(-10));
+		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(-10));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(18));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 - 10));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::minutes(15));
+		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::minutes(15));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
 		EXPECT_THAT(dateTime.getHours(), Eq(8));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(48));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 15));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		UtcDateTime dateTime = UtcDateTime(1621326808).add(std::chrono::hours(25));
+		UtcDateTime dateTime = dateTimeDefault.add(std::chrono::hours(25));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
-		EXPECT_THAT(dateTime.getHours(), Eq(9));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
 
 TEST(LocalDateTimeTest, add) {
+	const LocalDateTime dateTimeDefault(2021, 5, 18, 8, 33, 28);
+
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::seconds());
+		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::seconds());
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::seconds(10));
+		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(10));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(38));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 + 10));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::seconds(-10));
+		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::seconds(-10));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
-		EXPECT_THAT(dateTime.getSeconds(), Eq(18));
+		EXPECT_THAT(dateTime.getSeconds(), Eq(28 - 10));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::minutes(15));
+		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::minutes(15));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
 		EXPECT_THAT(dateTime.getDays(), Eq(18));
-		EXPECT_THAT(dateTime.getHours(), Eq(10));
-		EXPECT_THAT(dateTime.getMinutes(), Eq(48));
+		EXPECT_THAT(dateTime.getHours(), Eq(8));
+		EXPECT_THAT(dateTime.getMinutes(), Eq(33 + 15));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 
 	{
-		LocalDateTime dateTime = LocalDateTime(1621326808).add(std::chrono::hours(25));
+		LocalDateTime dateTime = dateTimeDefault.add(std::chrono::hours(25));
 
 		EXPECT_THAT(dateTime.getYears(), Eq(2021));
 		EXPECT_THAT(dateTime.getMonths(), Eq(5));
-		EXPECT_THAT(dateTime.getDays(), Eq(19));
-		EXPECT_THAT(dateTime.getHours(), Eq(11));
+		EXPECT_THAT(dateTime.getDays(), Eq(18 + 1));
+		EXPECT_THAT(dateTime.getHours(), Eq(8 + 1));
 		EXPECT_THAT(dateTime.getMinutes(), Eq(33));
 		EXPECT_THAT(dateTime.getSeconds(), Eq(28));
 	}
 }
+

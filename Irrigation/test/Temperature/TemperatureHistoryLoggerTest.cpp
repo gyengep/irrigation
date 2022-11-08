@@ -14,7 +14,7 @@ TEST(TemperatureHistoryLoggerTest, save) {
 	auto mockCsvWriter = make_shared<MockCsvWriter>();
 	auto mockCsvWriterFactory = make_shared<MockCsvWriterFactory>(mockCsvWriter);
 
-	const LocalDateTime localDateTime = LocalDateTime::create(2019, 6, 12, 22, 0, 0);
+	const LocalDateTime localDateTime(2019, 6, 12, 22, 0, 0);
 	const TemperatureHistory::Values result(10, 20, 15);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(localDateTime, localDateTime.addSeconds(60))).Times(1).WillOnce(Return(result));

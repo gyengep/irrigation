@@ -48,7 +48,7 @@ string RestViewTest::createTemperatureYesterdayUrl(const std::string& requestPar
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getTemperature) {
-	const auto now = LocalDateTime::create(2021, 6, 22, 23, 36, 57);
+	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
@@ -63,7 +63,7 @@ TEST_F(RestViewTest, getTemperature) {
 }
 
 TEST_F(RestViewTest, getTemperatureWithTimeFormat) {
-	const auto now = LocalDateTime::create(2021, 6, 22, 23, 36, 57);
+	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
@@ -77,7 +77,7 @@ TEST_F(RestViewTest, getTemperatureWithTimeFormat) {
 }
 
 TEST_F(RestViewTest, getTemperatureAcceptable) {
-	const auto now = LocalDateTime::create(2021, 6, 22, 23, 36, 57);
+	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
@@ -107,15 +107,15 @@ TEST_F(RestViewTest, getTemperatureNotAcceptable) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getTomorrowTemperature) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 30, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 30, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -127,15 +127,15 @@ TEST_F(RestViewTest, getTomorrowTemperature) {
 }
 
 TEST_F(RestViewTest, getTomorrowTemperatureWithDatetimeFormat) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 30, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 30, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -147,15 +147,15 @@ TEST_F(RestViewTest, getTomorrowTemperatureWithDatetimeFormat) {
 }
 
 TEST_F(RestViewTest, getTomorrowTemperatureAcceptable) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 30, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 30, 23, 59, 59);
 	const auto values = TemperatureForecast::Values(25, 30);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Return(values));
@@ -167,14 +167,14 @@ TEST_F(RestViewTest, getTomorrowTemperatureAcceptable) {
 }
 
 TEST_F(RestViewTest, getTomorrowTemperatureNotFound) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
-	const auto from = LocalDateTime::create(2021, 5, 30, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 30, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 30, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 30, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(from, to)).Times(1).WillOnce(Throw(TemperatureException("")));
 
@@ -192,15 +192,15 @@ TEST_F(RestViewTest, getTomorrowTemperatureNotAcceptable) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getTodayTemperature) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 29, 23, 59, 59);
 	const auto historyValues = TemperatureHistory::Values(20, 28, 23);
 	const auto forecastValues = TemperatureForecast::Values(25, 30);
 
@@ -217,15 +217,15 @@ TEST_F(RestViewTest, getTodayTemperature) {
 }
 
 TEST_F(RestViewTest, getTodayTemperatureWithDatetimeFormat) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 29, 23, 59, 59);
 	const auto historyValues = TemperatureHistory::Values(20, 28, 23);
 	const auto forecastValues = TemperatureForecast::Values(25, 30);
 
@@ -242,15 +242,15 @@ TEST_F(RestViewTest, getTodayTemperatureWithDatetimeFormat) {
 }
 
 TEST_F(RestViewTest, getTodayTemperatureAcceptable) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 29, 23, 59, 59);
 	const auto historyValues = TemperatureHistory::Values(20, 28, 23);
 	const auto forecastValues = TemperatureForecast::Values(25, 30);
 
@@ -267,14 +267,14 @@ TEST_F(RestViewTest, getTodayTemperatureAcceptable) {
 }
 
 TEST_F(RestViewTest, getTodayTemperature_HistoryNotFound) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 29, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Throw(TemperatureException("")));
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(now, to)).Times(0);
@@ -284,14 +284,14 @@ TEST_F(RestViewTest, getTodayTemperature_HistoryNotFound) {
 }
 
 TEST_F(RestViewTest, getTodayTemperature_ForecastNotFound) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
-	const auto from = LocalDateTime::create(2021, 5, 29, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 29, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 29, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 29, 23, 59, 59);
 	const auto historyValues = TemperatureHistory::Values(25, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, now)).Times(1).WillOnce(Return(historyValues));
@@ -311,15 +311,15 @@ TEST_F(RestViewTest, getTodayTemperatureNotAcceptable) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTest, getYesterdayTemperature) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 28, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 28, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(25, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -331,15 +331,15 @@ TEST_F(RestViewTest, getYesterdayTemperature) {
 }
 
 TEST_F(RestViewTest, getYesterdayTemperatureWithDatetimeFormat) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 28, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 28, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(25, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -351,15 +351,15 @@ TEST_F(RestViewTest, getYesterdayTemperatureWithDatetimeFormat) {
 }
 
 TEST_F(RestViewTest, getYesterdayTemperatureAcceptable) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 28, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 28, 23, 59, 59);
 	const auto values = TemperatureHistory::Values(20, 30, 28);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Return(values));
@@ -371,15 +371,15 @@ TEST_F(RestViewTest, getYesterdayTemperatureAcceptable) {
 }
 
 TEST_F(RestViewTest, getYesterdayTemperatureNotFound) {
-	const auto now = LocalDateTime::create(2021, 5, 29, 19, 33, 54);
+	const LocalDateTime now(2021, 5, 29, 19, 33, 54);
 	auto mockTimefunc = std::make_shared<MockTimefunc>();
 
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawtime()));
 
 	DateTime::setTimefunc(mockTimefunc);
 
-	const auto from = LocalDateTime::create(2021, 5, 28, 0, 0, 0);
-	const auto to = LocalDateTime::create(2021, 5, 28, 23, 59, 59);
+	const LocalDateTime from(2021, 5, 28, 0, 0, 0);
+	const LocalDateTime to(2021, 5, 28, 23, 59, 59);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(from, to)).Times(1).WillOnce(Throw(TemperatureException("")));
 

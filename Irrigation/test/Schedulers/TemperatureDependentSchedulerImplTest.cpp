@@ -29,7 +29,7 @@ void TemperatureDependentSchedulerImplTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(TemperatureDependentSchedulerImplTest, getAdjustment) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
@@ -37,7 +37,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustment) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentLower) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 9)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));
@@ -45,7 +45,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentLower) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentHigher) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));
@@ -53,14 +53,14 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentHigher) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, getRequiredPercentForNextDay) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
 
 	EXPECT_THAT(scheduler->getRequiredPercentForNextDay(fromLocalTime(2019, 8, 1, 4, 0, 0)), Eq(50));
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, getRequiredPercentForPreviousDay) {
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 25, 0)));
 
 	EXPECT_THAT(scheduler->getRequiredPercentForPreviousDay(fromLocalTime(2019, 8, 2, 4, 0, 0)), Eq(50));
@@ -69,7 +69,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getRequiredPercentForPreviousDay) 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentToday) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2020, 2, 15, 4, 0, 0), LocalDateTime::create(2020, 2, 16, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 15, 4, 0, 0), LocalDateTime(2020, 2, 16, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2020, 2, 15, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
@@ -80,11 +80,11 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentToday) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentYesterdayDay) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2020, 2, 15, 4, 0, 0), LocalDateTime::create(2020, 2, 16, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 15, 4, 0, 0), LocalDateTime(2020, 2, 16, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2020, 2, 15, 4, 0, 0), LocalDateTime::create(2020, 2, 16, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2020, 2, 15, 4, 0, 0), LocalDateTime(2020, 2, 16, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 25, 0)));
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2020, 2, 16, 4, 0, 0), LocalDateTime::create(2020, 2, 17, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 16, 4, 0, 0), LocalDateTime(2020, 2, 17, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2020, 2, 15, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
@@ -95,9 +95,9 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentYesterdayDay) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentOtherDay) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2020, 2, 15, 4, 0, 0), LocalDateTime::create(2020, 2, 16, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 15, 4, 0, 0), LocalDateTime(2020, 2, 16, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2020, 2, 17, 4, 0, 0), LocalDateTime::create(2020, 2, 18, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 17, 4, 0, 0), LocalDateTime(2020, 2, 18, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2020, 2, 15, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
@@ -110,7 +110,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentOtherDay) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(TemperatureDependentSchedulerImplTest, dayStart) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2020, 2, 28, 0, 0, 0), LocalDateTime::create(2020, 2, 28, 23, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 28, 0, 0, 0), LocalDateTime(2020, 2, 28, 23, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 15)));
 
 	EXPECT_THAT(scheduler->process(fromLocalTime(2020, 2, 28, 0, 0, 0)), Eq(Scheduler::Result(true, true, 25)));
@@ -123,12 +123,12 @@ TEST_F(TemperatureDependentSchedulerImplTest, dayStart) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim1) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -142,12 +142,12 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim1) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim2) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 33.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -161,12 +161,12 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim2) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim3) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 29.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 33.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 37.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -180,12 +180,12 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim3) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim4) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 33.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 29.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 33.0f)));
 
 	
@@ -200,12 +200,12 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim4) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim5) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 33.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 29.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 37.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -219,12 +219,12 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim5) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim6) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 33.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 29.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 41.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -238,32 +238,32 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim6) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim7) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 38.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 37.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 38.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 37.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 35.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 4, 4, 0, 0), LocalDateTime::create(2019, 8, 5, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 4, 4, 0, 0), LocalDateTime(2019, 8, 5, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 4, 4, 0, 0), LocalDateTime::create(2019, 8, 5, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 4, 4, 0, 0), LocalDateTime(2019, 8, 5, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 37.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 5, 4, 0, 0), LocalDateTime::create(2019, 8, 6, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 5, 4, 0, 0), LocalDateTime(2019, 8, 6, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 34.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 5, 4, 0, 0), LocalDateTime::create(2019, 8, 6, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 5, 4, 0, 0), LocalDateTime(2019, 8, 6, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 21.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 6, 4, 0, 0), LocalDateTime::create(2019, 8, 7, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 6, 4, 0, 0), LocalDateTime(2019, 8, 7, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30.0f)));
 
 
@@ -294,17 +294,17 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim7) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim8) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 38.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 38.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -322,17 +322,17 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim8) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim9) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 36.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 36.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -350,17 +350,17 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim9) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim11) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 38.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 38.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30.0f)));
 
 	scheduler->trimAdjustmentOver(100);
@@ -378,22 +378,22 @@ TEST_F(TemperatureDependentSchedulerImplTest, trim11) {
 }
 
 TEST_F(TemperatureDependentSchedulerImplTest, trim12) {
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 1, 4, 0, 0), LocalDateTime::create(2019, 8, 2, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 2, 4, 0, 0), LocalDateTime::create(2019, 8, 3, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 2, 4, 0, 0), LocalDateTime(2019, 8, 3, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime::create(2019, 8, 3, 4, 0, 0), LocalDateTime::create(2019, 8, 4, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 3, 4, 0, 0), LocalDateTime(2019, 8, 4, 3, 59, 59))).
 		WillOnce(Return(TemperatureHistory::Values(0, 30.0f, 0)));
 
-	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime::create(2019, 8, 4, 4, 0, 0), LocalDateTime::create(2019, 8, 5, 3, 59, 59))).
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 4, 4, 0, 0), LocalDateTime(2019, 8, 5, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 38.0f)));
 
 	scheduler->trimAdjustmentOver(100);
