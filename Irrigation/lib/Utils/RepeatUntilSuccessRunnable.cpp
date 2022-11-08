@@ -2,6 +2,7 @@
 #include "TimeContainer.h"
 #include "TimeConversion.h"
 #include "Logger/Logger.h"
+#include "Utils/DateTime.h"
 #include <sstream>
 
 
@@ -49,11 +50,10 @@ void RepeatUntilSuccessRunnable::run() {
 			errorCount++;
 
 			if (LOGGER.isLoggable(LogLevel::WARNING)) {
-				const auto nextTryTime = std::chrono::system_clock::now() + waitTime;
-				const std::string nextTryTimeStr = toLocalTimeStr(std::chrono::system_clock::to_time_t(nextTryTime), "%T");
+				const LocalDateTime nextTryDateTime = LocalDateTime::now() + std::chrono::duration_cast<std::chrono::seconds>(waitTime);
 
 				std::ostringstream oss;
-				oss << name << " failed on try " << errorCount << ", next try at " << nextTryTimeStr;
+				oss << name << " failed on try " << errorCount << ", next try at " << nextTryDateTime.toString("%T");
 				LOGGER.warning(oss.str().c_str(), e);
 			}
 

@@ -60,7 +60,7 @@ bool FixedRateSchedulerRunnable::checkWaitTime(const std::chrono::milliseconds& 
 	if (waitTime < std::chrono::milliseconds(0) || period < waitTime) {
 
 		if (LOGGER.isLoggable(LogLevel::WARNING)) {
-			TimeConverter timeConverter(abs(waitTime));
+			TimeConverter timeConverter((waitTime > std::chrono::milliseconds(0)) ? waitTime : -waitTime);
 			std::ostringstream oss;
 
 			oss << "Update period failure in FixedRateScheduler [" << name << "]! ";

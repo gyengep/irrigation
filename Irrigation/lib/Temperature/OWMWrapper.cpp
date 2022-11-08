@@ -126,7 +126,7 @@ list<TemperatureForecastProvider::ValuesWithTimes> OWMWrapper::parseTemperatureF
 	return result;
 }
 
-DateTime OWMWrapper::parseTimeString(const string& text) {
+UtcDateTime OWMWrapper::parseTimeString(const string& text) {
 	const static regex dateRegex("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
 	smatch dateMatch;
 

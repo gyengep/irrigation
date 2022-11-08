@@ -17,6 +17,10 @@ TEST(DateTimeTest, init) {
 	const DateTime now3(now2);
 }
 
+TEST(UtcDateTimeTest, now) {
+	UtcDateTime::now();
+}
+
 TEST(UtcDateTimeTest, init) {
 	UtcDateTime dateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond);
 
@@ -26,6 +30,10 @@ TEST(UtcDateTimeTest, init) {
 	EXPECT_THAT(dateTime.getHours(), Eq(expectedHour));
 	EXPECT_THAT(dateTime.getMinutes(), Eq(expectedMinute));
 	EXPECT_THAT(dateTime.getSeconds(), Eq(expectedSecond));
+}
+
+TEST(LocalDateTimeTest, now) {
+	LocalDateTime::now();
 }
 
 TEST(LocalDateTimeTest, init) {
