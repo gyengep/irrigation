@@ -19,7 +19,7 @@ public:
 	virtual void enableDay(size_t day, bool enable) override;
 	virtual bool isDayEnabled(size_t day) const override;
 
-	virtual Scheduler::Result process(const DateTime& dateTime) override;
+	virtual Scheduler::Result process(const LocalDateTime& localDateTime) override;
 
 	////////////////////////////////////////////////////////////
 

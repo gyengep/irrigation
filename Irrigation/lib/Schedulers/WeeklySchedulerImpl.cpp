@@ -53,8 +53,8 @@ bool WeeklySchedulerImpl::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-Scheduler::Result WeeklySchedulerImpl::process(const DateTime& dateTime) {
-	const size_t weekDay = LocalDateTime(dateTime).getDayOfWeek();
+Scheduler::Result WeeklySchedulerImpl::process(const LocalDateTime& localDateTime) {
+	const size_t weekDay = localDateTime.getDayOfWeek();
 	checkIndex(weekDay);
 	return Scheduler::Result(days[weekDay]);
 }

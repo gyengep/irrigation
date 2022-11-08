@@ -32,7 +32,7 @@ public:
 
 	Scheduler() = default;
 	virtual ~Scheduler() = default;
-	virtual Result process(const DateTime& dateTime) = 0;
+	virtual Result process(const LocalDateTime& localDateTime) = 0;
 
 	virtual std::string toString() const = 0;
 };

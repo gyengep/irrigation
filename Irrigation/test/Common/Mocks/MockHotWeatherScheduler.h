@@ -6,7 +6,7 @@
 class MockHotWeatherScheduler : public HotWeatherScheduler {
 public:
 
-	MOCK_METHOD1(process, Scheduler::Result(const DateTime& dateTime));
+	MOCK_METHOD1(process, Scheduler::Result(const LocalDateTime& localDateTime));
 
 	MOCK_METHOD1(setMinTemperature, void(float minTemperature));
 	MOCK_METHOD1(setPeriod, void(const std::chrono::seconds& period));

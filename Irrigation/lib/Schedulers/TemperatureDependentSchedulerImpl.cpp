@@ -212,7 +212,7 @@ unsigned TemperatureDependentSchedulerImpl::calculateAdjustment(const unsigned r
 	return result;
 }
 
-Scheduler::Result TemperatureDependentSchedulerImpl::process(const DateTime& dateTime) {
+Scheduler::Result TemperatureDependentSchedulerImpl::process(const LocalDateTime& localDateTime) {
 
 	if (nullptr == temperatureForecast) {
 		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureForecast");
@@ -222,8 +222,8 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const DateTime& dat
 		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureHistory");
 	}
 
-	const enum Day day = getLastRunDay(dateTime);
-	lastRun = dateTime;
+	const enum Day day = getLastRunDay(localDateTime);
+	lastRun = localDateTime;
 
 	std::ostringstream oss;
 	oss.setf(std::ios::left, std::ios::adjustfield);
@@ -238,7 +238,7 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const DateTime& dat
 		remainingPercent = calculateRemainingPercentToday(remainingPercent, oss);
 		break;
 	case Day::YESTERDAY:
-		remainingPercent = calculateRemainingPercentYesterday(remainingPercent, dateTime, oss);
+		remainingPercent = calculateRemainingPercentYesterday(remainingPercent, localDateTime, oss);
 		break;
 	case Day::OTHER:
 		remainingPercent = calculateRemainingPercentOther(remainingPercent, oss);
@@ -250,7 +250,7 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const DateTime& dat
 
 
 	if (Day::YESTERDAY == day || Day::OTHER == day) {
-		requiredPercentForToday = calculateRequiredPercentForToday(remainingPercent, dateTime, oss);
+		requiredPercentForToday = calculateRequiredPercentForToday(remainingPercent, localDateTime, oss);
 	}
 	oss << "\t" << std::setw(logIndentation) << "requiredPercentForToday: " << toPercent(requiredPercentForToday) << std::endl;
 

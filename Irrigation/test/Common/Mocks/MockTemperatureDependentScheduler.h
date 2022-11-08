@@ -6,7 +6,7 @@
 class MockTemperatureDependentScheduler : public TemperatureDependentScheduler {
 public:
 
-	MOCK_METHOD1(process, Scheduler::Result(const DateTime& dateTime));
+	MOCK_METHOD1(process, Scheduler::Result(const LocalDateTime& localDateTime));
 
 	MOCK_METHOD1(setRemainingCorrection, void(float a));
 	MOCK_METHOD1(setMinAdjustment, void(unsigned minAdjustment));

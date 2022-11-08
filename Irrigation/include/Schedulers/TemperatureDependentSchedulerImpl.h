@@ -58,7 +58,7 @@ public:
 	unsigned getRequiredPercentForNextDay(const DateTime& dateTime, float* temp = nullptr) const;
 	unsigned getRequiredPercentForPreviousDay(const DateTime& dateTime, float* temp = nullptr) const;
 
-	virtual Scheduler::Result process(const DateTime& dateTime) override;
+	virtual Scheduler::Result process(const LocalDateTime& localDateTime) override;
 
 	////////////////////////////////////////////////////
 

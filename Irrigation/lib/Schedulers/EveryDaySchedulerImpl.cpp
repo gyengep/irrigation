@@ -9,7 +9,7 @@ EveryDaySchedulerPtr EveryDaySchedulerImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Scheduler::Result EveryDaySchedulerImpl::process(const DateTime&) {
+Scheduler::Result EveryDaySchedulerImpl::process(const LocalDateTime&) {
 	return Scheduler::Result(true);
 }
 

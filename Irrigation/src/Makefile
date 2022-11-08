@@ -20,7 +20,7 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-LOCAL_LIBS      = -lLogger -lModel -lDocumentView -lLogic -lSchedulers -lTimerView -lValves -lRestView -lWebServer -lTemperature -lDtoReaderWriter -lDS18B20 -lEmail -lUtils
+LOCAL_LIBS      = -lModel -lRestView -lLogger -lWebServer -lDtoReaderWriter -lDocumentView -lLogic -lSchedulers -lValves -lTemperature -lDS18B20 -lEmail -lTimerView -lUtils
 INCLUDES	    = -I$(INCLUDE_DIR) -I$(PROJECT_ROOT)/3p/nlohmann
 LIBDIRS         = -L$(LIBRARY_DIR) -L/usr/local/lib
 LIBS            = $(LOCAL_LIBS) -pthread -lpugixml -lmicrohttpd -lcurl -lssl -lcrypto -ldl

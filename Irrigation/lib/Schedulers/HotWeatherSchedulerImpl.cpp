@@ -50,9 +50,9 @@ unsigned HotWeatherSchedulerImpl::getPeriod() const {
 	return period.count();
 }
 
-Scheduler::Result HotWeatherSchedulerImpl::process(const DateTime& dateTime) {
-	const auto historyValues = temperatureHistory->getTemperatureHistory(dateTime - period, dateTime);
-	const bool periodIsOk = ((lastRun + period) <= dateTime);
+Scheduler::Result HotWeatherSchedulerImpl::process(const LocalDateTime& localDateTime) {
+	const auto historyValues = temperatureHistory->getTemperatureHistory(localDateTime - period, localDateTime);
+	const bool periodIsOk = ((lastRun + period) <= localDateTime);
 	const bool temperatureIsOk = (historyValues.avg >= minTemperature);
 
 	if (LOGGER.isLoggable(LogLevel::TRACE)) {
@@ -64,12 +64,12 @@ Scheduler::Result HotWeatherSchedulerImpl::process(const DateTime& dateTime) {
 		oss << "avg: " << historyValues.avg << "  ";
 		oss << (temperatureIsOk ? "OK" : "SKIPPED") << "\n";
 
-		oss << "\tlast run: " << std::chrono::duration_cast<std::chrono::minutes>(dateTime - lastRun).count() << " minutes ago  " << (periodIsOk ? "OK" : "SKIPPED");
+		oss << "\tlast run: " << std::chrono::duration_cast<std::chrono::minutes>(localDateTime - lastRun).count() << " minutes ago  " << (periodIsOk ? "OK" : "SKIPPED");
 		LOGGER.trace(oss.str().c_str());
 	}
 
 	if (periodIsOk && temperatureIsOk) {
-		lastRun = dateTime;
+		lastRun = localDateTime;
 		return Scheduler::Result(true);
 	}
 
