@@ -6,7 +6,6 @@
 	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, float, RemainingCorrection);			\
 	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, int, MinAdjustment);					\
 	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, int, MaxAdjustment);					\
-	DTO_MEMBER_COPY(TemperatureDependentSchedulerDTO, int, Trim)
 
 
 CREATE_DTO_CLASS(TemperatureDependentSchedulerDTO)
@@ -18,8 +17,7 @@ CREATE_DTO_CLASS(TemperatureDependentSchedulerDTO)
 	TemperatureDependentSchedulerDTO(
 			float RemainingCorrection,
 			int MinAdjustment,
-			int MaxAdjustment,
-			int Trim
+			int MaxAdjustment
 		)
 	{
 		TEMPERATURE_DEPENDENT_SCHEDULER_DTO_MEMBERS;

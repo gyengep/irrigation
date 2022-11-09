@@ -160,10 +160,6 @@ TemperatureDependentSchedulerDTO XmlReader::loadTemperatureDependentScheduler(co
 		scheduler.setMaxAdjustment(tmpNode.text().as_uint());
 	}
 
-	if ((tmpNode = node.child("trim")) != nullptr) {
-		scheduler.setTrim(tmpNode.text().as_uint());
-	}
-
 	return scheduler;
 }
 

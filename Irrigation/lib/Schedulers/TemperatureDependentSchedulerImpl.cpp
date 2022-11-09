@@ -38,8 +38,7 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 	lastRun(DateTime::epoch()),
 	remainingCorrection(1.0f),
 	minAdjustment(),
-	maxAdjustment(),
-	trim()
+	maxAdjustment()
 {
 }
 
@@ -47,8 +46,7 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 	const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 	const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 	float remainingCorrection,
-	unsigned minAdjustment, unsigned maxAdjustment,
-	unsigned trim
+	unsigned minAdjustment, unsigned maxAdjustment
 ) :
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
@@ -59,8 +57,6 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 {
 	setMinAdjustment(minAdjustment);
 	setMaxAdjustment(maxAdjustment);
-	trimAdjustmentOver(trim);
-
 }
 
 TemperatureDependentSchedulerImpl::~TemperatureDependentSchedulerImpl() {
@@ -150,15 +146,11 @@ int TemperatureDependentSchedulerImpl::calculateRemainingPercentYesterday(const 
 
 	oss << "\t\t\t" << std::setw(logIndentation) << "yesterday usage: " << toPercent(yesterdayUsage) << " (" << toCelsius(temperature) << ")" << std::endl;
 
-	if (nullptr != trim && yesterdayUsage > *trim) {
-		yesterdayUsage = *trim;
-	}
-
 	int result = remainingPercent;
 	result -= static_cast<int>(yesterdayUsage);
 	result *= remainingCorrection;
 
-	oss << "\t\t\t" << std::setw(logIndentation) << "yesterday usage (trim): " << toPercent(yesterdayUsage) << " (trim: " << optionalToString(trim) << ")" << std::endl;
+	oss << "\t\t\t" << std::setw(logIndentation) << "yesterday usage: " << toPercent(yesterdayUsage) << std::endl;
 	oss << "\t\t\t" << std::setw(logIndentation) << "remaining correction: " << remainingCorrection << std::endl;
 	oss << "\t\t\t" << std::setw(logIndentation) << "result: " << toPercent(result) << std::endl;
 	return result;
@@ -175,11 +167,6 @@ unsigned TemperatureDependentSchedulerImpl::calculateRequiredPercentForToday(con
 
 	oss << "\t\t\t" << std::setw(logIndentation) << "forecasted usage: " << toPercent(forecastedUsage) << " (" << toCelsius(temperature) << ")" << std::endl;
 
-	if (nullptr != trim && forecastedUsage > *trim) {
-		forecastedUsage = *trim;
-	}
-
-
 	int result = static_cast<int>(forecastedUsage);
 	result -= remainingPercent;
 
@@ -187,7 +174,7 @@ unsigned TemperatureDependentSchedulerImpl::calculateRequiredPercentForToday(con
 		result = 0;
 	}
 
-	oss << "\t\t\t" << std::setw(logIndentation) << "forecasted usage (trim): " << toPercent(forecastedUsage) << " (trim: " << optionalToString(trim) << ")" << std::endl;
+	oss << "\t\t\t" << std::setw(logIndentation) << "forecasted usage: " << toPercent(forecastedUsage) << std::endl;
 	oss << "\t\t\t" << std::setw(logIndentation) << "result: " << toPercent(result) << std::endl;
 	return static_cast<unsigned>(result);
 }
@@ -223,7 +210,6 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const LocalDateTime
 	}
 
 	const enum Day day = getLastRunDay(localDateTime);
-	lastRun = localDateTime;
 
 	std::ostringstream oss;
 	oss.setf(std::ios::left, std::ios::adjustfield);
@@ -232,6 +218,8 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const LocalDateTime
 	oss << "\t" << std::setw(logIndentation) << "last run: " << dayToString(day) << " (" << lastRun.toString("%F %T") << ")" << std::endl;
 	oss << "\t" << std::setw(logIndentation) << "remainingPercent from previous run: " << toPercent(remainingPercent) << std::endl;
 	oss << "\t" << std::setw(logIndentation) << "requiredPercentForToday from previous run: " << toPercent(requiredPercentForToday) << std::endl;
+
+	lastRun = localDateTime;
 
 	switch (day) {
 	case Day::TODAY:
@@ -317,19 +305,11 @@ void TemperatureDependentSchedulerImpl::setMaxAdjustment(unsigned maxAdjustment)
 	}
 }
 
-void TemperatureDependentSchedulerImpl::trimAdjustmentOver(unsigned trim) {
-	if (0 == trim) {
-		this->trim.reset();
-	} else {
-		this->trim.reset(new unsigned(trim));
-	}
-}
-
 TemperatureDependentSchedulerDTO TemperatureDependentSchedulerImpl::toTemperatureDependentSchedulerDto() const {
 	return TemperatureDependentSchedulerDTO(
 			remainingCorrection,
-			minAdjustment ? *minAdjustment : 0, maxAdjustment ? *maxAdjustment : 0,
-			trim ? *trim : 0);
+			minAdjustment ? *minAdjustment : 0, maxAdjustment ? *maxAdjustment : 0
+		);
 }
 
 void TemperatureDependentSchedulerImpl::updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDTO& schedulerDTO) {
@@ -343,10 +323,6 @@ void TemperatureDependentSchedulerImpl::updateFromTemperatureDependentSchedulerD
 
 	if (schedulerDTO.hasMaxAdjustment()) {
 		setMaxAdjustment(schedulerDTO.getMaxAdjustment());
-	}
-
-	if (schedulerDTO.hasTrim()) {
-		trimAdjustmentOver(schedulerDTO.getTrim());
 	}
 }
 
@@ -364,7 +340,6 @@ std::string TemperatureDependentSchedulerImpl::toString() const {
 	oss << "remainingCorrection=" << remainingCorrection << ", ";
 	oss << "minAdjustment=" << optionalToString(minAdjustment) << ", ";
 	oss << "maxAdjustment=" << optionalToString(maxAdjustment) << ", ";
-	oss << "trimOver=" << optionalToString(trim);
 	oss << "}";
 	return oss.str();
 }

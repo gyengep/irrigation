@@ -24,8 +24,7 @@ void IrrigationApplication::setMyDefaults() {
 					TemperatureHandler::getInstance().getTemperatureForecast(),
 					TemperatureHandler::getInstance().getTemperatureHistory(),
 					0.75f,
-					50, 0,
-					100
+					50, 0
 				)).
 				build()
 			).
@@ -55,8 +54,7 @@ void IrrigationApplication::setMyDefaults() {
 					TemperatureHandler::getInstance().getTemperatureForecast(),
 					TemperatureHandler::getInstance().getTemperatureHistory(),
 					1.0f,
-					100, 0,
-					0
+					100, 0
 				)).
 				build()
 			).
@@ -119,8 +117,7 @@ void IrrigationApplication::setMyDefaults() {
 					TemperatureHandler::getInstance().getTemperatureForecast(),
 					TemperatureHandler::getInstance().getTemperatureHistory(),
 					1.0f,
-					75, 75,
-					0
+					75, 75
 				)).
 				build()
 			).
@@ -151,8 +148,7 @@ void IrrigationApplication::setMyDefaults() {
 					TemperatureHandler::getInstance().getTemperatureForecast(),
 					TemperatureHandler::getInstance().getTemperatureHistory(),
 					1.0f,
-					75, 75,
-					0
+					75, 75
 				)).
 				build()
 			).

@@ -181,10 +181,6 @@ void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const Temper
 	if (scheduler.hasMaxAdjustment()) {
 		node.append_child("max-adjustment").text().set(scheduler.getMaxAdjustment());
 	}
-
-	if (scheduler.hasTrim()) {
-		node.append_child("trim").text().set(scheduler.getTrim());
-	}
 }
 
 void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& scheduler) {

@@ -13,8 +13,8 @@ protected:
 
 	const HotWeatherSchedulerDTO expectedHotWeatherSchedulerDTO1 = HotWeatherSchedulerDTO(10, 20);
 	const HotWeatherSchedulerDTO expectedHotWeatherSchedulerDTO2 = HotWeatherSchedulerDTO(25, 35);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentSchedulerDto1 = TemperatureDependentSchedulerDTO(0, 1, 2, 3);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentSchedulerDto2 = TemperatureDependentSchedulerDTO(10, 20, 30, 40);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentSchedulerDto1 = TemperatureDependentSchedulerDTO(0, 1, 2);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentSchedulerDto2 = TemperatureDependentSchedulerDTO(10, 20, 30);
 	const WeeklySchedulerDTO expectedWeeklySchedulerDto1 = WeeklySchedulerDTO(std::list<bool> { true, true, false, false, true, false, false});
 	const WeeklySchedulerDTO expectedWeeklySchedulerDto2 = WeeklySchedulerDTO(std::list<bool> { false, false, true, false, true, false, false});
 

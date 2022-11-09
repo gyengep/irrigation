@@ -25,7 +25,6 @@ class TemperatureDependentSchedulerImpl : public TemperatureDependentScheduler {
 	float remainingCorrection;
 	std::unique_ptr<unsigned> minAdjustment;
 	std::unique_ptr<unsigned> maxAdjustment;
-	std::unique_ptr<unsigned> trim;
 
 	int calculateRemainingPercentOther(const int remainingPercent, std::ostringstream& oss) const;
 	int calculateRemainingPercentToday(const int remainingPercent, std::ostringstream& oss) const;
@@ -44,15 +43,13 @@ public:
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 			float remainingCorrection,
-			unsigned minAdjustment, unsigned maxAdjustment,
-			unsigned trim
+			unsigned minAdjustment, unsigned maxAdjustment
 		);
 	virtual ~TemperatureDependentSchedulerImpl();
 
 	virtual void setRemainingCorrection(float a) override;
 	virtual void setMinAdjustment(unsigned minAdjustment) override;
 	virtual void setMaxAdjustment(unsigned maxAdjustment) override;
-	virtual void trimAdjustmentOver(unsigned percent) override;
 
 	unsigned getRemainingPercent() const { return remainingPercent; }
 	unsigned getRequiredPercentForNextDay(const DateTime& dateTime, float* temp = nullptr) const;

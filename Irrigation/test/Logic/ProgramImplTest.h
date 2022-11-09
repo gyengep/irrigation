@@ -28,13 +28,13 @@ protected:
 	const SchedulersDTO expectedSchedulersDTO1 = SchedulersDTO(
 			EveryDaySchedulerDTO(),
 			HotWeatherSchedulerDTO(10, 20),
-			TemperatureDependentSchedulerDTO(0, 1, 2, 3),
+			TemperatureDependentSchedulerDTO(0, 1, 2),
 			WeeklySchedulerDTO(std::list<bool> { true, true, false, false, true, false, false})
 		);
 	const SchedulersDTO expectedSchedulersDTO2 = SchedulersDTO(
 			EveryDaySchedulerDTO(),
 			HotWeatherSchedulerDTO(25, 35),
-			TemperatureDependentSchedulerDTO(10, 20, 30, 40),
+			TemperatureDependentSchedulerDTO(10, 20, 30),
 			WeeklySchedulerDTO(std::list<bool> { false, false, true, false, true, false, false})
 		);
 	const std::list<RunTimeDTO> expectedRunTimeDtoList1 = std::list<RunTimeDTO> { RunTimeDTO(10, 20), RunTimeDTO(30, 40), RunTimeDTO(50, 60) };

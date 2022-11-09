@@ -17,7 +17,6 @@ public:
 	virtual void setRemainingCorrection(float a) = 0;
 	virtual void setMinAdjustment(unsigned minAdjustment) = 0;
 	virtual void setMaxAdjustment(unsigned maxAdjustment) = 0;
-	virtual void trimAdjustmentOver(unsigned percent) = 0;
 
 	///////////////////////////////////////////////////////////////////////////
 

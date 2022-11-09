@@ -54,10 +54,6 @@ TEST_F(TemperatureDependentSchedulerReaderTest, schedulerMaxAdjustment) {
 	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_maxAdjustment, reader);
 }
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerTrim) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_trim, reader);
-}
-
 TEST_F(TemperatureDependentSchedulerReaderTest, schedulerEmpty) {
 	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_empty, reader);
 }
@@ -78,10 +74,6 @@ TEST_F(TemperatureDependentSchedulerWriterTest, schedulerMinAdjustment) {
 
 TEST_F(TemperatureDependentSchedulerWriterTest, schedulerMaxAdjustment) {
 	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_maxAdjustment, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerTrim) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_trim, writer);
 }
 
 TEST_F(TemperatureDependentSchedulerWriterTest, schedulerEmpty) {

@@ -25,7 +25,7 @@ TEST(SchedulersDTOTest, defaultConstructor) {
 TEST(SchedulersDTOTest, parametrizedConstructor) {
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(120, 35.0f);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 80, 90, 120);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 80, 90);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 
 	SchedulersDTO schedulersDTO(
@@ -49,7 +49,7 @@ TEST(SchedulersDTOTest, parametrizedConstructor) {
 TEST(SchedulersDTOTest, copyConstructor) {
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(90, 31.0f);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(2.1f, 180, 190, 20);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(2.1f, 180, 190);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 
 	const SchedulersDTO source(
@@ -75,7 +75,7 @@ TEST(SchedulersDTOTest, copyConstructor) {
 TEST(SchedulersDTOTest, moveConstructor) {
 	const EveryDaySchedulerDTO expectedEveryDayScheduler;
 	const HotWeatherSchedulerDTO expectedHotWeatherScheduler(43, 15.0f);
-	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 63, 64, 65);
+	const TemperatureDependentSchedulerDTO expectedTemperatureDependentScheduler(1.1f, 63, 64);
 	const WeeklySchedulerDTO expectedWeeklyScheduler(list<bool>({ true, false, true }));
 
 	SchedulersDTO source(
@@ -102,7 +102,7 @@ TEST(SchedulersDTOTest, moveConstructor) {
 
 CHECK_DTO_FUNCTIONS(SchedulersDTO, EveryDaySchedulerDTO, EveryDayScheduler, EveryDaySchedulerDTO());
 CHECK_DTO_FUNCTIONS(SchedulersDTO, HotWeatherSchedulerDTO, HotWeatherScheduler, HotWeatherSchedulerDTO(120, 30));
-CHECK_DTO_FUNCTIONS(SchedulersDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler, TemperatureDependentSchedulerDTO(0.9f, 75, 110, 90));
+CHECK_DTO_FUNCTIONS(SchedulersDTO, TemperatureDependentSchedulerDTO, TemperatureDependentScheduler, TemperatureDependentSchedulerDTO(0.9f, 75, 110));
 CHECK_DTO_FUNCTIONS(SchedulersDTO, WeeklySchedulerDTO, WeeklyScheduler, WeeklySchedulerDTO(list<bool>({ true, false, true, false })));
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,8 +119,8 @@ TEST(SchedulersDTOTest, equalsOperator) {
 			HotWeatherSchedulerDTO(110, 35.0f)
 		);
 	CHECK_DTO_EQUALS_MOVE(TemperatureDependentSchedulerDTO, TemperatureDependentScheduler,
-			TemperatureDependentSchedulerDTO(10.0f, 15, 25, 35),
-			TemperatureDependentSchedulerDTO(15.0f, 15, 25, 35)
+			TemperatureDependentSchedulerDTO(10.0f, 15, 25),
+			TemperatureDependentSchedulerDTO(15.0f, 15, 25)
 		);
 	CHECK_DTO_EQUALS_MOVE(WeeklySchedulerDTO, WeeklyScheduler,
 			WeeklySchedulerDTO(list<bool>({ true, true, false })),

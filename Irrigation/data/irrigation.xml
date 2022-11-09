@@ -16,7 +16,6 @@
 					<remaining-correction>0.75</remaining-correction>
 					<min-adjustment>50</min-adjustment>
 					<max-adjustment>0</max-adjustment>
-					<trim>100</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
@@ -78,7 +77,6 @@
 					<remaining-correction>1</remaining-correction>
 					<min-adjustment>100</min-adjustment>
 					<max-adjustment>0</max-adjustment>
-					<trim>0</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
@@ -140,7 +138,6 @@
 					<remaining-correction>1</remaining-correction>
 					<min-adjustment>0</min-adjustment>
 					<max-adjustment>0</max-adjustment>
-					<trim>0</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
@@ -222,7 +219,6 @@
 					<remaining-correction>1</remaining-correction>
 					<min-adjustment>75</min-adjustment>
 					<max-adjustment>75</max-adjustment>
-					<trim>0</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
@@ -288,7 +284,6 @@
 					<remaining-correction>1</remaining-correction>
 					<min-adjustment>75</min-adjustment>
 					<max-adjustment>75</max-adjustment>
-					<trim>0</trim>
 				</scheduler>
 				<scheduler type="weekly">
 					<days>
