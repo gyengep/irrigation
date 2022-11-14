@@ -31,7 +31,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustment) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 1, 4, 0, 0)), Pointee(Scheduler::Result(50u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(50));
 }
 
@@ -39,7 +39,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentLower) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 9)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(false, true, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 1, 4, 0, 0)), Pointee(Scheduler::Result(0u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(0));
 }
 
@@ -47,7 +47,7 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentHigher) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2019, 8, 1, 4, 0, 0), LocalDateTime(2019, 8, 2, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 36)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 1, 4, 0, 0)), Eq(Scheduler::Result(true, true, 105)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 1, 4, 0, 0)), Pointee(Scheduler::Result(105u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(105));
 }
 
@@ -71,10 +71,10 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentToday) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 15, 4, 0, 0), LocalDateTime(2020, 2, 16, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 25)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 4, 0, 0)), Pointee(Scheduler::Result(50u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(50));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 14, 0, 0)), Eq(Scheduler::Result(false, true, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 14, 0, 0)), Pointee(Scheduler::Result(0u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(50));
 }
 
@@ -86,10 +86,10 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentYesterdayDay) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 16, 4, 0, 0), LocalDateTime(2020, 2, 17, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 4, 0, 0)), Pointee(Scheduler::Result(50u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(50));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 16, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 16, 4, 0, 0)), Pointee(Scheduler::Result(75u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
 }
 
@@ -99,10 +99,10 @@ TEST_F(TemperatureDependentSchedulerImplTest, getAdjustmentOtherDay) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 17, 4, 0, 0), LocalDateTime(2020, 2, 18, 3, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 30)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 4, 0, 0)), Eq(Scheduler::Result(true, true, 50)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 15, 4, 0, 0)), Pointee(Scheduler::Result(50u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(50));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 17, 4, 0, 0)), Eq(Scheduler::Result(true, true, 75)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 17, 4, 0, 0)), Pointee(Scheduler::Result(75u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(75));
 }
 
@@ -112,9 +112,9 @@ TEST_F(TemperatureDependentSchedulerImplTest, dayStart) {
 	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(LocalDateTime(2020, 2, 28, 0, 0, 0), LocalDateTime(2020, 2, 28, 23, 59, 59))).
 		WillOnce(Return(TemperatureForecast::Values(0, 15)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 28, 0, 0, 0)), Eq(Scheduler::Result(true, true, 25)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 28, 0, 0, 0)), Pointee(Scheduler::Result(25u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(25));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 28, 23, 59, 59)), Eq(Scheduler::Result(false, true, 0)));
+	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 28, 23, 59, 59)), Pointee(Scheduler::Result(0u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(25));
 }

@@ -48,12 +48,6 @@ void StartTimeImpl::set(unsigned hour, unsigned minute) {
 	this->minute = minute;
 }
 
-bool StartTimeImpl::equals(unsigned hour, unsigned minute, unsigned second) const {
-	return (getHours() == hour &&
-			getMinutes() == minute &&
-			0 == second);
-}
-
 bool StartTimeImpl::less(const StartTime& other) const {
 	return ((60 * getHours() + getMinutes()) < (60 * other.getHours() + other.getMinutes()));
 }

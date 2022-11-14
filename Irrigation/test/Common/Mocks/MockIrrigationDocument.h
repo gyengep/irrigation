@@ -1,0 +1,29 @@
+#pragma once
+#include <gmock/gmock.h>
+#include "Model/IrrigationDocument.h"
+
+
+class MockIrrigationDocument : public IrrigationDocument {
+public:
+	MOCK_CONST_METHOD0(lock, void());
+	MOCK_CONST_METHOD0(unlock, void());
+
+	MOCK_CONST_METHOD0(getProgramContainer, const ProgramContainer&());
+	MOCK_METHOD0(getProgramContainer, ProgramContainer& ());
+
+	MOCK_METHOD1(createProgram, std::pair<IdType, ProgramPtr>(const ProgramDTO& programDto));
+
+	MOCK_CONST_METHOD0(isModified, bool());
+	MOCK_METHOD1(setModified, void(bool modified));
+
+	MOCK_METHOD1(startIfScheduled, void(const LocalDateTime& localDateTime));
+	MOCK_METHOD2(startProgram, void(const IdType& programId, unsigned adjustment));
+	MOCK_METHOD2(startCustom, void(const DurationList& durations, unsigned adjustment));
+	MOCK_METHOD0(stop, void());
+
+	MOCK_CONST_METHOD0(toDocumentDto, DocumentDTO());
+	MOCK_METHOD2(updateFromDocumentDto, void(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO));
+
+	MOCK_CONST_METHOD0(saveState, void());
+	MOCK_METHOD0(loadState, void());
+};

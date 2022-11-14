@@ -6,7 +6,6 @@
 class MockStartTime : public StartTime {
 public:
 	MOCK_CONST_METHOD1(less, bool(const StartTime& other));
-	MOCK_CONST_METHOD3(equals, bool(unsigned hour, unsigned minute, unsigned second));
 
 	MOCK_METHOD2(set, void(unsigned hour, unsigned minute));
 

@@ -9,8 +9,8 @@ EveryDaySchedulerPtr EveryDaySchedulerImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Scheduler::Result EveryDaySchedulerImpl::process(const LocalDateTime&) {
-	return Scheduler::Result(true);
+std::unique_ptr<Scheduler::Result> EveryDaySchedulerImpl::process(const LocalDateTime&) {
+	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(true));
 }
 
 EveryDaySchedulerDTO EveryDaySchedulerImpl::toEveryDaySchedulerDto() const {

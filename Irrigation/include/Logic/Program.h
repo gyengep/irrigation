@@ -10,20 +10,6 @@
 #include "SchedulerContainer.h"
 
 
-class ScheduledResult {
-	const bool scheduled;
-	const unsigned adjustment;
-
-public:
-	ScheduledResult(bool scheduled, unsigned adjustment);
-
-	bool isScheduled() const;
-	unsigned getAdjustment() const;
-
-	bool operator==(const ScheduledResult& other) const;
-};
-
-
 class Program {
 public:
 	Program() = default;
@@ -39,9 +25,8 @@ public:
 	virtual unsigned getAdjustment() const = 0;
 	virtual SchedulerType getSchedulerType() const = 0;
 
-	virtual std::unique_ptr<ScheduledResult> isScheduled(const LocalDateTime& localDateTime) = 0;
-//	virtual const Scheduler& getCurrentScheduler() const { return *currentScheduler; }
-	virtual Scheduler& getCurrentScheduler() = 0;
+	virtual std::unique_ptr<Scheduler::Result> isScheduled(const LocalDateTime& localDateTime) = 0;
+
 
 	virtual const SchedulerContainer& getSchedulerContainer() const = 0;
 	virtual const RunTimeContainer& getRunTimeContainer() const = 0;

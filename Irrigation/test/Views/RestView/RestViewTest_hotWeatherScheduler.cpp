@@ -18,7 +18,7 @@ string RestViewTest::createHotWeatherSchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postHotWeatherScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("POST", createHotWeatherSchedulerUrl(programId), XmlWriter().save(HotWeatherSchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -37,7 +37,7 @@ void RestViewTest::testGetHotWeatherScheduler(const HotWeatherSchedulerSample& h
 			)
 			.build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	const Response response = executeRequest("GET", createHotWeatherSchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
@@ -69,7 +69,7 @@ TEST_F(RestViewTest, getHotWeatherSchedulerNotFound) {
 
 TEST_F(RestViewTest, getHotWeatherSchedulerAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createHotWeatherSchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -77,7 +77,7 @@ TEST_F(RestViewTest, getHotWeatherSchedulerAcceptable) {
 
 TEST_F(RestViewTest, getHotWeatherSchedulerNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createHotWeatherSchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -101,7 +101,7 @@ TEST_F(RestViewTest, patchHotWeatherScheduler) {
 
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(hotWeatherSchedulerSample.getDto()));
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	Response response = executeRequest("PATCH", createHotWeatherSchedulerUrl(programId), XmlWriter().save(hotWeatherSchedulerSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
@@ -116,7 +116,7 @@ TEST_F(RestViewTest, patchHotWeatherSchedulerNotFound) {
 TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createHotWeatherSchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -125,7 +125,7 @@ TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidXml) {
 TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createHotWeatherSchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -136,7 +136,7 @@ TEST_F(RestViewTest, patchHotWeatherSchedulerInvalidContentType) {
 TEST_F(RestViewTest, deleteHotWeatherScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createHotWeatherSchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");

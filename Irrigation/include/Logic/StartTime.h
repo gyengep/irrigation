@@ -11,7 +11,6 @@ public:
 	virtual ~StartTime() = default;
 
 	virtual bool less(const StartTime& other) const = 0;
-	virtual bool equals(unsigned hour, unsigned minute, unsigned second) const = 0;
 
 	virtual void set(unsigned hour, unsigned minute) = 0;
 

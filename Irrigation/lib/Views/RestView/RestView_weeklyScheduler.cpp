@@ -20,7 +20,7 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			weeklySchedulerDto = irrigationDocument.getPrograms().at(programId)->getSchedulerContainer().getWeeklyScheduler().toWeeklySchedulerDto();
+			weeklySchedulerDto = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getWeeklyScheduler().toWeeklySchedulerDto();
 		}
 
 		return HttpResponse::Builder().
@@ -47,7 +47,7 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			WeeklyScheduler& weeklyScheduler = irrigationDocument.getPrograms().at(programId)->getSchedulerContainer().getWeeklyScheduler();
+			WeeklyScheduler& weeklyScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getWeeklyScheduler();
 
 			irrigationDocument.setModified();
 			weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);

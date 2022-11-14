@@ -16,7 +16,7 @@ public:
 	MOCK_METHOD1(updateFromRunTimeDtoList, void(const std::list<RunTimeDTO>&));
 
 	MOCK_CONST_METHOD0(toString, std::string());
-	MOCK_CONST_METHOD0(toDurations, std::list<std::chrono::seconds>());
+	MOCK_CONST_METHOD0(toDurationList, DurationList());
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -20,7 +20,7 @@ unique_ptr<HttpResponse> RestView::onGetHotWeatherScheduler(const HttpRequest& r
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			hotWeatherSchedulerDto = irrigationDocument.getPrograms().at(programId)->getSchedulerContainer().getHotWeatherScheduler().toHotWeatherSchedulerDto();
+			hotWeatherSchedulerDto = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getHotWeatherScheduler().toHotWeatherSchedulerDto();
 		}
 
 		return HttpResponse::Builder().
@@ -47,7 +47,7 @@ unique_ptr<HttpResponse> RestView::onPatchHotWeatherScheduler(const HttpRequest&
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			HotWeatherScheduler& hotWeatherScheduler = irrigationDocument.getPrograms().at(programId)->getSchedulerContainer().getHotWeatherScheduler();
+			HotWeatherScheduler& hotWeatherScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getHotWeatherScheduler();
 
 			irrigationDocument.setModified();
 			hotWeatherScheduler.updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDto);

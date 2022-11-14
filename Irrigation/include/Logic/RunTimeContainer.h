@@ -6,6 +6,7 @@
 #include <vector>
 #include "DTO/RunTimeDTO.h"
 #include "Utils/OstreamInsert.h"
+#include "DurationList.h"
 #include "IdType.h"
 #include "RunTime.h"
 
@@ -34,9 +35,9 @@ public:
 	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) = 0;
 
 	virtual std::string toString() const = 0;
-	virtual std::list<std::chrono::seconds> toDurations() const = 0;
+	virtual DurationList toDurationList() const = 0;
 
-	static std::list<std::chrono::seconds> toDurations(const std::list<RunTimeDTO>& runTimeDtoList);
+	static DurationList toDurationList(const std::list<RunTimeDTO>& runTimeDtoList);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

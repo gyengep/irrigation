@@ -12,7 +12,7 @@
 
 
 void IrrigationApplication::setMyDefaults() {
-	irrigationDocument->getPrograms().insert(
+	irrigationDocument->getProgramContainer().insert(
 		IdType(),
 		ProgramImpl::Builder().
 			setName("Fűlocsolás").
@@ -42,7 +42,7 @@ void IrrigationApplication::setMyDefaults() {
 			build()
 		);
 
-	irrigationDocument->getPrograms().insert(
+	irrigationDocument->getProgramContainer().insert(
 		IdType(),
 		ProgramImpl::Builder().
 			setName("Buxus").
@@ -72,7 +72,7 @@ void IrrigationApplication::setMyDefaults() {
 			build()
 		);
 
-	irrigationDocument->getPrograms().insert(
+	irrigationDocument->getProgramContainer().insert(
 		IdType(),
 		ProgramImpl::Builder().
 			setName("Kánikula").
@@ -105,7 +105,7 @@ void IrrigationApplication::setMyDefaults() {
 			build()
 		);
 
-	irrigationDocument->getPrograms().insert(
+	irrigationDocument->getProgramContainer().insert(
 		IdType(),
 		ProgramImpl::Builder().
 			setName("Paradicsom").
@@ -136,7 +136,7 @@ void IrrigationApplication::setMyDefaults() {
 			build()
 		);
 
-	irrigationDocument->getPrograms().insert(
+	irrigationDocument->getProgramContainer().insert(
 		IdType(),
 		ProgramImpl::Builder().
 			setName("Virág").

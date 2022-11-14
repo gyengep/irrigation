@@ -14,7 +14,7 @@ void checkDay(int year, int month, int day, Scheduler& scheduler, bool expectedR
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				const LocalDateTime localDateTime(year, month, day, hour, min, sec);
-				ASSERT_THAT(scheduler.process(localDateTime), Eq(Scheduler::Result(expectedResult, false, 0)));
+				ASSERT_THAT(scheduler.process(localDateTime), Pointee(Scheduler::Result(expectedResult)));
 			}
 		}
 	}

@@ -53,10 +53,10 @@ bool WeeklySchedulerImpl::isDayEnabled(size_t day) const {
 	return days[day];
 }
 
-Scheduler::Result WeeklySchedulerImpl::process(const LocalDateTime& localDateTime) {
+std::unique_ptr<Scheduler::Result> WeeklySchedulerImpl::process(const LocalDateTime& localDateTime) {
 	const size_t weekDay = localDateTime.getDayOfWeek();
 	checkIndex(weekDay);
-	return Scheduler::Result(days[weekDay]);
+	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(days[weekDay]));
 }
 
 WeeklySchedulerDTO WeeklySchedulerImpl::toWeeklySchedulerDto() const {

@@ -23,39 +23,32 @@ string to_string(SchedulerType schedulerType) {
 	}
 }
 
-Scheduler::Result::Result(bool isScheduled) :
-	isScheduled(isScheduled),
-	overrideAdjustment(false),
-	adjustment(0)
+Scheduler::Result::Result(bool scheduled) :
+	adjustment(scheduled ? 100 : 0)
 {
 }
 
 Scheduler::Result::Result(unsigned adjustment) :
-	isScheduled(adjustment > 0),
-	overrideAdjustment(true),
 	adjustment(adjustment)
 {
 }
 
-Scheduler::Result::Result(bool isScheduled, bool overrideAdjustment, unsigned adjustment) :
-	isScheduled(isScheduled),
-	overrideAdjustment(overrideAdjustment),
-	adjustment(adjustment)
-{
+bool Scheduler::Result::isSkipped() const {
+	return (0 == adjustment);
+}
+
+unsigned Scheduler::Result::getAdjustment() const {
+	return adjustment;
 }
 
 bool Scheduler::Result::operator== (const Result& other) const {
-	return  (isScheduled == other.isScheduled) &&
-			(overrideAdjustment == other.overrideAdjustment) &&
-			(adjustment == other.adjustment);
+	return  (adjustment == other.adjustment);
 }
 
 ostream& operator<<(ostream& os, const Scheduler::Result& result) {
 	ostringstream oss;
 	os << "SchedulerResult{";
-	os << "isScheduled: " << std::boolalpha << result.isScheduled  << ", ";
-	os << "overrideAdjustment: " << std::boolalpha << result.overrideAdjustment  << ", ";
-	os << "adjustment: " << result.adjustment << "%";
+	os << "adjustment: " << result.getAdjustment() << "%";
 	os << "}";
 	return os;
 }

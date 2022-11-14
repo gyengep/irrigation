@@ -199,7 +199,7 @@ unsigned TemperatureDependentSchedulerImpl::calculateAdjustment(const unsigned r
 	return result;
 }
 
-Scheduler::Result TemperatureDependentSchedulerImpl::process(const LocalDateTime& localDateTime) {
+std::unique_ptr<Scheduler::Result> TemperatureDependentSchedulerImpl::process(const LocalDateTime& localDateTime) {
 
 	if (nullptr == temperatureForecast) {
 		throw std::logic_error("TemperatureDependentSchedulerImpl::process()  nullptr == temperatureForecast");
@@ -259,7 +259,7 @@ Scheduler::Result TemperatureDependentSchedulerImpl::process(const LocalDateTime
 
 	LOGGER.trace(oss.str().c_str());
 
-	return Scheduler::Result(adjustment);
+	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(adjustment));
 }
 
 nlohmann::json TemperatureDependentSchedulerImpl::saveTo() const {

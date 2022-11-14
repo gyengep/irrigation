@@ -1,9 +1,9 @@
 #pragma once
+#include "DTO/DocumentDTO.h"
+#include "Temperature/TemperatureHandler.h"
 #include "Application.h"
 #include "ShutdownManagerImpl.h"
-#include "DTO/DocumentDTO.h"
-#include "Model/IrrigationDocument.h"
-#include "Temperature/TemperatureHandler.h"
+#include "IrrigationDocument.h"
 
 class DocumentSaver;
 

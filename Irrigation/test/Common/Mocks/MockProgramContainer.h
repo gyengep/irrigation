@@ -22,3 +22,13 @@ public:
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class MockProgramContainerFactory : public ProgramContainerFactory {
+public:
+	virtual ~MockProgramContainerFactory() = default;
+	virtual ProgramContainerPtr create() const override {
+		return std::make_shared<MockProgramContainer>();
+	}
+};

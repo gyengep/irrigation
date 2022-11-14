@@ -22,7 +22,7 @@ unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, 
 
 	{
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
-		programDtoList = irrigationDocument.getPrograms().toProgramDtoList();
+		programDtoList = irrigationDocument.getProgramContainer().toProgramDtoList();
 	}
 
 	const std::string piName = "xml-stylesheet";
@@ -81,7 +81,7 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			programDto = irrigationDocument.getPrograms().at(programId)->toProgramDto();
+			programDto = irrigationDocument.getProgramContainer().at(programId)->toProgramDto();
 		}
 
 		const std::string piName = "xml-stylesheet";
@@ -111,7 +111,7 @@ unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& request, co
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			const shared_ptr<Program> program = irrigationDocument.getPrograms().at(programId);
+			const shared_ptr<Program> program = irrigationDocument.getProgramContainer().at(programId);
 
 			irrigationDocument.setModified();
 			program->updateFromProgramDto(programDto);
@@ -152,7 +152,7 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
 			irrigationDocument.setModified();
-			irrigationDocument.getPrograms().erase(programId);
+			irrigationDocument.getProgramContainer().erase(programId);
 		}
 
 		LOGGER.debug("Program[%s] is deleted",

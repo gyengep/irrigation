@@ -27,7 +27,7 @@ void RestViewTest::testGetStartTime(const StartTimeListSample& startTimeListSamp
 	const IdType programId;
 	const shared_ptr<Program> program = ProgramImpl::Builder().setStartTimeContainer(startTimeListSample.getContainerPtr()).build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	for (const auto& startTimeWithId : *startTimeListSample.getContainerPtr()) {
 		const Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeWithId.first));
@@ -61,7 +61,7 @@ TEST_F(RestViewTest, getStartTimeNotFound1) {
 
 TEST_F(RestViewTest, getStartTimeNotFound2) {
 	IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, IdType()));
 	checkErrorResponse(response, 404, "application/xml");
@@ -72,7 +72,7 @@ TEST_F(RestViewTest, getStartTimeAcceptable) {
 	const IdType startTimeId;
 	const ProgramPtr program = ProgramImpl::Builder().build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 	program->getStartTimeContainer().insert(startTimeId, std::make_shared<StartTimeImpl>());
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/xml");
@@ -84,7 +84,7 @@ TEST_F(RestViewTest, getStartTimeNotAcceptable) {
 	const IdType startTimeId;
 	const ProgramPtr program = ProgramImpl::Builder().build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 	program->getStartTimeContainer().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	Response response = executeRequest("GET", createStartTimeUrl(programId, startTimeId), "Accept: application/json");
@@ -101,7 +101,7 @@ TEST_F(RestViewTest, patchStartTime) {
 	const ProgramPtr program = ProgramImpl::Builder().build();
 
 	program->getStartTimeContainer().insert(startTimeId, mockStartTime);
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(startTimeSample.getDto()));
 
@@ -120,7 +120,7 @@ TEST_F(RestViewTest, patchStartTimeInvalidXml) {
 	const IdType startTimeId;
 	const ProgramPtr program = ProgramImpl::Builder().build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 	program->getStartTimeContainer().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "InvalidXml", "application/xml");
@@ -132,7 +132,7 @@ TEST_F(RestViewTest, patchStartTimeInvalidContentType) {
 	const IdType startTimeId;
 	const ProgramPtr program = ProgramImpl::Builder().build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 	program->getStartTimeContainer().insert(startTimeId, shared_ptr<StartTime>(new StartTimeImpl()));
 
 	const Response response = executeRequest("PATCH", createStartTimeUrl(programId, startTimeId), "{ \"key\" : \"value\" }", "application/json");
@@ -149,7 +149,7 @@ TEST_F(RestViewTest, deleteStartTime) {
 
 	EXPECT_CALL(*mockStartTimeContainer, erase(startTimeId));
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	Response response = executeRequest("DELETE", createStartTimeUrl(programId, startTimeId));
 	checkResponseWithoutBody(response, 200);

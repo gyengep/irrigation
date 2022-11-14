@@ -32,7 +32,7 @@ public:
 	void setMinTemperature(float minTemperature) override;
 	void setPeriod(const std::chrono::seconds& period) override;
 
-	virtual Result process(const LocalDateTime& localDateTime) override;
+	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) override;
 
 	////////////////////////////////////////////////////////////
 

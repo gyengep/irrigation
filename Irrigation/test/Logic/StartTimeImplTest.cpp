@@ -27,22 +27,6 @@ TEST(StartTimeImplTest, parametrizedConstructor_invalid) {
 	EXPECT_THROW(StartTimeImpl(23, 60), ValueOutOfBoundsException);
 }
 
-TEST(StartTimeImplTest, equals) {
-	const unsigned hour = 15;
-	const unsigned minute = 25;
-
-	const StartTimeImpl startTime(hour, minute);
-
-	EXPECT_TRUE(startTime.equals(hour, minute, 0));
-
-	EXPECT_FALSE(startTime.equals(hour, minute, 59));
-	EXPECT_FALSE(startTime.equals(hour, minute, 1));
-	EXPECT_FALSE(startTime.equals(hour, minute - 1, 0));
-	EXPECT_FALSE(startTime.equals(hour, minute + 1, 0));
-	EXPECT_FALSE(startTime.equals(hour - 1, minute, 0));
-	EXPECT_FALSE(startTime.equals(hour + 1, minute, 0));
-}
-
 TEST(StartTimeImplTest, less) {
 	const unsigned hour = 15;
 	const unsigned minute = 25;

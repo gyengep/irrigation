@@ -11,7 +11,7 @@ using namespace placeholders;
 
 
 void DocumentSaverTest::SetUp() {
-	irrigationDocument = IrrigationDocument::Builder().build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().build();
 	mockDtoWriterFactory = make_shared<MockDtoWriterFactory>(make_shared<MockDtoWriter>());
 	mockFileWriterFactory = make_shared<MockFileWriterFactory>(make_shared<MockFileWriter>());
 

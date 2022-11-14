@@ -50,8 +50,8 @@ RunTimeContainerImpl::mapped_type RunTimeContainerImpl::at(const key_type& key) 
 	return container[key.getValue()].second;
 }
 
-std::list<std::chrono::seconds> RunTimeContainerImpl::toDurations() const {
-	std::list<std::chrono::seconds> result;
+DurationList RunTimeContainerImpl::toDurationList() const {
+	DurationList result;
 
 	for (size_t i = 0; i < container.size(); i++) {
 		result.emplace_back(container[i].second->toDuration());

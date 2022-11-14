@@ -3,6 +3,7 @@
 #include <ctime>
 #include <memory>
 #include <string>
+#include "OstreamInsert.h"
 
 
 class Timefunc {
@@ -150,3 +151,8 @@ public:
 	virtual void toTimeinfo(std::tm* timeinfo, const std::time_t& rawtime) const override;
 	virtual std::time_t fromTimeinfo(std::tm* timeinfo) const override;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(LocalDateTime);
+OSTREAM_INSERT(UtcDateTime);

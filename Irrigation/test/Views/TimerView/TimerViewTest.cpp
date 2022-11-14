@@ -1,108 +1,92 @@
 #include "TimerViewTest.h"
-#include "Logic/ProgramContainer.h"
-#include "Logic/RunTimeImpl.h"
+#include "TestCommon/cout.h"
 
-using namespace std;
 using namespace testing;
-
-///////////////////////////////////////////////////////////////////////////////
-
-const time_t TimerViewTest::rawtime = time(nullptr);
-const tm TimerViewTest::timeinfo = *localtime(&TimerViewTest::rawtime);
-const RunTimeContainerImpl TimerViewTest::runTimes1 {
-	std::make_shared<RunTimeImpl>(110),
-	std::make_shared<RunTimeImpl>(120),
-	std::make_shared<RunTimeImpl>(130),
-	std::make_shared<RunTimeImpl>(140),
-	std::make_shared<RunTimeImpl>(150),
-	std::make_shared<RunTimeImpl>(160)
-};
-
-const RunTimeContainerImpl TimerViewTest::runTimes2 {
-	std::make_shared<RunTimeImpl>(210),
-	std::make_shared<RunTimeImpl>(220),
-	std::make_shared<RunTimeImpl>(230),
-	std::make_shared<RunTimeImpl>(240),
-	std::make_shared<RunTimeImpl>(250),
-	std::make_shared<RunTimeImpl>(260)
-};
 
 
 void TimerViewTest::SetUp() {
-	/*
-	wateringController.reset(new MockWateringController());
-	scheduler1.reset(new MockScheduler());
-	scheduler2.reset(new MockScheduler());
-	program1.reset(new MockProgram());
-	program2.reset(new MockProgram());
-	program1->setRunTimes(shared_ptr<RunTimeContainer>(new RunTimeContainer(runTimes1)));
-	program2->setRunTimes(shared_ptr<RunTimeContainer>(new RunTimeContainer(runTimes2)));
+	mockTimefunc = std::make_shared<StrictMock<MockTimefunc>>();
+	mockIrrigationDocument = std::make_shared<StrictMock<MockIrrigationDocument>>();
+	view = std::make_shared<TimerView>(*mockIrrigationDocument);
 
-	ON_CALL(*wateringController, isWateringActive()).WillByDefault(Return(false));
-	ON_CALL(*program1, isScheduled(_)).WillByDefault(Return(nullptr));
-	ON_CALL(*program1, getCurrentScheduler()).WillByDefault(ReturnPointee(scheduler1));
-	ON_CALL(*program2, isScheduled(_)).WillByDefault(Return(nullptr));
-	ON_CALL(*program2, getCurrentScheduler()).WillByDefault(ReturnPointee(scheduler2));
+	DateTime::setTimefunc(mockTimefunc);
 
-	program1->setAdjustment(adjustment1);
-	program2->setAdjustment(adjustment2);
-
-	irrigationDocument = IrrigationDocument::Builder().
-		setWateringController(wateringController).
-		setProgramContainer(shared_ptr<ProgramContainer>(new ProgramContainer({{ IdType(), program1 }, { IdType(), program2 }}))).
-		build();
-
-	view.reset(new TimerView(*irrigationDocument));
-	*/
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(AnyNumber());
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(AnyNumber());
 }
 
 void TimerViewTest::TearDown() {
-
-}
-
-bool operator== (const tm& t1, const tm& t2) {
-	return (t1.tm_year == t2.tm_year &&
-			t1.tm_mon == t2.tm_mon &&
-			t1.tm_mday == t2.tm_mday &&
-			t1.tm_hour == t2.tm_hour &&
-			t1.tm_min == t2.tm_min &&
-			t1.tm_sec == t2.tm_sec);
+	DateTime::resetTimefunc();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/*
-TEST_F(TimerViewTest, notActiveNotScheduled) {
-	EXPECT_CALL(*wateringController, isWateringActive()).Times(1);
-	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
-	EXPECT_CALL(*program1, isScheduled(timeinfo)).Times(1);
-	EXPECT_CALL(*program2, isScheduled(timeinfo)).Times(1);
 
-	view->onTimer(rawtime);
+TEST_F(TimerViewTest, callStartIfScheduled) {
+	const LocalDateTime now(2021, 6, 22, 23, 36, 57);
+
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(now.toRawTime()));
+	EXPECT_CALL(*mockIrrigationDocument, startIfScheduled(now)).Times(1);
+
+	view->run();
 }
 
-TEST_F(TimerViewTest, notActiveScheduledFirst) {
-	EXPECT_CALL(*wateringController, isWateringActive()).Times(1);
-	EXPECT_CALL(*wateringController, start(rawtime, runTimes1, adjustment1)).Times(1);
-	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
-	EXPECT_CALL(*program1, isScheduled(timeinfo)).Times(1).WillOnce(Return(true));
+TEST_F(TimerViewTest, callStartIfScheduled_onceInAMinute) {
+	const LocalDateTime now(2021, 6, 22, 23, 36, 0);
 
-	view->onTimer(rawtime);
+	EXPECT_CALL(*mockTimefunc, getTime()).
+			Times(9).
+			WillOnce(Return(now.addSeconds(0).toRawTime())). 	// initialize()
+			WillOnce(Return(now.addSeconds(0).toRawTime())). 	// run()
+			WillOnce(Return(now.addSeconds(1).toRawTime())).	// run()
+			WillOnce(Return(now.addSeconds(2).toRawTime())).	// run()
+			WillOnce(Return(now.addSeconds(3).toRawTime())).	// run()
+			WillOnce(Return(now.addSeconds(10).toRawTime())).	// run()
+			WillOnce(Return(now.addSeconds(10).toRawTime())).	// checkExpectedDateTime()
+			WillOnce(Return(now.addSeconds(59).toRawTime())).	// run()
+			WillOnce(Return(now.addSeconds(59).toRawTime()));	// checkExpectedDateTime()
+
+
+	EXPECT_CALL(*mockIrrigationDocument, startIfScheduled(now)).Times(1);
+
+	view->run();
+	view->run();
+	view->run();
+	view->run();
+	view->run();
+	view->run();
 }
 
-TEST_F(TimerViewTest, notActiveScheduledSecond) {
-	EXPECT_CALL(*wateringController, isWateringActive()).Times(1);
-	EXPECT_CALL(*wateringController, start(rawtime, runTimes2, adjustment2)).Times(1);
-	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
-	EXPECT_CALL(*program1, isScheduled(timeinfo)).Times(1);
-	EXPECT_CALL(*program2, isScheduled(timeinfo)).Times(1).WillOnce(Return(true));
+TEST_F(TimerViewTest, callStartIfScheduled_onceInEveryMinute) {
+	const LocalDateTime now1(2021, 6, 22, 23, 35, 59);
+	const LocalDateTime now2(2021, 6, 22, 23, 36, 0);
+	const LocalDateTime now3(2021, 6, 22, 23, 37, 0);
 
-	view->onTimer(rawtime);
+	EXPECT_CALL(*mockTimefunc, getTime()).
+			Times(11).
+			WillOnce(Return(now1.toRawTime())). 				// initialize()
+			WillOnce(Return(now1.toRawTime())). 				// run()
+			WillOnce(Return(now2.addSeconds(0).toRawTime())). 	// run()
+			WillOnce(Return(now2.addSeconds(1).toRawTime())).	// run()
+			WillOnce(Return(now2.addSeconds(2).toRawTime())).	// run()
+			WillOnce(Return(now2.addSeconds(3).toRawTime())).	// run()
+			WillOnce(Return(now2.addSeconds(10).toRawTime())).	// run()
+			WillOnce(Return(now2.addSeconds(10).toRawTime())).	// checkExpectedDateTime()
+			WillOnce(Return(now2.addSeconds(59).toRawTime())).	// run()
+			WillOnce(Return(now2.addSeconds(59).toRawTime())).	// checkExpectedDateTime()
+			WillOnce(Return(now3.toRawTime()));					// run()
+
+
+	EXPECT_CALL(*mockIrrigationDocument, startIfScheduled(now1)).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, startIfScheduled(now2)).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, startIfScheduled(now3)).Times(1);
+
+	view->run();
+	view->run();
+	view->run();
+	view->run();
+	view->run();
+	view->run();
+	view->run();
+	view->run();
 }
 
-TEST_F(TimerViewTest, active) {
-	EXPECT_CALL(*wateringController, isWateringActive()).Times(1).WillOnce(Return(true));
-	EXPECT_CALL(*wateringController, on1SecTimer(rawtime)).Times(1);
-
-	view->onTimer(rawtime);
-}
-*/

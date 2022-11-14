@@ -53,8 +53,8 @@ public:
 	virtual unsigned getAdjustment() const override						{ return adjustment; }
 	SchedulerType getSchedulerType() const override 					{ return schedulerType; }
 
-	virtual std::unique_ptr<ScheduledResult> isScheduled(const LocalDateTime& localDateTime) override;
-	virtual Scheduler& getCurrentScheduler() override;
+	virtual std::unique_ptr<Scheduler::Result> isScheduled(const LocalDateTime& localDateTime) override;
+
 
 	virtual const SchedulerContainer& getSchedulerContainer() const 	{ return *schedulerContainer; }
 	virtual const RunTimeContainer& getRunTimeContainer() const 		{ return *runTimeContainer; }

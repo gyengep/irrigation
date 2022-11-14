@@ -18,7 +18,7 @@ string RestViewTest::createWeeklySchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postWeeklyScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("POST", createWeeklySchedulerUrl(programId), XmlWriter().save(WeeklySchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -37,7 +37,7 @@ void RestViewTest::testGetWeeklyScheduler(const WeeklySchedulerSample& weeklySch
 			)
 			.build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	const Response response = executeRequest("GET", createWeeklySchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
@@ -69,7 +69,7 @@ TEST_F(RestViewTest, getWeeklySchedulerNotFound) {
 
 TEST_F(RestViewTest, getWeeklySchedulerAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createWeeklySchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -77,7 +77,7 @@ TEST_F(RestViewTest, getWeeklySchedulerAcceptable) {
 
 TEST_F(RestViewTest, getWeeklySchedulerNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createWeeklySchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -101,7 +101,7 @@ TEST_F(RestViewTest, patchWeeklyScheduler) {
 
 	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(weeklySchedulerSample.getDto()));
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	Response response = executeRequest("PATCH", createWeeklySchedulerUrl(programId), XmlWriter().save(weeklySchedulerSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
@@ -116,7 +116,7 @@ TEST_F(RestViewTest, patchWeeklySchedulerNotFound) {
 TEST_F(RestViewTest, patchWeeklySchedulerInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createWeeklySchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -125,7 +125,7 @@ TEST_F(RestViewTest, patchWeeklySchedulerInvalidXml) {
 TEST_F(RestViewTest, patchWeeklySchedulerInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createWeeklySchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -136,7 +136,7 @@ TEST_F(RestViewTest, patchWeeklySchedulerInvalidContentType) {
 TEST_F(RestViewTest, deleteWeeklyScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createWeeklySchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");

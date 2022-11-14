@@ -16,25 +16,30 @@ std::string to_string(SchedulerType schedulerType);
 
 class Scheduler {
 public:
-	struct Result {
-		const bool isScheduled;
-		const bool overrideAdjustment;
-		const unsigned adjustment;
-
-		Result(bool isScheduled);
-		Result(unsigned adjustment);
-		Result(bool isScheduled, bool overrideAdjustment, unsigned adjustment);
-
-		bool operator== (const Result& other) const;
-
-		friend std::ostream& operator<<(std::ostream& os, const Result& result);
-	};
+	class Result;
 
 	Scheduler() = default;
 	virtual ~Scheduler() = default;
-	virtual Result process(const LocalDateTime& localDateTime) = 0;
+	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) = 0;
 
 	virtual std::string toString() const = 0;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class Scheduler::Result {
+	const unsigned adjustment;
+
+public:
+	Result(bool isScheduled);
+	Result(unsigned adjustment);
+
+	bool isSkipped() const;
+	unsigned getAdjustment() const;
+
+	bool operator== (const Result& other) const;
+
+	friend std::ostream& operator<<(std::ostream& os, const Result& result);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

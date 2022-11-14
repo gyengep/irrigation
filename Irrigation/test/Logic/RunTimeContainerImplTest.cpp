@@ -93,7 +93,7 @@ TEST(RunTimeContainerImplTest, atInvalid) {
 	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
 
-TEST(RunTimeContainerImplTest, toDurations) {
+TEST(RunTimeContainerImplTest, toDurationList) {
 	auto mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
 
 	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[0], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(0)));
@@ -104,21 +104,23 @@ TEST(RunTimeContainerImplTest, toDurations) {
 	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[5], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(60)));
 
 	EXPECT_THAT(
-			RunTimeContainerImpl(mockRunTimeFactory).toDurations(),
-			ContainerEq(std::list<std::chrono::seconds> {
-				std::chrono::seconds(0),
-				std::chrono::seconds(50),
-				std::chrono::seconds(12),
-				std::chrono::seconds(130),
-				std::chrono::seconds(23),
-				std::chrono::seconds(60)
-			})
+			RunTimeContainerImpl(mockRunTimeFactory).toDurationList(),
+			ContainerEq(
+				DurationList {
+					std::chrono::seconds(0),
+					std::chrono::seconds(50),
+					std::chrono::seconds(12),
+					std::chrono::seconds(130),
+					std::chrono::seconds(23),
+					std::chrono::seconds(60)
+				}
+			)
 		);
 }
 
 TEST(RunTimeContainerImplTest, toDurationsStatic) {
 	EXPECT_THAT(
-			RunTimeContainer::toDurations(
+			RunTimeContainer::toDurationList(
 				std::list<RunTimeDTO>{
 					RunTimeDTO(0, 0),
 					RunTimeDTO(0, 12),
@@ -129,7 +131,7 @@ TEST(RunTimeContainerImplTest, toDurationsStatic) {
 				}
 			),
 			ContainerEq(
-				std::list<std::chrono::seconds>{
+				DurationList {
 					std::chrono::minutes(0) + std::chrono::seconds(0),
 					std::chrono::minutes(0) + std::chrono::seconds(12),
 					std::chrono::minutes(1) + std::chrono::seconds(25),

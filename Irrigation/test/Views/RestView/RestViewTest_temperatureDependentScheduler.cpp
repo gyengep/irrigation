@@ -18,7 +18,7 @@ string RestViewTest::createTemperatureDependentSchedulerUrl(IdType programId) {
 TEST_F(RestViewTest, postTemperatureDependentScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("POST", createTemperatureDependentSchedulerUrl(programId), XmlWriter().save(TemperatureDependentSchedulerSample1().getDto()), "application/xml");
 	checkErrorResponse(response, 405, "application/xml");
@@ -37,7 +37,7 @@ void RestViewTest::testGetTemperatureDependentScheduler(const TemperatureDepende
 			)
 			.build();
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	const Response response = executeRequest("GET", createTemperatureDependentSchedulerUrl(programId));
 	checkResponseWithBody(response, 200, "application/xml");
@@ -69,7 +69,7 @@ TEST_F(RestViewTest, getTemperatureDependentSchedulerNotFound) {
 
 TEST_F(RestViewTest, getTemperatureDependentSchedulerAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createTemperatureDependentSchedulerUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -77,7 +77,7 @@ TEST_F(RestViewTest, getTemperatureDependentSchedulerAcceptable) {
 
 TEST_F(RestViewTest, getTemperatureDependentSchedulerNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("GET", createTemperatureDependentSchedulerUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -101,7 +101,7 @@ TEST_F(RestViewTest, patchTemperatureDependentScheduler) {
 
 	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerSample.getDto()));
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	Response response = executeRequest("PATCH", createTemperatureDependentSchedulerUrl(programId), XmlWriter().save(temperatureDependentSchedulerSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
@@ -116,7 +116,7 @@ TEST_F(RestViewTest, patchTemperatureDependentSchedulerNotFound) {
 TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createTemperatureDependentSchedulerUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -125,7 +125,7 @@ TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidXml) {
 TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createTemperatureDependentSchedulerUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -136,7 +136,7 @@ TEST_F(RestViewTest, patchTemperatureDependentSchedulerInvalidContentType) {
 TEST_F(RestViewTest, deleteTemperatureDependentScheduler) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("DELETE", createTemperatureDependentSchedulerUrl(programId));
 	checkErrorResponse(response, 405, "application/xml");

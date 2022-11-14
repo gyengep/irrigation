@@ -50,7 +50,7 @@ unsigned HotWeatherSchedulerImpl::getPeriod() const {
 	return period.count();
 }
 
-Scheduler::Result HotWeatherSchedulerImpl::process(const LocalDateTime& localDateTime) {
+std::unique_ptr<Scheduler::Result> HotWeatherSchedulerImpl::process(const LocalDateTime& localDateTime) {
 	const auto historyValues = temperatureHistory->getTemperatureHistory(localDateTime - period, localDateTime);
 	const bool periodIsOk = ((lastRun + period) <= localDateTime);
 	const bool temperatureIsOk = (historyValues.avg >= minTemperature);
@@ -70,10 +70,10 @@ Scheduler::Result HotWeatherSchedulerImpl::process(const LocalDateTime& localDat
 
 	if (periodIsOk && temperatureIsOk) {
 		lastRun = localDateTime;
-		return Scheduler::Result(true);
+		return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(true));
 	}
 
-	return Scheduler::Result(false);
+	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(false));
 }
 
 nlohmann::json HotWeatherSchedulerImpl::saveTo() const {

@@ -1,6 +1,7 @@
 #include "IrrigationApplication.h"
 #include "Configuration.h"
 #include "DocumentSaver.h"
+#include "IrrigationDocumentImpl.h"
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
@@ -134,7 +135,7 @@ void IrrigationApplication::uninitTemperature() {
 }
 
 void IrrigationApplication::initDocument() {
-	irrigationDocument = IrrigationDocument::Builder().build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().build();
 
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,

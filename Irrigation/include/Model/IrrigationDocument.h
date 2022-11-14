@@ -1,73 +1,35 @@
 #pragma once
-#include <atomic>
 #include <memory>
-#include <mutex>
-#include <string>
-#include "json.hpp"
 #include "DocumentView/Document.h"
 #include "DTO/DocumentDTO.h"
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
 
-class WateringController;
-
 
 class IrrigationDocument : public Document {
-public:
-	class Builder;
-
-private:
-	mutable std::mutex mtx;
-	std::shared_ptr<ProgramContainer> programs;
-	std::shared_ptr<ProgramFactory> programFactory;
-	std::shared_ptr<WateringController> wateringController;
-	std::atomic_bool modified;
 
 public:
-	IrrigationDocument(
-		const std::shared_ptr<ProgramContainer>& programContainer,
-		const std::shared_ptr<ProgramFactory>& programFactory,
-		const std::shared_ptr<WateringController>& wateringController
-	);
+	virtual ~IrrigationDocument() = default;
 
-	virtual ~IrrigationDocument();
+	virtual void lock() const = 0;
+	virtual void unlock() const = 0;
 
-	void lock() const;
-	void unlock() const;
+	virtual const ProgramContainer& getProgramContainer() const = 0;
+	virtual ProgramContainer& getProgramContainer() = 0;
 
-	const ProgramContainer& getPrograms() const { return *programs; }
-	ProgramContainer& getPrograms() { return *programs; }
+	virtual std::pair<IdType, ProgramPtr> createProgram(const ProgramDTO& programDto) = 0;
 
-	std::pair<IdType, ProgramPtr> createProgram(const ProgramDTO& programDto);
+	virtual bool isModified() const = 0;
+	virtual void setModified(bool modified = true) = 0;
 
-	const WateringController& getWateringController() const { return *wateringController; }
-	WateringController& getWateringController() { return *wateringController; }
+	virtual void startIfScheduled(const LocalDateTime& localDateTime) = 0;
+	virtual void startProgram(const IdType& programId, unsigned adjustment) = 0;
+	virtual void startCustom(const DurationList& durations, unsigned adjustment) = 0;
+	virtual void stop() = 0;
 
-	bool isModified() const { return modified; }
-	void setModified(bool modified = true) { this->modified = modified; }
+	virtual DocumentDTO toDocumentDto() const = 0;
+	virtual void updateFromDocumentDto(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO) = 0;
 
-	DocumentDTO toDocumentDto() const;
-	void updateFromDocumentDto(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO);
-
-	nlohmann::json saveTo() const;
-	void loadFrom(const nlohmann::json& values);
-
-	void saveState() const;
-	void loadState();
-};
-
-class IrrigationDocument::Builder {
-	std::shared_ptr<ProgramContainer> programContainer;
-	std::shared_ptr<ProgramFactory> programFactory;
-	std::shared_ptr<WateringController> wateringController;
-
-public:
-	Builder();
-	~Builder();
-
-	Builder& setProgramContainer(const std::shared_ptr<ProgramContainer>& programContainer);
-	Builder& setProgramFactory(const std::shared_ptr<ProgramFactory>& programFactory);
-	Builder& setWateringController(const std::shared_ptr<WateringController>& wateringController);
-
-	std::shared_ptr<IrrigationDocument> build();
+	virtual void saveState() const = 0;
+	virtual void loadState() = 0;
 };

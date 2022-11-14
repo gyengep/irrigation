@@ -20,9 +20,9 @@ TEST(ProgramContainerImplImplTest, defaultConstructor) {
 
 TEST(ProgramContainerImplImplTest, initializerConstructor) {
 	const initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, ProgramImpl::Builder().build() },
-		{ 20, ProgramImpl::Builder().build() },
-		{ 15, ProgramImpl::Builder().build() },
+		{ 10, std::make_shared<MockProgram>() },
+		{ 20, std::make_shared<MockProgram>() },
+		{ 15, std::make_shared<MockProgram>() },
 	};
 	ProgramContainerImpl programs(initializer);
 
@@ -38,19 +38,19 @@ TEST(ProgramContainerImplImplTest, size) {
 	ProgramContainerImpl programs;
 	EXPECT_THAT(programs, SizeIs(0));
 
-	programs.insert(0, ProgramImpl::Builder().build());
+	programs.insert(0, std::make_shared<MockProgram>());
 	EXPECT_THAT(programs, SizeIs(1));
 
-	programs.insert(1, ProgramImpl::Builder().build());
-	programs.insert(2, ProgramImpl::Builder().build());
+	programs.insert(1, std::make_shared<MockProgram>());
+	programs.insert(2, std::make_shared<MockProgram>());
 	EXPECT_THAT(programs, SizeIs(3));
 }
 
 TEST(ProgramContainerImplImplTest, insert) {
 	const initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, ProgramImpl::Builder().build() },
-		{ 20, ProgramImpl::Builder().build() },
-		{ 15, ProgramImpl::Builder().build() },
+		{ 10, std::make_shared<MockProgram>() },
+		{ 20, std::make_shared<MockProgram>() },
+		{ 15, std::make_shared<MockProgram>() },
 	};
 
 	ProgramContainerImpl programs;
@@ -64,20 +64,20 @@ TEST(ProgramContainerImplImplTest, insert) {
 
 TEST(ProgramContainerImplImplTest, insertExisting) {
 	ProgramContainerImpl programs({
-		{ 100, ProgramImpl::Builder().build() },
-		{ 101, ProgramImpl::Builder().build() },
-		{ 102, ProgramImpl::Builder().build() },
+		{ 100, std::make_shared<MockProgram>() },
+		{ 101, std::make_shared<MockProgram>() },
+		{ 102, std::make_shared<MockProgram>() },
 	});
 
-	EXPECT_THROW(programs.insert(101, ProgramImpl::Builder().build()), AlreadyExistException);
+	EXPECT_THROW(programs.insert(101, std::make_shared<MockProgram>()), AlreadyExistException);
 }
 
 TEST(ProgramContainerImplImplTest, erase) {
 	const initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 50, ProgramImpl::Builder().build() },
-		{ 40, ProgramImpl::Builder().build() },
-		{ 70, ProgramImpl::Builder().build() },
-		{ 60, ProgramImpl::Builder().build() }
+		{ 50, std::make_shared<MockProgram>() },
+		{ 40, std::make_shared<MockProgram>() },
+		{ 70, std::make_shared<MockProgram>() },
+		{ 60, std::make_shared<MockProgram>() }
 	};
 
 	ProgramContainerImpl programs(initializer);
@@ -96,9 +96,9 @@ TEST(ProgramContainerImplImplTest, erase) {
 
 TEST(ProgramContainerImplImplTest, eraseInvalid) {
 	const initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, ProgramImpl::Builder().build() },
-		{ 20, ProgramImpl::Builder().build() },
-		{ 15, ProgramImpl::Builder().build() },
+		{ 10, std::make_shared<MockProgram>() },
+		{ 20, std::make_shared<MockProgram>() },
+		{ 15, std::make_shared<MockProgram>() },
 	};
 
 	ProgramContainerImpl programs(initializer);
@@ -110,9 +110,9 @@ TEST(ProgramContainerImplImplTest, eraseInvalid) {
 
 TEST(ProgramContainerImplImplTest, at) {
 	const initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, ProgramImpl::Builder().build() },
-		{ 15, ProgramImpl::Builder().build() },
-		{ 20, ProgramImpl::Builder().build() },
+		{ 10, std::make_shared<MockProgram>() },
+		{ 15, std::make_shared<MockProgram>() },
+		{ 20, std::make_shared<MockProgram>() },
 	};
 
 	ProgramContainerImpl programs(initializer);
@@ -130,9 +130,9 @@ TEST(ProgramContainerImplImplTest, at) {
 
 TEST(ProgramContainerImplImplTest, atInvalid) {
 	ProgramContainerImpl programs({
-		{ 10, ProgramImpl::Builder().build() },
-		{ 15, ProgramImpl::Builder().build() },
-		{ 20, ProgramImpl::Builder().build() },
+		{ 10, std::make_shared<MockProgram>() },
+		{ 15, std::make_shared<MockProgram>() },
+		{ 20, std::make_shared<MockProgram>() },
 	});
 
 	EXPECT_THROW(programs.at(6), NoSuchElementException);
@@ -153,9 +153,9 @@ void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) {
 	}
 
 	ProgramContainerImpl programContainer {
-		{ IdType(10), ProgramImpl::Builder().build() },
-		{ IdType(20), ProgramImpl::Builder().build() },
-		{ IdType(30), ProgramImpl::Builder().build() }
+		{ IdType(10), std::make_shared<MockProgram>() },
+		{ IdType(20), std::make_shared<MockProgram>() },
+		{ IdType(30), std::make_shared<MockProgram>() }
 	};
 
 	EXPECT_THAT(programContainer.size(), Eq(3));

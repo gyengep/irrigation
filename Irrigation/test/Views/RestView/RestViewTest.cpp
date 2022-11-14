@@ -1,5 +1,5 @@
 #include "RestViewTest.h"
-#include "Model/IrrigationDocument.h"
+#include "Model/IrrigationDocumentImpl.h"
 #include "Utils/DateTime.h"
 #include "Utils/CurlStringReader.h"
 #include "Views/RestView/RestView.h"
@@ -15,7 +15,7 @@ void RestViewTest::SetUp() {
 	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
 	mockShutdownManager = std::make_shared<MockShutdownManager>();
 
-	irrigationDocument = IrrigationDocument::Builder().build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,

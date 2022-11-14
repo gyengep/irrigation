@@ -6,7 +6,7 @@
 class MockEveryDayScheduler : public EveryDayScheduler {
 public:
 
-	MOCK_METHOD1(process, Scheduler::Result(const LocalDateTime& localDateTime));
+	MOCK_METHOD1(process, std::unique_ptr<Scheduler::Result>(const LocalDateTime& localDateTime));
 
 	MOCK_CONST_METHOD0(toEveryDaySchedulerDto, EveryDaySchedulerDTO());
 	MOCK_METHOD1(updateFromEveryDaySchedulerDto, void(const EveryDaySchedulerDTO& schedulerDTO));

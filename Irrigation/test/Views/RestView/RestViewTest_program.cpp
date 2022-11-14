@@ -2,7 +2,7 @@
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Mocks/MockProgram.h"
 #include "Mocks/MockProgramContainer.h"
-#include "Model/IrrigationDocument.h"
+#include "Model/IrrigationDocumentImpl.h"
 #include "Views/RestView/RestView.h"
 
 using namespace std;
@@ -24,7 +24,7 @@ TEST_F(RestViewTest, postProgram) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::testGetProgram(const ProgramListSample& programListSample) {
-	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainerPtr()).build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().setProgramContainer(programListSample.getContainerPtr()).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
@@ -68,7 +68,7 @@ TEST_F(RestViewTest, getProgramNotFound) {
 
 TEST_F(RestViewTest, getProgramAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/xml");
 	checkResponseWithBody(response, 200, "application/xml");
@@ -76,7 +76,7 @@ TEST_F(RestViewTest, getProgramAcceptable) {
 
 TEST_F(RestViewTest, getProgramNotAcceptable) {
 	const IdType programId;
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	Response response = executeRequest("GET", createProgramUrl(programId), "Accept: application/json");
 	checkErrorResponse(response, 406, "application/xml");
@@ -91,7 +91,7 @@ TEST_F(RestViewTest, patchProgram) {
 
 	EXPECT_CALL(*program, updateFromProgramDto(programSample.getDto()));
 
-	irrigationDocument->getPrograms().insert(programId, program);
+	irrigationDocument->getProgramContainer().insert(programId, program);
 
 	Response response = executeRequest("PATCH", createProgramUrl(programId), XmlWriter().save(programSample.getDto()), "application/xml");
 	checkResponseWithoutBody(response, 204);
@@ -106,7 +106,7 @@ TEST_F(RestViewTest, patchProgramNotFound) {
 TEST_F(RestViewTest, patchProgramInvalidXml) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "InvalidXml", "application/xml");
 	checkErrorResponse(response, 400, "application/xml");
@@ -115,7 +115,7 @@ TEST_F(RestViewTest, patchProgramInvalidXml) {
 TEST_F(RestViewTest, patchProgramInvalidContentType) {
 	const IdType programId;
 
-	irrigationDocument->getPrograms().insert(programId, ProgramImpl::Builder().build());
+	irrigationDocument->getProgramContainer().insert(programId, ProgramImpl::Builder().build());
 
 	const Response response = executeRequest("PATCH", createProgramUrl(programId), "{ \"key\" = \"value\" }", "application/json");
 	checkErrorResponse(response, 415, "application/xml");
@@ -129,7 +129,7 @@ TEST_F(RestViewTest, deleteProgram) {
 
 	EXPECT_CALL(*mockProgramContainer, erase(programId));
 
-	irrigationDocument = IrrigationDocument::Builder().
+	irrigationDocument = IrrigationDocumentImpl::Builder().
 			setProgramContainer(mockProgramContainer).
 			build();
 

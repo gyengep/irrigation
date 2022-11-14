@@ -25,7 +25,7 @@ public:
 	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) override;
 
 	virtual std::string toString() const override;
-	virtual std::list<std::chrono::seconds> toDurations() const override;
+	virtual DurationList toDurationList() const override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

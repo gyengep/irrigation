@@ -24,7 +24,7 @@ std::string to_string(const InputIterator&  first, const InputIterator&  last) {
 		if (it != first) {
 			o << ", ";
 		}
-		o << to_string(*it);
+		o << std::to_string(*it);
 	}
 	o << "]";
 	return o.str();

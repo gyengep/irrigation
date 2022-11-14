@@ -1,7 +1,7 @@
 #include "RestViewTest.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Mocks/MockProgramContainer.h"
-#include "Model/IrrigationDocument.h"
+#include "Model/IrrigationDocumentImpl.h"
 #include "Views/RestView/RestView.h"
 
 using namespace std;
@@ -21,7 +21,7 @@ TEST_F(RestViewTest, postProgramList) {
 	const ProgramPtr expectedParam = ProgramSample1().getObjectPtr();
 	EXPECT_CALL(*mockProgramContainer, insert(_, Pointee(Eq(std::ref(*expectedParam)))));
 
-	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(mockProgramContainer).build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().setProgramContainer(mockProgramContainer).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
@@ -31,7 +31,7 @@ TEST_F(RestViewTest, postProgramList) {
 		)));
 
 	const Response response = executeRequest("POST", createProgramListUrl(), XmlWriter().save(ProgramSample1().getDto()), "application/xml");
-	const IdType programId = irrigationDocument->getPrograms().begin()->first;
+	const IdType programId = irrigationDocument->getProgramContainer().begin()->first;
 
 	checkResponseWithoutBody(response, 201);
 	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Location: /programs/" + programId.toString() + "\r\n"));
@@ -51,7 +51,7 @@ TEST_F(RestViewTest, postProgramListInvalidContentType) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::testGetProgramList(const ProgramListSample& programListSample) {
-	irrigationDocument = IrrigationDocument::Builder().setProgramContainer(programListSample.getContainerPtr()).build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().setProgramContainer(programListSample.getContainerPtr()).build();
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,

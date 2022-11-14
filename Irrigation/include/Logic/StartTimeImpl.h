@@ -13,7 +13,6 @@ public:
 	virtual ~StartTimeImpl();
 
 	virtual bool less(const StartTime& other) const override;
-	virtual bool equals(unsigned hour, unsigned minute, unsigned second) const override;
 
 	virtual void set(unsigned hour, unsigned minute) override;
 

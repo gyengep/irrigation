@@ -1,7 +1,4 @@
-#include "IrrigationDocumentTest.h"
-#include <gmock/gmock.h>
-#include <cstdio>
-#include <thread>
+#include "IrrigationDocumentImplTest.h"
 #include "DTO/DocumentDTO.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
@@ -12,12 +9,14 @@
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
 #include "Logic/WateringController.h"
-#include "Model/IrrigationDocument.h"
 #include "Schedulers/WeeklyScheduler.h"
 #include "Mocks/MockDtoReader.h"
 #include "Mocks/MockFileReader.h"
 #include "Mocks/MockProgram.h"
 #include "Dto2Object/DocumentSamples.h"
+#include <gmock/gmock.h>
+#include <cstdio>
+#include <thread>
 
 using namespace std;
 using namespace testing;
@@ -66,27 +65,27 @@ const DocumentDTO expectedDocumentDTO(list<ProgramDTO>({
 	).setId(25),
 }));
 */
-void IrrigationDocumentTest::SetUp() {
-	irrigationDocument = IrrigationDocument::Builder().build();
+void IrrigationDocumentImplTest::SetUp() {
+	irrigationDocument = IrrigationDocumentImpl::Builder().build();
 }
 
-void IrrigationDocumentTest::TearDown() {
+void IrrigationDocumentImplTest::TearDown() {
 }
 
-void IrrigationDocumentTest::waitAndUnlock(IrrigationDocument* irrigationDocument, unsigned waitMs) {
+void IrrigationDocumentImplTest::waitAndUnlock(IrrigationDocumentImpl* irrigationDocument, unsigned waitMs) {
 	this_thread::sleep_for(chrono::milliseconds(waitMs + 10));
 	irrigationDocument->unlock();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(IrrigationDocumentTest, lockUnlock) {
+TEST_F(IrrigationDocumentImplTest, lockUnlock) {
 	const unsigned waitMs = 100;
 
 	irrigationDocument->lock();
 
 	auto start = chrono::high_resolution_clock::now();
-	thread lockAndUnlockThread(&IrrigationDocumentTest::waitAndUnlock, this, irrigationDocument.get(), waitMs);
+	thread lockAndUnlockThread(&IrrigationDocumentImplTest::waitAndUnlock, this, irrigationDocument.get(), waitMs);
 
 	irrigationDocument->lock();
 	irrigationDocument->unlock();
@@ -103,67 +102,67 @@ void testToDocumentDto(const DocumentSample& documentSample) {
 	EXPECT_THAT(documentSample.getObjectPtr()->toDocumentDto(), Eq(documentSample.getDto()));
 }
 
-TEST_F(IrrigationDocumentTest, toDocumentDto1) {
+TEST_F(IrrigationDocumentImplTest, toDocumentDto1) {
 	testToDocumentDto(DocumentSample1());
 }
 
-TEST_F(IrrigationDocumentTest, toDocumentDto2) {
+TEST_F(IrrigationDocumentImplTest, toDocumentDto2) {
 	testToDocumentDto(DocumentSample2());
 }
 
-TEST_F(IrrigationDocumentTest, toDocumentDto3) {
+TEST_F(IrrigationDocumentImplTest, toDocumentDto3) {
 	testToDocumentDto(DocumentSample3());
 }
 
-TEST_F(IrrigationDocumentTest, toDocumentDto4) {
+TEST_F(IrrigationDocumentImplTest, toDocumentDto4) {
 	testToDocumentDto(DocumentSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testUpdateFromDocumentDto(const shared_ptr<IrrigationDocument>& irrigationDocument, const DocumentSample& documentSample) {
-	EXPECT_THAT(irrigationDocument->getPrograms(), Not(Eq(std::ref(documentSample.getObjectPtr()->getPrograms()))));
+void testUpdateFromDocumentDto(const shared_ptr<IrrigationDocumentImpl>& irrigationDocument, const DocumentSample& documentSample) {
+	EXPECT_THAT(irrigationDocument->getProgramContainer(), Not(Eq(std::ref(documentSample.getObjectPtr()->getPrograms()))));
 	irrigationDocument->updateFromDocumentDto(Program, documentSample.getDto());
-	EXPECT_THAT(irrigationDocument->getPrograms(), Eq(std::ref(documentSample.getObjectPtr()->getPrograms())));
+	EXPECT_THAT(irrigationDocument->getProgramContainer(), Eq(std::ref(documentSample.getObjectPtr()->getPrograms())));
 }
 
-TEST_F(IrrigationDocumentTest, updateFromDocumentDto1) {
-	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample4().getObjectPtr();
+TEST_F(IrrigationDocumentImplTest, updateFromDocumentDto1) {
+	shared_ptr<IrrigationDocumentImpl> irrigationDocument = DocumentSample4().getObjectPtr();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample1());
 }
 
-TEST_F(IrrigationDocumentTest, updateFromDocumentDto2) {
-	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample1().getObjectPtr();
+TEST_F(IrrigationDocumentImplTest, updateFromDocumentDto2) {
+	shared_ptr<IrrigationDocumentImpl> irrigationDocument = DocumentSample1().getObjectPtr();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample2());
 }
 
-TEST_F(IrrigationDocumentTest, updateFromDocumentDto3) {
-	shared_ptr<IrrigationDocument> irrigationDocument = DocumentSample2().getObjectPtr();
+TEST_F(IrrigationDocumentImplTest, updateFromDocumentDto3) {
+	shared_ptr<IrrigationDocumentImpl> irrigationDocument = DocumentSample2().getObjectPtr();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample3());
 }
 
-TEST_F(IrrigationDocumentTest, updateFromDocumentDto4) {
-	shared_ptr<IrrigationDocument> irrigationDocument = IrrigationDocument::Builder().build();
+TEST_F(IrrigationDocumentImplTest, updateFromDocumentDto4) {
+	shared_ptr<IrrigationDocumentImpl> irrigationDocument = IrrigationDocumentImpl::Builder().build();
 	testUpdateFromDocumentDto(irrigationDocument, DocumentSample4());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(IrrigationDocumentTest, partialUpdateFromDocumentDto_empty) {
+TEST_F(IrrigationDocumentImplTest, partialUpdateFromDocumentDto_empty) {
 	const DocumentSample3 expected;
 
 	DocumentSample3 actual;
 	actual.getObjectPtr()->updateFromDocumentDto(DocumentDTO());
 	EXPECT_THAT(actual.getObjectPtr()->getPrograms(), Eq(std::ref(expected.getObjectPtr()->getPrograms())));
 }
-
+*/
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(IrrigationDocumentTest, isModified) {
+TEST_F(IrrigationDocumentImplTest, isModified) {
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
-TEST_F(IrrigationDocumentTest, setModified) {
+TEST_F(IrrigationDocumentImplTest, setModified) {
 	irrigationDocument->setModified();
 	EXPECT_TRUE(irrigationDocument->isModified());
 
@@ -173,4 +172,3 @@ TEST_F(IrrigationDocumentTest, setModified) {
 	irrigationDocument->setModified(true);
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
-*/

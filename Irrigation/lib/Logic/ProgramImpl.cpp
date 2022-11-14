@@ -68,42 +68,18 @@ ProgramImpl::ProgramImpl(
 {
 }
 
-Scheduler& ProgramImpl::getCurrentScheduler() {
-	return *getSchedulerContainer().at(schedulerType);
-}
-
-std::unique_ptr<ScheduledResult> ProgramImpl::isScheduled(const LocalDateTime& localDateTime) {
+std::unique_ptr<Scheduler::Result> ProgramImpl::isScheduled(const LocalDateTime& localDateTime) {
 	if (enabled) {
 		for (const auto& startTimeAndIdPair : getStartTimeContainer()) {
 			const StartTime& startTime = *startTimeAndIdPair.second;
 
-			if (startTime.equals(localDateTime.getHours(), localDateTime.getMinutes(), localDateTime.getSeconds())) {
-				const Scheduler::Result result = getCurrentScheduler().process(localDateTime);
-
-				unsigned adjustment = 0;
-
-				if (result.isScheduled) {
-					adjustment = getAdjustment();
-
-					if (result.overrideAdjustment) {
-						adjustment *= (result.adjustment / 100.0f);
-						LOGGER.debug("The scheduler overrides the adjustment\n"
-								"\tuser adjustment        %d%%\n"
-								"\tscheduler adjustment   %d%%\n"
-								"\taccumulated adjustment %d%%",
-								getAdjustment(),
-								result.adjustment,
-								adjustment
-							);
-					}
-				}
-
-				return std::unique_ptr<ScheduledResult>(new ScheduledResult(true, adjustment));
+			if ((static_cast<int>(startTime.getHours()) == localDateTime.getHours()) && (static_cast<int>(startTime.getMinutes()) == localDateTime.getMinutes())) {
+				return getSchedulerContainer().at(schedulerType)->process(localDateTime);
 			}
 		}
 	}
 
-	return std::unique_ptr<ScheduledResult>(new ScheduledResult(false, 0));
+	return std::unique_ptr<Scheduler::Result>();
 }
 
 std::pair<IdType, StartTimePtr> ProgramImpl::createStartTime(const StartTimeDTO& startTimeDto) {
