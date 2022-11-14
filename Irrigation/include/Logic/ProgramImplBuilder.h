@@ -27,6 +27,7 @@ public:
 	ProgramPtr build();
 };
 
+///////////////////////////////////////////////////////////////////////////////
 
 class ProgramImplFactory::Builder {
 	std::shared_ptr<SchedulerContainerFactory> schedulerContainerFactory;
@@ -42,5 +43,5 @@ public:
 	Builder& setStartTimeContainerFactory(const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory);
 	Builder& setStartTimeFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
 
-	std::shared_ptr<ProgramFactory> build();
+	ProgramFactoryPtr build();
 };

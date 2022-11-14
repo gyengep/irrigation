@@ -63,3 +63,7 @@ public:
 	virtual ~SchedulerContainerFactory() = default;
 	virtual SchedulerContainerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<SchedulerContainerFactory> SchedulerContainerFactoryPtr;

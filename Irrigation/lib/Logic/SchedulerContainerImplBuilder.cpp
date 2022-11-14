@@ -66,8 +66,27 @@ SchedulerContainerPtr SchedulerContainerImpl::Builder::build() {
 SchedulerContainerImplFactory::Builder::Builder() {
 }
 
-std::shared_ptr<SchedulerContainerFactory> SchedulerContainerImplFactory::Builder::build() {
+SchedulerContainerImplFactory::Builder& SchedulerContainerImplFactory::Builder::setEveryDaySchedulerFactory(const std::shared_ptr<EveryDaySchedulerFactory>& everyDaySchedulerFactory) {
+	this->everyDaySchedulerFactory = everyDaySchedulerFactory;
+	return *this;
+}
 
+SchedulerContainerImplFactory::Builder& SchedulerContainerImplFactory::Builder::setHotWeatherSchedulerFactory(const std::shared_ptr<HotWeatherSchedulerFactory>& hotWeatherSchedulerFactory) {
+	this->hotWeatherSchedulerFactory = hotWeatherSchedulerFactory;
+	return *this;
+}
+
+SchedulerContainerImplFactory::Builder& SchedulerContainerImplFactory::Builder::setTemperatureDependentSchedulerFactory(const std::shared_ptr<TemperatureDependentSchedulerFactory>& temperatureDependentSchedulerFactory) {
+	this->temperatureDependentSchedulerFactory = temperatureDependentSchedulerFactory;
+	return *this;
+}
+
+SchedulerContainerImplFactory::Builder& SchedulerContainerImplFactory::Builder::setWeeklySchedulerFactory(const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory) {
+	this->weeklySchedulerFactory = weeklySchedulerFactory;
+	return *this;
+}
+
+SchedulerContainerFactoryPtr SchedulerContainerImplFactory::Builder::build() {
 	if (nullptr == everyDaySchedulerFactory) {
 		everyDaySchedulerFactory = std::make_shared<EveryDaySchedulerImplFactory>();
 	}

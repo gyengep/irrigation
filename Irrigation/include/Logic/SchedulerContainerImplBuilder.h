@@ -1,5 +1,4 @@
 #pragma once
-#include "SchedulerContainer.h"
 #include "SchedulerContainerImpl.h"
 
 
@@ -31,5 +30,10 @@ class SchedulerContainerImplFactory::Builder {
 public:
 	Builder();
 
-	std::shared_ptr<SchedulerContainerFactory> build();
+	Builder& setEveryDaySchedulerFactory(const std::shared_ptr<EveryDaySchedulerFactory>& everyDaySchedulerFactory);
+	Builder& setHotWeatherSchedulerFactory(const std::shared_ptr<HotWeatherSchedulerFactory>& hotWeatherSchedulerFactory);
+	Builder& setTemperatureDependentSchedulerFactory(const std::shared_ptr<TemperatureDependentSchedulerFactory>& temperatureDependentSchedulerFactory);
+	Builder& setWeeklySchedulerFactory(const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory);
+
+	SchedulerContainerFactoryPtr build();
 };

@@ -63,3 +63,7 @@ public:
 	virtual ~ProgramFactory() = default;
 	virtual ProgramPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<ProgramFactory> ProgramFactoryPtr;

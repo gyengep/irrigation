@@ -1,7 +1,6 @@
 #include "IrrigationDocumentImpl.h"
 #include "Hardware/Valves/GpioValve.h"
 #include "Hardware/Valves/ZoneHandlerImpl.h"
-#include "Logic/ProgramImpl.h"
 #include "Logic/ProgramImplBuilder.h"
 #include "Logic/ProgramContainerImpl.h"
 #include "Logic/WateringControllerImpl.h"
