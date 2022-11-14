@@ -1,6 +1,5 @@
 #include <gmock/gmock.h>
 #include "Schedulers/EveryDaySchedulerImpl.h"
-#include "Utils/TimeConversion.h"
 
 using namespace testing;
 

@@ -9,15 +9,11 @@
 
 
 class TimerView : public View, public Runnable {
-	const std::chrono::seconds period;
-	const std::chrono::seconds maxTardiness;
-	LocalDateTime expectedLocalDateTime;
+	const std::chrono::milliseconds period;
 	LocalDateTime lastRun;
 
 	IrrigationDocument& irrigationDocument;
 	std::unique_ptr<Thread> timerThread;
-
-	static bool checkExpectedDateTime(const LocalDateTime& expectedLocalDateTime);
 
 public:
 	TimerView(IrrigationDocument& irrigationDocument);

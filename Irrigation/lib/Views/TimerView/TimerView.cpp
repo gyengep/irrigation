@@ -1,14 +1,12 @@
 #include "TimerView.h"
 #include "Logger/Logger.h"
-#include "Utils/FixedRateSchedulerRunnable.h"
+#include "Utils/FixedDelaySchedulerRunnable.h"
 #include "Utils/ReferenceRunnable.h"
 
 
 TimerView::TimerView(IrrigationDocument& irrigationDocument) :
 	View(irrigationDocument),
-	period(std::chrono::seconds(1)),
-	maxTardiness(std::chrono::seconds(1)),
-	expectedLocalDateTime(DateTime::epoch()),
+	period(std::chrono::milliseconds(500)),
 	lastRun(DateTime::epoch()),
 	irrigationDocument(irrigationDocument)
 {
@@ -20,17 +18,16 @@ TimerView::~TimerView() {
 void TimerView::initialize() {
 	LOGGER.debug("TimerView initializing...");
 
-	expectedLocalDateTime = DateTime::now() + period;
-
 	auto referenceRunnbale = std::make_shared<ReferenceRunnable>(*this);
-	auto fixedRateSchedulerRunnable = std::make_shared<FixedRateSchedulerRunnable>(
+	auto fixedDelaySchedulerRunnable = std::make_shared<FixedDelaySchedulerRunnable>(
 			referenceRunnbale,
+			period,
 			period,
 			"TimerView"
 		);
 
-	timerThread = std::unique_ptr<Thread>(new Thread(fixedRateSchedulerRunnable, "TimerView"));
-	timerThread->start(Thread::Priority::HIGH);
+	timerThread = std::unique_ptr<Thread>(new Thread(fixedDelaySchedulerRunnable, "TimerView"));
+	timerThread->start();
 
 	LOGGER.debug("TimerView initialized");
 }
@@ -49,44 +46,23 @@ void TimerView::run() {
 	LOGGER.trace("TimerView::run()");
 #endif
 
-	if (!checkExpectedDateTime(expectedLocalDateTime)) {
-		expectedLocalDateTime = DateTime::now();
-	}
+	const LocalDateTime now = LocalDateTime::now();
 
-	if (lastRun.getYears() != expectedLocalDateTime.getYears() ||
-		lastRun.getMonths() != expectedLocalDateTime.getMonths() ||
-		lastRun.getDays() != expectedLocalDateTime.getDays() ||
-		lastRun.getHours() != expectedLocalDateTime.getHours() ||
-		lastRun.getMinutes() != expectedLocalDateTime.getMinutes()
+	if (lastRun.getYears() != now.getYears() ||
+		lastRun.getMonths() != now.getMonths() ||
+		lastRun.getDays() != now.getDays() ||
+		lastRun.getHours() != now.getHours() ||
+		lastRun.getMinutes() != now.getMinutes()
 	)
 	{
 		try {
 			std::lock_guard<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.startIfScheduled(expectedLocalDateTime);
+			irrigationDocument.startIfScheduled(now);
 		} catch (const std::exception& e) {
 			LOGGER.warning("Start watering failed", e);
 		}
 
-		lastRun = expectedLocalDateTime;
+		lastRun = now;
 	}
-
-	expectedLocalDateTime = expectedLocalDateTime + period;
-}
-
-bool TimerView::checkExpectedDateTime(const LocalDateTime& expectedLocalDateTime) {
-	const LocalDateTime now = LocalDateTime::now();
-	const std::chrono::seconds actualDiff = (now - expectedLocalDateTime);
-
-	if (actualDiff < std::chrono::seconds(-1) || std::chrono::seconds(1) < actualDiff) {
-
-		LOGGER.warning("Time is changed! from %s to %s",
-				expectedLocalDateTime.toString("%Y.%m.%d %H:%M:%S").c_str(),
-				now.toString("%Y.%m.%d %H:%M:%S").c_str()
-			);
-
-		return false;
-	}
-
-	return true;
 }
 

@@ -2,7 +2,6 @@
 #include "Mocks/MockCsvWriter.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include "Temperature/TemperatureHistoryLogger.h"
-#include "Utils/TimeConversion.h"
 
 using namespace std;
 using namespace testing;

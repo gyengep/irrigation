@@ -1,5 +1,4 @@
 #include "FixedDelaySchedulerRunnable.h"
-#include "TimeConversion.h"
 #include "Exceptions/InterruptedException.h"
 #include "Logger/Logger.h"
 #include <chrono>

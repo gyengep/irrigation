@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include "Mocks/MockNetworkReader.h"
 #include "Temperature/OWMWrapper.h"
-#include "Utils/TimeConversion.h"
 
 using namespace std;
 using namespace testing;

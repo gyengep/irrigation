@@ -1,7 +1,6 @@
 #include "TemperatureHistoryImpl.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
-#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <iomanip>
 #include <sstream>

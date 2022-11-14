@@ -2,7 +2,6 @@
 #include "Logic/ProgramImplBuilder.h"
 #include "Logic/SchedulerContainerImpl.h"
 #include "Logic/StartTimeImpl.h"
-#include "Utils/TimeConversion.h"
 #include "Mocks/MockEveryDayScheduler.h"
 #include "Mocks/MockHotWeatherScheduler.h"
 #include "Mocks/MockTemperatureDependentScheduler.h"

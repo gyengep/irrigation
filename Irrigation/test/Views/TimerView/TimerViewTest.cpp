@@ -34,16 +34,14 @@ TEST_F(TimerViewTest, callStartIfScheduled_onceInAMinute) {
 	const LocalDateTime now(2021, 6, 22, 23, 36, 0);
 
 	EXPECT_CALL(*mockTimefunc, getTime()).
-			Times(9).
-			WillOnce(Return(now.addSeconds(0).toRawTime())). 	// initialize()
+			Times(6).
 			WillOnce(Return(now.addSeconds(0).toRawTime())). 	// run()
 			WillOnce(Return(now.addSeconds(1).toRawTime())).	// run()
 			WillOnce(Return(now.addSeconds(2).toRawTime())).	// run()
 			WillOnce(Return(now.addSeconds(3).toRawTime())).	// run()
 			WillOnce(Return(now.addSeconds(10).toRawTime())).	// run()
-			WillOnce(Return(now.addSeconds(10).toRawTime())).	// checkExpectedDateTime()
-			WillOnce(Return(now.addSeconds(59).toRawTime())).	// run()
-			WillOnce(Return(now.addSeconds(59).toRawTime()));	// checkExpectedDateTime()
+			WillOnce(Return(now.addSeconds(59).toRawTime()));	// run()
+
 
 
 	EXPECT_CALL(*mockIrrigationDocument, startIfScheduled(now)).Times(1);
@@ -62,17 +60,14 @@ TEST_F(TimerViewTest, callStartIfScheduled_onceInEveryMinute) {
 	const LocalDateTime now3(2021, 6, 22, 23, 37, 0);
 
 	EXPECT_CALL(*mockTimefunc, getTime()).
-			Times(11).
-			WillOnce(Return(now1.toRawTime())). 				// initialize()
+			Times(8).
 			WillOnce(Return(now1.toRawTime())). 				// run()
 			WillOnce(Return(now2.addSeconds(0).toRawTime())). 	// run()
 			WillOnce(Return(now2.addSeconds(1).toRawTime())).	// run()
 			WillOnce(Return(now2.addSeconds(2).toRawTime())).	// run()
 			WillOnce(Return(now2.addSeconds(3).toRawTime())).	// run()
 			WillOnce(Return(now2.addSeconds(10).toRawTime())).	// run()
-			WillOnce(Return(now2.addSeconds(10).toRawTime())).	// checkExpectedDateTime()
 			WillOnce(Return(now2.addSeconds(59).toRawTime())).	// run()
-			WillOnce(Return(now2.addSeconds(59).toRawTime())).	// checkExpectedDateTime()
 			WillOnce(Return(now3.toRawTime()));					// run()
 
 

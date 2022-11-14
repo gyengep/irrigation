@@ -2,7 +2,6 @@
 #include "TemperatureToPercent.h"
 #include "Logger/Logger.h"
 #include "Utils/DateTime.h"
-#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <algorithm>
 #include <chrono>

@@ -1,5 +1,4 @@
 #include "HotWeatherSchedulerImplProcessTest.h"
-#include "Utils/TimeConversion.h"
 
 using namespace testing;
 

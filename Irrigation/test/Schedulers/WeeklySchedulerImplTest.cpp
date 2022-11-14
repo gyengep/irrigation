@@ -1,6 +1,5 @@
 #include "Schedulers/WeeklySchedulerImpl.h"
 #include "Exceptions/Exceptions.h"
-#include "Utils/TimeConversion.h"
 #include "Dto2Object/WeeklySchedulerSamples.h"
 #include <gmock/gmock.h>
 #include <list>

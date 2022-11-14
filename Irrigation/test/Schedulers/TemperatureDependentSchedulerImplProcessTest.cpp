@@ -1,6 +1,5 @@
 #include "TemperatureDependentSchedulerImplProcessTest.h"
 #include "Schedulers/TemperatureToPercent.h"
-#include "Utils/TimeConversion.h"
 
 using namespace testing;
 

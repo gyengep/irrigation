@@ -4,7 +4,6 @@
 #include "Utils/CsvWriter.h"
 #include "Utils/FixedDelaySchedulerRunnable.h"
 #include "Utils/FunctionRunnable.h"
-#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <fstream>
 #include <iomanip>

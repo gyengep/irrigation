@@ -4,7 +4,6 @@
 #include "Schedulers/HotWeatherScheduler.h"
 #include "Schedulers/TemperatureDependentScheduler.h"
 #include "Schedulers/WeeklyScheduler.h"
-#include "Utils/TimeConversion.h"
 #include "Utils/ToString.h"
 #include <algorithm>
 #include <sstream>
