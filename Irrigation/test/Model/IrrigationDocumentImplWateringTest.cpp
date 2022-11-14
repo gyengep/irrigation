@@ -62,7 +62,8 @@ void IrrigationDocumentImplWateringTest::SetUp() {
 						{ id2, mockProgram2 }
 					}),
 			std::make_shared<MockProgramFactory>(),
-			mockWateringController
+			mockWateringController,
+			nullptr
 		);
 }
 

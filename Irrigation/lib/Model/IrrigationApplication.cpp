@@ -5,7 +5,6 @@
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
-#include "Email/EmailHandler.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioValve.h"
 #include "Logger/Logger.h"
@@ -55,7 +54,7 @@ string IrrigationApplication::getVersion() {
 }
 
 void IrrigationApplication::initEmail() {
-	EmailHandler::init(
+	emailHandler = std::make_shared<EmailHandler>(
 			Email::Contact("Irrigation System", "irrigation.gyengep@gmail.com"),
 			Email::Contact("Gyenge Peter", "gyengep@gmail.com"),
 			EmailSender::create(),
@@ -65,17 +64,18 @@ void IrrigationApplication::initEmail() {
 				}
 		);
 
-	EMAIL.enableTopic(EmailTopic::WATERING_START);
-	EMAIL.enableTopic(EmailTopic::WATERING_SKIP);
-	EMAIL.enableTopic(EmailTopic::SYSTEM_STARTED);
-	EMAIL.enableTopic(EmailTopic::SYSTEM_STOPPED);
+	emailHandler->enableTopic(EmailTopic::WATERING_START);
+	emailHandler->enableTopic(EmailTopic::WATERING_SKIP);
+	emailHandler->enableTopic(EmailTopic::SYSTEM_STARTED);
+	emailHandler->enableTopic(EmailTopic::SYSTEM_STOPPED);
+	emailHandler->start();
 
-	EMAIL.send(EmailTopic::SYSTEM_STARTED, "System started");
+	emailHandler->send(EmailTopic::SYSTEM_STARTED, "System started");
 }
 
 void IrrigationApplication::uninitEmail() {
-	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "System stopped");
-	EmailHandler::uninit();
+	emailHandler->send(EmailTopic::SYSTEM_STOPPED, "System stopped");
+	emailHandler->stop();
 }
 
 void IrrigationApplication::initGpio() {
@@ -135,7 +135,9 @@ void IrrigationApplication::uninitTemperature() {
 }
 
 void IrrigationApplication::initDocument() {
-	irrigationDocument = IrrigationDocumentImpl::Builder().build();
+	irrigationDocument = IrrigationDocumentImpl::Builder().
+			setEmailHandler(emailHandler).
+			build();
 
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,

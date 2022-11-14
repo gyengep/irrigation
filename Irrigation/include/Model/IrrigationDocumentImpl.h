@@ -4,6 +4,7 @@
 #include <mutex>
 #include "json.hpp"
 #include "DTO/DocumentDTO.h"
+#include "Email/EmailHandler.h"
 #include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
@@ -15,10 +16,12 @@ public:
 	class Builder;
 
 private:
+	const std::shared_ptr<ProgramContainer> programContainer;
+	const std::shared_ptr<ProgramFactory> programFactory;
+	const std::shared_ptr<WateringController> wateringController;
+	const std::shared_ptr<EmailHandler> emailHandler;
+
 	mutable std::mutex mtx;
-	std::shared_ptr<ProgramContainer> programContainer;
-	std::shared_ptr<ProgramFactory> programFactory;
-	std::shared_ptr<WateringController> wateringController;
 	std::atomic_bool modified;
 
 	void start(const ProgramPtr& program, unsigned adjustment);
@@ -28,7 +31,8 @@ public:
 	IrrigationDocumentImpl(
 		const std::shared_ptr<ProgramContainer>& programContainer,
 		const std::shared_ptr<ProgramFactory>& programFactory,
-		const std::shared_ptr<WateringController>& wateringController
+		const std::shared_ptr<WateringController>& wateringController,
+		const std::shared_ptr<EmailHandler>& emailHandler
 	);
 
 	virtual ~IrrigationDocumentImpl();
@@ -63,12 +67,14 @@ class IrrigationDocumentImpl::Builder {
 	std::shared_ptr<ProgramContainer> programContainer;
 	std::shared_ptr<ProgramFactory> programFactory;
 	std::shared_ptr<WateringController> wateringController;
+	std::shared_ptr<EmailHandler> emailHandler;
 
 public:
 
 	Builder& setProgramContainer(const std::shared_ptr<ProgramContainer>& programContainer);
 	Builder& setProgramFactory(const std::shared_ptr<ProgramFactory>& programFactory);
 	Builder& setWateringController(const std::shared_ptr<WateringController>& wateringController);
+	Builder& setEmailHandler(const std::shared_ptr<EmailHandler>& emailHandler);
 
 	std::shared_ptr<IrrigationDocumentImpl> build();
 };

@@ -13,6 +13,7 @@ protected:
 	std::shared_ptr<MockEmailSender> mockEmailSender;
 	std::vector<std::chrono::milliseconds> waitTimes;
 	std::shared_ptr<MockWaitObserver> mockWaitObserver;
+	std::shared_ptr<EmailHandler> emailHandler;
 
 	virtual void SetUp();
     virtual void TearDown();

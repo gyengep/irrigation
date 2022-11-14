@@ -2,7 +2,6 @@
 #include "EmailHandlerTest.h"
 #include "Utils/WaitObserverStore.h"
 
-using namespace std;
 using namespace testing;
 
 
@@ -20,16 +19,18 @@ void EmailHandlerTest::SetUp() {
 
 	WaitObserverStore::getInstance().insert("EmailConsumerSync", mockWaitObserver);
 
-	EmailHandler::init(
+	emailHandler = std::make_shared<EmailHandler>(
 			*from.get(),
 			*to.get(),
 			mockEmailSender,
 			waitTimes
 		);
+
+	emailHandler->start();
 }
 
 void EmailHandlerTest::TearDown() {
-	EmailHandler::uninit();
+	emailHandler->stop();
 	WaitObserverStore::getInstance().clear();
 }
 
@@ -42,13 +43,13 @@ TEST_F(EmailHandlerTest, sendEnabled) {
 	EXPECT_CALL(*mockWaitObserver, wait_pred()).Times(0);
 	EXPECT_CALL(*mockWaitObserver, wait_for_pred(_)).Times(0);
 
-	EMAIL.enableTopic(EmailTopic::TEST, true);
+	emailHandler->enableTopic(EmailTopic::TEST, true);
 
-	EMAIL.send(EmailTopic::WATERING_START, "Message Body");
-	EMAIL.send(EmailTopic::WATERING_SKIP, "Message Body");
-	EMAIL.send(EmailTopic::SYSTEM_STARTED, "Message Body");
-	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "Message Body");
-	EMAIL.send(EmailTopic::TEST, "Message Body");
+	emailHandler->send(EmailTopic::WATERING_START, "Message Body");
+	emailHandler->send(EmailTopic::WATERING_SKIP, "Message Body");
+	emailHandler->send(EmailTopic::SYSTEM_STARTED, "Message Body");
+	emailHandler->send(EmailTopic::SYSTEM_STOPPED, "Message Body");
+	emailHandler->send(EmailTopic::TEST, "Message Body");
 }
 
 TEST_F(EmailHandlerTest, sendDisabled) {
@@ -59,13 +60,13 @@ TEST_F(EmailHandlerTest, sendDisabled) {
 	EXPECT_CALL(*mockWaitObserver, wait_pred()).Times(0);
 	EXPECT_CALL(*mockWaitObserver, wait_for_pred(_)).Times(0);
 
-	EMAIL.enableTopic(EmailTopic::TEST, false);
+	emailHandler->enableTopic(EmailTopic::TEST, false);
 
-	EMAIL.send(EmailTopic::WATERING_START, "Message Body");
-	EMAIL.send(EmailTopic::WATERING_SKIP, "Message Body");
-	EMAIL.send(EmailTopic::SYSTEM_STARTED, "Message Body");
-	EMAIL.send(EmailTopic::SYSTEM_STOPPED, "Message Body");
-	EMAIL.send(EmailTopic::TEST, "Message Body");
+	emailHandler->send(EmailTopic::WATERING_START, "Message Body");
+	emailHandler->send(EmailTopic::WATERING_SKIP, "Message Body");
+	emailHandler->send(EmailTopic::SYSTEM_STARTED, "Message Body");
+	emailHandler->send(EmailTopic::SYSTEM_STOPPED, "Message Body");
+	emailHandler->send(EmailTopic::TEST, "Message Body");
 }
 
 TEST_F(EmailHandlerTest, sendFailed) {
@@ -79,8 +80,8 @@ TEST_F(EmailHandlerTest, sendFailed) {
 	EXPECT_CALL(*mockWaitObserver, wait_pred()).Times(0);
 	EXPECT_CALL(*mockWaitObserver, wait_for_pred(waitTimes.front())).Times(1);
 
-	EMAIL.enableTopic(EmailTopic::TEST, true);
-	EMAIL.send(EmailTopic::TEST, "Message Body");
+	emailHandler->enableTopic(EmailTopic::TEST, true);
+	emailHandler->send(EmailTopic::TEST, "Message Body");
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }

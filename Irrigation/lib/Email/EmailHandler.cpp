@@ -3,40 +3,6 @@
 #include "Utils/BlockingQueue.h"
 
 
-std::unique_ptr<EmailHandler> EmailHandler::instance;
-
-
-void EmailHandler::init(
-		const Email::Contact& from,
-		const Email::Contact& to,
-		const std::shared_ptr<EmailSender>& emailSender,
-		const std::vector<std::chrono::milliseconds>& delayOnFailed
-) {
-	instance.reset(new EmailHandler(
-			from,
-			to,
-			emailSender,
-			delayOnFailed
-		));
-
-	instance->start();
-}
-
-void EmailHandler::uninit() {
-	instance->stop();
-	instance.reset();
-}
-
-EmailHandler& EmailHandler::getInstance() {
-	if (nullptr == instance) {
-		throw std::logic_error("EmailHandler is not initialized");
-	}
-
-	return *instance;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 EmailHandler::EmailHandler(
 		const Email::Contact& from,
 		const Email::Contact& to,

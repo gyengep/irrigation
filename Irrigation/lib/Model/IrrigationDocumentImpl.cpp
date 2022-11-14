@@ -9,11 +9,13 @@
 IrrigationDocumentImpl::IrrigationDocumentImpl(
 	const std::shared_ptr<ProgramContainer>& programContainer,
 	const std::shared_ptr<ProgramFactory>& programFactory,
-	const std::shared_ptr<WateringController>& wateringController
+	const std::shared_ptr<WateringController>& wateringController,
+	const std::shared_ptr<EmailHandler>& emailHandler
 ) :
 	programContainer(programContainer),
 	programFactory(programFactory),
 	wateringController(wateringController),
+	emailHandler(emailHandler),
 	modified(false)
 {
 }
@@ -72,59 +74,36 @@ void IrrigationDocumentImpl::startIfScheduled(const LocalDateTime& localDateTime
 							schedulerResult->getAdjustment()
 						);
 
-		//				const EmailTopic topic = EmailTopic::WATERING_START;
-		//				if (EMAIL.isTopicEnabled(topic)) {
-		//					std::ostringstream oss;
-		//					oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
-		//					oss << "adjustment: "<< scheduledResult->getAdjustment() << "%" << std::endl;
-		//					oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
-		//					EMAIL.send(topic, oss.str());
-		//				}
+						const EmailTopic topic = EmailTopic::WATERING_START;
+						if (emailHandler && emailHandler->isTopicEnabled(topic)) {
+							std::ostringstream oss;
+							oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
+							oss << "adjustment: "<< schedulerResult->getAdjustment() << "%" << std::endl;
+							oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
+							emailHandler->send(topic, oss.str());
+						}
 
 
 					start(program, schedulerResult->getAdjustment());
 					saveState();
 					break;
 				} else {
-					//				const EmailTopic topic = EmailTopic::WATERING_SKIP;
-					//				if (EMAIL.isTopicEnabled(topic)) {
-					//					std::ostringstream oss;
-					//					oss << "The " << program->getName() << " is skipped by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
-					//					EMAIL.send(topic, oss.str());
-					//				}
+					LOGGER.debug("Program[%s] (%s) is skipped by '%s' scheduler",
+							id.toString().c_str(),
+							program->getName().c_str(),
+							to_string(program->getSchedulerType()).c_str()
+						);
 
+					const EmailTopic topic = EmailTopic::WATERING_SKIP;
+					if (emailHandler && emailHandler->isTopicEnabled(topic)) {
+						std::ostringstream oss;
+						oss << "The " << program->getName() << " is skipped by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
+						emailHandler->send(topic, oss.str());
+					}
 				}
 			}
 		}
 	}
-
-/*
-
-	if (0 < scheduledResult->getAdjustment()) {
-		LOGGER.debug("Program[%s] (%s) '%s' scheduler is scheduled",
-				idType.toString().c_str(),
-				program->getName().c_str(),
-				to_string(program->getSchedulerType()).c_str());
-
-		const EmailTopic topic = EmailTopic::WATERING_START;
-		if (EMAIL.isTopicEnabled(topic)) {
-			std::ostringstream oss;
-			oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
-			oss << "adjustment: "<< scheduledResult->getAdjustment() << "%" << std::endl;
-			oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
-			EMAIL.send(topic, oss.str());
-		}
-
-		irrigationDocument.getWateringController().start(program->getRunTimeContainer().toDurationList(), scheduledResult->getAdjustment());
-	} else {
-		const EmailTopic topic = EmailTopic::WATERING_SKIP;
-		if (EMAIL.isTopicEnabled(topic)) {
-			std::ostringstream oss;
-			oss << "The " << program->getName() << " is skipped by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
-			EMAIL.send(topic, oss.str());
-		}
-	}
-*/
 }
 
 void IrrigationDocumentImpl::startProgram(const IdType& programId, unsigned adjustment) {

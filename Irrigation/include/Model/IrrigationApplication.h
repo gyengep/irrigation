@@ -1,5 +1,6 @@
 #pragma once
 #include "DTO/DocumentDTO.h"
+#include "Email/EmailHandler.h"
 #include "Temperature/TemperatureHandler.h"
 #include "Application.h"
 #include "ShutdownManagerImpl.h"
@@ -13,6 +14,7 @@ class IrrigationApplication : public Application {
 	//std::shared_ptr<TemperatureHandler> temperature;
 	std::unique_ptr<DocumentSaver> documentSaver;
 	std::shared_ptr<ShutdownManagerImpl> shutdownManager;
+	std::shared_ptr<EmailHandler> emailHandler;
 
 	void initEmail();
 	void initGpio();
