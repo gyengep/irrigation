@@ -65,7 +65,9 @@ void FixedDelaySchedulerRunnable::interrupt() {
 std::string FixedDelaySchedulerRunnable::periodText(const std::chrono::milliseconds& t) {
 	string periodText;
 
-	if (t < chrono::hours(1)) {
+	if (t < chrono::seconds(1)) {
+		periodText = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(t).count()) + " milliseconds";
+	} else if (t < chrono::hours(1)) {
 		periodText = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(t).count()) + " seconds";
 	} else {
 		periodText = std::to_string(std::chrono::duration_cast<std::chrono::hours>(t).count()) + " hours";

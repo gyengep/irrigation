@@ -338,7 +338,7 @@ std::string TemperatureDependentSchedulerImpl::toString() const {
 	oss << "TemperatureDependentScheduler{";
 	oss << "remainingCorrection=" << remainingCorrection << ", ";
 	oss << "minAdjustment=" << optionalToString(minAdjustment) << ", ";
-	oss << "maxAdjustment=" << optionalToString(maxAdjustment) << ", ";
+	oss << "maxAdjustment=" << optionalToString(maxAdjustment);
 	oss << "}";
 	return oss.str();
 }
