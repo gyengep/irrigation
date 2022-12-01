@@ -1,5 +1,5 @@
-#include <gmock/gmock.h>
 #include "Schedulers/EveryDaySchedulerImpl.h"
+#include <gmock/gmock.h>
 
 using namespace testing;
 
@@ -55,16 +55,4 @@ TEST(EveryDaySchedulerImplTest, isDayScheduled) {
 	EXPECT_THAT(scheduler.process(LocalDateTime(2016, 11, 18)), Pointee(Scheduler::Result(true)));
 	EXPECT_THAT(scheduler.process(LocalDateTime(2016, 11, 19)), Pointee(Scheduler::Result(true)));
 	EXPECT_THAT(scheduler.process(LocalDateTime(2016, 11, 20)), Pointee(Scheduler::Result(true)));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(EveryDaySchedulerImplTest, toEveryDaySchedulerDto) {
-	EXPECT_THAT(EveryDaySchedulerImpl().toEveryDaySchedulerDto(), Eq(EveryDaySchedulerDTO()));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(EveryDaySchedulerImplTest, updateFromDto) {
-	EveryDaySchedulerImpl().updateFromEveryDaySchedulerDto(EveryDaySchedulerDTO());
 }

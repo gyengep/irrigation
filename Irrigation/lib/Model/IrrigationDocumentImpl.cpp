@@ -8,12 +8,10 @@
 
 IrrigationDocumentImpl::IrrigationDocumentImpl(
 	const std::shared_ptr<ProgramContainer>& programContainer,
-	const std::shared_ptr<ProgramFactory>& programFactory,
 	const std::shared_ptr<WateringController>& wateringController,
 	const std::shared_ptr<EmailHandler>& emailHandler
 ) :
 	programContainer(programContainer),
-	programFactory(programFactory),
 	wateringController(wateringController),
 	emailHandler(emailHandler),
 	modified(false)
@@ -48,7 +46,7 @@ void IrrigationDocumentImpl::setModified(bool modified) {
 }
 
 std::pair<IdType, ProgramPtr> IrrigationDocumentImpl::createProgram(const ProgramDTO& programDto) {
-	ProgramPtr program = programFactory->create();
+	ProgramPtr program = getProgramContainer().getProgramFactory().create();
 	program->updateFromProgramDto(programDto);
 	return programContainer->insert(IdType(), program);
 }
@@ -130,9 +128,9 @@ DocumentDTO IrrigationDocumentImpl::toDocumentDto() const {
 	return DocumentDTO(programContainer->toProgramDtoList());
 }
 
-void IrrigationDocumentImpl::updateFromDocumentDto(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO) {
+void IrrigationDocumentImpl::updateFromDocumentDto(const DocumentDTO& documentDTO) {
 	if (documentDTO.hasPrograms()) {
-		programContainer->updateFromProgramDtoList(programFactory, documentDTO.getPrograms());
+		programContainer->updateFromProgramDtoList(documentDTO.getPrograms());
 	}
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {

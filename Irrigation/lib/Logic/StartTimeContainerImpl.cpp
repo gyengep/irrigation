@@ -5,13 +5,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+StartTimeContainerImplFactory::StartTimeContainerImplFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory) :
+	startTimeFactory(startTimeFactory)
+{
+}
+
 StartTimeContainerPtr StartTimeContainerImplFactory::create() const {
-	return std::make_shared<StartTimeContainerImpl>();
+	return std::make_shared<StartTimeContainerImpl>(startTimeFactory);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
+StartTimeContainerImpl::StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory) :
+	startTimeFactory(startTimeFactory)
+{
+}
+
+StartTimeContainerImpl::StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory, std::initializer_list<StartTimeContainer::value_type> initializer) :
+	startTimeFactory(startTimeFactory),
+	container(initializer)
+{
+}
+
 StartTimeContainerImpl::StartTimeContainerImpl(std::initializer_list<StartTimeContainer::value_type> initializer) :
+	startTimeFactory(nullptr),
 	container(initializer)
 {
 }
@@ -63,6 +80,10 @@ void StartTimeContainerImpl::sort() {
 	container.sort(comp);
 }
 
+const StartTimeFactory& StartTimeContainerImpl::getStartTimeFactory() const {
+	return *startTimeFactory;
+}
+
 std::list<StartTimeDTO> StartTimeContainerImpl::toStartTimeDtoList() const {
 	std::list<StartTimeDTO> startTimeDtoList;
 	for (const value_type& value : container) {
@@ -71,7 +92,7 @@ std::list<StartTimeDTO> StartTimeContainerImpl::toStartTimeDtoList() const {
 	return startTimeDtoList;
 }
 
-void StartTimeContainerImpl::updateFromStartTimeDtoList(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const std::list<StartTimeDTO>& startTimeDtoList) {
+void StartTimeContainerImpl::updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) {
 	container.clear();
 	for (const StartTimeDTO& startTimeDTO : startTimeDtoList) {
 		std::unique_ptr<IdType> id;

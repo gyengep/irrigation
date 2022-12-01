@@ -21,8 +21,5 @@ public:
 
 class MockWeeklySchedulerFactory : public WeeklySchedulerFactory {
 public:
-	virtual ~MockWeeklySchedulerFactory() = default;
-	virtual WeeklySchedulerPtr create() const override {
-		return std::make_shared<MockWeeklyScheduler>();
-	}
+	MOCK_CONST_METHOD0(create, WeeklySchedulerPtr());
 };

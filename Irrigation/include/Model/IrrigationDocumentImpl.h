@@ -17,7 +17,6 @@ public:
 
 private:
 	const std::shared_ptr<ProgramContainer> programContainer;
-	const std::shared_ptr<ProgramFactory> programFactory;
 	const std::shared_ptr<WateringController> wateringController;
 	const std::shared_ptr<EmailHandler> emailHandler;
 
@@ -30,7 +29,6 @@ private:
 public:
 	IrrigationDocumentImpl(
 		const std::shared_ptr<ProgramContainer>& programContainer,
-		const std::shared_ptr<ProgramFactory>& programFactory,
 		const std::shared_ptr<WateringController>& wateringController,
 		const std::shared_ptr<EmailHandler>& emailHandler
 	);
@@ -54,7 +52,7 @@ public:
 	virtual void stop() override;
 
 	virtual DocumentDTO toDocumentDto() const override;
-	virtual void updateFromDocumentDto(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO) override;
+	virtual void updateFromDocumentDto(const DocumentDTO& documentDTO) override;
 
 	virtual void saveState() const override;
 	virtual void loadState() override;
@@ -65,14 +63,12 @@ public:
 
 class IrrigationDocumentImpl::Builder {
 	std::shared_ptr<ProgramContainer> programContainer;
-	std::shared_ptr<ProgramFactory> programFactory;
 	std::shared_ptr<WateringController> wateringController;
 	std::shared_ptr<EmailHandler> emailHandler;
 
 public:
 
 	Builder& setProgramContainer(const std::shared_ptr<ProgramContainer>& programContainer);
-	Builder& setProgramFactory(const std::shared_ptr<ProgramFactory>& programFactory);
 	Builder& setWateringController(const std::shared_ptr<WateringController>& wateringController);
 	Builder& setEmailHandler(const std::shared_ptr<EmailHandler>& emailHandler);
 

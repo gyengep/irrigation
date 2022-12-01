@@ -29,14 +29,14 @@ public:
 	float getMinTemperature() const;
 	unsigned getPeriod() const;
 
-	void setMinTemperature(float minTemperature) override;
-	void setPeriod(const std::chrono::seconds& period) override;
+	virtual void setMinTemperature(float minTemperature) override;
+	virtual void setPeriod(const std::chrono::seconds& period) override;
 
 	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) override;
 
 	////////////////////////////////////////////////////////////
 
-	HotWeatherSchedulerDTO toHotWeatherSchedulerDto() const override;
+	virtual HotWeatherSchedulerDTO toHotWeatherSchedulerDto() const override;
 	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) override;
 
 	////////////////////////////////////////////////////////////

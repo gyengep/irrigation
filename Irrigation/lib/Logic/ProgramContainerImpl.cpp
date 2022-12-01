@@ -5,13 +5,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+ProgramContainerImplFactory::ProgramContainerImplFactory(const std::shared_ptr<ProgramFactory>& programFactory) :
+	programFactory(programFactory)
+{
+}
+
 ProgramContainerPtr ProgramContainerImplFactory::create() const {
-	return std::make_shared<ProgramContainerImpl>();
+	return std::make_shared<ProgramContainerImpl>(programFactory);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
+ProgramContainerImpl::ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory) :
+	programFactory(programFactory)
+{
+}
+
+ProgramContainerImpl::ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory, std::initializer_list<ProgramContainer::value_type> initializer) :
+	programFactory(programFactory),
+	container(initializer)
+{
+}
+
 ProgramContainerImpl::ProgramContainerImpl(std::initializer_list<ProgramContainer::value_type> initializer) :
+	programFactory(nullptr),
 	container(initializer)
 {
 }
@@ -55,6 +72,10 @@ ProgramContainerImpl::value_type& ProgramContainerImpl::insert(const key_type& k
 	return container.back();
 }
 
+const ProgramFactory& ProgramContainerImpl::getProgramFactory() const {
+	return *programFactory;
+}
+
 std::list<ProgramDTO> ProgramContainerImpl::toProgramDtoList() const {
 	std::list<ProgramDTO> programDtos;
 	for (const value_type& value : container) {
@@ -63,7 +84,7 @@ std::list<ProgramDTO> ProgramContainerImpl::toProgramDtoList() const {
 	return programDtos;
 }
 
-void ProgramContainerImpl::updateFromProgramDtoList(const std::shared_ptr<ProgramFactory>& programFactory, const std::list<ProgramDTO>& dtoList) {
+void ProgramContainerImpl::updateFromProgramDtoList(const std::list<ProgramDTO>& dtoList) {
 	container.clear();
 	for (const ProgramDTO& dto : dtoList) {
 		std::unique_ptr<IdType> id;

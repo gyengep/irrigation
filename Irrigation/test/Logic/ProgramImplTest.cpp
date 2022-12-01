@@ -1,15 +1,14 @@
-#include "ProgramImplTest.h"
 #include "Logic/ProgramImplBuilder.h"
 #include "Logic/SchedulerContainerImpl.h"
 #include "Logic/StartTimeImpl.h"
-#include "Mocks/MockEveryDayScheduler.h"
-#include "Mocks/MockHotWeatherScheduler.h"
-#include "Mocks/MockTemperatureDependentScheduler.h"
-#include "Mocks/MockWeeklyScheduler.h"
+#include "Mocks/MockScheduler.h"
+#include "Mocks/MockSchedulerContainer.h"
+#include "Mocks/MockRunTimeContainer.h"
+#include "Mocks/MockStartTimeContainer.h"
+#include "Mocks/MockStartTime.h"
+#include <gmock/gmock.h>
 
 using namespace testing;
-using ::testing::Return;
-using ::testing::AnyNumber;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,13 +16,11 @@ TEST(ProgramImplTest, defaultConstructor) {
 	const auto mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	const auto mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const auto mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
-	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>(0);
 
 	const ProgramImpl program(
 		mockSchedulerContainer,
 		mockRunTimeContainer,
-		mockStartTimeContainer,
-		mockStartTimeFactory
+		mockStartTimeContainer
 	);
 
 	EXPECT_TRUE(program.isEnabled());
@@ -44,14 +41,12 @@ TEST(ProgramImplTest, parametrizedConstructor) {
 	const auto mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	const auto mockRunTimeContainer = std::make_shared<MockRunTimeContainer>();
 	const auto mockStartTimeContainer = std::make_shared<MockStartTimeContainer>();
-	const auto mockStartTimeFactory = std::make_shared<MockStartTimeFactory>(0);
 
 	const ProgramImpl program(
 		enabled, name, adjustment, schedulerType,
 		mockSchedulerContainer,
 		mockRunTimeContainer,
-		mockStartTimeContainer,
-		mockStartTimeFactory
+		mockStartTimeContainer
 	);
 
 	EXPECT_THAT(program.isEnabled(), Eq(enabled));
@@ -220,147 +215,4 @@ TEST(ProgramImplTest, isScheduled_withCorrectScheduler) {
 
 		ASSERT_THAT(program->isScheduled(localDateTime), Pointee(Scheduler::Result(0u)));
 	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-#define CHECK_VALUES(program, enabled, name, adjustment, schedulerType)		\
-{																			\
-	EXPECT_THAT(program->isEnabled(), Eq(enabled));							\
-	EXPECT_THAT(program->getName(), Eq(name));								\
-	EXPECT_THAT(program->getAdjustment(), Eq(adjustment));					\
-	EXPECT_THAT(program->getSchedulerType(), Eq(schedulerType));			\
-}
-
-
-void ProgramImplUpdateFromOrToDtoTest::SetUp() {
-	mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
-	mockRunTimeContainer = std::make_shared<StrictMock<MockRunTimeContainer>>();
-	mockStartTimeContainer = std::make_shared<StrictMock<MockStartTimeContainer>>();
-	mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>(0);
-
-	program = std::make_shared<ProgramImpl>(
-		defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType,
-		mockSchedulerContainer,
-		mockRunTimeContainer,
-		mockStartTimeContainer,
-		mockStartTimeFactory
-	);
-}
-
-void ProgramImplUpdateFromOrToDtoTest::TearDown() {
-}
-
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, toDto1) {
-	EXPECT_CALL(*mockSchedulerContainer, toSchedulersDto()).Times(1).WillOnce(Return(expectedSchedulersDTO1));
-	EXPECT_CALL(*mockRunTimeContainer, toRunTimeDtoList()).Times(1).WillOnce(Return(expectedRunTimeDtoList1));
-	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1).WillOnce(Return(expectedStartTimeDtoList1));
-
-	program->setEnabled(expectedEnabled1);
-	program->setName(expectedName1);
-	program->setAdjustment(expectedAdjustment1);
-	program->setSchedulerType(expectedSchedulerType1);
-
-	EXPECT_THAT(program->toProgramDto(), Eq(expectedProgramDto1));
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, toDto2) {
-	EXPECT_CALL(*mockSchedulerContainer, toSchedulersDto()).Times(1).WillOnce(Return(expectedSchedulersDTO2));
-	EXPECT_CALL(*mockRunTimeContainer, toRunTimeDtoList()).Times(1).WillOnce(Return(expectedRunTimeDtoList2));
-	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1).WillOnce(Return(expectedStartTimeDtoList2));
-
-	program->setEnabled(expectedEnabled2);
-	program->setName(expectedName2);
-	program->setAdjustment(expectedAdjustment2);
-	program->setSchedulerType(expectedSchedulerType2);
-
-	EXPECT_THAT(program->toProgramDto(), Eq(expectedProgramDto2));
-}
-
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_empty) {
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO());
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_Enabled) {
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setEnabled(expectedEnabled1));
-	CHECK_VALUES(program, expectedEnabled1, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setEnabled(expectedEnabled2));
-	CHECK_VALUES(program, expectedEnabled2, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_Name) {
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setName(expectedName1));
-	CHECK_VALUES(program, defaultEnabled, expectedName1, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setName(expectedName2));
-	CHECK_VALUES(program, defaultEnabled, expectedName2, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_Adjustment) {
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setAdjustment(expectedAdjustment1));
-	CHECK_VALUES(program, defaultEnabled, defaultName, expectedAdjustment1, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setAdjustment(expectedAdjustment2));
-	CHECK_VALUES(program, defaultEnabled, defaultName, expectedAdjustment2, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_SchedulerType) {
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setSchedulerType(to_string(expectedSchedulerType1)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, expectedSchedulerType1);
-	program->updateFromProgramDto(ProgramDTO().setSchedulerType(to_string(expectedSchedulerType2)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, expectedSchedulerType2);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_SchedulerContainer) {
-	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO1)).Times(1);
-	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO2)).Times(1);
-
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setSchedulers(SchedulersDTO(expectedSchedulersDTO1)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setSchedulers(SchedulersDTO(expectedSchedulersDTO2)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_RunTimeContainer) {
-	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList1)).Times(1);
-	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList2)).Times(1);
-
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setRunTimes(std::list<RunTimeDTO>(expectedRunTimeDtoList1)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setRunTimes(std::list<RunTimeDTO>(expectedRunTimeDtoList2)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_partial_StartTimeContainer) {
-	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(mockStartTimeFactory, expectedStartTimeDtoList1)).Times(1);
-	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(mockStartTimeFactory, expectedStartTimeDtoList2)).Times(1);
-
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setStartTimes(std::list<StartTimeDTO>(expectedStartTimeDtoList1)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(ProgramDTO().setStartTimes(std::list<StartTimeDTO>(expectedStartTimeDtoList2)));
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-}
-
-TEST_F(ProgramImplUpdateFromOrToDtoTest, fromDto_all) {
-	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO1)).Times(1);
-	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO2)).Times(1);
-	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList1)).Times(1);
-	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList2)).Times(1);
-	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(mockStartTimeFactory, expectedStartTimeDtoList1)).Times(1);
-	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(mockStartTimeFactory, expectedStartTimeDtoList2)).Times(1);
-
-	CHECK_VALUES(program, defaultEnabled, defaultName, defaultAdjustment, defaultSchedulerType);
-	program->updateFromProgramDto(expectedProgramDto1);
-	CHECK_VALUES(program, expectedEnabled1, expectedName1, expectedAdjustment1, expectedSchedulerType1);
-	program->updateFromProgramDto(expectedProgramDto2);
-	CHECK_VALUES(program, expectedEnabled2, expectedName2, expectedAdjustment2, expectedSchedulerType2);
 }

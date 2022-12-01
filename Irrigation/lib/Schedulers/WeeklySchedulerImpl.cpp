@@ -1,10 +1,10 @@
 #include "WeeklySchedulerImpl.h"
+#include "Exceptions/Exceptions.h"
+#include "Utils/ToString.h"
 #include <algorithm>
 #include <list>
 #include <sstream>
 #include <stdexcept>
-#include "Exceptions/Exceptions.h"
-#include "Utils/ToString.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -65,7 +65,7 @@ WeeklySchedulerDTO WeeklySchedulerImpl::toWeeklySchedulerDto() const {
 void WeeklySchedulerImpl::updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) {
 	if (schedulerDTO.hasValues()) {
 		if (schedulerDTO.getValues().size() != days.size()) {
-			throw std::runtime_error("WeeklySchedulerImpl::updateFromDTO(): " + std::to_string(days.size()) +
+			throw IllegalArgumentException("WeeklySchedulerImpl::updateFromDTO(): " + std::to_string(days.size()) +
 					"\"days\" have to be exist");
 		}
 

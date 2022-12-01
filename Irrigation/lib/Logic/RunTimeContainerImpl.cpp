@@ -70,8 +70,7 @@ std::list<RunTimeDTO> RunTimeContainerImpl::toRunTimeDtoList() const {
 
 void RunTimeContainerImpl::updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) {
 	if (runTimeDtoList.size() != container.size()) {
-		throw IllegalArgumentException(
-				"RunTimeDtoList has to contain " + std::to_string(size()) + " elements");
+		throw IllegalArgumentException("RunTimeDtoList has to contain " + std::to_string(size()) + " elements");
 	}
 
 	auto it = runTimeDtoList.begin();

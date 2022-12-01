@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <gmock/gmock.h>
 #include "Logic/Program.h"
 
@@ -40,15 +41,35 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class MockProgramFactory : public ProgramFactory {
-public:
-	mutable std::vector<std::shared_ptr<MockProgram>> mockPrograms;
-	mutable size_t index = 0;
-
-	virtual ProgramPtr create() const {
-		if (index >= mockPrograms.size()) {
-			throw std::runtime_error("MockProgramFactory no more item");
+	std::shared_ptr<MockProgram> getNext() const {
+		if (nextIndex >= mockPrograms.size()) {
+			throw std::runtime_error("MockProgramFactory::getNext() invalid index: " + std::to_string(nextIndex));
 		}
 
-		return mockPrograms[index++];
+		return mockPrograms[nextIndex++];
 	}
+
+public:
+	std::vector<std::shared_ptr<MockProgram>> mockPrograms;
+	mutable size_t nextIndex;
+
+	MockProgramFactory(size_t size) :
+		mockPrograms(size),
+		nextIndex(0)
+	{
+		for (size_t i = 0; i < mockPrograms.size(); ++i) {
+			mockPrograms[i] = std::make_shared<testing::StrictMock<MockProgram>>();
+		}
+
+		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
+	}
+
+	MockProgramFactory(std::initializer_list<std::shared_ptr<MockProgram>> initializer) :
+		mockPrograms(initializer),
+		nextIndex(0)
+	{
+		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
+	}
+
+	MOCK_CONST_METHOD0(create, ProgramPtr());
 };

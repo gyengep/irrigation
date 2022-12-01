@@ -26,9 +26,6 @@ public:
 
 class MockTemperatureDependentSchedulerFactory : public TemperatureDependentSchedulerFactory {
 public:
-	virtual ~MockTemperatureDependentSchedulerFactory() = default;
-	virtual TemperatureDependentSchedulerPtr create() const override {
-		return std::make_shared<MockTemperatureDependentScheduler>();
-	}
+	MOCK_CONST_METHOD0(create, TemperatureDependentSchedulerPtr());
 };
 

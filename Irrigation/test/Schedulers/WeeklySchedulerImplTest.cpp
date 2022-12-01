@@ -1,6 +1,5 @@
 #include "Schedulers/WeeklySchedulerImpl.h"
 #include "Exceptions/Exceptions.h"
-#include "Dto2Object/WeeklySchedulerSamples.h"
 #include <gmock/gmock.h>
 #include <list>
 
@@ -109,68 +108,3 @@ TEST(WeeklySchedulerImplTest, isDayScheduled) {
 		checkDay(year, month, day, scheduler, 22 == day || 25 == day);
 	}
 }
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(WeeklySchedulerImplTest, toWeeklySchedulerDto) {
-	EXPECT_THAT(
-		Dto2ObjectTest::WeeklySchedulerSample1().getObjectPtr()->toWeeklySchedulerDto(),
-		Eq(Dto2ObjectTest::WeeklySchedulerSample1().getDto())
-	);
-
-	EXPECT_THAT(
-		Dto2ObjectTest::WeeklySchedulerSample2().getObjectPtr()->toWeeklySchedulerDto(),
-		Eq(Dto2ObjectTest::WeeklySchedulerSample2().getDto())
-	);
-
-	EXPECT_THAT(
-		Dto2ObjectTest::WeeklySchedulerSample3().getObjectPtr()->toWeeklySchedulerDto(),
-		Eq(Dto2ObjectTest::WeeklySchedulerSample3().getDto())
-	);
-
-	EXPECT_THAT(
-		Dto2ObjectTest::WeeklySchedulerSample4().getObjectPtr()->toWeeklySchedulerDto(),
-		Eq(Dto2ObjectTest::WeeklySchedulerSample4().getDto())
-	);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(WeeklySchedulerImplTest, updateFromDto_empty) {
-	WeeklySchedulerImpl scheduler({ true, true, true, false, false, false, false });
-
-	scheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO());
-
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
-}
-
-TEST(WeeklySchedulerImplTest, updateFromDto_partial_all) {
-	WeeklySchedulerImpl scheduler({ true, true, true, false, false, false, false });
-
-	scheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO(std::list<bool> { false, false, true, true, false, true, false }));
-
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
-
-	scheduler.updateFromWeeklySchedulerDto(WeeklySchedulerDTO(std::list<bool> { true, true, true, true, false, false, false }));
-
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
-}
-

@@ -10,7 +10,6 @@ class ProgramImpl::Builder {
 	std::shared_ptr<SchedulerContainer> schedulerContainer;
 	std::shared_ptr<RunTimeContainer> runTimeContainer;
 	std::shared_ptr<StartTimeContainer> startTimeContainer;
-	std::shared_ptr<StartTimeFactory> startTimeFactory;
 
 public:
 	Builder();
@@ -22,7 +21,6 @@ public:
 	Builder& setSchedulerContainer(const std::shared_ptr<SchedulerContainer>& schedulerContainer);
 	Builder& setRunTimeContainer(const std::shared_ptr<RunTimeContainer>& runTimeContainer);
 	Builder& setStartTimeContainer(const std::shared_ptr<StartTimeContainer>& startTimeContainer);
-	Builder& setStartTimeFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
 
 	ProgramPtr build();
 };
@@ -33,7 +31,6 @@ class ProgramImplFactory::Builder {
 	std::shared_ptr<SchedulerContainerFactory> schedulerContainerFactory;
 	std::shared_ptr<RunTimeContainerFactory> runTimeContainerFactory;
 	std::shared_ptr<StartTimeContainerFactory> startTimeContainerFactory;
-	std::shared_ptr<StartTimeFactory> startTimeFactory;
 
 public:
 	Builder();
@@ -41,7 +38,6 @@ public:
 	Builder& setSchedulerContainerFactory(const std::shared_ptr<SchedulerContainerFactory>& schedulerContainerFactory);
 	Builder& setRunTimeContainerFactory(const std::shared_ptr<RunTimeContainerFactory>& runTimeContainerFactory);
 	Builder& setStartTimeContainerFactory(const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory);
-	Builder& setStartTimeFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
 
 	ProgramFactoryPtr build();
 };

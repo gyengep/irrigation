@@ -1,59 +1,48 @@
 #pragma once
 #include <memory>
+#include <vector>
+#include "DTO/RunTimeDTO.h"
 #include "Logic/RunTimeImpl.h"
 #include "SampleBase.h"
 
 
 namespace Dto2ObjectTest {
 
-	typedef ObjectSample<RunTime, RunTimeDTO> RunTimeSample;
+	typedef ObjectSample<RunTimeImpl, RunTimeDTO> RunTimeSample;
 
-
-	class RunTimeSample1 : public RunTimeSample {
+	class RunTimeSampleList : public std::vector<RunTimeSample> {
 	public:
-		RunTimeSample1() : RunTimeSample (
-			std::make_shared<RunTimeImpl>(60 * 1 + 10),
-			RunTimeDTO(1, 10)
-		) {}
-	};
+		RunTimeSampleList() {
 
-	class RunTimeSample2 : public RunTimeSample {
-	public:
-		RunTimeSample2() : RunTimeSample(
-			std::make_shared<RunTimeImpl>(60 * 2 + 15),
-			RunTimeDTO(2, 15)
-		) {}
-	};
+			emplace_back(
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(1) + std::chrono::seconds(10)),
+				RunTimeDTO(1, 10)
+			);
 
-	class RunTimeSample3 : public RunTimeSample {
-	public:
-		RunTimeSample3() : RunTimeSample(
-			std::make_shared<RunTimeImpl>(60 * 3 + 20),
-			RunTimeDTO(3, 20)
-		) {}
-	};
+			emplace_back(
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(2) + std::chrono::seconds(15)),
+				RunTimeDTO(2, 15)
+			);
 
-	class RunTimeSample4 : public RunTimeSample {
-	public:
-		RunTimeSample4() : RunTimeSample(
-			std::make_shared<RunTimeImpl>(60 * 4 + 30),
-			RunTimeDTO(4, 30)
-		) {}
-	};
+			emplace_back(
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(3) + std::chrono::seconds(20)),
+				RunTimeDTO(3, 20)
+			);
 
-	class RunTimeSample5 : public RunTimeSample {
-	public:
-		RunTimeSample5() : RunTimeSample(
-			std::make_shared<RunTimeImpl>(60 * 5 + 40),
-			RunTimeDTO(5, 40)
-		) {}
-	};
+			emplace_back(
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(4) + std::chrono::seconds(30)),
+				RunTimeDTO(4, 30)
+			);
 
-	class RunTimeSample6 : public RunTimeSample {
-	public:
-		RunTimeSample6() : RunTimeSample(
-			std::make_shared<RunTimeImpl>(60 * 10 + 50),
-			RunTimeDTO(10, 50)
-		) {}
+			emplace_back(
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(5) + std::chrono::seconds(40)),
+				RunTimeDTO(5, 40)
+			);
+
+			emplace_back(
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(10) + std::chrono::seconds(50)),
+				RunTimeDTO(10, 50)
+			);
+		}
 	};
 };

@@ -23,8 +23,7 @@ public:
 
 class MockRunTimeContainerFactory : public RunTimeContainerFactory {
 public:
-	virtual ~MockRunTimeContainerFactory() = default;
 	virtual RunTimeContainerPtr create() const override {
-		return std::make_shared<MockRunTimeContainer>();
+		return std::make_shared<testing::StrictMock<MockRunTimeContainer>>();
 	}
 };

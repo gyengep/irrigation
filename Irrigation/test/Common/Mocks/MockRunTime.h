@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <gmock/gmock.h>
 #include "Logic/RunTime.h"
 
@@ -18,21 +19,35 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class MockRunTimeFactory : public RunTimeFactory {
+	std::shared_ptr<MockRunTime> getNext() const {
+		if (nextIndex >= mockRunTimes.size()) {
+			throw std::runtime_error("MockRunTimeFactory::getNext() invalid index: " + std::to_string(nextIndex));
+		}
+
+		return mockRunTimes[nextIndex++];
+	}
+
 public:
-	mutable std::vector<std::shared_ptr<MockRunTime>> mockRunTimes;
-	mutable size_t index = 0;
+	std::vector<std::shared_ptr<MockRunTime>> mockRunTimes;
+	mutable size_t nextIndex;
 
-	MockRunTimeFactory(unsigned size) {
-		for (unsigned i = 0; i < size; i++) {
-			mockRunTimes.emplace_back(std::make_shared<testing::StrictMock<MockRunTime>>());
-		}
-	}
-
-	virtual RunTimePtr create() const {
-		if (index >= mockRunTimes.size()) {
-			throw std::runtime_error("MockRunTimeFactory no more item");
+	MockRunTimeFactory(size_t size) :
+		mockRunTimes(size),
+		nextIndex(0)
+	{
+		for (size_t i = 0; i < mockRunTimes.size(); ++i) {
+			mockRunTimes[i] = std::make_shared<testing::StrictMock<MockRunTime>>();
 		}
 
-		return mockRunTimes[index++];
+		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockRunTimeFactory::getNext));
 	}
+
+	MockRunTimeFactory(std::initializer_list<std::shared_ptr<MockRunTime>> initializer) :
+		mockRunTimes(initializer),
+		nextIndex(0)
+	{
+		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockRunTimeFactory::getNext));
+	}
+
+	MOCK_CONST_METHOD0(create, RunTimePtr());
 };

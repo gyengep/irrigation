@@ -1,19 +1,21 @@
 #pragma once
 #include <memory>
-#include "Schedulers/EveryDayScheduler.h"
+#include <vector>
+#include "DTO/EveryDaySchedulerDTO.h"
+#include "Schedulers/EveryDaySchedulerImpl.h"
 #include "SampleBase.h"
 
 
 namespace Dto2ObjectTest {
 
-	typedef ObjectSample<EveryDayScheduler, EveryDaySchedulerDTO> EveryDaySchedulerSample;
-
-
-	class EveryDaySchedulerSample1 : public EveryDaySchedulerSample {
+	class EveryDaySchedulerSample : public ObjectSample<EveryDaySchedulerImpl, EveryDaySchedulerDTO> {
 	public:
-		EveryDaySchedulerSample1() : EveryDaySchedulerSample(
-			std::make_shared<EveryDayScheduler>(),
-			EveryDaySchedulerDTO()
-		) {}
+		EveryDaySchedulerSample() :
+			ObjectSample<EveryDaySchedulerImpl, EveryDaySchedulerDTO>(
+					std::make_shared<EveryDaySchedulerImpl>(),
+					EveryDaySchedulerDTO()
+			)
+		{
+		}
 	};
 };

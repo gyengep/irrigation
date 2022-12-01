@@ -13,13 +13,11 @@
 ProgramImplFactory::ProgramImplFactory(
 	const std::shared_ptr<SchedulerContainerFactory>& schedulerContainerFactory,
 	const std::shared_ptr<RunTimeContainerFactory>& runTimeContainerFactory,
-	const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory,
-	const std::shared_ptr<StartTimeFactory>& startTimeFactory
+	const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory
 ) :
 	schedulerContainerFactory(schedulerContainerFactory),
 	runTimeContainerFactory(runTimeContainerFactory),
-	startTimeContainerFactory(startTimeContainerFactory),
-	startTimeFactory(startTimeFactory)
+	startTimeContainerFactory(startTimeContainerFactory)
 {
 }
 
@@ -27,8 +25,7 @@ ProgramPtr ProgramImplFactory::create() const {
 	return std::make_shared<ProgramImpl>(
 		schedulerContainerFactory->create(),
 		runTimeContainerFactory->create(),
-		startTimeContainerFactory->create(),
-		startTimeFactory
+		startTimeContainerFactory->create()
 	);
 }
 
@@ -37,14 +34,12 @@ ProgramPtr ProgramImplFactory::create() const {
 ProgramImpl::ProgramImpl(
 	const std::shared_ptr<SchedulerContainer>& schedulerContainer,
 	const std::shared_ptr<RunTimeContainer>& runTimeContainer,
-	const std::shared_ptr<StartTimeContainer>& startTimeContainer,
-	const std::shared_ptr<StartTimeFactory>& startTimeFactory
+	const std::shared_ptr<StartTimeContainer>& startTimeContainer
 ) : ProgramImpl(
 		true, "", 100, SchedulerType::WEEKLY,
 		schedulerContainer,
 		runTimeContainer,
-		startTimeContainer,
-		startTimeFactory
+		startTimeContainer
 	)
 {
 }
@@ -53,8 +48,7 @@ ProgramImpl::ProgramImpl(
 	bool enabled, const std::string& name, unsigned adjustment, SchedulerType schedulerType,
 	const std::shared_ptr<SchedulerContainer>& schedulerContainer,
 	const std::shared_ptr<RunTimeContainer>& runTimeContainer,
-	const std::shared_ptr<StartTimeContainer>& startTimeContainer,
-	const std::shared_ptr<StartTimeFactory>& startTimeFactory
+	const std::shared_ptr<StartTimeContainer>& startTimeContainer
 ) :
 	enabled(enabled),
 	name(name),
@@ -62,8 +56,7 @@ ProgramImpl::ProgramImpl(
 	schedulerType(schedulerType),
 	schedulerContainer(schedulerContainer),
 	runTimeContainer(runTimeContainer),
-	startTimeContainer(startTimeContainer),
-	startTimeFactory(startTimeFactory)
+	startTimeContainer(startTimeContainer)
 {
 }
 
@@ -82,7 +75,7 @@ std::unique_ptr<Scheduler::Result> ProgramImpl::isScheduled(const LocalDateTime&
 }
 
 std::pair<IdType, StartTimePtr> ProgramImpl::createStartTime(const StartTimeDTO& startTimeDto) {
-	StartTimePtr startTime = startTimeFactory->create();
+	StartTimePtr startTime = getStartTimeContainer().getStartTimeFactory().create();
 	startTime->updateFromStartTimeDto(startTimeDto);
 	return startTimeContainer->insert(IdType(), startTime);
 }
@@ -137,7 +130,7 @@ void ProgramImpl::updateFromProgramDto(const ProgramDTO& programDTO) {
 	}
 
 	if (programDTO.hasStartTimes()) {
-		startTimeContainer->updateFromStartTimeDtoList(startTimeFactory, programDTO.getStartTimes());
+		startTimeContainer->updateFromStartTimeDtoList(programDTO.getStartTimes());
 	}
 }
 

@@ -288,6 +288,10 @@ void TemperatureDependentSchedulerImpl::setRemainingCorrection(float a) {
 	remainingCorrection = a;
 }
 
+float TemperatureDependentSchedulerImpl::getRemainingCorrection() const {
+	return remainingCorrection;
+}
+
 void TemperatureDependentSchedulerImpl::setMinAdjustment(unsigned minAdjustment) {
 	if (0 == minAdjustment) {
 		this->minAdjustment.reset();
@@ -302,6 +306,14 @@ void TemperatureDependentSchedulerImpl::setMaxAdjustment(unsigned maxAdjustment)
 	} else {
 		this->maxAdjustment.reset(new unsigned(maxAdjustment));
 	}
+}
+
+unsigned TemperatureDependentSchedulerImpl::getMinAdjustment() const {
+	return (minAdjustment ? *minAdjustment : 0);
+}
+
+unsigned TemperatureDependentSchedulerImpl::getMaxAdjustment() const {
+	return (maxAdjustment ? *maxAdjustment : 0);
 }
 
 TemperatureDependentSchedulerDTO TemperatureDependentSchedulerImpl::toTemperatureDependentSchedulerDto() const {

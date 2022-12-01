@@ -17,8 +17,10 @@ public:
 	MOCK_CONST_METHOD1(at, const_mapped_type(const key_type& key));
 	MOCK_METHOD1(at, mapped_type(const key_type& key));
 
+	MOCK_CONST_METHOD0(getStartTimeFactory, const StartTimeFactory&());
+
 	MOCK_CONST_METHOD0(toStartTimeDtoList, std::list<StartTimeDTO>());
-	MOCK_METHOD2(updateFromStartTimeDtoList, void(const std::shared_ptr<StartTimeFactory>& startTimeFactory, const std::list<StartTimeDTO>& startTimeDtoList));
+	MOCK_METHOD1(updateFromStartTimeDtoList, void(const std::list<StartTimeDTO>& startTimeDtoList));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };
@@ -27,8 +29,7 @@ public:
 
 class MockStartTimeContainerFactory : public StartTimeContainerFactory {
 public:
-	virtual ~MockStartTimeContainerFactory() = default;
 	virtual StartTimeContainerPtr create() const override {
-		return std::make_shared<MockStartTimeContainer>();
+		return std::make_shared<testing::StrictMock<MockStartTimeContainer>>();
 	}
 };

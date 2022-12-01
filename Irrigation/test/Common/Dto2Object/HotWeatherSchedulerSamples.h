@@ -1,5 +1,7 @@
 #pragma once
 #include <memory>
+#include <vector>
+#include "DTO/HotWeatherSchedulerDTO.h"
 #include "Schedulers/HotWeatherSchedulerImpl.h"
 #include "SampleBase.h"
 
@@ -8,36 +10,29 @@ namespace Dto2ObjectTest {
 
 	typedef ObjectSample<HotWeatherSchedulerImpl, HotWeatherSchedulerDTO> HotWeatherSchedulerSample;
 
-
-	class HotWeatherSchedulerSample1 : public HotWeatherSchedulerSample {
+	class HotWeatherSchedulerSampleList : public std::vector<HotWeatherSchedulerSample> {
 	public:
-		HotWeatherSchedulerSample1() : HotWeatherSchedulerSample(
-			std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(60), 35.0f),
-			HotWeatherSchedulerDTO(60, 35.0f)
-		) {}
-	};
+		HotWeatherSchedulerSampleList() {
 
-	class HotWeatherSchedulerSample2 : public HotWeatherSchedulerSample {
-	public:
-		HotWeatherSchedulerSample2() : HotWeatherSchedulerSample(
-			std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(120), 30.0f),
-			HotWeatherSchedulerDTO(120, 30.0f)
-		) {}
-	};
+			emplace_back(
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(60), 35.0f),
+				HotWeatherSchedulerDTO(60, 35.0f)
+			);
 
-	class HotWeatherSchedulerSample3 : public HotWeatherSchedulerSample {
-	public:
-		HotWeatherSchedulerSample3() : HotWeatherSchedulerSample(
-			std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(180), 33.0f),
-			HotWeatherSchedulerDTO(180, 33.0f)
-		) {}
-	};
+			emplace_back(
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(120), 30.0f),
+				HotWeatherSchedulerDTO(120, 30.0f)
+			);
 
-	class HotWeatherSchedulerSample4 : public HotWeatherSchedulerSample {
-	public:
-		HotWeatherSchedulerSample4() : HotWeatherSchedulerSample(
-			std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(150), 25.0f),
-			HotWeatherSchedulerDTO(150, 25.0f)
-		) {}
+			emplace_back(
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(180), 33.0f),
+				HotWeatherSchedulerDTO(180, 33.0f)
+			);
+
+			emplace_back(
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(150), 25.0f),
+				HotWeatherSchedulerDTO(150, 25.0f)
+			);
+		}
 	};
 };

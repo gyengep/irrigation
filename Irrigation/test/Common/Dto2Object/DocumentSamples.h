@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
+#include <vector>
+#include "DTO/DocumentDTO.h"
 #include "Model/IrrigationDocumentImpl.h"
-#include "ProgramListSamples.h"
+#include "ProgramContainerSamples.h"
 #include "SampleBase.h"
 
 
@@ -9,36 +11,45 @@ namespace Dto2ObjectTest {
 
 	typedef ObjectSample<IrrigationDocumentImpl, DocumentDTO> DocumentSample;
 
-
-	class DocumentSample1 : public DocumentSample {
+	class DocumentSampleList : public std::vector<DocumentSample> {
 	public:
-		DocumentSample1() : DocumentSample(
-			IrrigationDocumentImpl::Builder().setProgramContainer(ProgramListSample1().getContainerPtr()).build(),
-			DocumentDTO(std::list<ProgramDTO>(ProgramListSample1().getDtoList()))
-		) {}
-	};
+		DocumentSampleList() {
 
-	class DocumentSample2 : public DocumentSample {
-	public:
-		DocumentSample2() : DocumentSample(
-			IrrigationDocumentImpl::Builder().setProgramContainer(ProgramListSample2().getContainerPtr()).build(),
-			DocumentDTO(std::list<ProgramDTO>(ProgramListSample2().getDtoList()))
-		) {}
-	};
+			emplace_back(
+				std::make_shared<IrrigationDocumentImpl>(
+					ProgramContainerSampleList().at(0).getContainerPtr(),
+					nullptr,
+					nullptr
+				),
+				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(0).getDtoList()))
+			);
 
-	class DocumentSample3 : public DocumentSample {
-	public:
-		DocumentSample3() : DocumentSample(
-			IrrigationDocumentImpl::Builder().setProgramContainer(ProgramListSample3().getContainerPtr()).build(),
-			DocumentDTO(std::list<ProgramDTO>(ProgramListSample3().getDtoList()))
-		) {}
-	};
+			emplace_back(
+				std::make_shared<IrrigationDocumentImpl>(
+					ProgramContainerSampleList().at(1).getContainerPtr(),
+					nullptr,
+					nullptr
+				),
+				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(1).getDtoList()))
+			);
 
-	class DocumentSample4 : public DocumentSample {
-	public:
-		DocumentSample4() : DocumentSample(
-			IrrigationDocumentImpl::Builder().setProgramContainer(ProgramListSample4().getContainerPtr()).build(),
-			DocumentDTO(std::list<ProgramDTO>(ProgramListSample4().getDtoList()))
-		) {}
+			emplace_back(
+				std::make_shared<IrrigationDocumentImpl>(
+					ProgramContainerSampleList().at(2).getContainerPtr(),
+					nullptr,
+					nullptr
+				),
+				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(2).getDtoList()))
+			);
+
+			emplace_back(
+				std::make_shared<IrrigationDocumentImpl>(
+					ProgramContainerSampleList().at(3).getContainerPtr(),
+					nullptr,
+					nullptr
+				),
+				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(3).getDtoList()))
+			);
+		}
 	};
 };

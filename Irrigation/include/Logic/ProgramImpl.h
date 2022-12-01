@@ -23,22 +23,19 @@ private:
 	const std::shared_ptr<SchedulerContainer> schedulerContainer;
 	const std::shared_ptr<RunTimeContainer> runTimeContainer;
 	const std::shared_ptr<StartTimeContainer> startTimeContainer;
-	const std::shared_ptr<StartTimeFactory> startTimeFactory;
 
 public:
 	ProgramImpl(
 		const std::shared_ptr<SchedulerContainer>& schedulerContainer,
 		const std::shared_ptr<RunTimeContainer>& runTimeContainer,
-		const std::shared_ptr<StartTimeContainer>& startTimeContainer,
-		const std::shared_ptr<StartTimeFactory>& startTimeFactory
+		const std::shared_ptr<StartTimeContainer>& startTimeContainer
 	);
 
 	ProgramImpl(
 		bool enabled, const std::string& name, unsigned adjustment, SchedulerType schedulerType,
 		const std::shared_ptr<SchedulerContainer>& schedulerContainer,
 		const std::shared_ptr<RunTimeContainer>& runTimeContainer,
-		const std::shared_ptr<StartTimeContainer>& startTimeContainer,
-		const std::shared_ptr<StartTimeFactory>& startTimeFactory
+		const std::shared_ptr<StartTimeContainer>& startTimeContainer
 	);
 
 	virtual ~ProgramImpl() = default;
@@ -85,14 +82,12 @@ private:
 	const std::shared_ptr<SchedulerContainerFactory> schedulerContainerFactory;
 	const std::shared_ptr<RunTimeContainerFactory> runTimeContainerFactory;
 	const std::shared_ptr<StartTimeContainerFactory> startTimeContainerFactory;
-	const std::shared_ptr<StartTimeFactory> startTimeFactory;
 
 public:
 	ProgramImplFactory(
 		const std::shared_ptr<SchedulerContainerFactory>& schedulerContainerFactory,
 		const std::shared_ptr<RunTimeContainerFactory>& runTimeContainerFactory,
-		const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory,
-		const std::shared_ptr<StartTimeFactory>& startTimeFactory
+		const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory
 	);
 
 	virtual ~ProgramImplFactory() = default;

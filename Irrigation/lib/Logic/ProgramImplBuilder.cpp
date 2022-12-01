@@ -50,11 +50,6 @@ ProgramImpl::Builder& ProgramImpl::Builder::setStartTimeContainer(const std::sha
 	return *this;
 }
 
-ProgramImpl::Builder& ProgramImpl::Builder::setStartTimeFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory) {
-	this->startTimeFactory = startTimeFactory;
-	return *this;
-}
-
 ProgramPtr ProgramImpl::Builder::build() {
 
 	if (nullptr == schedulerContainer) {
@@ -68,11 +63,9 @@ ProgramPtr ProgramImpl::Builder::build() {
 	}
 
 	if (nullptr == startTimeContainer) {
-		startTimeContainer = std::make_shared<StartTimeContainerImpl>();
-	}
-
-	if (nullptr == startTimeFactory) {
-		startTimeFactory = std::make_shared<StartTimeImplFactory>();
+		startTimeContainer = std::make_shared<StartTimeContainerImpl>(
+				std::make_shared<StartTimeImplFactory>()
+			);
 	}
 
 	return std::make_shared<ProgramImpl>(
@@ -82,8 +75,7 @@ ProgramPtr ProgramImpl::Builder::build() {
 			schedulerType,
 			schedulerContainer,
 			runTimeContainer,
-			startTimeContainer,
-			startTimeFactory
+			startTimeContainer
 		);
 }
 
@@ -107,11 +99,6 @@ ProgramImplFactory::Builder& ProgramImplFactory::Builder::setStartTimeContainerF
 	return *this;
 }
 
-ProgramImplFactory::Builder& ProgramImplFactory::Builder::setStartTimeFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory) {
-	this->startTimeFactory = startTimeFactory;
-	return *this;
-}
-
 std::shared_ptr<ProgramFactory> ProgramImplFactory::Builder::build() {
 	if (nullptr == schedulerContainerFactory) {
 		schedulerContainerFactory = SchedulerContainerImplFactory::Builder().build();
@@ -124,17 +111,14 @@ std::shared_ptr<ProgramFactory> ProgramImplFactory::Builder::build() {
 	}
 
 	if (nullptr == startTimeContainerFactory) {
-		startTimeContainerFactory = std::make_shared<StartTimeContainerImplFactory>();
-	}
-
-	if (nullptr == startTimeFactory) {
-		startTimeFactory = std::make_shared<StartTimeImplFactory>();
+		startTimeContainerFactory = std::make_shared<StartTimeContainerImplFactory>(
+				std::make_shared<StartTimeImplFactory>()
+			);
 	}
 
 	return std::make_shared<ProgramImplFactory>(
 			schedulerContainerFactory,
 			runTimeContainerFactory,
-			startTimeContainerFactory,
-			startTimeFactory
+			startTimeContainerFactory
 		);
 }

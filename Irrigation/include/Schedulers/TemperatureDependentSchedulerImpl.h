@@ -55,6 +55,10 @@ public:
 	unsigned getRequiredPercentForNextDay(const DateTime& dateTime, float* temp = nullptr) const;
 	unsigned getRequiredPercentForPreviousDay(const DateTime& dateTime, float* temp = nullptr) const;
 
+	float getRemainingCorrection() const;
+	unsigned getMinAdjustment() const;
+	unsigned getMaxAdjustment() const;
+
 	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) override;
 
 	////////////////////////////////////////////////////

@@ -1,129 +1,81 @@
 #pragma once
 #include <memory>
+#include <vector>
+#include "DTO/ProgramDTO.h"
 #include "Logic/ProgramImpl.h"
-#include "Logic/ProgramImplBuilder.h"
+#include "RunTimeContainerSamples.h"
+#include "StartTimeContainerSamples.h"
 #include "SchedulerContainerSamples.h"
-#include "RunTimeListSamples.h"
-#include "StartTimeListSamples.h"
 #include "SampleBase.h"
 
 
 namespace Dto2ObjectTest {
 
-	class ProgramSample : public ObjectSample<Program, ProgramDTO> {
+	typedef ObjectSample<ProgramImpl, ProgramDTO> ProgramSample;
+
+	class ProgramSampleList : public std::vector<ProgramSample> {
 	public:
-		ProgramSample(const std::shared_ptr<Program>& objectPtr, ProgramDTO&& dto) : ObjectSample<Program, ProgramDTO>(objectPtr, std::move(dto)) {}
-		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const = 0;
-	};
+		ProgramSampleList() {
 
+			emplace_back(
+				std::make_shared<ProgramImpl>(
+					false, "program1", 54, SchedulerType::EVERY_DAY,
+					SchedulerContainerSampleList().at(0).getObjectPtr(),
+					RunTimeContainerSampleList().at(0).getContainerPtr(),
+					StartTimeContainerSampleList().at(0).getContainerPtr()
+				),
+				ProgramDTO(
+					false, "program1", 54, to_string(SchedulerType::EVERY_DAY),
+					SchedulersDTO(SchedulerContainerSampleList().at(0).getDto()),
+					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(0).getDtoList()),
+					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(0).getDtoList())
+				)
+			);
 
-	class ProgramSample1 : public ProgramSample {
-	public:
-		ProgramSample1() : ProgramSample(
-			createBuilder()->build(),
-			ProgramDTO(
-				false, "name1", 54, to_string(SchedulerType::EVERY_DAY),
-				SchedulersDTO(SchedulerContainerSample1().getDto()),
-				std::list<RunTimeDTO>(RunTimeListSample1().getDtoList()),
-				std::list<StartTimeDTO>(StartTimeListSample1().getDtoList())
-			)
-		) {}
+			emplace_back(
+				std::make_shared<ProgramImpl>(
+					true, "program2", 61, SchedulerType::HOT_WEATHER,
+					SchedulerContainerSampleList().at(1).getObjectPtr(),
+					RunTimeContainerSampleList().at(1).getContainerPtr(),
+					StartTimeContainerSampleList().at(1).getContainerPtr()
+				),
+				ProgramDTO(
+					true, "program2", 61, to_string(SchedulerType::HOT_WEATHER),
+					SchedulersDTO(SchedulerContainerSampleList().at(1).getDto()),
+					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(1).getDtoList()),
+					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(1).getDtoList())
+				)
+			);
 
-		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
-			auto builder = std::make_shared<ProgramImpl::Builder>();
+			emplace_back(
+				std::make_shared<ProgramImpl>(
+					false, "program3", 159, SchedulerType::TEMPERATURE_DEPENDENT,
+					SchedulerContainerSampleList().at(2).getObjectPtr(),
+					RunTimeContainerSampleList().at(2).getContainerPtr(),
+					StartTimeContainerSampleList().at(2).getContainerPtr()
+				),
+				ProgramDTO(
+					false, "program3", 159, to_string(SchedulerType::TEMPERATURE_DEPENDENT),
+					SchedulersDTO(SchedulerContainerSampleList().at(2).getDto()),
+					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(2).getDtoList()),
+					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(2).getDtoList())
+				)
+			);
 
-			builder->setEnabled(false).
-				setName("name1").
-				setAdjustment(54).
-				setSchedulerType(SchedulerType::EVERY_DAY).
-				setSchedulerContainer(SchedulerContainerSample1().getObjectPtr()).
-				setRunTimeContainer(RunTimeListSample1().getContainerPtr()).
-				setStartTimeContainer(StartTimeListSample1().getContainerPtr());
-
-			return builder;
-		}
-	};
-
-	class ProgramSample2 : public ProgramSample {
-	public:
-		ProgramSample2() : ProgramSample(
-			createBuilder()->build(),
-			ProgramDTO(true, "name2", 61, to_string(SchedulerType::WEEKLY),
-				SchedulersDTO(SchedulerContainerSample2().getDto()),
-				std::list<RunTimeDTO>(RunTimeListSample2().getDtoList()),
-				std::list<StartTimeDTO>(StartTimeListSample2().getDtoList())
-			)
-		) {}
-
-		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
-			auto builder = std::make_shared<ProgramImpl::Builder>();
-
-			builder->
-				setEnabled(true).
-				setName("name2").
-				setAdjustment(61).
-				setSchedulerType(SchedulerType::WEEKLY).
-				setSchedulerContainer(SchedulerContainerSample2().getObjectPtr()).
-				setRunTimeContainer(RunTimeListSample2().getContainerPtr()).
-				setStartTimeContainer(StartTimeListSample2().getContainerPtr());
-
-			return builder;
-		}
-	};
-
-	class ProgramSample3 : public ProgramSample {
-	public:
-		ProgramSample3() : ProgramSample(
-			createBuilder()->build(),
-			ProgramDTO(
-				false, "name3", 159, to_string(SchedulerType::WEEKLY),
-				SchedulersDTO(SchedulerContainerSample3().getDto()),
-				std::list<RunTimeDTO>(RunTimeListSample3().getDtoList()),
-				std::list<StartTimeDTO>(StartTimeListSample3().getDtoList())
-			)
-		) {}
-
-		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
-			auto builder = std::make_shared<ProgramImpl::Builder>();
-
-			builder->
-				setEnabled(false).
-				setName("name3").
-				setAdjustment(159).
-				setSchedulerType(SchedulerType::WEEKLY).
-				setSchedulerContainer(SchedulerContainerSample3().getObjectPtr()).
-				setRunTimeContainer(RunTimeListSample3().getContainerPtr()).
-				setStartTimeContainer(StartTimeListSample3().getContainerPtr());
-
-			return builder;
-		}
-	};
-
-	class ProgramSample4 : public ProgramSample {
-	public:
-		ProgramSample4() : ProgramSample(
-			createBuilder()->build(),
-			ProgramDTO(
-				true, "name4", 238, to_string(SchedulerType::WEEKLY),
-				SchedulersDTO(SchedulerContainerSample4().getDto()),
-				std::list<RunTimeDTO>(RunTimeListSample4().getDtoList()),
-				std::list<StartTimeDTO>(StartTimeListSample4().getDtoList())
-			)
-		) {}
-
-		virtual std::shared_ptr<ProgramImpl::Builder> createBuilder() const override {
-			auto builder = std::make_shared<ProgramImpl::Builder>();
-
-			builder->
-				setEnabled(true).
-				setName("name4").
-				setAdjustment(238).
-				setSchedulerType(SchedulerType::WEEKLY).
-				setSchedulerContainer(SchedulerContainerSample1().getObjectPtr()).
-				setRunTimeContainer(RunTimeListSample4().getContainerPtr()).
-				setStartTimeContainer(StartTimeListSample4().getContainerPtr());
-
-			return builder;
+			emplace_back(
+				std::make_shared<ProgramImpl>(
+					true, "program4", 238, SchedulerType::WEEKLY,
+					SchedulerContainerSampleList().at(3).getObjectPtr(),
+					RunTimeContainerSampleList().at(3).getContainerPtr(),
+					StartTimeContainerSampleList().at(3).getContainerPtr()
+				),
+				ProgramDTO(
+					true, "program4", 238, to_string(SchedulerType::WEEKLY),
+					SchedulersDTO(SchedulerContainerSampleList().at(3).getDto()),
+					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(3).getDtoList()),
+					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(3).getDtoList())
+				)
+			);
 		}
 	};
 };

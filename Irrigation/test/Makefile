@@ -5,6 +5,7 @@ PROJECT_ROOT    = ..
 all:
 	@$(MAKE) -C DocumentView all
 	@$(MAKE) -C DTO all
+	@$(MAKE) -C Dto2Object all
 	@$(MAKE) -C DtoReaderWriter all
 	@$(MAKE) -C Email all
 	@$(MAKE) -C Hardware/DS18B20 all
@@ -15,7 +16,6 @@ all:
 	@$(MAKE) -C Schedulers all
 	@$(MAKE) -C Temperature all
 	@$(MAKE) -C Utils all
-	@$(MAKE) -C Views/RestView all
 	@$(MAKE) -C Views/TimerView all
 	@$(MAKE) -C WebServer all
 
@@ -23,6 +23,7 @@ all:
 clean:
 	@$(MAKE) -C DocumentView clean
 	@$(MAKE) -C DTO clean
+	@$(MAKE) -C Dto2Object clean
 	@$(MAKE) -C DtoReaderWriter clean
 	@$(MAKE) -C Email clean
 	@$(MAKE) -C Hardware/DS18B20 clean
@@ -33,7 +34,6 @@ clean:
 	@$(MAKE) -C Schedulers clean
 	@$(MAKE) -C Temperature clean
 	@$(MAKE) -C Utils clean
-	@$(MAKE) -C Views/RestView clean
 	@$(MAKE) -C Views/TimerView clean
 	@$(MAKE) -C WebServer clean
 

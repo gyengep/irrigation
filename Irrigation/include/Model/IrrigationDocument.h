@@ -28,7 +28,7 @@ public:
 	virtual void stop() = 0;
 
 	virtual DocumentDTO toDocumentDto() const = 0;
-	virtual void updateFromDocumentDto(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO) = 0;
+	virtual void updateFromDocumentDto(const DocumentDTO& documentDTO) = 0;
 
 	virtual void saveState() const = 0;
 	virtual void loadState() = 0;

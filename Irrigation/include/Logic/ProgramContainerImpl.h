@@ -18,12 +18,12 @@ class ProgramContainerImpl : public ProgramContainer {
 		}
 	};
 
+	const std::shared_ptr<ProgramFactory> programFactory;
 	container_type container;
 
 public:
-	ProgramContainerImpl() = default;
-	ProgramContainerImpl(ProgramContainerImpl&&) = delete;
-	ProgramContainerImpl(const ProgramContainerImpl&) = delete;
+	ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory);
+	ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory, std::initializer_list<value_type> initializer);
 	ProgramContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~ProgramContainerImpl() = default;
 
@@ -38,8 +38,10 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;
 	virtual mapped_type at(const key_type& key) override;
 
+	virtual const ProgramFactory& getProgramFactory() const override;
+
 	virtual std::list<ProgramDTO> toProgramDtoList() const override;
-	virtual void updateFromProgramDtoList(const std::shared_ptr<ProgramFactory>& programFactory, const std::list<ProgramDTO>& programDtoList) override;
+	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) override;
 
 	virtual std::string toString() const override;
 };
@@ -47,7 +49,11 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class ProgramContainerImplFactory : public ProgramContainerFactory {
+	const std::shared_ptr<ProgramFactory> programFactory;
+
 public:
+	ProgramContainerImplFactory(const std::shared_ptr<ProgramFactory>& programFactory);
+
 	virtual ~ProgramContainerImplFactory() = default;
 	virtual ProgramContainerPtr create() const override;
 };

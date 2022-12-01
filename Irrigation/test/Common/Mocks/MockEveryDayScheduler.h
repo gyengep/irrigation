@@ -18,8 +18,5 @@ public:
 
 class MockEveryDaySchedulerFactory : public EveryDaySchedulerFactory {
 public:
-	virtual ~MockEveryDaySchedulerFactory() = default;
-	virtual EveryDaySchedulerPtr create() const override {
-		return std::make_shared<MockEveryDayScheduler>();
-	}
+	MOCK_CONST_METHOD0(create, EveryDaySchedulerPtr());
 };

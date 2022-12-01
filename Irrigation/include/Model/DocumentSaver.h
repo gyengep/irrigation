@@ -33,7 +33,7 @@ public:
 	virtual ~DocumentSaver();
 
 	void saveIfModified();
-	void load(const std::shared_ptr<DtoReader>& dtoReader, const std::shared_ptr<FileReader>& fileReader, const std::shared_ptr<ProgramFactory>& programFactory);
+	void load(const std::shared_ptr<DtoReader>& dtoReader, const std::shared_ptr<FileReader>& fileReader);
 
 	void startTimer();
 	void stopTimer();

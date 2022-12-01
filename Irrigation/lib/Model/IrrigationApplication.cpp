@@ -151,8 +151,7 @@ void IrrigationApplication::initDocument() {
 		if (true) {
 			documentSaver->load(
 				make_shared<XmlReader>(),
-				make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName()),
-				ProgramImplFactory::Builder().build()
+				make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
 			);
 		} else {
 			setMyDefaults();

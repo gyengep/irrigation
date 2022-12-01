@@ -22,7 +22,7 @@ public:
 	MOCK_METHOD0(stop, void());
 
 	MOCK_CONST_METHOD0(toDocumentDto, DocumentDTO());
-	MOCK_METHOD2(updateFromDocumentDto, void(const std::shared_ptr<ProgramFactory>& programFactory, const DocumentDTO& documentDTO));
+	MOCK_METHOD1(updateFromDocumentDto, void(const DocumentDTO& documentDTO));
 
 	MOCK_CONST_METHOD0(saveState, void());
 	MOCK_METHOD0(loadState, void());

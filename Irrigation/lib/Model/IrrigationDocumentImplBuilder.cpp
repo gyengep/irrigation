@@ -11,11 +11,6 @@ IrrigationDocumentImpl::Builder& IrrigationDocumentImpl::Builder::setProgramCont
 	return *this;
 }
 
-IrrigationDocumentImpl::Builder& IrrigationDocumentImpl::Builder::setProgramFactory(const std::shared_ptr<ProgramFactory>& programFactory) {
-	this->programFactory = programFactory;
-	return *this;
-}
-
 IrrigationDocumentImpl::Builder& IrrigationDocumentImpl::Builder::setWateringController(const std::shared_ptr<WateringController>& wateringController) {
 	this->wateringController = wateringController;
 	return *this;
@@ -29,11 +24,9 @@ IrrigationDocumentImpl::Builder& IrrigationDocumentImpl::Builder::setEmailHandle
 std::shared_ptr<IrrigationDocumentImpl> IrrigationDocumentImpl::Builder::build() {
 
 	if (nullptr == programContainer) {
-		programContainer = std::make_shared<ProgramContainerImpl>();
-	}
-
-	if (nullptr == programFactory) {
-		programFactory = ProgramImplFactory::Builder().build();
+		programContainer = std::make_shared<ProgramContainerImpl>(
+				ProgramImplFactory::Builder().build()
+			);
 	}
 
 	if (nullptr == wateringController) {
@@ -48,7 +41,6 @@ std::shared_ptr<IrrigationDocumentImpl> IrrigationDocumentImpl::Builder::build()
 
 	return std::make_shared<IrrigationDocumentImpl>(
 		programContainer,
-		programFactory,
 		wateringController,
 		emailHandler
 	);
