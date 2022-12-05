@@ -72,10 +72,6 @@ ProgramContainerImpl::value_type& ProgramContainerImpl::insert(const key_type& k
 	return container.back();
 }
 
-const ProgramFactory& ProgramContainerImpl::getProgramFactory() const {
-	return *programFactory;
-}
-
 std::list<ProgramDTO> ProgramContainerImpl::toProgramDtoList() const {
 	std::list<ProgramDTO> programDtos;
 	for (const value_type& value : container) {
@@ -84,20 +80,26 @@ std::list<ProgramDTO> ProgramContainerImpl::toProgramDtoList() const {
 	return programDtos;
 }
 
-void ProgramContainerImpl::updateFromProgramDtoList(const std::list<ProgramDTO>& dtoList) {
+void ProgramContainerImpl::updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) {
 	container.clear();
-	for (const ProgramDTO& dto : dtoList) {
-		std::unique_ptr<IdType> id;
-		if (dto.hasId()) {
-			id.reset(new IdType(dto.getId()));
-		} else {
-			id.reset(new IdType());
-		}
 
-		ProgramPtr program = programFactory->create();
-		program->updateFromProgramDto(dto);
-		insert(IdType(*id), program);
+	for (const ProgramDTO& programDto : programDtoList) {
+		if (programDto.hasId()) {
+			createUpdateAndInsert(IdType(programDto.getId()), programDto);
+		} else {
+			createUpdateAndInsert(IdType(), programDto);
+		}
 	}
+}
+
+ProgramContainer::value_type& ProgramContainerImpl::createFromProgramDto(const ProgramDTO& programDto) {
+	return createUpdateAndInsert(IdType(), programDto);
+}
+
+ProgramContainer::value_type& ProgramContainerImpl::createUpdateAndInsert(const IdType& id, const ProgramDTO& programDto) {
+	auto program = programFactory->create();
+	program->updateFromProgramDto(programDto);
+	return insert(id, program);
 }
 
 std::string ProgramContainerImpl::toString() const {

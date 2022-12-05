@@ -1,5 +1,6 @@
 #include "Logic/ProgramContainerImpl.h"
 #include "Exceptions/Exceptions.h"
+#include "Dto2Object/ProgramSamples.h"
 #include "Mocks/MockProgram.h"
 #include <gmock/gmock.h>
 
@@ -139,4 +140,29 @@ TEST(ProgramContainerImplImplTest, atInvalid) {
 		);
 
 	EXPECT_THROW(programs.at(6), NoSuchElementException);
+}
+
+
+TEST(ProgramContainerImplTest, createFromProgramDto) {
+	const Dto2ObjectTest::ProgramSampleList programSampleList;
+	auto mockProgramFactory = std::make_shared<StrictMock<MockProgramFactory>>(programSampleList.size());
+
+	ASSERT_THAT(programSampleList, SizeIs(4));
+
+	ProgramContainerImpl programContainer(mockProgramFactory);
+
+	EXPECT_CALL(*mockProgramFactory, create()).Times(programSampleList.size());
+
+	for (size_t i = 0; i < programSampleList.size(); ++i) {
+		const ProgramDTO& programDto = programSampleList[i].getDto();
+
+		EXPECT_CALL(*mockProgramFactory->mockPrograms[i], updateFromProgramDto(programDto)).Times(1);
+
+		auto result = programContainer.createFromProgramDto(programDto);
+
+		const auto& id = result.first;
+
+		EXPECT_THAT(programContainer, SizeIs(i + 1));
+		EXPECT_THAT(programContainer.at(id), Eq(mockProgramFactory->mockPrograms[i]));
+	}
 }

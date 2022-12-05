@@ -11,8 +11,6 @@ public:
 	MOCK_CONST_METHOD0(getProgramContainer, const ProgramContainer&());
 	MOCK_METHOD0(getProgramContainer, ProgramContainer& ());
 
-	MOCK_METHOD1(createProgram, std::pair<IdType, ProgramPtr>(const ProgramDTO& programDto));
-
 	MOCK_CONST_METHOD0(isModified, bool());
 	MOCK_METHOD1(setModified, void(bool modified));
 

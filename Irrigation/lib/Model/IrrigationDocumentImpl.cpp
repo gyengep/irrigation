@@ -45,12 +45,6 @@ void IrrigationDocumentImpl::setModified(bool modified) {
 	this->modified = modified;
 }
 
-std::pair<IdType, ProgramPtr> IrrigationDocumentImpl::createProgram(const ProgramDTO& programDto) {
-	ProgramPtr program = getProgramContainer().getProgramFactory().create();
-	program->updateFromProgramDto(programDto);
-	return programContainer->insert(IdType(), program);
-}
-
 void IrrigationDocumentImpl::startIfScheduled(const LocalDateTime& localDateTime) {
 	if (!wateringController->isWateringActive()) {
 		const ProgramContainer& programContainer = getProgramContainer();

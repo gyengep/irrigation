@@ -1,6 +1,7 @@
 #include "Logic/StartTimeContainerImpl.h"
 #include "Logic/StartTimeImpl.h"
 #include "Exceptions/Exceptions.h"
+#include "Dto2Object/StartTimeSamples.h"
 #include "Mocks/MockStartTime.h"
 #include <gmock/gmock.h>
 #include <memory>
@@ -164,4 +165,28 @@ TEST(StartTimeContainerImplTest, sort) {
 			*next(initializer.begin(), 1)
 		)
 	);
+}
+
+TEST(StartTimeContainerImplTest, createFromStartTimeDto) {
+	const Dto2ObjectTest::StartTimeSampleList startTimeSampleList;
+	auto mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>(startTimeSampleList.size());
+
+	ASSERT_THAT(startTimeSampleList, SizeIs(4));
+
+	StartTimeContainerImpl startTimeContainer(mockStartTimeFactory);
+
+	EXPECT_CALL(*mockStartTimeFactory, create()).Times(startTimeSampleList.size());
+
+	for (size_t i = 0; i < startTimeSampleList.size(); ++i) {
+		const StartTimeDTO& startTimeDto = startTimeSampleList[i].getDto();
+
+		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes[i], updateFromStartTimeDto(startTimeDto)).Times(1);
+
+		auto result = startTimeContainer.createFromStartTimeDto(startTimeDto);
+
+		const auto& id = result.first;
+
+		EXPECT_THAT(startTimeContainer, SizeIs(i + 1));
+		EXPECT_THAT(startTimeContainer.at(id), Eq(mockStartTimeFactory->mockStartTimes[i]));
+	}
 }

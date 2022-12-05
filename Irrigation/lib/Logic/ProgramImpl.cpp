@@ -74,12 +74,6 @@ std::unique_ptr<Scheduler::Result> ProgramImpl::isScheduled(const LocalDateTime&
 	return std::unique_ptr<Scheduler::Result>();
 }
 
-std::pair<IdType, StartTimePtr> ProgramImpl::createStartTime(const StartTimeDTO& startTimeDto) {
-	StartTimePtr startTime = getStartTimeContainer().getStartTimeFactory().create();
-	startTime->updateFromStartTimeDto(startTimeDto);
-	return startTimeContainer->insert(IdType(), startTime);
-}
-
 ProgramDTO ProgramImpl::toProgramDto() const {
 	return ProgramDTO(enabled, name, adjustment,
 			to_string(getSchedulerType()),

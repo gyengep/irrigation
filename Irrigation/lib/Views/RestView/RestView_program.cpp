@@ -44,7 +44,7 @@ unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& request,
 		unique_lock<IrrigationDocument> lock(irrigationDocument);
 		irrigationDocument.setModified();
 
-		const auto result = irrigationDocument.createProgram(programDto);
+		const auto result = irrigationDocument.getProgramContainer().createFromProgramDto(programDto);
 		const IdType programId = result.first;
 		const ProgramPtr program = result.second;
 

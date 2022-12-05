@@ -36,8 +36,6 @@ public:
 	virtual RunTimeContainer& getRunTimeContainer() = 0;
 	virtual StartTimeContainer& getStartTimeContainer() = 0;
 
-	virtual std::pair<IdType, StartTimePtr> createStartTime(const StartTimeDTO& startTimeDto) = 0;
-
 	virtual ProgramDTO toProgramDto() const = 0;
 	virtual void updateFromProgramDto(const ProgramDTO& programDTO) = 0;
 

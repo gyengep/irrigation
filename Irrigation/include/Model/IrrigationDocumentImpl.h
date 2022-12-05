@@ -41,8 +41,6 @@ public:
 	virtual const ProgramContainer& getProgramContainer() const override;
 	virtual ProgramContainer& getProgramContainer() override;
 
-	virtual std::pair<IdType, ProgramPtr> createProgram(const ProgramDTO& programDto) override;
-
 	virtual bool isModified() const override;
 	virtual void setModified(bool modified = true) override;
 

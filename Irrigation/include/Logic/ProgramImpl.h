@@ -61,8 +61,6 @@ public:
 	virtual RunTimeContainer& getRunTimeContainer() 					{ return *runTimeContainer; }
 	virtual StartTimeContainer& getStartTimeContainer() 				{ return *startTimeContainer; }
 
-	virtual std::pair<IdType, StartTimePtr> createStartTime(const StartTimeDTO& startTimeDto) override;
-
 	virtual ProgramDTO toProgramDto() const override;
 	virtual void updateFromProgramDto(const ProgramDTO& programDTO) override;
 

@@ -32,10 +32,9 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;
 	virtual mapped_type at(const key_type& key) = 0;
 
-	virtual const StartTimeFactory& getStartTimeFactory() const = 0;
-
 	virtual std::list<StartTimeDTO> toStartTimeDtoList() const = 0;
 	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) = 0;
+	virtual value_type& createFromStartTimeDto(const StartTimeDTO& startTimeDto) = 0;
 
 	virtual std::string toString() const = 0;
 };

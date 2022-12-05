@@ -17,8 +17,6 @@ public:
 	virtual const ProgramContainer& getProgramContainer() const = 0;
 	virtual ProgramContainer& getProgramContainer() = 0;
 
-	virtual std::pair<IdType, ProgramPtr> createProgram(const ProgramDTO& programDto) = 0;
-
 	virtual bool isModified() const = 0;
 	virtual void setModified(bool modified = true) = 0;
 

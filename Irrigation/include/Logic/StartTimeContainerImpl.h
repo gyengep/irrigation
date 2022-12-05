@@ -21,6 +21,8 @@ class StartTimeContainerImpl : public StartTimeContainer {
 	const std::shared_ptr<StartTimeFactory> startTimeFactory;
 	container_type container;
 
+	value_type& createUpdateAndInsert(const IdType& id, const StartTimeDTO& startTimeDto);
+
 public:
 	StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
 	StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory, std::initializer_list<value_type> initializer);
@@ -39,10 +41,9 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;
 	virtual mapped_type at(const key_type& key) override;
 
-	virtual const StartTimeFactory& getStartTimeFactory() const override;
-
 	virtual std::list<StartTimeDTO> toStartTimeDtoList() const override;
 	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) override;
+	virtual value_type& createFromStartTimeDto(const StartTimeDTO& startTimeDto) override;
 
 	virtual std::string toString() const override;
 };

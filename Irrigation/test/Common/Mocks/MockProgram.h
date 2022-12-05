@@ -27,8 +27,6 @@ public:
 	MOCK_METHOD0(getRunTimeContainer, RunTimeContainer&());
 	MOCK_METHOD0(getStartTimeContainer, StartTimeContainer&());
 
-	MOCK_METHOD1(createStartTime, std::pair<IdType, StartTimePtr>(const StartTimeDTO& startTimeDto));
-
 	MOCK_CONST_METHOD0(toProgramDto, ProgramDTO());
 	MOCK_METHOD1(updateFromProgramDto, void(const ProgramDTO& programDTO));
 
