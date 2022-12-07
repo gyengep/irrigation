@@ -26,10 +26,10 @@ namespace Dto2ObjectTest {
 					WeeklySchedulerSampleList().at(3).getObjectPtr()
 				),
 				SchedulersDTO(
-					EveryDaySchedulerDTO(EveryDaySchedulerSample().getDto()),
-					HotWeatherSchedulerDTO(HotWeatherSchedulerSampleList().at(1).getDto()),
-					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSampleList().at(2).getDto()),
-					WeeklySchedulerDTO(WeeklySchedulerSampleList().at(3).getDto())
+					EveryDaySchedulerSample().getDto(),
+					HotWeatherSchedulerSampleList().at(1).getDto(),
+					TemperatureDependentSchedulerSampleList().at(2).getDto(),
+					WeeklySchedulerSampleList().at(3).getDto()
 				)
 			);
 
@@ -41,10 +41,10 @@ namespace Dto2ObjectTest {
 					WeeklySchedulerSampleList().at(1).getObjectPtr()
 				),
 				SchedulersDTO(
-					EveryDaySchedulerDTO(EveryDaySchedulerSample().getDto()),
-					HotWeatherSchedulerDTO(HotWeatherSchedulerSampleList().at(2).getDto()),
-					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSampleList().at(3).getDto()),
-					WeeklySchedulerDTO(WeeklySchedulerSampleList().at(1).getDto())
+					EveryDaySchedulerSample().getDto(),
+					HotWeatherSchedulerSampleList().at(2).getDto(),
+					TemperatureDependentSchedulerSampleList().at(3).getDto(),
+					WeeklySchedulerSampleList().at(1).getDto()
 				)
 			);
 
@@ -56,10 +56,10 @@ namespace Dto2ObjectTest {
 					WeeklySchedulerSampleList().at(2).getObjectPtr()
 				),
 				SchedulersDTO(
-					EveryDaySchedulerDTO(EveryDaySchedulerSample().getDto()),
-					HotWeatherSchedulerDTO(HotWeatherSchedulerSampleList().at(3).getDto()),
-					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSampleList().at(1).getDto()),
-					WeeklySchedulerDTO(WeeklySchedulerSampleList().at(2).getDto())
+					EveryDaySchedulerSample().getDto(),
+					HotWeatherSchedulerSampleList().at(3).getDto(),
+					TemperatureDependentSchedulerSampleList().at(1).getDto(),
+					WeeklySchedulerSampleList().at(2).getDto()
 				)
 			);
 
@@ -71,10 +71,10 @@ namespace Dto2ObjectTest {
 					WeeklySchedulerSampleList().at(2).getObjectPtr()
 				),
 				SchedulersDTO(
-					EveryDaySchedulerDTO(EveryDaySchedulerSample().getDto()),
-					HotWeatherSchedulerDTO(HotWeatherSchedulerSampleList().at(0).getDto()),
-					TemperatureDependentSchedulerDTO(TemperatureDependentSchedulerSampleList().at(1).getDto()),
-					WeeklySchedulerDTO(WeeklySchedulerSampleList().at(2).getDto())
+					EveryDaySchedulerSample().getDto(),
+					HotWeatherSchedulerSampleList().at(0).getDto(),
+					TemperatureDependentSchedulerSampleList().at(1).getDto(),
+					WeeklySchedulerSampleList().at(2).getDto()
 				)
 			);
 		}

@@ -26,9 +26,9 @@ namespace Dto2ObjectTest {
 				),
 				ProgramDTO(
 					false, "program1", 54, to_string(SchedulerType::EVERY_DAY),
-					SchedulersDTO(SchedulerContainerSampleList().at(0).getDto()),
-					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(0).getDtoList()),
-					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(0).getDtoList())
+					SchedulerContainerSampleList().at(0).getDto(),
+					RunTimeContainerSampleList().at(0).getDtoList(),
+					StartTimeContainerSampleList().at(0).getDtoList()
 				)
 			);
 
