@@ -1,61 +1,42 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/StartTimeListSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "StartTimeListSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testStartTimeListRead(const StartTimeListSample& startTimeListSample, XmlReader& reader) {
-	const list<StartTimeDTO> actualDto = reader.loadStartTimeList(startTimeListSample.first);
-	EXPECT_THAT(startTimeListSample.second, ContainerEq(actualDto));
-}
+TEST(StartTimeListWriterTest, save) {
+	for (const auto& startTimeSample : Dto2XmlTest::StartTimeListSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(startTimeSample.getDtoList());
+		const std::string expectedXml = startTimeSample.getXml();
 
-void testStartTimeListWrite(const StartTimeListSample& startTimeListSample, XmlWriter& writer) {
-	const string actualXml = writer.save(startTimeListSample.second);
-	EXPECT_THAT(startTimeListSample.first, remove_xml_tag(actualXml));
-}
+		std::cout << actualXml << std::endl;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(StartTimeListReaderTest, startTimeListInvalid) {
-	EXPECT_THROW(reader.loadStartTimeList("<starttimeABC/>"), RequiredTagMissing);
-}
-
-TEST_F(StartTimeListReaderTest, startTimeListNoneXml) {
-	EXPECT_THROW(reader.loadStartTimeList("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(StartTimeListReaderTest, startTimeListInvalidXml) {
-	EXPECT_THROW(reader.loadStartTimeList("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(StartTimeListReaderTest, startTimeListMore) {
-	testStartTimeListRead(startTimeListSample_more, reader);
+TEST(StartTimeListReaderTest, load) {
+	for (const auto& startTimeSample : Dto2XmlTest::StartTimeListSampleList()) {
+		const std::list<StartTimeDTO> actualDtoList = XmlReader().loadStartTimeList(startTimeSample.getXml());
+		const std::list<StartTimeDTO> expectedDtoList = startTimeSample.getDtoList();
+
+		EXPECT_THAT(actualDtoList, Eq(expectedDtoList));
+	}
 }
 
-TEST_F(StartTimeListReaderTest, startTimeListOne) {
-	testStartTimeListRead(startTimeListSample_one, reader);
+TEST(StartTimeListReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadStartTimeList("<starttimeABC/>"), RequiredTagMissing);
 }
 
-TEST_F(StartTimeListReaderTest, startTimeListEmpty) {
-	testStartTimeListRead(startTimeListSample_empty, reader);
+TEST(StartTimeListReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadStartTimeList("jhvjhvjh"), XMLParseException);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(StartTimeListWriterTest, startTimeMore) {
-	testStartTimeListWrite(startTimeListSample_more, writer);
-}
-
-TEST_F(StartTimeListWriterTest, startTimeOne) {
-	testStartTimeListWrite(startTimeListSample_one, writer);
-}
-
-TEST_F(StartTimeListWriterTest, startTimeEmpty) {
-	testStartTimeListWrite(startTimeListSample_empty, writer);
+TEST(StartTimeListReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadStartTimeList("<abc/><123/>"), XMLParseException);
 }

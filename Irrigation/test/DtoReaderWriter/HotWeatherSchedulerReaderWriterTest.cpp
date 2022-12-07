@@ -1,73 +1,48 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/HotWeatherSchedulerSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "HotWeatherSchedulerSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testHotWeatherSchedulerRead(const HotWeatherSchedulerSample& hotWeatherSchedulerSample, XmlReader& reader) {
-	const HotWeatherSchedulerDTO actualDto = reader.loadHotWeatherScheduler(hotWeatherSchedulerSample.first);
-	EXPECT_THAT(actualDto, Eq(hotWeatherSchedulerSample.second));
-}
+TEST(HotWeatherSchedulerWriterTest, save) {
+	for (const auto& hotWeatherSchedulerSample : Dto2XmlTest::HotWeatherSchedulerSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(hotWeatherSchedulerSample.getDto());
+		const std::string expectedXml = hotWeatherSchedulerSample.getXml();
 
-void testHotWeatherSchedulerWrite(const HotWeatherSchedulerSample& hotWeatherSchedulerSample, XmlWriter& writer) {
-	const string actualXml = writer.save(hotWeatherSchedulerSample.second);
-	EXPECT_THAT(remove_xml_tag(actualXml), Eq(hotWeatherSchedulerSample.first));
-}
+		std::cout << actualXml << std::endl;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(HotWeatherSchedulerReaderTest, schedulerInvalidType) {
-	EXPECT_THROW(reader.loadHotWeatherScheduler("<scheduler type=\"ABC\"/>"), invalid_argument);
-}
-
-TEST_F(HotWeatherSchedulerReaderTest, schedulerInvalid) {
-	EXPECT_THROW(reader.loadHotWeatherScheduler("<ABCD/>"), RequiredTagMissing);
-}
-
-TEST_F(HotWeatherSchedulerReaderTest, schedulerNoneXml) {
-	EXPECT_THROW(reader.loadHotWeatherScheduler("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(HotWeatherSchedulerReaderTest, schedulerInvalidXml) {
-	EXPECT_THROW(reader.loadHotWeatherScheduler("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(HotWeatherSchedulerReaderTest, schedulerAll) {
-	testHotWeatherSchedulerRead(hotWeatherSchedulerSample_all, reader);
+TEST(HotWeatherSchedulerReaderTest, load) {
+	for (const auto& hotWeatherSchedulerSample : Dto2XmlTest::HotWeatherSchedulerSampleList()) {
+		const HotWeatherSchedulerDTO actualDto = XmlReader().loadHotWeatherScheduler(hotWeatherSchedulerSample.getXml());
+		const HotWeatherSchedulerDTO expectedDto = hotWeatherSchedulerSample.getDto();
+
+		std::cout << actualDto << std::endl;
+
+		EXPECT_THAT(actualDto, Eq(expectedDto));
+	}
 }
 
-TEST_F(HotWeatherSchedulerReaderTest, schedulerPeriod) {
-	testHotWeatherSchedulerRead(hotWeatherSchedulerSample_period, reader);
+TEST(HotWeatherSchedulerReaderTest, loadInvalidType) {
+	EXPECT_THROW(XmlReader().loadTemperatureDependentScheduler("<scheduler type=\"ABC\"/>"), std::invalid_argument);
 }
 
-TEST_F(HotWeatherSchedulerReaderTest, schedulerTemperature) {
-	testHotWeatherSchedulerRead(hotWeatherSchedulerSample_temperature, reader);
+TEST(HotWeatherSchedulerReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadHotWeatherScheduler("<hotweatherABC/>"), RequiredTagMissing);
 }
 
-TEST_F(HotWeatherSchedulerReaderTest, schedulerEmpty) {
-	testHotWeatherSchedulerRead(hotWeatherSchedulerSample_empty, reader);
+TEST(HotWeatherSchedulerReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadHotWeatherScheduler("jhvjhvjh"), XMLParseException);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(HotWeatherSchedulerWriterTest, schedulerAll) {
-	testHotWeatherSchedulerWrite(hotWeatherSchedulerSample_all, writer);
-}
-
-TEST_F(HotWeatherSchedulerWriterTest, schedulerPeriod) {
-	testHotWeatherSchedulerWrite(hotWeatherSchedulerSample_period, writer);
-}
-
-TEST_F(HotWeatherSchedulerWriterTest, schedulerTemperature) {
-	testHotWeatherSchedulerWrite(hotWeatherSchedulerSample_temperature, writer);
-}
-
-TEST_F(HotWeatherSchedulerWriterTest, schedulerEmpty) {
-	testHotWeatherSchedulerWrite(hotWeatherSchedulerSample_empty, writer);
+TEST(HotWeatherSchedulerReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadHotWeatherScheduler("<abc/><123/>"), XMLParseException);
 }

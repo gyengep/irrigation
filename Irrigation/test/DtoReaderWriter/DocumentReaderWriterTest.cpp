@@ -1,62 +1,44 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/DocumentSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "DocumentSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testDocumentRead(const DocumentSample& documentSample, XmlReader& reader) {
-	const DocumentDTO actualDto = reader.loadDocument(documentSample.first);
-	EXPECT_THAT(actualDto, Eq(documentSample.second));
-}
+TEST(DocumentWriterTest, save) {
+	for (const auto& documentSample : Dto2XmlTest::DocumentSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(documentSample.getDto());
+		const std::string expectedXml = documentSample.getXml();
 
+		std::cout << actualXml << std::endl;
 
-void testDocumentWrite(const DocumentSample& documentSample, XmlWriter& writer) {
-	const string actualXml = writer.save(documentSample.second);
-	EXPECT_THAT(remove_xml_tag(actualXml), Eq(documentSample.first));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(DocumentReaderTest, documentInvalid) {
-	EXPECT_THROW(reader.loadDocument("<irrig/>"), RequiredTagMissing);
-}
-
-TEST_F(DocumentReaderTest, documentNoneXml) {
-	EXPECT_THROW(reader.loadDocument("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(DocumentReaderTest, documentInvalidXml) {
-	EXPECT_THROW(reader.loadDocument("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(DocumentReaderTest, document1) {
-	testDocumentRead(documentSample_1, reader);
+TEST(DocumentReaderTest, load) {
+	for (const auto& documentSample : Dto2XmlTest::DocumentSampleList()) {
+		const DocumentDTO actualDto = XmlReader().loadDocument(documentSample.getXml());
+		const DocumentDTO expectedDto = documentSample.getDto();
+
+		std::cout << actualDto << std::endl;
+
+		EXPECT_THAT(actualDto, Eq(expectedDto));
+	}
 }
 
-TEST_F(DocumentReaderTest, document2) {
-	testDocumentRead(documentSample_2, reader);
+TEST(DocumentReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadDocument("<irrigABC/>"), RequiredTagMissing);
 }
 
-TEST_F(DocumentReaderTest, documentEmpty) {
-	testDocumentRead(documentSample_empty, reader);
+TEST(DocumentReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadDocument("jhvjhvjh"), XMLParseException);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(DocumentWriterTest, document1) {
-	testDocumentWrite(documentSample_1, writer);
-}
-
-TEST_F(DocumentWriterTest, document2) {
-	testDocumentWrite(documentSample_2, writer);
-}
-
-TEST_F(DocumentWriterTest, documentEmpty) {
-	testDocumentWrite(documentSample_empty, writer);
+TEST(DocumentReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadDocument("<abc/><123/>"), XMLParseException);
 }

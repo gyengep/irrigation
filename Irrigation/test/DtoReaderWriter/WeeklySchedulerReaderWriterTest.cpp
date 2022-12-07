@@ -1,65 +1,48 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/WeeklySchedulerSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "WeeklySchedulerSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testWeeklySchedulerRead(const WeeklySchedulerSample& weeklySchedulerSample, XmlReader& reader) {
-	const WeeklySchedulerDTO actualDto = reader.loadWeeklyScheduler(weeklySchedulerSample.first);
-	EXPECT_THAT(actualDto, Eq(weeklySchedulerSample.second));
-}
+TEST(WeeklySchedulerWriterTest, save) {
+	for (const auto& weeklySchedulerSample : Dto2XmlTest::WeeklySchedulerSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(weeklySchedulerSample.getDto());
+		const std::string expectedXml = weeklySchedulerSample.getXml();
 
-void testWeeklySchedulerWrite(const WeeklySchedulerSample& weeklySchedulerSample, XmlWriter& writer) {
-	const string actualXml = writer.save(weeklySchedulerSample.second);
-	EXPECT_THAT(remove_xml_tag(actualXml), Eq(weeklySchedulerSample.first));
-}
+		std::cout << actualXml << std::endl;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(WeeklySchedulerReaderTest, schedulerInvalidType) {
-	EXPECT_THROW(reader.loadWeeklyScheduler("<scheduler type=\"ABC\"/>"), invalid_argument);
-}
-
-TEST_F(WeeklySchedulerReaderTest, schedulerInvalid) {
-	EXPECT_THROW(reader.loadWeeklyScheduler("<ABCD/>"), RequiredTagMissing);
-}
-
-TEST_F(WeeklySchedulerReaderTest, schedulerNoneXml) {
-	EXPECT_THROW(reader.loadWeeklyScheduler("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(WeeklySchedulerReaderTest, schedulerInvalidXml) {
-	EXPECT_THROW(reader.loadWeeklyScheduler("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(WeeklySchedulerReaderTest, scheduler_all) {
-	testWeeklySchedulerRead(weeklySchedulerSample_all, reader);
+TEST(WeeklySchedulerReaderTest, load) {
+	for (const auto& weeklySchedulerSample : Dto2XmlTest::WeeklySchedulerSampleList()) {
+		const WeeklySchedulerDTO actualDto = XmlReader().loadWeeklyScheduler(weeklySchedulerSample.getXml());
+		const WeeklySchedulerDTO expectedDto = weeklySchedulerSample.getDto();
+
+		std::cout << actualDto << std::endl;
+
+		EXPECT_THAT(actualDto, Eq(expectedDto));
+	}
 }
 
-TEST_F(WeeklySchedulerReaderTest, schedulerValues) {
-	testWeeklySchedulerRead(weeklySchedulerSample_values, reader);
+TEST(WeeklySchedulerReaderTest, loadInvalidType) {
+	EXPECT_THROW(XmlReader().loadWeeklyScheduler("<scheduler type=\"ABC\"/>"), std::invalid_argument);
 }
 
-TEST_F(WeeklySchedulerReaderTest, schedulerEmpty) {
-	testWeeklySchedulerRead(weeklySchedulerSample_empty, reader);
+TEST(WeeklySchedulerReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadWeeklyScheduler("<hotweatherABC/>"), RequiredTagMissing);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(WeeklySchedulerWriterTest, scheduler_all) {
-	testWeeklySchedulerWrite(weeklySchedulerSample_all, writer);
+TEST(WeeklySchedulerReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadWeeklyScheduler("jhvjhvjh"), XMLParseException);
 }
 
-TEST_F(WeeklySchedulerWriterTest, schedulerValues) {
-	testWeeklySchedulerWrite(weeklySchedulerSample_values, writer);
-}
-
-TEST_F(WeeklySchedulerWriterTest, schedulerEmpty) {
-	testWeeklySchedulerWrite(weeklySchedulerSample_empty, writer);
+TEST(WeeklySchedulerReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadWeeklyScheduler("<abc/><123/>"), XMLParseException);
 }

@@ -1,81 +1,48 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/TemperatureDependentSchedulerSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "TemperatureDependentSchedulerSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testTemperatureDependentSchedulerRead(const TemperatureDependentSchedulerSample& temperatureDependentSchedulerSample, XmlReader& reader) {
-	const TemperatureDependentSchedulerDTO actualDto = reader.loadTemperatureDependentScheduler(temperatureDependentSchedulerSample.first);
-	EXPECT_THAT(actualDto, Eq(temperatureDependentSchedulerSample.second));
-}
+TEST(TemperatureDependentSchedulerWriterTest, save) {
+	for (const auto& temperatureDependentSchedulerSample : Dto2XmlTest::TemperatureDependentSchedulerSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(temperatureDependentSchedulerSample.getDto());
+		const std::string expectedXml = temperatureDependentSchedulerSample.getXml();
 
-void testTemperatureDependentSchedulerWrite(const TemperatureDependentSchedulerSample& temperatureDependentSchedulerSample, XmlWriter& writer) {
-	const string actualXml = writer.save(temperatureDependentSchedulerSample.second);
-	EXPECT_THAT(remove_xml_tag(actualXml), Eq(temperatureDependentSchedulerSample.first));
-}
+		std::cout << actualXml << std::endl;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerInvalidType) {
-	EXPECT_THROW(reader.loadTemperatureDependentScheduler("<scheduler type=\"ABC\"/>"), invalid_argument);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerInvalid) {
-	EXPECT_THROW(reader.loadTemperatureDependentScheduler("<ABCD/>"), RequiredTagMissing);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerNoneXml) {
-	EXPECT_THROW(reader.loadTemperatureDependentScheduler("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerInvalidXml) {
-	EXPECT_THROW(reader.loadTemperatureDependentScheduler("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerAll) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_all, reader);
+TEST(TemperatureDependentSchedulerReaderTest, load) {
+	for (const auto& temperatureDependentSchedulerSample : Dto2XmlTest::TemperatureDependentSchedulerSampleList()) {
+		const TemperatureDependentSchedulerDTO actualDto = XmlReader().loadTemperatureDependentScheduler(temperatureDependentSchedulerSample.getXml());
+		const TemperatureDependentSchedulerDTO expectedDto = temperatureDependentSchedulerSample.getDto();
+
+		std::cout << actualDto << std::endl;
+
+		EXPECT_THAT(actualDto, Eq(expectedDto));
+	}
 }
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerRemainingCorrection) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_remainingCorrection, reader);
+TEST(TemperatureDependentSchedulerReaderTest, loadInvalidType) {
+	EXPECT_THROW(XmlReader().loadTemperatureDependentScheduler("<scheduler type=\"ABC\"/>"), std::invalid_argument);
 }
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerMinAdjustment) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_minAdjustment, reader);
+TEST(TemperatureDependentSchedulerReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadTemperatureDependentScheduler("<hotweatherABC/>"), RequiredTagMissing);
 }
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerMaxAdjustment) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_maxAdjustment, reader);
+TEST(TemperatureDependentSchedulerReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadTemperatureDependentScheduler("jhvjhvjh"), XMLParseException);
 }
 
-TEST_F(TemperatureDependentSchedulerReaderTest, schedulerEmpty) {
-	testTemperatureDependentSchedulerRead(temperatureDependentSchedulerSample_empty, reader);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerAll) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_all, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerRemainingCorrection) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_remainingCorrection, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerMinAdjustment) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_minAdjustment, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerMaxAdjustment) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_maxAdjustment, writer);
-}
-
-TEST_F(TemperatureDependentSchedulerWriterTest, schedulerEmpty) {
-	testTemperatureDependentSchedulerWrite(temperatureDependentSchedulerSample_empty, writer);
+TEST(TemperatureDependentSchedulerReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadTemperatureDependentScheduler("<abc/><123/>"), XMLParseException);
 }

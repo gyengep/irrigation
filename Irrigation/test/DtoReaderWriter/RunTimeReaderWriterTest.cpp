@@ -1,77 +1,44 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/RunTimeSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "RunTimeSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testRunTimeRead(const RunTimeSample& runTimeSample, XmlReader& reader) {
-	const RunTimeDTO actualDto = reader.loadRunTime(runTimeSample.first);
-	EXPECT_THAT(actualDto, Eq(runTimeSample.second));
-}
+TEST(RunTimeWriterTest, save) {
+	for (const auto& runTimeSample : Dto2XmlTest::RunTimeSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(runTimeSample.getDto());
+		const std::string expectedXml = runTimeSample.getXml();
 
-void testRunTimeWrite(const RunTimeSample& runTimeSample, XmlWriter& writer) {
-	const string actualXml = writer.save(runTimeSample.second);
-	EXPECT_THAT(remove_xml_tag(actualXml), Eq(runTimeSample.first));
-}
+		std::cout << actualXml << std::endl;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(RunTimeReaderTest, runTimeInvalid) {
-	EXPECT_THROW(reader.loadRunTime("<runtimeABC/>"), RequiredTagMissing);
-}
-
-TEST_F(RunTimeReaderTest, runTimeNoneXml) {
-	EXPECT_THROW(reader.loadRunTime("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(RunTimeReaderTest, runTimeInvalidXml) {
-	EXPECT_THROW(reader.loadRunTime("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RunTimeReaderTest, runTimeAll) {
-	testRunTimeRead(runTimeSample_all, reader);
+TEST(RunTimeReaderTest, load) {
+	for (const auto& runTimeSample : Dto2XmlTest::RunTimeSampleList()) {
+		const RunTimeDTO actualDto = XmlReader().loadRunTime(runTimeSample.getXml());
+		const RunTimeDTO expectedDto = runTimeSample.getDto();
+
+		std::cout << actualDto << std::endl;
+
+		EXPECT_THAT(actualDto, Eq(expectedDto));
+	}
 }
 
-TEST_F(RunTimeReaderTest, runTimeMinute) {
-	testRunTimeRead(runTimeSample_minute, reader);
+TEST(RunTimeReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadRunTime("<runtimeABC/>"), RequiredTagMissing);
 }
 
-TEST_F(RunTimeReaderTest, runTimeSecond) {
-	testRunTimeRead(runTimeSample_second, reader);
+TEST(RunTimeReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadRunTime("jhvjhvjh"), XMLParseException);
 }
 
-TEST_F(RunTimeReaderTest, runTimeId) {
-	testRunTimeRead(runTimeSample_id, reader);
-}
-
-TEST_F(RunTimeReaderTest, runTimeEmpty) {
-	testRunTimeRead(runTimeSample_empty, reader);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(RunTimeWriterTest, runTimeAll) {
-	testRunTimeWrite(runTimeSample_all, writer);
-}
-
-TEST_F(RunTimeWriterTest, runTimeMinute) {
-	testRunTimeWrite(runTimeSample_minute, writer);
-}
-
-TEST_F(RunTimeWriterTest, runTimeSecond) {
-	testRunTimeWrite(runTimeSample_second, writer);
-}
-
-TEST_F(RunTimeWriterTest, runTimeId) {
-	testRunTimeWrite(runTimeSample_id, writer);
-}
-
-TEST_F(RunTimeWriterTest, runTimeEmpty) {
-	testRunTimeWrite(runTimeSample_empty, writer);
+TEST(RunTimeReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadRunTime("<abc/><123/>"), XMLParseException);
 }

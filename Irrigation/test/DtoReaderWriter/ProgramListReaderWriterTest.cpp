@@ -1,61 +1,42 @@
+#include "XmlReaderWriterTest.h"
+#include "Dto2Xml/ProgramListSamples.h"
 #include <list>
 #include <string>
-#include "XmlReaderWriterTest.h"
-#include "ProgramListSamples.h"
 
-using namespace std;
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testProgramListRead(const ProgramListSample& programListSample, XmlReader& reader) {
-	const list<ProgramDTO> actualDto = reader.loadProgramList(programListSample.first);
-	EXPECT_THAT(programListSample.second, ContainerEq(actualDto));
-}
+TEST(ProgramListWriterTest, save) {
+	for (const auto& programSample : Dto2XmlTest::ProgramListSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(programSample.getDtoList());
+		const std::string expectedXml = programSample.getXml();
 
-void testProgramListWrite(const ProgramListSample& programListSample, XmlWriter& writer) {
-	const string actualXml = writer.save(programListSample.second);
-	EXPECT_THAT(programListSample.first, remove_xml_tag(actualXml));
-}
+		std::cout << actualXml << std::endl;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(ProgramListReaderTest, programListInvalid) {
-	EXPECT_THROW(reader.loadProgramList("<programABC/>"), RequiredTagMissing);
-}
-
-TEST_F(ProgramListReaderTest, programListNoneXml) {
-	EXPECT_THROW(reader.loadProgramList("jhvjhvjh"), XMLParseException);
-}
-
-TEST_F(ProgramListReaderTest, programListInvalidXml) {
-	EXPECT_THROW(reader.loadProgramList("<abc/><123/>"), XMLParseException);
+		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(ProgramListReaderTest, programListMore) {
-	testProgramListRead(programListSample_more, reader);
+TEST(ProgramListReaderTest, load) {
+	for (const auto& programSample : Dto2XmlTest::ProgramListSampleList()) {
+		const std::list<ProgramDTO> actualDtoList = XmlReader().loadProgramList(programSample.getXml());
+		const std::list<ProgramDTO> expectedDtoList = programSample.getDtoList();
+
+		EXPECT_THAT(actualDtoList, Eq(expectedDtoList));
+	}
 }
 
-TEST_F(ProgramListReaderTest, programListOne) {
-	testProgramListRead(programListSample_one, reader);
+TEST(ProgramListReaderTest, loadInvalid) {
+	EXPECT_THROW(XmlReader().loadProgramList("<programABC/>"), RequiredTagMissing);
 }
 
-TEST_F(ProgramListReaderTest, programListEmpty) {
-	testProgramListRead(programListSample_empty, reader);
+TEST(ProgramListReaderTest, loadNoneXml) {
+	EXPECT_THROW(XmlReader().loadProgramList("jhvjhvjh"), XMLParseException);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(ProgramListWriterTest, programMore) {
-	testProgramListWrite(programListSample_more, writer);
-}
-
-TEST_F(ProgramListWriterTest, programOne) {
-	testProgramListWrite(programListSample_one, writer);
-}
-
-TEST_F(ProgramListWriterTest, programEmpty) {
-	testProgramListWrite(programListSample_empty, writer);
+TEST(ProgramListReaderTest, loadInvalidXml) {
+	EXPECT_THROW(XmlReader().loadProgramList("<abc/><123/>"), XMLParseException);
 }
