@@ -5,9 +5,8 @@
 #include <curl/curl.h>
 #include <functional>
 
-using namespace std;
 using namespace testing;
-using namespace placeholders;
+using namespace std::placeholders;
 
 
 void RestServerTest::SetUp() {
@@ -27,11 +26,11 @@ void RestServerTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestServerTest, invalidPath) {
-	EXPECT_ANY_THROW(restService->addPath("GET", "//programs", bind(&RestServerTest::onCreateProgram, this, _1, _2)));
+	EXPECT_ANY_THROW(restService->addPath("GET", "//programs", std::bind(&RestServerTest::onCreateProgram, this, _1, _2)));
 }
 
 TEST_F(RestServerTest, callbackWithoutParameter) {
-	const string url = createUrl(port, "/programs");
+	const std::string url = createUrl(port, "/programs");
 
 	CURL *curl = curl_easy_init();
 
@@ -50,7 +49,7 @@ TEST_F(RestServerTest, callbackWithoutParameter) {
 }
 
 TEST_F(RestServerTest, callbackWithParameter) {
-	const string url = createUrl(port, "/programs/567");
+	const std::string url = createUrl(port, "/programs/567");
 
 	CURL *curl = curl_easy_init();
 

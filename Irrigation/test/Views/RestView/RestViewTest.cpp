@@ -1,127 +1,157 @@
 #include "RestViewTest.h"
-#include "Model/IrrigationDocumentImpl.h"
-#include "Utils/DateTime.h"
-#include "Utils/CurlStringReader.h"
-#include "Views/RestView/RestView.h"
-#include <curl/curl.h>
+#include "Request.h"
 
-using namespace std;
 using namespace testing;
 
+///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::SetUp() {
+
+	mockIrrigationDocument = std::make_shared<StrictMock<MockIrrigationDocument>>();
 	mockCurrentTemperature = std::make_shared<MockCurrentTemperature>();
 	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
 	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
 	mockShutdownManager = std::make_shared<MockShutdownManager>();
 
-	irrigationDocument = IrrigationDocumentImpl::Builder().build();
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument, port,
+	restView = std::make_shared<RestView>(*mockIrrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
 			mockShutdownManager,
 			"/tmp"
-		)));
+		);
+
+	restView->initialize();
 }
 
 void RestViewTest::TearDown() {
-	DateTime::resetTimefunc();
+	restView->terminate();
 }
 
-string RestViewTest::createUrl(const string& path) {
+std::string RestViewTest::createUrl(const std::string& path) {
 	if ('/' != path[0]) {
-		throw logic_error("The path has to start with '/'");
+		throw std::logic_error("The path has to start with '/'");
 	}
 
-	ostringstream o;
+	std::ostringstream o;
+	o << "http://localhost:" << port << "/api/v1" << path;
 
-	o << "http://localhost:" << port;
-	o << "/api/v1";
-	o << path;
-/*
-	if (!parameters.empty()) {
-		o << "?";
-
-		for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-			if (parameters.begin() != it) {
-				o << "&";
-			}
-
-			o << it->first << "=" << it->second;
-		}
-	}
-*/
 	return o.str();
 }
 
-RestViewTest::Response RestViewTest::__executeRequest__(const string& method, const string&  url, const string& body, const string& headerField) {
-	Response response;
-
-	CURL *curl = curl_easy_init();
-	curl_slist *header = NULL;
-	CurlStringReader curlStringReader(body);
-
-	if (curl == nullptr) {
-		throw logic_error("RestViewTest::executeRequest()  curl == nullptr");
-	}
-
-	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlStringWriter::writeFunction);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.curlStringWriter);
-	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, CurlHeaderWriter::headerFunction);
-	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.curlHeaderWriter);
-
-	if (!headerField.empty()) {
-		header = curl_slist_append(header, headerField.c_str());
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
-	}
-
-	if (!body.empty()) {
-		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, CurlStringReader::readFunction);
-		curl_easy_setopt(curl, CURLOPT_READDATA, &curlStringReader);
-	}
-
-	curl_easy_perform(curl);
-	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.responseCode);
-	curl_easy_cleanup(curl);
-	curl_slist_free_all(header);
-
-    return response;
+AAA::Response RestViewTest::DELETE(const std::string& url) {
+	return AAA::Request("DELETE", url).
+		execute();
 }
 
-RestViewTest::Response RestViewTest::executeRequest(const string& method, const string&  url) {
-	return __executeRequest__(method, url, "", "");
+AAA::Response RestViewTest::GET(const std::string& url) {
+	return AAA::Request("GET", url).
+		execute();
 }
 
-RestViewTest::Response RestViewTest::executeRequest(const string& method, const string&  url, const string& customHeader) {
-	return __executeRequest__(method, url, "", customHeader);
+AAA::Response RestViewTest::GET_Accept_Xml(const std::string& url) {
+	return AAA::Request("GET", url).
+		addHeader("Accept: application/xml").
+		execute();
 }
 
-RestViewTest::Response RestViewTest::executeRequest(const string& method, const string&  url, const string& body, const string& contentType) {
-	return __executeRequest__(method, url, body, "Content-Type: " + contentType);
+AAA::Response RestViewTest::GET_Accept_Json(const std::string& url) {
+	return AAA::Request("GET", url).
+		addHeader("Accept: application/json").
+		execute();
 }
 
-void RestViewTest::checkResponseWithoutBody(const RestViewTest::Response& response, long statusCode) {
-	EXPECT_THAT(response.responseCode, Eq(statusCode));
-	EXPECT_THAT(response.curlStringWriter.getText(), IsEmpty());
-	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Not(Contains(HasSubstr("Content-Type:"))));
+AAA::Response RestViewTest::PATCH_ContentType_Xml(const std::string& url, const std::string& text) {
+	return AAA::Request("PATCH", url).
+		addHeader("Content-Type: application/xml").
+		setBody(text).
+		execute();
 }
 
-void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response, long statusCode, const string& contentType) {
-	EXPECT_THAT(response.responseCode, Eq(statusCode));
-	EXPECT_THAT(response.curlStringWriter.getText(), Not(IsEmpty()));
-	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Content-Type: " + contentType + "\r\n"));
+AAA::Response RestViewTest::PATCH_ContentType_Json(const std::string& url, const std::string& text) {
+	return AAA::Request("PATCH", url).
+		addHeader("Content-Type: application/json").
+		setBody(text).
+		execute();
 }
 
-void RestViewTest::checkResponseWithBody(const RestViewTest::Response& response, long expectedStatusCode, const string& expectedContentType, const std::string& expectedBody) {
-	EXPECT_THAT(response.responseCode, Eq(expectedStatusCode));
-	EXPECT_THAT(response.curlStringWriter.getText(), Eq(expectedBody));
-	EXPECT_THAT(response.curlHeaderWriter.getHeaders(), Contains("Content-Type: " + expectedContentType + "\r\n"));
+AAA::Response RestViewTest::POST_ContentType_Xml(const std::string& url, const std::string& text) {
+	return AAA::Request("POST", url).
+		addHeader("Content-Type: application/xml").
+		setBody(text).
+		execute();
 }
 
-void RestViewTest::checkErrorResponse(const RestViewTest::Response& response, long statusCode, const string& contentType) {
-	checkResponseWithBody(response, statusCode, contentType);
+AAA::Response RestViewTest::POST_ContentType_Json(const std::string& url, const std::string& text) {
+	return AAA::Request("POST", url).
+		addHeader("Content-Type: application/json").
+		setBody(text).
+		execute();
+}
+
+std::string RestViewTest::stripXml(const std::string& text) {
+	std::ostringstream oss;
+    std::istringstream f(text);
+    std::string line;
+    while (std::getline(f, line)) {
+    	line.erase(0, line.find_first_not_of("\t"));
+   		oss << line;
+    }
+
+	return oss.str();
+}
+
+std::string RestViewTest::prependXmlHeader(const std::string& xml) {
+	static const std::string xmlHeader(R"(<?xml version="1.0"?>)");
+	return xmlHeader + xml;
+}
+
+std::string RestViewTest::prependXmlAndStyleSheetHeader(const std::string& xml, const std::string& xslFile) {
+	const std::string styleSheetPI(R"(<?xml-stylesheet type="text/xsl" href=")" + xslFile + R"("?>)");
+	return prependXmlHeader(styleSheetPI + xml);
+}
+
+void RestViewTest::checkResponse_200_OK(const AAA::Response& response, const std::string& expectedXml) {
+	EXPECT_THAT(response.getResponseCode(), Eq(200));
+	EXPECT_THAT(stripXml(response.getBody()), Eq(expectedXml));
+	EXPECT_THAT(response.getHeaders(), Contains("Content-Type: application/xml\r\n"));
+}
+
+void RestViewTest::checkResponse_201_Created(const AAA::Response& response, const std::string& expectedLocation) {
+	EXPECT_THAT(response.getResponseCode(), Eq(201));
+	EXPECT_THAT(response.getBody(), IsEmpty());
+	EXPECT_THAT(response.getHeaders(), Not(Contains(HasSubstr("Content-Type:"))));
+	EXPECT_THAT(response.getHeaders(), Contains("Location: " + expectedLocation + "\r\n"));
+}
+
+void RestViewTest::checkResponse_204_No_Content(const AAA::Response& response) {
+	EXPECT_THAT(response.getResponseCode(), Eq(204));
+	EXPECT_THAT(response.getBody(), IsEmpty());
+	EXPECT_THAT(response.getHeaders(), Not(Contains(HasSubstr("Content-Type:"))));
+}
+
+void RestViewTest::checkResponse_400_Bad_Request(const AAA::Response& response) {
+	checkResponseIsError(400, response);
+}
+
+void RestViewTest::checkResponse_404_Not_Found(const AAA::Response& response) {
+	checkResponseIsError(404, response);
+}
+
+void RestViewTest::checkResponse_405_Method_Not_Allowed(const AAA::Response& response) {
+	checkResponseIsError(405, response);
+}
+
+void RestViewTest::checkResponse_406_Not_Acceptable(const AAA::Response& response) {
+	checkResponseIsError(406, response);
+}
+
+void RestViewTest::checkResponse_415_Unsupported_Media_Type(const AAA::Response& response) {
+	checkResponseIsError(415, response);
+}
+
+void RestViewTest::checkResponseIsError(long responseCode, const AAA::Response& response) {
+	EXPECT_THAT(response.getResponseCode(), Eq(responseCode));
+	EXPECT_THAT(response.getBody(), Not(IsEmpty()));
+	EXPECT_THAT(response.getHeaders(), Contains("Content-Type: application/xml\r\n"));
 }

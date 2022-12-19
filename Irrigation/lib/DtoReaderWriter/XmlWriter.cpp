@@ -1,5 +1,6 @@
 #include "XmlWriter.h"
 #include "pugixml.hpp"
+#include <iomanip>
 #include <sstream>
 
 using namespace std;
@@ -171,7 +172,9 @@ void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const Temper
 	node.append_attribute("type").set_value("temperature-dependent");
 
 	if (scheduler.hasRemainingCorrection()) {
-		node.append_child("remaining-correction").text().set(scheduler.getRemainingCorrection());
+		std::stringstream ss;
+		ss << std::fixed << std::setprecision(2) << scheduler.getRemainingCorrection();
+		node.append_child("remaining-correction").text().set(ss.str().c_str());
 	}
 
 	if (scheduler.hasMinAdjustment()) {

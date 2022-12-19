@@ -1,75 +1,58 @@
 #pragma once
 #include <memory>
 #include <gmock/gmock.h>
-#include "Utils/CurlHeaderWriter.h"
-#include "Utils/CurlStringWriter.h"
-#include "Dto2Object/ProgramListSamples.h"
+#include "Logic/IdType.h"
+#include "Views/RestView/RestView.h"
+#include "Mocks/MockIrrigationDocument.h"
 #include "Mocks/MockCurrentTemperature.h"
 #include "Mocks/MockShutdownManager.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include "Mocks/MockTemperatureForecast.h"
-
-class IrrigationDocument;
-class RestView;
+#include "Response.h"
 
 
 class RestViewTest : public  testing::Test {
-protected:
-	struct Response {
-		long responseCode;
-	    CurlStringWriter curlStringWriter;
-	    CurlHeaderWriter curlHeaderWriter;
-	};
 
-
-private:
-	Response __executeRequest__(const std::string& method, const std::string& url, const std::string& body, const std::string& customHeader);
+    static std::string stripXml(const std::string& text);
+    static void checkResponseIsError(long responseCode, const AAA::Response& response);
 
 protected:
 	static const uint16_t port = 8080;
 
+	std::shared_ptr<MockIrrigationDocument> mockIrrigationDocument;
 	std::shared_ptr<MockCurrentTemperature> mockCurrentTemperature;
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
 	std::shared_ptr<MockTemperatureForecast> mockTemperatureForecast;
 	std::shared_ptr<MockShutdownManager> mockShutdownManager;
-	std::shared_ptr<IrrigationDocument> irrigationDocument;
+
+	std::shared_ptr<RestView> restView;
 
     virtual void SetUp();
     virtual void TearDown();
 
-    Response executeRequest(const std::string& method, const std::string&  url);
-    Response executeRequest(const std::string& method, const std::string&  url, const std::string& customHeader);
-    Response executeRequest(const std::string& method, const std::string&  url, const std::string& body, const std::string& contentType);
-
-    void testGetProgram(const Dto2ObjectTest::ProgramListSample& programListSample);
-    void testGetStartTime(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
-    void testGetProgramList(const Dto2ObjectTest::ProgramListSample& programListSample);
-    void testGetRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
-    void testPatchRunTimeList(const Dto2ObjectTest::RunTimeListSample& runTimeListSample);
-    void testGetStartTimeList(const Dto2ObjectTest::StartTimeListSample& startTimeListSample);
-    void testGetHotWeatherScheduler(const Dto2ObjectTest::HotWeatherSchedulerSample& hotWeatherSchedulerSample);
-    void testGetTemperatureDependentScheduler(const Dto2ObjectTest::TemperatureDependentSchedulerSample& temperatureDependentSchedulerSample);
-    void testGetWeeklyScheduler(const Dto2ObjectTest::WeeklySchedulerSample& weeklySchedulerSample);
-
-    static void checkErrorResponse(const Response& response, long statusCode, const std::string& contentType);
-    static void checkResponseWithoutBody(const Response& response, long statusCode);
-    static void checkResponseWithBody(const Response& response, long statusCode, const std::string& contentType);
-    static void checkResponseWithBody(const Response& response, long statusCode, const std::string& contentType, const std::string& body);
-
     static std::string createUrl(const std::string& path);
-    static std::string createProgramUrl(IdType programId);
-    static std::string createStartTimeUrl(IdType programId, IdType runTimeId);
-    static std::string createProgramListUrl();
-    static std::string createRunTimeListUrl(IdType programId);
-    static std::string createStartTimeListUrl(IdType programId);
-    static std::string createHotWeatherSchedulerUrl(IdType programId);
-    static std::string createTemperatureDependentSchedulerUrl(IdType programId);
-    static std::string createWeeklySchedulerUrl(IdType programId);
-    static std::string createIrrigationActionUrl();
-    static std::string createTemperatureUrl(const std::string& requestParameters = "");
-    static std::string createTemperatureTomorrowUrl(const std::string& requestParameters = "");
-    static std::string createTemperatureTodayUrl(const std::string& requestParameters = "");
-    static std::string createTemperatureYesterdayUrl(const std::string& requestParameters = "");
-    static std::string createPoweroffUrl();
-    static std::string createRebootUrl();
+
+    static std::string prependXmlHeader(const std::string& xml);
+    static std::string prependXmlAndStyleSheetHeader(const std::string& xml, const std::string& xslFile);
+
+    static AAA::Response DELETE(const std::string& url);
+
+    static AAA::Response GET(const std::string& url);
+    static AAA::Response GET_Accept_Xml(const std::string& url);
+    static AAA::Response GET_Accept_Json(const std::string& url);
+
+    static AAA::Response PATCH_ContentType_Xml(const std::string& url, const std::string& text);
+    static AAA::Response PATCH_ContentType_Json(const std::string& url, const std::string& text);
+
+    static AAA::Response POST_ContentType_Xml(const std::string& url, const std::string& text);
+    static AAA::Response POST_ContentType_Json(const std::string& url, const std::string& text);
+
+    static void checkResponse_200_OK(const AAA::Response& response, const std::string& expectedXml);
+    static void checkResponse_201_Created(const AAA::Response& response, const std::string& expectedLocation);
+    static void checkResponse_204_No_Content(const AAA::Response& response);
+    static void checkResponse_400_Bad_Request(const AAA::Response& response);
+    static void checkResponse_404_Not_Found(const AAA::Response& response);
+    static void checkResponse_405_Method_Not_Allowed(const AAA::Response& response);
+    static void checkResponse_406_Not_Acceptable(const AAA::Response& response);
+    static void checkResponse_415_Unsupported_Media_Type(const AAA::Response& response);
 };

@@ -3,12 +3,12 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
 
-using namespace std;
+using namespace testing;
 
 
 TEST(PathTemplateTest, invalidPathTemplate) {
-	EXPECT_THROW(PathTemplate("/abc/{}/123"), invalid_argument);
-	EXPECT_THROW(PathTemplate("{variable}"), invalid_argument);
+	EXPECT_THROW(PathTemplate("/abc/{}/123"), std::invalid_argument);
+	EXPECT_THROW(PathTemplate("{variable}"), std::invalid_argument);
 }
 
 TEST(PathTemplateTest, pathTemplateNotEquals) {

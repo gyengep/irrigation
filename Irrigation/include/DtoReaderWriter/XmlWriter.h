@@ -33,7 +33,6 @@ public:
 
 	virtual std::string save(const DocumentDTO& document) override;
 	virtual std::string save(const ProgramDTO& program) override;
-	virtual std::string save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) override;
 	virtual std::string save(const RunTimeDTO& runTime) override;
 	virtual std::string save(const StartTimeDTO& startTime) override;
 	virtual std::string save(const EveryDaySchedulerDTO& scheduler) override;
@@ -41,8 +40,10 @@ public:
 	virtual std::string save(const TemperatureDependentSchedulerDTO& scheduler) override;
 	virtual std::string save(const WeeklySchedulerDTO& scheduler) override;
 	virtual std::string save(const std::list<ProgramDTO>& programs) override;
-	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) override;
 	virtual std::string save(const std::list<RunTimeDTO>& runTimes) override;
 	virtual std::string save(const std::list<StartTimeDTO>& startTimes) override;
 	virtual std::string save(const SchedulersDTO& schedulers) override;
+
+	virtual std::string save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) override;
+	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) override;
 };

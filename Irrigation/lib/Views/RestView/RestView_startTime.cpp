@@ -51,15 +51,17 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 	try {
 		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const IdType programId = getProgramId(pathParameters);
-		const IdType startTimeId;
 
-		StartTimePtr startTime = StartTimeImplFactory().create();
-		startTime->updateFromStartTimeDto(startTimeDto);
+		IdType startTimeId;
+		StartTimePtr startTime;
 
 		{
 			unique_lock<IrrigationDocument> lock(irrigationDocument);
 			irrigationDocument.setModified();
-			irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().insert(startTimeId, startTime);
+			const auto result = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().createFromStartTimeDto(startTimeDto);
+
+			startTimeId = result.first;
+			startTime = result.second;
 
 			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
 				const std::string logText = startTime->toString();
@@ -179,7 +181,7 @@ unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request,
 				startTimeId.toString().c_str());
 
 		return HttpResponse::Builder().
-				setStatus(200, "OK").
+				setStatus(204, "No Content").
 				build();
 
 	} catch (const NoSuchElementException& e) {

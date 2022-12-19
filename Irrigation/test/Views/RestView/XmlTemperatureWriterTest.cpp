@@ -1,7 +1,6 @@
 #include <gmock/gmock.h>
 #include "Views/RestView/XmlTemperatureWriter.h"
 
-using namespace std;
 using namespace testing;
 
 

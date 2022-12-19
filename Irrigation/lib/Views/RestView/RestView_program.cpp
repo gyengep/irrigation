@@ -159,7 +159,7 @@ unique_ptr<HttpResponse> RestView::onDeleteProgram(const HttpRequest& request, c
 				programId.toString().c_str());
 
 		return HttpResponse::Builder().
-				setStatus(200, "OK").
+				setStatus(204, "No Content").
 				build();
 
 	} catch (const NoSuchElementException& e) {
