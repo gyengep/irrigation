@@ -81,13 +81,13 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/logs", bind(&RestView::onGetLogs, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/current", bind(&RestView::onGetTemperatureCurrent, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/yesterday", bind(&RestView::onGetTemperatureYesterday, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/today", bind(&RestView::onGetTemperatureToday, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/tomorrow", bind(&RestView::onGetTemperatureTomorrow, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/{fileName}", bind(&RestView::onGetFile, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/", bind(&RestView::onGetRoot, this, _1, _2));
 }

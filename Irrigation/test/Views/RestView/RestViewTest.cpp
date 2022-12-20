@@ -8,10 +8,10 @@ using namespace testing;
 void RestViewTest::SetUp() {
 
 	mockIrrigationDocument = std::make_shared<StrictMock<MockIrrigationDocument>>();
-	mockCurrentTemperature = std::make_shared<MockCurrentTemperature>();
-	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
-	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
-	mockShutdownManager = std::make_shared<MockShutdownManager>();
+	mockCurrentTemperature = std::make_shared<StrictMock<MockCurrentTemperature>>();
+	mockTemperatureHistory = std::make_shared<StrictMock<MockTemperatureHistory>>();
+	mockTemperatureForecast = std::make_shared<StrictMock<MockTemperatureForecast>>();
+	mockShutdownManager = std::make_shared<StrictMock<MockShutdownManager>>();
 
 	restView = std::make_shared<RestView>(*mockIrrigationDocument, port,
 			mockCurrentTemperature,

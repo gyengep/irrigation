@@ -13,7 +13,6 @@
 
 class RestViewTest : public  testing::Test {
 
-    static std::string stripXml(const std::string& text);
     static void checkResponseIsError(long responseCode, const AAA::Response& response);
 
 protected:
@@ -32,6 +31,7 @@ protected:
 
     static std::string createUrl(const std::string& path);
 
+    static std::string stripXml(const std::string& text);
     static std::string prependXmlHeader(const std::string& xml);
     static std::string prependXmlAndStyleSheetHeader(const std::string& xml, const std::string& xslFile);
 

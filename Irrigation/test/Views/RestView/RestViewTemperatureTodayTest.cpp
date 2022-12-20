@@ -1,0 +1,88 @@
+#include "RestViewTemperatureTodayTest.h"
+#include "Request.h"
+#include "Temperature/TemperatureException.h"
+
+using namespace testing;
+
+///////////////////////////////////////////////////////////////////////////////
+
+const Dto2XmlTest::TemperatureTodaySample RestViewTemperatureTodayTest::sample;
+const std::string RestViewTemperatureTodayTest::styleSheetFile("/temperature-today.xsl");
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RestViewTemperatureTodayTest::createTemperatureTodayUrl(const std::string& requestParameters) {
+	std::string result = createUrl("/temperature/today");
+
+	if (false == requestParameters.empty()) {
+		result.append("?" + requestParameters);
+	}
+
+	return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(RestViewTemperatureTodayTest, get) {
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getNow())).Times(1).WillOnce(Return(sample.getHistoryValues()));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(sample.getNow(), sample.getTo())).Times(1).WillOnce(Return(sample.getForecastValues()));
+
+	checkResponse_200_OK(
+			GET(createTemperatureTodayUrl()),
+			prependXmlAndStyleSheetHeader(sample.getXml(), styleSheetFile)
+		);
+}
+
+TEST_F(RestViewTemperatureTodayTest, get_WithAcceptHeader) {
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getNow())).Times(1).WillOnce(Return(sample.getHistoryValues()));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(sample.getNow(), sample.getTo())).Times(1).WillOnce(Return(sample.getForecastValues()));
+
+	checkResponse_200_OK(
+			GET_Accept_Xml(createTemperatureTodayUrl()),
+			prependXmlAndStyleSheetHeader(sample.getXml(), styleSheetFile)
+		);
+}
+
+TEST_F(RestViewTemperatureTodayTest, get_WithDatetimeFormat) {
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getNow())).Times(2).WillRepeatedly(Return(sample.getHistoryValues()));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(sample.getNow(), sample.getTo())).Times(2).WillRepeatedly(Return(sample.getForecastValues()));
+
+	checkResponse_200_OK(
+			GET(createTemperatureTodayUrl(sample.getDateTimeFormatAndXml(0).first)),
+			prependXmlAndStyleSheetHeader(sample.getDateTimeFormatAndXml(0).second, styleSheetFile)
+		);
+
+	checkResponse_200_OK(
+			GET(createTemperatureTodayUrl(sample.getDateTimeFormatAndXml(1).first)),
+			prependXmlAndStyleSheetHeader(sample.getDateTimeFormatAndXml(1).second, styleSheetFile)
+		);
+}
+
+TEST_F(RestViewTemperatureTodayTest, get_HistoryNotFound) {
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getNow())).Times(1).WillOnce(Throw(TemperatureException("")));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(sample.getNow(), sample.getTo())).Times(0);
+
+	checkResponse_404_Not_Found(
+			GET(createTemperatureTodayUrl())
+		);
+}
+
+TEST_F(RestViewTemperatureTodayTest, get_ForecastNotFound) {
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
+	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getNow())).Times(1).WillOnce(Return(sample.getHistoryValues()));
+	EXPECT_CALL(*mockTemperatureForecast, getTemperatureForecast(sample.getNow(), sample.getTo())).Times(1).WillOnce(Throw(TemperatureException("")));
+
+	checkResponse_404_Not_Found(
+			GET(createTemperatureTodayUrl())
+		);
+}
+
+TEST_F(RestViewTemperatureTodayTest, get_NotAcceptable) {
+	checkResponse_406_Not_Acceptable(
+			GET_Accept_Json(createTemperatureTodayUrl())
+		);
+}
