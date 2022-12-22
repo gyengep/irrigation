@@ -6,7 +6,7 @@
 #include "SampleBase.h"
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	typedef SampleList<StartTimeDTO> StartTimeContainerSample;
 

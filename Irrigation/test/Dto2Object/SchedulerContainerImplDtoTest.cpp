@@ -1,5 +1,5 @@
 #include "Logic/SchedulerContainerImpl.h"
-#include "Dto2Object/SchedulerContainerSamples.h"
+#include "Samples/SchedulerContainerSamples.h"
 #include "Mocks/MockEveryDayScheduler.h"
 #include "Mocks/MockHotWeatherScheduler.h"
 #include "Mocks/MockTemperatureDependentScheduler.h"
@@ -12,7 +12,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(SchedulerContainerImplToDtoTest, toSchedulerContainerDto) {
-	const Dto2ObjectTest::SchedulerContainerSampleList sampleList;
+	const Dto2ObjectTestSamples::SchedulerContainerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -49,7 +49,7 @@ void check(const SchedulerContainerDtoUpdateType updateType) {
 		mockWeeklyScheduler
 	);
 
-	for (const auto& sample : Dto2ObjectTest::SchedulerContainerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::SchedulerContainerSampleList()) {
 		SchedulersDTO actualSchedulersDTO;
 
 		if (SchedulerContainerDtoUpdateType::EveryDayScheduler == updateType || SchedulerContainerDtoUpdateType::All == updateType) {

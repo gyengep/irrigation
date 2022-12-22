@@ -7,7 +7,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 const IdType RestViewWeeklySchedulerTest::programId(25);
-const Dto2XmlTest::WeeklySchedulerSample RestViewWeeklySchedulerTest::sample = Dto2XmlTest::WeeklySchedulerSampleList().front();
+const RestViewTestSamples::WeeklySchedulerSample RestViewWeeklySchedulerTest::sample = RestViewTestSamples::WeeklySchedulerSampleList().front();
 
 ///////////////////////////////////////////////////////////////////////////////
 

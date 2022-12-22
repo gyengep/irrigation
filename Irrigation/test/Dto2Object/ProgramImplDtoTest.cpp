@@ -1,5 +1,5 @@
 #include "Logic/ProgramImpl.h"
-#include "Dto2Object/ProgramSamples.h"
+#include "Samples/ProgramSamples.h"
 #include "Mocks/MockSchedulerContainer.h"
 #include "Mocks/MockRunTimeContainer.h"
 #include "Mocks/MockStartTimeContainer.h"
@@ -11,7 +11,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramImplToDtoTest, toProgramDto) {
-	const Dto2ObjectTest::ProgramSampleList sampleList;
+	const Dto2ObjectTestSamples::ProgramSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -55,7 +55,7 @@ void check(const ProgramDtoUpdateType updateType, bool enabled, const std::strin
 	unsigned expectedAdjustment = adjustment;
 	std::string expectedSchedulerType = to_string(schedulerType);
 
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		ProgramDTO actualProgramDTO;
 
 		if (ProgramDtoUpdateType::Enabled == updateType || ProgramDtoUpdateType::All == updateType) {
@@ -103,7 +103,7 @@ void check(const ProgramDtoUpdateType updateType, bool enabled, const std::strin
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_empty) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::Nothing,
@@ -116,7 +116,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_empty) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_enabled) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::Enabled,
@@ -129,7 +129,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_enabled) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_name) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::Name,
@@ -142,7 +142,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_name) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_adjustament) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::Adjustment,
@@ -155,7 +155,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_adjustament) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerType) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::SchedulerType,
@@ -168,7 +168,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerType) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerContainer) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::SchedulerContainer,
@@ -181,7 +181,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerContainer) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_runTimeContainer) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::RunTimeContainer,
@@ -194,7 +194,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_runTimeContainer) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_startTimeContainer) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::StartTimeContainer,
@@ -207,7 +207,7 @@ TEST(ProgramImplFromDtoTest, updateFromProgramDto_partial_startTimeContainer) {
 }
 
 TEST(ProgramImplFromDtoTest, updateFromProgramDto_all) {
-	for (const auto& sample : Dto2ObjectTest::ProgramSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramSampleList()) {
 		const ProgramImpl& actual = sample.getObject();
 
 		check(ProgramDtoUpdateType::All,

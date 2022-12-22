@@ -6,7 +6,7 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const Dto2XmlTest::CurrentTemperatureSample RestViewCurrentTemperatureTest::sample;
+const RestViewTestSamples::CurrentTemperatureSample RestViewCurrentTemperatureTest::sample;
 const std::string RestViewCurrentTemperatureTest::styleSheetFile("/temperature-current.xsl");
 
 ///////////////////////////////////////////////////////////////////////////////

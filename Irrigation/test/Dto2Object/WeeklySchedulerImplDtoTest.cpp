@@ -1,6 +1,6 @@
 #include "Schedulers/WeeklySchedulerImpl.h"
 #include "Exceptions/Exceptions.h"
-#include "Dto2Object/WeeklySchedulerSamples.h"
+#include "Samples/WeeklySchedulerSamples.h"
 #include <gmock/gmock.h>
 #include <list>
 #include <memory>
@@ -10,7 +10,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeeklySchedulerImplToDtoTest, toWeeklySchedulerDto) {
-	const Dto2ObjectTest::WeeklySchedulerSampleList sampleList;
+	const Dto2ObjectTestSamples::WeeklySchedulerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -54,7 +54,7 @@ void check(const WeeklySchedulerDtoUpdateType updateType, const std::vector<bool
 
 	std::vector<bool> expected = days;
 
-	for (const auto& sample : Dto2ObjectTest::WeeklySchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::WeeklySchedulerSampleList()) {
 		WeeklySchedulerDTO actualWeeklySchedulerDTO;
 
 		if (WeeklySchedulerDtoUpdateType::Days == updateType || WeeklySchedulerDtoUpdateType::All == updateType) {
@@ -75,7 +75,7 @@ void check(const WeeklySchedulerDtoUpdateType updateType, const std::vector<bool
 }
 
 TEST(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_empty) {
-	for (const auto& sample : Dto2ObjectTest::WeeklySchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::WeeklySchedulerSampleList()) {
 		const WeeklySchedulerImpl& actual = sample.getObject();
 
 		check(WeeklySchedulerDtoUpdateType::Nothing,
@@ -85,7 +85,7 @@ TEST(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_empty) {
 }
 
 TEST(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_partial_days) {
-	for (const auto& sample : Dto2ObjectTest::WeeklySchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::WeeklySchedulerSampleList()) {
 		const WeeklySchedulerImpl& actual = sample.getObject();
 
 		check(WeeklySchedulerDtoUpdateType::Days,
@@ -95,7 +95,7 @@ TEST(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_partial_days) 
 }
 
 TEST(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_all) {
-	for (const auto& sample : Dto2ObjectTest::WeeklySchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::WeeklySchedulerSampleList()) {
 		const WeeklySchedulerImpl& actual = sample.getObject();
 
 		check(WeeklySchedulerDtoUpdateType::All,

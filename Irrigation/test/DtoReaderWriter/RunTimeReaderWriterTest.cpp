@@ -1,5 +1,5 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/RunTimeSamples.h"
+#include "Samples/RunTimeSamples.h"
 #include <list>
 #include <string>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeWriterTest, save) {
-	for (const auto& runTimeSample : Dto2XmlTest::RunTimeSampleList()) {
+	for (const auto& runTimeSample : DtoReaderWriterTestSamples::RunTimeSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(runTimeSample.getDto());
 		const std::string expectedXml = runTimeSample.getXml();
 
@@ -21,7 +21,7 @@ TEST(RunTimeWriterTest, save) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeReaderTest, load) {
-	for (const auto& runTimeSample : Dto2XmlTest::RunTimeSampleList()) {
+	for (const auto& runTimeSample : DtoReaderWriterTestSamples::RunTimeSampleList()) {
 		const RunTimeDTO actualDto = XmlReader().loadRunTime(runTimeSample.getXml());
 		const RunTimeDTO expectedDto = runTimeSample.getDto();
 

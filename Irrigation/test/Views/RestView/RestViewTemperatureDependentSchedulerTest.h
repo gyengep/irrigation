@@ -14,7 +14,7 @@ class RestViewTemperatureDependentSchedulerTest : public RestViewTest {
 protected:
 
 	static const IdType programId;
-	static const Dto2XmlTest::TemperatureDependentSchedulerSample sample;
+	static const RestViewTestSamples::TemperatureDependentSchedulerSample sample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 	std::shared_ptr<MockProgram> mockProgram;

@@ -8,7 +8,7 @@ using namespace testing;
 
 const IdType RestViewStartTimeTest::programId(25);
 const IdType RestViewStartTimeTest::startTimeId(10);
-const Dto2XmlTest::StartTimeSample RestViewStartTimeTest::sample = Dto2XmlTest::StartTimeSampleList().front();
+const RestViewTestSamples::StartTimeSample RestViewStartTimeTest::sample = RestViewTestSamples::StartTimeSampleList().front();
 
 ///////////////////////////////////////////////////////////////////////////////
 

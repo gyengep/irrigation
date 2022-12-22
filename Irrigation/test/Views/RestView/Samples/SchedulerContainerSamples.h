@@ -9,7 +9,7 @@
 #include "SampleBase.h"
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	typedef Sample<SchedulersDTO> SchedulerContainerSample;
 

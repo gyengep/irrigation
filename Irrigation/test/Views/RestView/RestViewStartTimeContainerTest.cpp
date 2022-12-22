@@ -9,8 +9,8 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 const IdType RestViewStartTimeContainerTest::programId(25);
-const Dto2XmlTest::StartTimeContainerSample RestViewStartTimeContainerTest::sample = Dto2XmlTest::StartTimeContainerSampleList().back();
-const Dto2XmlTest::StartTimeSample RestViewStartTimeContainerTest::startTimeSample = Dto2XmlTest::StartTimeSampleList().back();
+const RestViewTestSamples::StartTimeContainerSample RestViewStartTimeContainerTest::sample = RestViewTestSamples::StartTimeContainerSampleList().back();
+const RestViewTestSamples::StartTimeSample RestViewStartTimeContainerTest::startTimeSample = RestViewTestSamples::StartTimeSampleList().back();
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -1,5 +1,5 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/WeeklySchedulerSamples.h"
+#include "Samples/WeeklySchedulerSamples.h"
 #include <list>
 #include <string>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeeklySchedulerWriterTest, save) {
-	for (const auto& weeklySchedulerSample : Dto2XmlTest::WeeklySchedulerSampleList()) {
+	for (const auto& weeklySchedulerSample : DtoReaderWriterTestSamples::WeeklySchedulerSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(weeklySchedulerSample.getDto());
 		const std::string expectedXml = weeklySchedulerSample.getXml();
 
@@ -21,7 +21,7 @@ TEST(WeeklySchedulerWriterTest, save) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeeklySchedulerReaderTest, load) {
-	for (const auto& weeklySchedulerSample : Dto2XmlTest::WeeklySchedulerSampleList()) {
+	for (const auto& weeklySchedulerSample : DtoReaderWriterTestSamples::WeeklySchedulerSampleList()) {
 		const WeeklySchedulerDTO actualDto = XmlReader().loadWeeklyScheduler(weeklySchedulerSample.getXml());
 		const WeeklySchedulerDTO expectedDto = weeklySchedulerSample.getDto();
 

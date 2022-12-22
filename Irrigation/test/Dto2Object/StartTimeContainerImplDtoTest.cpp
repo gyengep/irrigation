@@ -1,5 +1,5 @@
 #include "Logic/StartTimeContainerImpl.h"
-#include "Dto2Object/StartTimeContainerSamples.h"
+#include "Samples/StartTimeContainerSamples.h"
 #include "Mocks/MockStartTime.h"
 #include <gmock/gmock.h>
 #include <memory>
@@ -9,7 +9,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeContainerImplDtoTest, toStartTimeContainerDtoList) {
-	const Dto2ObjectTest::StartTimeContainerSampleList sampleList;
+	const Dto2ObjectTestSamples::StartTimeContainerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -23,9 +23,35 @@ TEST(StartTimeContainerImplDtoTest, toStartTimeContainerDtoList) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(StartTimeContainerImplDtoTest, createFromStartTimeDto) {
+	const Dto2ObjectTestSamples::StartTimeSampleList startTimeSampleList;
+	auto mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>(startTimeSampleList.size());
+
+	ASSERT_THAT(startTimeSampleList, SizeIs(4));
+
+	StartTimeContainerImpl startTimeContainer(mockStartTimeFactory);
+
+	EXPECT_CALL(*mockStartTimeFactory, create()).Times(startTimeSampleList.size());
+
+	for (size_t i = 0; i < startTimeSampleList.size(); ++i) {
+		const StartTimeDTO& startTimeDto = startTimeSampleList[i].getDto();
+
+		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes[i], updateFromStartTimeDto(startTimeDto)).Times(1);
+
+		auto result = startTimeContainer.createFromStartTimeDto(startTimeDto);
+
+		const auto& id = result.first;
+
+		EXPECT_THAT(startTimeContainer, SizeIs(i + 1));
+		EXPECT_THAT(startTimeContainer.at(id), Eq(mockStartTimeFactory->mockStartTimes[i]));
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void check(std::initializer_list<StartTimeContainer::value_type> initializer) {
 
-	for (const auto& sample : Dto2ObjectTest::StartTimeContainerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::StartTimeContainerSampleList()) {
 		const std::list<StartTimeDTO>& actualStartTimeDtoList = sample.getDtoList();
 		const size_t size = actualStartTimeDtoList.size();
 

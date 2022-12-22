@@ -1,6 +1,6 @@
 #include "Logic/RunTimeContainerImpl.h"
 #include "Exceptions/Exceptions.h"
-#include "Dto2Object/RunTimeContainerSamples.h"
+#include "Samples/RunTimeContainerSamples.h"
 #include "Mocks/MockRunTime.h"
 #include <gmock/gmock.h>
 #include <memory>
@@ -10,7 +10,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeContainerImplDtoTest, toRunTimeContainerDtoList) {
-	const Dto2ObjectTest::RunTimeContainerSampleList sampleList;
+	const Dto2ObjectTestSamples::RunTimeContainerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -26,7 +26,7 @@ TEST(RunTimeContainerImplDtoTest, toRunTimeContainerDtoList) {
 
 TEST(RunTimeContainerImplFromDtoTest, updateFromRunTimeContainerDto) {
 
-	for (const auto& sample : Dto2ObjectTest::RunTimeContainerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::RunTimeContainerSampleList()) {
 		const std::list<RunTimeDTO>& actualRunTimeDtoList = sample.getDtoList();
 		const size_t size = actualRunTimeDtoList.size();
 

@@ -15,7 +15,7 @@ public:
 
 	static const IdType programId;
 	static const IdType startTimeId;
-	static const Dto2XmlTest::StartTimeSample sample;
+	static const RestViewTestSamples::StartTimeSample sample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 	std::shared_ptr<MockProgram> mockProgram;

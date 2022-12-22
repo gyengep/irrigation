@@ -1,5 +1,5 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/DocumentSamples.h"
+#include "Samples/DocumentSamples.h"
 #include <list>
 #include <string>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(DocumentWriterTest, save) {
-	for (const auto& documentSample : Dto2XmlTest::DocumentSampleList()) {
+	for (const auto& documentSample : DtoReaderWriterTestSamples::DocumentSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(documentSample.getDto());
 		const std::string expectedXml = documentSample.getXml();
 
@@ -21,7 +21,7 @@ TEST(DocumentWriterTest, save) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(DocumentReaderTest, load) {
-	for (const auto& documentSample : Dto2XmlTest::DocumentSampleList()) {
+	for (const auto& documentSample : DtoReaderWriterTestSamples::DocumentSampleList()) {
 		const DocumentDTO actualDto = XmlReader().loadDocument(documentSample.getXml());
 		const DocumentDTO expectedDto = documentSample.getDto();
 

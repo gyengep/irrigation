@@ -8,8 +8,8 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const Dto2XmlTest::ProgramContainerSample RestViewProgramContainerTest::sample = Dto2XmlTest::ProgramContainerSampleList().back();
-const Dto2XmlTest::ProgramSample RestViewProgramContainerTest::programSample = Dto2XmlTest::ProgramSampleList().back();
+const RestViewTestSamples::ProgramContainerSample RestViewProgramContainerTest::sample = RestViewTestSamples::ProgramContainerSampleList().back();
+const RestViewTestSamples::ProgramSample RestViewProgramContainerTest::programSample = RestViewTestSamples::ProgramSampleList().back();
 
 ///////////////////////////////////////////////////////////////////////////////
 

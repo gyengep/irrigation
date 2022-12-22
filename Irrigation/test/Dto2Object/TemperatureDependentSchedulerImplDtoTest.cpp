@@ -1,5 +1,5 @@
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
-#include "Dto2Object/TemperatureDependentSchedulerSamples.h"
+#include "Samples/TemperatureDependentSchedulerSamples.h"
 #include "Mocks/MockTemperatureForecast.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include <gmock/gmock.h>
@@ -10,7 +10,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(TemperatureDependentSchedulerImplToDtoTest, toTemperatureDependentSchedulerDto) {
-	const Dto2ObjectTest::TemperatureDependentSchedulerSampleList sampleList;
+	const Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -46,7 +46,7 @@ void check(const TemperatureDependentSchedulerDtoUpdateType updateType, float re
 	unsigned expectedMinAdjustment = minAdjustment;
 	unsigned expectedMaxAdjustment = maxAdjustment;
 
-	for (const auto& sample : Dto2ObjectTest::TemperatureDependentSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
 		TemperatureDependentSchedulerDTO actualTemperatureDependentSchedulerDTO;
 
 		if (TemperatureDependentSchedulerDtoUpdateType::RemainingCorrection == updateType || TemperatureDependentSchedulerDtoUpdateType::All == updateType) {
@@ -73,7 +73,7 @@ void check(const TemperatureDependentSchedulerDtoUpdateType updateType, float re
 }
 
 TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_empty) {
-	for (const auto& sample : Dto2ObjectTest::TemperatureDependentSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
 		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
 
 		check(TemperatureDependentSchedulerDtoUpdateType::Nothing,
@@ -85,7 +85,7 @@ TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependen
 }
 
 TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_partial_remainingCorrection) {
-	for (const auto& sample : Dto2ObjectTest::TemperatureDependentSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
 		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
 
 		check(TemperatureDependentSchedulerDtoUpdateType::RemainingCorrection,
@@ -97,7 +97,7 @@ TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependen
 }
 
 TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_partial_minAdjustment) {
-	for (const auto& sample : Dto2ObjectTest::TemperatureDependentSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
 		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
 
 		check(TemperatureDependentSchedulerDtoUpdateType::MinAdjustment,
@@ -109,7 +109,7 @@ TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependen
 }
 
 TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_partial_maxAdjustment) {
-	for (const auto& sample : Dto2ObjectTest::TemperatureDependentSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
 		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
 
 		check(TemperatureDependentSchedulerDtoUpdateType::MaxAdjustment,
@@ -121,7 +121,7 @@ TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependen
 }
 
 TEST(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_all) {
-	for (const auto& sample : Dto2ObjectTest::TemperatureDependentSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
 		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
 
 		check(TemperatureDependentSchedulerDtoUpdateType::All,

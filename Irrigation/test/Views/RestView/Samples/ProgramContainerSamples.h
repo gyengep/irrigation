@@ -6,7 +6,7 @@
 #include "SampleBase.h"
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	class ProgramContainerSample : public SampleList<ProgramDTO> {
 		const std::string xmlWithoutContainers;

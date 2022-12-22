@@ -1,5 +1,5 @@
 #include "Logic/StartTimeImpl.h"
-#include "Dto2Object/StartTimeSamples.h"
+#include "Samples/StartTimeSamples.h"
 #include <gmock/gmock.h>
 #include <memory>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeImplToDtoTest, toStartTimeDto) {
-	const Dto2ObjectTest::StartTimeSampleList sampleList;
+	const Dto2ObjectTestSamples::StartTimeSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -39,7 +39,7 @@ void check(const StartTimeDtoUpdateType updateType, unsigned hours, unsigned min
 	unsigned expectedHours = hours;
 	unsigned expectedMinutes = minutes;
 
-	for (const auto& sample : Dto2ObjectTest::StartTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::StartTimeSampleList()) {
 		StartTimeDTO actualStartTimeDTO;
 
 		if (StartTimeDtoUpdateType::Hours == updateType) {
@@ -69,7 +69,7 @@ void check(const StartTimeDtoUpdateType updateType, unsigned hours, unsigned min
 }
 
 TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_empty) {
-	for (const auto& sample : Dto2ObjectTest::StartTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::StartTimeSampleList()) {
 		const StartTimeImpl& actual = sample.getObject();
 
 		check(StartTimeDtoUpdateType::Nothing,
@@ -80,7 +80,7 @@ TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_empty) {
 }
 
 TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_hours) {
-	for (const auto& sample : Dto2ObjectTest::StartTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::StartTimeSampleList()) {
 		const StartTimeImpl& actual = sample.getObject();
 
 		check(StartTimeDtoUpdateType::Hours,
@@ -91,7 +91,7 @@ TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_hours) {
 }
 
 TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_minutes) {
-	for (const auto& sample : Dto2ObjectTest::StartTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::StartTimeSampleList()) {
 		const StartTimeImpl& actual = sample.getObject();
 
 		check(StartTimeDtoUpdateType::Minutes,
@@ -102,7 +102,7 @@ TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_minutes) {
 }
 
 TEST(StartTimeImplFromDtoTest, updateFromStartTimeDto_all) {
-	for (const auto& sample : Dto2ObjectTest::StartTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::StartTimeSampleList()) {
 		const StartTimeImpl& actual = sample.getObject();
 
 		check(StartTimeDtoUpdateType::All,

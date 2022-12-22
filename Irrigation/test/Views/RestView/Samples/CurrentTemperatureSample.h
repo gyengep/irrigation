@@ -3,7 +3,7 @@
 #include "SampleBase.h"
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	class CurrentTemperatureSample : public Sample<CurrentTemperatureDTO> {
 	public:

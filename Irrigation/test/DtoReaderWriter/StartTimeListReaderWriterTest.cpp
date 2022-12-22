@@ -1,5 +1,5 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/StartTimeListSamples.h"
+#include "Samples/StartTimeListSamples.h"
 #include <list>
 #include <string>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeListWriterTest, save) {
-	for (const auto& startTimeSample : Dto2XmlTest::StartTimeListSampleList()) {
+	for (const auto& startTimeSample : DtoReaderWriterTestSamples::StartTimeListSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(startTimeSample.getDtoList());
 		const std::string expectedXml = startTimeSample.getXml();
 
@@ -21,7 +21,7 @@ TEST(StartTimeListWriterTest, save) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(StartTimeListReaderTest, load) {
-	for (const auto& startTimeSample : Dto2XmlTest::StartTimeListSampleList()) {
+	for (const auto& startTimeSample : DtoReaderWriterTestSamples::StartTimeListSampleList()) {
 		const std::list<StartTimeDTO> actualDtoList = XmlReader().loadStartTimeList(startTimeSample.getXml());
 		const std::list<StartTimeDTO> expectedDtoList = startTimeSample.getDtoList();
 

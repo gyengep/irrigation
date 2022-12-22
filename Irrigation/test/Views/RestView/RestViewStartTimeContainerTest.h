@@ -13,8 +13,8 @@ class RestViewStartTimeContainerTest : public RestViewTest {
 protected:
 
 	static const IdType programId;
-	static const Dto2XmlTest::StartTimeContainerSample sample;
-	static const Dto2XmlTest::StartTimeSample startTimeSample;
+	static const RestViewTestSamples::StartTimeContainerSample sample;
+	static const RestViewTestSamples::StartTimeSample startTimeSample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 	std::shared_ptr<MockProgram> mockProgram;

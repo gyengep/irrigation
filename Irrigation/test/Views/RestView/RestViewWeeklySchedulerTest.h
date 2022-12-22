@@ -14,7 +14,7 @@ class RestViewWeeklySchedulerTest : public RestViewTest {
 protected:
 
 	static const IdType programId;
-	static const Dto2XmlTest::WeeklySchedulerSample sample;
+	static const RestViewTestSamples::WeeklySchedulerSample sample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 	std::shared_ptr<MockProgram> mockProgram;

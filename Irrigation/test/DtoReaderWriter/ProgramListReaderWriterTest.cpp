@@ -1,5 +1,5 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/ProgramListSamples.h"
+#include "Samples/ProgramListSamples.h"
 #include <list>
 #include <string>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramListWriterTest, save) {
-	for (const auto& programSample : Dto2XmlTest::ProgramListSampleList()) {
+	for (const auto& programSample : DtoReaderWriterTestSamples::ProgramListSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(programSample.getDtoList());
 		const std::string expectedXml = programSample.getXml();
 
@@ -21,7 +21,7 @@ TEST(ProgramListWriterTest, save) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramListReaderTest, load) {
-	for (const auto& programSample : Dto2XmlTest::ProgramListSampleList()) {
+	for (const auto& programSample : DtoReaderWriterTestSamples::ProgramListSampleList()) {
 		const std::list<ProgramDTO> actualDtoList = XmlReader().loadProgramList(programSample.getXml());
 		const std::list<ProgramDTO> expectedDtoList = programSample.getDtoList();
 

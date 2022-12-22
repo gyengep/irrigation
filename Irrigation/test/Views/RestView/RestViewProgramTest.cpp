@@ -7,7 +7,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 const IdType RestViewProgramTest::programId(25);
-const Dto2XmlTest::ProgramSample RestViewProgramTest::sample = Dto2XmlTest::ProgramSampleList().back();
+const RestViewTestSamples::ProgramSample RestViewProgramTest::sample = RestViewTestSamples::ProgramSampleList().back();
 
 ///////////////////////////////////////////////////////////////////////////////
 

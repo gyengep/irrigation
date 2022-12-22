@@ -1,5 +1,5 @@
 #include "Schedulers/HotWeatherSchedulerImpl.h"
-#include "Dto2Object/HotWeatherSchedulerSamples.h"
+#include "Samples/HotWeatherSchedulerSamples.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include <gmock/gmock.h>
 #include <memory>
@@ -9,7 +9,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(HotWeatherSchedulerImplToDtoTest, toHotWeatherSchedulerDto) {
-	const Dto2ObjectTest::HotWeatherSchedulerSampleList sampleList;
+	const Dto2ObjectTestSamples::HotWeatherSchedulerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -41,7 +41,7 @@ void check(const HotWeatherSchedulerDtoUpdateType updateType, unsigned periodInS
 	unsigned expectedPeriodInSeconds = periodInSeconds;
 	float expectedMinTemperature = minTemperature;
 
-	for (const auto& sample : Dto2ObjectTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::HotWeatherSchedulerSampleList()) {
 		HotWeatherSchedulerDTO actualHotWeatherSchedulerDTO;
 
 		if (HotWeatherSchedulerDtoUpdateType::Period == updateType || HotWeatherSchedulerDtoUpdateType::All == updateType) {
@@ -62,7 +62,7 @@ void check(const HotWeatherSchedulerDtoUpdateType updateType, unsigned periodInS
 }
 
 TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_empty) {
-	for (const auto& sample : Dto2ObjectTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::HotWeatherSchedulerSampleList()) {
 		const HotWeatherSchedulerImpl& actual = sample.getObject();
 
 		check(HotWeatherSchedulerDtoUpdateType::Nothing,
@@ -73,7 +73,7 @@ TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_empty)
 }
 
 TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_partial_minTemperature) {
-	for (const auto& sample : Dto2ObjectTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::HotWeatherSchedulerSampleList()) {
 		const HotWeatherSchedulerImpl& actual = sample.getObject();
 
 		check(HotWeatherSchedulerDtoUpdateType::MinTemperature,
@@ -84,7 +84,7 @@ TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_partia
 }
 
 TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_partial_period) {
-	for (const auto& sample : Dto2ObjectTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::HotWeatherSchedulerSampleList()) {
 		const HotWeatherSchedulerImpl& actual = sample.getObject();
 
 		check(HotWeatherSchedulerDtoUpdateType::Period,
@@ -95,7 +95,7 @@ TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_partia
 }
 
 TEST(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_all) {
-	for (const auto& sample : Dto2ObjectTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::HotWeatherSchedulerSampleList()) {
 		const HotWeatherSchedulerImpl& actual = sample.getObject();
 
 		check(HotWeatherSchedulerDtoUpdateType::All,

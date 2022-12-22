@@ -1,5 +1,5 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/HotWeatherSchedulerSamples.h"
+#include "Samples/HotWeatherSchedulerSamples.h"
 #include <list>
 #include <string>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(HotWeatherSchedulerWriterTest, save) {
-	for (const auto& hotWeatherSchedulerSample : Dto2XmlTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& hotWeatherSchedulerSample : DtoReaderWriterTestSamples::HotWeatherSchedulerSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(hotWeatherSchedulerSample.getDto());
 		const std::string expectedXml = hotWeatherSchedulerSample.getXml();
 
@@ -21,7 +21,7 @@ TEST(HotWeatherSchedulerWriterTest, save) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(HotWeatherSchedulerReaderTest, load) {
-	for (const auto& hotWeatherSchedulerSample : Dto2XmlTest::HotWeatherSchedulerSampleList()) {
+	for (const auto& hotWeatherSchedulerSample : DtoReaderWriterTestSamples::HotWeatherSchedulerSampleList()) {
 		const HotWeatherSchedulerDTO actualDto = XmlReader().loadHotWeatherScheduler(hotWeatherSchedulerSample.getXml());
 		const HotWeatherSchedulerDTO expectedDto = hotWeatherSchedulerSample.getDto();
 

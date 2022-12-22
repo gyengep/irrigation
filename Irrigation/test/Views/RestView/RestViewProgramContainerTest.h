@@ -10,8 +10,8 @@
 class RestViewProgramContainerTest : public RestViewTest {
 protected:
 
-	static const Dto2XmlTest::ProgramContainerSample sample;
-	static const Dto2XmlTest::ProgramSample programSample;
+	static const RestViewTestSamples::ProgramContainerSample sample;
+	static const RestViewTestSamples::ProgramSample programSample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 

@@ -1,8 +1,7 @@
 #include "DocumentSaverTest.h"
-#include "Dto2Object/DocumentSamples.h"
 #include "DTO/DocumentDTO.h"
 #include "Model/DocumentSaver.h"
-#include "Model/IrrigationDocument.h"
+#include "Model/IrrigationDocumentImpl.h"
 #include "Mocks/MockDtoReader.h"
 
 using namespace std;
@@ -32,7 +31,7 @@ TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 	irrigationDocument->setModified();
 
 	const string documentDtoAsText = "asdfghjkl";
-	const DocumentDTO expectedDocumentDto = Dto2ObjectTest::DocumentSample4().getDto();
+	const DocumentDTO expectedDocumentDto = Dto2ObjectTestSamples::DocumentSample4().getDto();
 
 	const shared_ptr<MockDtoReader> mockDtoReader = make_shared<MockDtoReader>();
 	const shared_ptr<MockFileReader> mockFileReader = make_shared<MockFileReader>();
@@ -64,7 +63,7 @@ TEST_F(DocumentSaverTest, isModifiedAfterSave) {
 
 TEST_F(DocumentSaverTest, load) {
 	const string documentDtoAsText = "asdfghjkl";
-	const DocumentDTO expectedDocumentDto = Dto2ObjectTest::DocumentSample4().getDto();
+	const DocumentDTO expectedDocumentDto = Dto2ObjectTestSamples::DocumentSample4().getDto();
 
 	const shared_ptr<MockDtoReader> mockDtoReader = make_shared<MockDtoReader>();
 	const shared_ptr<MockFileReader> mockFileReader = make_shared<MockFileReader>();
@@ -82,9 +81,9 @@ TEST_F(DocumentSaverTest, load) {
 
 TEST_F(DocumentSaverTest, save) {
 	const string documentDtoAsText = "123456789";
-	const DocumentDTO documentDto = Dto2ObjectTest::DocumentSample4().getDto();
+	const DocumentDTO documentDto = Dto2ObjectTestSamples::DocumentSample4().getDto();
 
-	irrigationDocument->updateFromDocumentDto(ProgramImplFactory::Builder().build(), Dto2ObjectTest::DocumentSample4().getDto());
+	irrigationDocument->updateFromDocumentDto(ProgramImplFactory::Builder().build(), Dto2ObjectTestSamples::DocumentSample4().getDto());
 	irrigationDocument->setModified(true);
 
 	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(documentDto))

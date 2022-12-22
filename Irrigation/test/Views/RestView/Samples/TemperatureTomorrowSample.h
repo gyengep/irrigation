@@ -4,7 +4,7 @@
 #include "SampleBase.h"
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	class TemperatureTomorrowSample : public Sample<TemperatureForecastDTO> {
 		const LocalDateTime now;

@@ -1,12 +1,12 @@
 #include "XmlReaderWriterTest.h"
-#include "Dto2Xml/TemperatureHistoryAndForecastSamples.h"
+#include "Samples/TemperatureHistoryAndForecastSamples.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(TemperatureHistoryAndForecastWriterTest, save) {
-	for (const auto& temperatureHistoryAndForecastSample : Dto2XmlTest::TemperatureHistoryAndForecastSampleList()) {
+	for (const auto& temperatureHistoryAndForecastSample : DtoReaderWriterTestSamples::TemperatureHistoryAndForecastSampleList()) {
 		const std::string actualXml = XmlWriter(false).save(
 				temperatureHistoryAndForecastSample.getDto().first,
 				temperatureHistoryAndForecastSample.getDto().second,

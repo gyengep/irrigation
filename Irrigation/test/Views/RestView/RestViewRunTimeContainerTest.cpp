@@ -7,7 +7,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 const IdType RestViewRunTimeContainerTest::programId(25);
-const Dto2XmlTest::RunTimeContainerSample RestViewRunTimeContainerTest::sample = Dto2XmlTest::RunTimeContainerSampleList().front();
+const RestViewTestSamples::RunTimeContainerSample RestViewRunTimeContainerTest::sample = RestViewTestSamples::RunTimeContainerSampleList().front();
 
 ///////////////////////////////////////////////////////////////////////////////
 

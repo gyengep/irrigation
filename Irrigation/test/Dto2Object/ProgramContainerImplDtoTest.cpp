@@ -1,5 +1,5 @@
 #include "Logic/ProgramContainerImpl.h"
-#include "Dto2Object/ProgramContainerSamples.h"
+#include "Samples/ProgramContainerSamples.h"
 #include "Mocks/MockProgram.h"
 #include <gmock/gmock.h>
 #include <memory>
@@ -9,7 +9,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramContainerImplDtoTest, toProgramContainerDtoList) {
-	const Dto2ObjectTest::ProgramContainerSampleList sampleList;
+	const Dto2ObjectTestSamples::ProgramContainerSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -23,9 +23,35 @@ TEST(ProgramContainerImplDtoTest, toProgramContainerDtoList) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(ProgramContainerImplDtoTest, createFromProgramDto) {
+	const Dto2ObjectTestSamples::ProgramSampleList programSampleList;
+	auto mockProgramFactory = std::make_shared<StrictMock<MockProgramFactory>>(programSampleList.size());
+
+	ASSERT_THAT(programSampleList, SizeIs(4));
+
+	ProgramContainerImpl programContainer(mockProgramFactory);
+
+	EXPECT_CALL(*mockProgramFactory, create()).Times(programSampleList.size());
+
+	for (size_t i = 0; i < programSampleList.size(); ++i) {
+		const ProgramDTO& programDto = programSampleList[i].getDto();
+
+		EXPECT_CALL(*mockProgramFactory->mockPrograms[i], updateFromProgramDto(programDto)).Times(1);
+
+		auto result = programContainer.createFromProgramDto(programDto);
+
+		const auto& id = result.first;
+
+		EXPECT_THAT(programContainer, SizeIs(i + 1));
+		EXPECT_THAT(programContainer.at(id), Eq(mockProgramFactory->mockPrograms[i]));
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void check(std::initializer_list<ProgramContainer::value_type> initializer) {
 
-	for (const auto& sample : Dto2ObjectTest::ProgramContainerSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::ProgramContainerSampleList()) {
 		const std::list<ProgramDTO>& actualProgramDtoList = sample.getDtoList();
 		const size_t size = actualProgramDtoList.size();
 

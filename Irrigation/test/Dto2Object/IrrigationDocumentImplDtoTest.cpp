@@ -1,5 +1,5 @@
 #include "Model/IrrigationDocumentImpl.h"
-#include "Dto2Object/DocumentSamples.h"
+#include "Samples/DocumentSamples.h"
 #include "Mocks/MockProgramContainer.h"
 #include "Mocks/MockWateringController.h"
 #include <gmock/gmock.h>
@@ -10,7 +10,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(IrrigationDocumentImplToDtoTest, toIrrigationDocumentDto) {
-	const Dto2ObjectTest::DocumentSampleList sampleList;
+	const Dto2ObjectTestSamples::DocumentSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
@@ -40,7 +40,7 @@ void check(const DocumentDtoUpdateType updateType) {
 		nullptr
 	);
 
-	for (const auto& sample : Dto2ObjectTest::DocumentSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::DocumentSampleList()) {
 		DocumentDTO actualDocumentDTO;
 
 		if (DocumentDtoUpdateType::ProgramContainer == updateType || DocumentDtoUpdateType::All == updateType) {

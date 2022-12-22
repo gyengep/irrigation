@@ -3,7 +3,7 @@
 #include <memory>
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	template<class DTO>
 	class Sample {

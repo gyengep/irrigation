@@ -14,7 +14,7 @@ class RestViewProgramTest : public RestViewTest {
 public:
 
 	static const IdType programId;
-	static const Dto2XmlTest::ProgramSample sample;
+	static const RestViewTestSamples::ProgramSample sample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 	std::shared_ptr<MockProgram> mockProgram;

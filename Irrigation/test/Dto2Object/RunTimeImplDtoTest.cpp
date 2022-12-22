@@ -1,5 +1,5 @@
 #include "Logic/RunTimeImpl.h"
-#include "Dto2Object/RunTimeSamples.h"
+#include "Samples/RunTimeSamples.h"
 #include <gmock/gmock.h>
 #include <memory>
 
@@ -8,7 +8,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(RunTimeImplToDtoTest, toRunTimeDto) {
-	const Dto2ObjectTest::RunTimeSampleList sampleList;
+	const Dto2ObjectTestSamples::RunTimeSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(6));
 
@@ -38,7 +38,7 @@ void check(const RunTimeDtoUpdateType updateType, unsigned seconds) {
 	unsigned expectedMinutes = seconds / 60;
 	unsigned expectedSeconds = seconds % 60;
 
-	for (const auto& sample : Dto2ObjectTest::RunTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::RunTimeSampleList()) {
 		RunTimeDTO actualRunTimeDTO;
 
 		if (RunTimeDtoUpdateType::Minutes == updateType) {
@@ -67,7 +67,7 @@ void check(const RunTimeDtoUpdateType updateType, unsigned seconds) {
 }
 
 TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_empty) {
-	for (const auto& sample : Dto2ObjectTest::RunTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::RunTimeSampleList()) {
 		const RunTimeImpl& actual = sample.getObject();
 
 		check(RunTimeDtoUpdateType::Nothing,
@@ -77,7 +77,7 @@ TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_empty) {
 }
 
 TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_minutes) {
-	for (const auto& sample : Dto2ObjectTest::RunTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::RunTimeSampleList()) {
 		const RunTimeImpl& actual = sample.getObject();
 
 		check(RunTimeDtoUpdateType::Minutes,
@@ -87,7 +87,7 @@ TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_minutes) {
 }
 
 TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_seconds) {
-	for (const auto& sample : Dto2ObjectTest::RunTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::RunTimeSampleList()) {
 		const RunTimeImpl& actual = sample.getObject();
 
 		check(RunTimeDtoUpdateType::Minutes,
@@ -97,7 +97,7 @@ TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_seconds) {
 }
 
 TEST(RunTimeImplFromDtoTest, updateFromRunTimeDto_all) {
-	for (const auto& sample : Dto2ObjectTest::RunTimeSampleList()) {
+	for (const auto& sample : Dto2ObjectTestSamples::RunTimeSampleList()) {
 		const RunTimeImpl& actual = sample.getObject();
 
 		check(RunTimeDtoUpdateType::All,

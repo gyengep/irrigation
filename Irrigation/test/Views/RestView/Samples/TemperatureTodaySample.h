@@ -5,7 +5,7 @@
 #include "SampleBase.h"
 
 
-namespace Dto2XmlTest {
+namespace RestViewTestSamples {
 
 	class TemperatureTodaySample  : public Sample<std::pair<TemperatureHistoryDTO, TemperatureForecastDTO>> {
 		const LocalDateTime now;
