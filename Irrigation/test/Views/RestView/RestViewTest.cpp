@@ -5,6 +5,10 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+const std::string RestViewTest::defaultDateTimeFormat("%a, %d %b %G %H:%M:%S %z");
+
+///////////////////////////////////////////////////////////////////////////////
+
 void RestViewTest::SetUp() {
 
 	mockIrrigationDocument = std::make_shared<StrictMock<MockIrrigationDocument>>();

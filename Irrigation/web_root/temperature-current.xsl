@@ -15,7 +15,7 @@
 					<div class="w3-bar-item w3-right"><xsl:value-of select="temperature/datetime"/></div>
 				</div>
 				
-				<div class="w3-center w3-jumbo"><xsl:value-of select="temperature/value"/>&#8451;</div>
+				<div class="w3-center w3-jumbo"><xsl:value-of select="temperature/value"/><xsl:value-of select="temperature/unit"/></div>
 					
 			</body>
 		</html>

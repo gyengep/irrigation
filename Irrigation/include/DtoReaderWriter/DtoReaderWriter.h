@@ -9,6 +9,9 @@
 #include "DTO/EveryDaySchedulerDTO.h"
 #include "DTO/HotWeatherSchedulerDTO.h"
 #include "DTO/TemperatureDependentSchedulerDTO.h"
+#include "DTO/TemperatureCurrentDTO.h"
+#include "DTO/TemperatureHistoryDTO.h"
+#include "DTO/TemperatureForecastDTO.h"
 #include "DTO/WeeklySchedulerDTO.h"
 
 
@@ -33,6 +36,9 @@ public:
 class DtoWriter {
 public:
 	virtual ~DtoWriter() = default;
+
+	virtual std::string getContentType() const = 0;
+
 	virtual std::string save(const DocumentDTO& document) = 0;
 	virtual std::string save(const ProgramDTO& program) = 0;
 	virtual std::string save(const RunTimeDTO& runTime) = 0;
@@ -45,6 +51,11 @@ public:
 	virtual std::string save(const std::list<RunTimeDTO>& runTimes) = 0;
 	virtual std::string save(const std::list<StartTimeDTO>& startTimes) = 0;
 	virtual std::string save(const SchedulersDTO& scheduler) = 0;
+
+	virtual std::string save(const TemperatureCurrentDTO& temperatureCurrent, const std::string& styleSheet) = 0;
+	virtual std::string save(const TemperatureHistoryDTO& temperatureHistory, const std::string& styleSheet) = 0;
+	virtual std::string save(const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) = 0;
+	virtual std::string save(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) = 0;
 
 	virtual std::string save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) = 0;
 	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) = 0;

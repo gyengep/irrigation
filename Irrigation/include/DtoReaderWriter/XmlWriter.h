@@ -14,6 +14,8 @@ protected:
 
 	const bool humanReadable;
 
+	void prependStyleSheet(pugi::xml_node* parent, const std::string& styleSheet);
+
 	void saveDocument(pugi::xml_node* parent, const DocumentDTO& document);
 	void saveProgram(pugi::xml_node* parent, const ProgramDTO& program, bool includeContainers);
 	void saveRunTime(pugi::xml_node* parent, const RunTimeDTO& runTime);
@@ -26,10 +28,15 @@ protected:
 	void saveRunTimeList(pugi::xml_node* parent, const std::list<RunTimeDTO>& runTimes);
 	void saveStartTimeList(pugi::xml_node* parent, const std::list<StartTimeDTO>& startTimes);
 	void saveSchedulers(pugi::xml_node* parent, const SchedulersDTO& schedulers);
+	void saveTemperatureCurrent(pugi::xml_node* parent, const TemperatureCurrentDTO& temperatureCurrent);
+	void saveTemperatureForecast(pugi::xml_node* parent, const TemperatureForecastDTO& temperatureForecast);
+	void saveTemperatureHistory(pugi::xml_node* parent, const TemperatureHistoryDTO& temperatureHistory);
 
 public:
 	XmlWriter(bool humanReadable = true);
 	virtual ~XmlWriter() = default;
+
+	virtual std::string getContentType() const override;
 
 	virtual std::string save(const DocumentDTO& document) override;
 	virtual std::string save(const ProgramDTO& program) override;
@@ -43,6 +50,11 @@ public:
 	virtual std::string save(const std::list<RunTimeDTO>& runTimes) override;
 	virtual std::string save(const std::list<StartTimeDTO>& startTimes) override;
 	virtual std::string save(const SchedulersDTO& schedulers) override;
+
+	virtual std::string save(const TemperatureCurrentDTO& temperatureCurrent, const std::string& styleSheet) override;
+	virtual std::string save(const TemperatureHistoryDTO& temperatureHistory, const std::string& styleSheet) override;
+	virtual std::string save(const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) override;
+	virtual std::string save(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) override;
 
 	virtual std::string save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) override;
 	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) override;

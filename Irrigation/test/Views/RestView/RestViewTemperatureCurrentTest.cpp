@@ -24,8 +24,7 @@ std::string RestViewTemperatureCurrentTest::createTemperatureCurrentUrl(const st
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTemperatureCurrentTest, get) {
-	EXPECT_CALL(*mockTimefunc, getTime()).Times(AnyNumber()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(1).WillOnce(Return(sample.getValue()));
+	EXPECT_CALL(*mockCurrentTemperature, toTemperatureCurrentDTO(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET(createTemperatureCurrentUrl()),
@@ -34,8 +33,7 @@ TEST_F(RestViewTemperatureCurrentTest, get) {
 }
 
 TEST_F(RestViewTemperatureCurrentTest, get_WithAcceptHeader) {
-	EXPECT_CALL(*mockTimefunc, getTime()).Times(AnyNumber()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(1).WillOnce(Return(sample.getValue()));
+	EXPECT_CALL(*mockCurrentTemperature, toTemperatureCurrentDTO(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createTemperatureCurrentUrl()),
@@ -44,22 +42,15 @@ TEST_F(RestViewTemperatureCurrentTest, get_WithAcceptHeader) {
 }
 
 TEST_F(RestViewTemperatureCurrentTest, get_WithDatetimeFormat) {
-	EXPECT_CALL(*mockTimefunc, getTime()).Times(AnyNumber()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(2).WillRepeatedly(Return(sample.getValue()));
+	EXPECT_CALL(*mockCurrentTemperature, toTemperatureCurrentDTO("abc")).Times(1).WillOnce(Return(sample.getDto()));
+	GET(createTemperatureCurrentUrl("datetime-format=abc"));
 
-	checkResponse_200_OK(
-			GET(createTemperatureCurrentUrl(sample.getDateTimeFormatAndXml(0).first)),
-			prependXmlAndStyleSheetHeader(sample.getDateTimeFormatAndXml(0).second, styleSheetFile)
-		);
-
-	checkResponse_200_OK(
-			GET(createTemperatureCurrentUrl(sample.getDateTimeFormatAndXml(1).first)),
-			prependXmlAndStyleSheetHeader(sample.getDateTimeFormatAndXml(1).second, styleSheetFile)
-		);
+	EXPECT_CALL(*mockCurrentTemperature, toTemperatureCurrentDTO("%a %b")).Times(1).WillOnce(Return(sample.getDto()));
+	GET(createTemperatureCurrentUrl("datetime-format=%a %b"));
 }
 
 TEST_F(RestViewTemperatureCurrentTest, get_NotFound) {
-	EXPECT_CALL(*mockCurrentTemperature, getCurrentTemperature()).Times(1).WillOnce(Throw(TemperatureException("")));
+	EXPECT_CALL(*mockCurrentTemperature, toTemperatureCurrentDTO(defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
 
 	checkResponse_404_Not_Found(
 			GET(createTemperatureCurrentUrl())

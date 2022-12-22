@@ -1,9 +1,9 @@
 #pragma once
 #include "Samples/TemperatureCurrentSample.h"
-#include "RestViewTemperatureTestBase.h"
+#include "RestViewTest.h"
 
 
-class RestViewTemperatureCurrentTest : public RestViewTemperatureTestBase {
+class RestViewTemperatureCurrentTest : public RestViewTest {
 protected:
 
 	static const Dto2XmlTest::TemperatureCurrentSample sample;

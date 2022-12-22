@@ -35,4 +35,6 @@ public:
 	virtual float getCurrentTemperature() const override;
 	virtual void addListener(CurrentTemperatureListener* currentTemperatureListener) override;
 	virtual void removeListener(CurrentTemperatureListener* currentTemperatureListener) override;
+
+	virtual TemperatureCurrentDTO toTemperatureCurrentDTO(const std::string& dateTimeFormat) const override;
 };

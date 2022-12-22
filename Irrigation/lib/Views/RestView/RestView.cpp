@@ -1,7 +1,6 @@
 #include "RestView.h"
 #include "RestService.h"
 #include "RestServiceException.h"
-#include "XmlTemperatureWriter.h"
 #include "XmlErrorWriter.h"
 #include "XmlLogWriter.h"
 #include "DtoReaderWriter/XmlReader.h"
@@ -58,7 +57,6 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	dtoReader.reset(new XmlReader());
 	dtoWriter.reset(new XmlWriter());
 	logWriter.reset(new XmlLogWriter());
-	temperatureWriter.reset(new XmlTemperatureWriter());
 
 	using namespace placeholders;
 

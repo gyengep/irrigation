@@ -147,6 +147,18 @@ TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(
 	return Values(minValue, maxValue);
 }
 
+TemperatureForecastDTO TemperatureForecastImpl::toTemperatureForecastDTO(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const {
+	const auto values = getTemperatureForecast(from, to);
+
+	return TemperatureForecastDTO(
+			LocalDateTime(from).toString(dateTimeFormat),
+			LocalDateTime(to).toString(dateTimeFormat),
+			"\xE2\x84\x83",
+			values.min,
+			values.max
+		);
+}
+
 const list<TemperatureForecastProvider::ValuesWithTimes> TemperatureForecastImpl::getContainer() const {
 	lock_guard<mutex> lock(mtx);
 	return values;

@@ -21,7 +21,7 @@ namespace Dto2XmlTest {
 			emplace_back(
 				TemperatureDependentSchedulerDTO().setRemainingCorrection(12.5f),
 				"<scheduler type=\"temperature-dependent\">"
-					"<remaining-correction>12.5</remaining-correction>"
+					"<remaining-correction>12.50</remaining-correction>"
 				"</scheduler>"
 			);
 
@@ -42,7 +42,7 @@ namespace Dto2XmlTest {
 			emplace_back(
 				TemperatureDependentSchedulerDTO(2.5f, 85, 86),
 				"<scheduler type=\"temperature-dependent\">"
-					"<remaining-correction>2.5</remaining-correction>"
+					"<remaining-correction>2.50</remaining-correction>"
 					"<min-adjustment>85</min-adjustment>"
 					"<max-adjustment>86</max-adjustment>"
 				"</scheduler>"

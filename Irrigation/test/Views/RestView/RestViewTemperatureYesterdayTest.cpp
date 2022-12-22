@@ -25,7 +25,7 @@ std::string RestViewTemperatureYesterdayTest::createTemperatureYesterdayUrl(cons
 
 TEST_F(RestViewTemperatureYesterdayTest, get) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getTo())).Times(1).WillOnce(Return(sample.getHistoryValues()));
+	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET(createTemperatureYesterdayUrl()),
@@ -35,7 +35,7 @@ TEST_F(RestViewTemperatureYesterdayTest, get) {
 
 TEST_F(RestViewTemperatureYesterdayTest, get_WithAcceptHeader) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getTo())).Times(1).WillOnce(Return(sample.getHistoryValues()));
+	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createTemperatureYesterdayUrl()),
@@ -45,22 +45,17 @@ TEST_F(RestViewTemperatureYesterdayTest, get_WithAcceptHeader) {
 
 TEST_F(RestViewTemperatureYesterdayTest, get_WithDatetimeFormat) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getTo())).Times(2).WillRepeatedly(Return(sample.getHistoryValues()));
 
-	checkResponse_200_OK(
-			GET(createTemperatureYesterdayUrl(sample.getDateTimeFormatAndXml(0).first)),
-			prependXmlAndStyleSheetHeader(sample.getDateTimeFormatAndXml(0).second, styleSheetFile)
-		);
+	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), "abc")).Times(1).WillOnce(Return(sample.getDto()));
+	GET(createTemperatureYesterdayUrl("datetime-format=abc"));
 
-	checkResponse_200_OK(
-			GET(createTemperatureYesterdayUrl(sample.getDateTimeFormatAndXml(1).first)),
-			prependXmlAndStyleSheetHeader(sample.getDateTimeFormatAndXml(1).second, styleSheetFile)
-		);
+	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), "%a %b")).Times(1).WillOnce(Return(sample.getDto()));
+	GET(createTemperatureYesterdayUrl("datetime-format=%a %b"));
 }
 
 TEST_F(RestViewTemperatureYesterdayTest, get_NotFound) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(sample.getFrom(), sample.getTo())).Times(1).WillOnce(Throw(TemperatureException("")));
+	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
 
 	checkResponse_404_Not_Found(
 			GET(createTemperatureYesterdayUrl())

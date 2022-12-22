@@ -16,6 +16,7 @@ class RestViewTest : public  testing::Test {
     static void checkResponseIsError(long responseCode, const AAA::Response& response);
 
 protected:
+    static const std::string defaultDateTimeFormat;
 	static const uint16_t port = 8080;
 
 	std::shared_ptr<MockIrrigationDocument> mockIrrigationDocument;

@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include "DTO/TemperatureCurrentDTO.h"
 #include "Utils/DateTime.h"
 
 
@@ -16,4 +18,6 @@ public:
 
 	virtual void addListener(CurrentTemperatureListener* currentTemperatureListener) = 0;
 	virtual void removeListener(CurrentTemperatureListener* currentTemperatureListener) = 0;
+
+	virtual TemperatureCurrentDTO toTemperatureCurrentDTO(const std::string& dateTimeFormat) const = 0;
 };

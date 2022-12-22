@@ -16,7 +16,6 @@ class HttpRequest;
 class DtoReader;
 class DtoWriter;
 class LogWriter;
-class TemperatureWriter;
 class IrrigationDocument;
 class CurrentTemperature;
 class TemperatureForecast;
@@ -38,7 +37,6 @@ class RestView : public View {
 	std::shared_ptr<DtoReader> dtoReader;
 	std::shared_ptr<DtoWriter> dtoWriter;
 	std::shared_ptr<LogWriter> logWriter;
-	std::shared_ptr<TemperatureWriter> temperatureWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters);
