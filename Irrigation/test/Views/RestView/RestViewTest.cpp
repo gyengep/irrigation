@@ -5,6 +5,10 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+const std::string RestViewTest::defaultDateTimeFormat("%a, %d %b %G %H:%M:%S %z");
+
+///////////////////////////////////////////////////////////////////////////////
+
 void RestViewTest::SetUp() {
 
 	mockIrrigationDocument = std::make_shared<StrictMock<MockIrrigationDocument>>();
@@ -87,28 +91,6 @@ AAA::Response RestViewTest::POST_ContentType_Json(const std::string& url, const 
 		addHeader("Content-Type: application/json").
 		setBody(text).
 		execute();
-}
-
-std::string RestViewTest::stripXml(const std::string& text) {
-	std::ostringstream oss;
-    std::istringstream f(text);
-    std::string line;
-    while (std::getline(f, line)) {
-    	line.erase(0, line.find_first_not_of("\t"));
-   		oss << line;
-    }
-
-	return oss.str();
-}
-
-std::string RestViewTest::prependXmlHeader(const std::string& xml) {
-	static const std::string xmlHeader(R"(<?xml version="1.0"?>)");
-	return xmlHeader + xml;
-}
-
-std::string RestViewTest::prependXmlAndStyleSheetHeader(const std::string& xml, const std::string& xslFile) {
-	const std::string styleSheetPI(R"(<?xml-stylesheet type="text/xsl" href=")" + xslFile + R"("?>)");
-	return prependXmlHeader(styleSheetPI + xml);
 }
 
 void RestViewTest::checkResponse_200_OK(const AAA::Response& response, const std::string& expectedXml) {

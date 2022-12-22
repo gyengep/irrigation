@@ -1,7 +1,6 @@
 #include "RestView.h"
 #include "RestService.h"
 #include "RestServiceException.h"
-#include "XmlTemperatureWriter.h"
 #include "XmlErrorWriter.h"
 #include "XmlLogWriter.h"
 #include "DtoReaderWriter/XmlReader.h"
@@ -58,7 +57,6 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	dtoReader.reset(new XmlReader());
 	dtoWriter.reset(new XmlWriter());
 	logWriter.reset(new XmlLogWriter());
-	temperatureWriter.reset(new XmlTemperatureWriter());
 
 	using namespace placeholders;
 
@@ -84,7 +82,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/logs", bind(&RestView::onGetLogs, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/current", bind(&RestView::onGetTemperatureCurrent, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/current", bind(&RestView::onGetCurrentTemperature, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/yesterday", bind(&RestView::onGetTemperatureYesterday, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/today", bind(&RestView::onGetTemperatureToday, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/tomorrow", bind(&RestView::onGetTemperatureTomorrow, this, _1, _2));

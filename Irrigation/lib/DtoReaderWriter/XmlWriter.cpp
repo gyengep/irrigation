@@ -11,6 +11,10 @@ using namespace pugi;
 XmlWriter::XmlWriter(bool humanReadable) : humanReadable(humanReadable) {
 }
 
+std::string XmlWriter::getContentType() const {
+	return "application/xml";
+}
+
 string XmlWriter::toString(const xml_document* doc, bool humanReadable) {
 	ostringstream o;
 	if (humanReadable) {
@@ -22,6 +26,13 @@ string XmlWriter::toString(const xml_document* doc, bool humanReadable) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+void XmlWriter::prependStyleSheet(pugi::xml_node* parent, const std::string& styleSheet) {
+	xml_node processingInstructionNode = parent->prepend_child(node_pi);
+
+	processingInstructionNode.set_name("xml-stylesheet");
+	processingInstructionNode.set_value(std::string("type=\"text/xsl\" href=\"" + styleSheet + "\"").c_str());
+}
 
 void XmlWriter::saveDocument(xml_node* parent, const DocumentDTO& document) {
 	xml_node node = parent->append_child("irrigation");
@@ -199,6 +210,33 @@ void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDTO& 
 	}
 }
 
+void XmlWriter::saveCurrentTemperature(pugi::xml_node* parent, const CurrentTemperatureDTO& currentTemperature) {
+	xml_node node = parent->append_child("temperature");
+
+	node.append_child("value").text().set(static_cast<int>(currentTemperature.getValue()));
+	node.append_child("datetime").text().set(currentTemperature.getDateTime().c_str());
+	node.append_child("unit").text().set(currentTemperature.getUnit().c_str());
+}
+
+void XmlWriter::saveTemperatureForecast(pugi::xml_node* parent, const TemperatureForecastDTO& temperatureForecast) {
+	xml_node node = parent->append_child("forecast");
+
+	node.append_child("value-min").text().set(static_cast<int>(temperatureForecast.getMinValue()));
+	node.append_child("value-max").text().set(static_cast<int>(temperatureForecast.getMaxValue()));
+	node.append_child("datetime-from").text().set(temperatureForecast.getDateTimeFrom().c_str());
+	node.append_child("datetime-to").text().set(temperatureForecast.getDateTimeTo().c_str());
+}
+
+void XmlWriter::saveTemperatureHistory(pugi::xml_node* parent, const TemperatureHistoryDTO& temperatureHistory) {
+	xml_node node = parent->append_child("historical");
+
+	node.append_child("value-min").text().set(static_cast<int>(temperatureHistory.getMinValue()));
+	node.append_child("value-max").text().set(static_cast<int>(temperatureHistory.getMaxValue()));
+	node.append_child("value-avg").text().set(static_cast<int>(temperatureHistory.getAvgValue()));
+	node.append_child("datetime-from").text().set(temperatureHistory.getDateTimeFrom().c_str());
+	node.append_child("datetime-to").text().set(temperatureHistory.getDateTimeTo().c_str());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 string XmlWriter::save(const DocumentDTO& document) {
@@ -292,5 +330,49 @@ string XmlWriter::save(const TemperatureDependentSchedulerDTO& scheduler) {
 string XmlWriter::save(const WeeklySchedulerDTO& scheduler) {
 	unique_ptr<xml_document> doc(new xml_document());
 	saveWeeklyScheduler(doc.get(), scheduler);
+	return toString(doc.get(), humanReadable);
+}
+
+std::string XmlWriter::save(const CurrentTemperatureDTO& currentTemperature, const std::string& styleSheet) {
+	unique_ptr<xml_document> doc(new xml_document());
+	prependStyleSheet(doc.get(), styleSheet);
+
+	saveCurrentTemperature(doc.get(), currentTemperature);
+	return toString(doc.get(), humanReadable);
+}
+
+std::string XmlWriter::save(const TemperatureHistoryDTO& temperatureHistory, const std::string& styleSheet) {
+	unique_ptr<xml_document> doc(new xml_document());
+	prependStyleSheet(doc.get(), styleSheet);
+
+	xml_node temperatureNode = doc->append_child("temperature");
+	temperatureNode.append_child("unit").text().set(temperatureHistory.getUnit().c_str());
+
+	saveTemperatureHistory(&temperatureNode, temperatureHistory);
+	return toString(doc.get(), humanReadable);
+}
+
+std::string XmlWriter::save(const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) {
+	unique_ptr<xml_document> doc(new xml_document());
+
+	prependStyleSheet(doc.get(), styleSheet);
+
+	xml_node temperatureNode = doc->append_child("temperature");
+	temperatureNode.append_child("unit").text().set(temperatureForecast.getUnit().c_str());
+
+	saveTemperatureForecast(&temperatureNode, temperatureForecast);
+	return toString(doc.get(), humanReadable);
+}
+
+std::string XmlWriter::save(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) {
+	unique_ptr<xml_document> doc(new xml_document());
+
+	prependStyleSheet(doc.get(), styleSheet);
+
+	xml_node temperatureNode = doc->append_child("temperature");
+	temperatureNode.append_child("unit").text().set(temperatureForecast.getUnit().c_str());
+
+	saveTemperatureHistory(&temperatureNode, temperatureHistory);
+	saveTemperatureForecast(&temperatureNode, temperatureForecast);
 	return toString(doc.get(), humanReadable);
 }

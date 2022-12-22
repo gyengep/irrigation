@@ -8,6 +8,7 @@
 #include "Mocks/MockShutdownManager.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include "Mocks/MockTemperatureForecast.h"
+#include "TestCommon/XmlModify.h"
 #include "Response.h"
 
 
@@ -16,6 +17,7 @@ class RestViewTest : public  testing::Test {
     static void checkResponseIsError(long responseCode, const AAA::Response& response);
 
 protected:
+    static const std::string defaultDateTimeFormat;
 	static const uint16_t port = 8080;
 
 	std::shared_ptr<MockIrrigationDocument> mockIrrigationDocument;
@@ -30,10 +32,6 @@ protected:
     virtual void TearDown();
 
     static std::string createUrl(const std::string& path);
-
-    static std::string stripXml(const std::string& text);
-    static std::string prependXmlHeader(const std::string& xml);
-    static std::string prependXmlAndStyleSheetHeader(const std::string& xml, const std::string& xslFile);
 
     static AAA::Response DELETE(const std::string& url);
 

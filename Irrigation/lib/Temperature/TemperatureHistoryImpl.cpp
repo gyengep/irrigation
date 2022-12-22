@@ -67,6 +67,19 @@ TemperatureHistoryImpl::Values TemperatureHistoryImpl::getTemperatureHistory(con
 	return Values(minValue, maxValue, sum / samples.size());
 }
 
+TemperatureHistoryDTO TemperatureHistoryImpl::toTemperatureHistoryDTO(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const {
+	const auto values = getTemperatureHistory(from, to);
+
+	return TemperatureHistoryDTO(
+			LocalDateTime(from).toString(dateTimeFormat),
+			LocalDateTime(to).toString(dateTimeFormat),
+			"\xE2\x84\x83",
+			values.min,
+			values.max,
+			values.avg
+		);
+}
+
 void TemperatureHistoryImpl::onTemperatureUpdated(const DateTime& dateTime, float temperature) {
 	lock_guard<mutex> lock(mtx);
 

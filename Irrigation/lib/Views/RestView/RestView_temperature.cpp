@@ -1,7 +1,6 @@
 #include "RestView.h"
 #include "RestService.h"
 #include "RestServiceException.h"
-#include "XmlTemperatureWriter.h"
 #include "Logger/Logger.h"
 #include "Temperature/CurrentTemperature.h"
 #include "Temperature/TemperatureException.h"
@@ -19,15 +18,15 @@ std::string getDatetimeFormatParameter(const KeyValue& parameters) {
 	return it->second;
 }
 
-unique_ptr<HttpResponse> RestView::onGetTemperatureCurrent(const HttpRequest& request, const KeyValue& pathParameters) {
+unique_ptr<HttpResponse> RestView::onGetCurrentTemperature(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const float temperature = currentTemperature->getCurrentTemperature();
 		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
+		const auto dto = currentTemperature->toCurrentTemperatureDTO(datetimeFormat);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->currentToString(LocalDateTime::now().toString(datetimeFormat), temperature)).
-				addHeader("Content-Type", temperatureWriter->contentType()).
+				setBody(dtoWriter->save(dto, "/temperature-current.xsl")).
+				addHeader("Content-Type", dtoWriter->getContentType()).
 				build();
 
 	} catch (const TemperatureException& e) {
@@ -43,12 +42,13 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureYesterday(const HttpRequ
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(-1);
 		const LocalDateTime from(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
 		const LocalDateTime to(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
-		const auto historyValues = temperatureHistory->getTemperatureHistory(from, to);
+
+		const auto temperatureHistoryDto = temperatureHistory->toTemperatureHistoryDTO(from, to, datetimeFormat);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->yesterdayToString(from.toString(datetimeFormat), to.toString(datetimeFormat), historyValues)).
-				addHeader("Content-Type", temperatureWriter->contentType()).
+				setBody(dtoWriter->save(temperatureHistoryDto, "/temperature-yesterday.xsl")).
+				addHeader("Content-Type", dtoWriter->getContentType()).
 				build();
 
 	} catch (const TemperatureException& e) {
@@ -65,18 +65,13 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureToday(const HttpRequest&
 		const LocalDateTime from(now.getYears(), now.getMonths(), now.getDays(), 0, 0, 0);
 		const LocalDateTime to(now.getYears(), now.getMonths(), now.getDays(), 23, 59, 59);
 
-		const auto historyValues = temperatureHistory->getTemperatureHistory(from, now);
-		const auto forecastValues = temperatureForecast->getTemperatureForecast(now, to);
+		const auto temperatureHistoryDto = temperatureHistory->toTemperatureHistoryDTO(from, now, datetimeFormat);
+		const auto temperatureForecastDto = temperatureForecast->toTemperatureForecastDTO(now, to, datetimeFormat);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->todayToString(
-						from.toString(datetimeFormat),
-						now.toString(datetimeFormat),
-						to.toString(datetimeFormat),
-						historyValues,
-						forecastValues)).
-				addHeader("Content-Type", temperatureWriter->contentType()).
+				setBody(dtoWriter->save(temperatureHistoryDto, temperatureForecastDto, "/temperature-today.xsl")).
+				addHeader("Content-Type", dtoWriter->getContentType()).
 				build();
 
 	} catch (const TemperatureException& e) {
@@ -92,12 +87,13 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureTomorrow(const HttpReque
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(1);
 		const LocalDateTime from(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
 		const LocalDateTime to(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 23, 59, 59);
-		const auto forecastValues = temperatureForecast->getTemperatureForecast(from, to);
+
+		const auto temperatureForecastDto = temperatureForecast->toTemperatureForecastDTO(from, to, datetimeFormat);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(temperatureWriter->tomorrowToString(from.toString(datetimeFormat), to.toString(datetimeFormat), forecastValues)).
-				addHeader("Content-Type", temperatureWriter->contentType()).
+				setBody(dtoWriter->save(temperatureForecastDto, "/temperature-tomorrow.xsl")).
+				addHeader("Content-Type", dtoWriter->getContentType()).
 				build();
 
 	} catch (const TemperatureException& e) {

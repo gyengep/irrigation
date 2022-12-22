@@ -121,6 +121,14 @@ float CurrentTemperatureImpl::getCurrentTemperature() const {
 	return value;
 }
 
+CurrentTemperatureDTO CurrentTemperatureImpl::toCurrentTemperatureDTO(const std::string& dateTimeFormat) const {
+	return CurrentTemperatureDTO(
+			LocalDateTime::now().toString(dateTimeFormat),
+			"\xE2\x84\x83",
+			getCurrentTemperature()
+		);
+}
+
 void CurrentTemperatureImpl::addListener(CurrentTemperatureListener* currentTemperatureListener) {
 	lock_guard<mutex> lock(listenerMutex);
 	listeners.push_back(currentTemperatureListener);

@@ -30,6 +30,7 @@ public:
 	void stop();
 
 	virtual Values getTemperatureForecast(const DateTime& from, const DateTime& to) const override;
+	virtual TemperatureForecastDTO toTemperatureForecastDTO(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const override;
 
 	static void checkValueList(const std::list<TemperatureForecastProvider::ValuesWithTimes>& temperatures);
 

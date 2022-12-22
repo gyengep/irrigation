@@ -15,7 +15,7 @@
 					<div class="w3-bar-item w3-right"><xsl:value-of select="temperature/forecast/datetime-from"/></div>
 				</div>
 
-				<div class="w3-center w3-jumbo"><xsl:value-of select="temperature/forecast/value-min"/> / <xsl:value-of select="temperature/forecast/value-max"/>&#8451;</div>
+				<div class="w3-center w3-jumbo"><xsl:value-of select="temperature/forecast/value-min"/> / <xsl:value-of select="temperature/forecast/value-max"/><xsl:value-of select="temperature/unit"/></div>
 					
 			</body>
 		</html>

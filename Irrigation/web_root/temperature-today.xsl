@@ -43,7 +43,7 @@
 						</xsl:choose>
 					</xsl:variable>
 				
-					<xsl:copy-of select="$min-value"/> / <xsl:copy-of select="$max-value"/> &#8451;
+					<xsl:copy-of select="$min-value"/> / <xsl:copy-of select="$max-value"/> <xsl:value-of select="temperature/unit"/>
 				</div>
 					
 			</body> 

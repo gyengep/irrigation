@@ -1,6 +1,9 @@
 #pragma once
 #include <memory>
 #include "DocumentView/View.h"
+#include "Temperature/CurrentTemperature.h"
+#include "Temperature/TemperatureForecast.h"
+#include "Temperature/TemperatureHistory.h"
 #include "Utils/ShutdownManager.h"
 #include "WebServer/KeyValue.h"
 #include "XmlIrrigationActionReader.h"
@@ -16,11 +19,7 @@ class HttpRequest;
 class DtoReader;
 class DtoWriter;
 class LogWriter;
-class TemperatureWriter;
 class IrrigationDocument;
-class CurrentTemperature;
-class TemperatureForecast;
-class TemperatureHistory;
 
 
 class RestView : public View {
@@ -38,7 +37,6 @@ class RestView : public View {
 	std::shared_ptr<DtoReader> dtoReader;
 	std::shared_ptr<DtoWriter> dtoWriter;
 	std::shared_ptr<LogWriter> logWriter;
-	std::shared_ptr<TemperatureWriter> temperatureWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters);
@@ -62,7 +60,7 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onPatchReboot(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onPatchPoweroff(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetLogs(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetTemperatureCurrent(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetCurrentTemperature(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureYesterday(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureToday(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetTemperatureTomorrow(const HttpRequest& request, const KeyValue& pathParameters);
