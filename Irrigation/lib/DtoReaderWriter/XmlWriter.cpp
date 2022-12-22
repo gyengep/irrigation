@@ -251,12 +251,9 @@ string XmlWriter::save(const ProgramDTO& program) {
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) {
+string XmlWriter::save(const ProgramDTO& program, const std::string& styleSheet) {
 	unique_ptr<xml_document> doc(new xml_document());
-	xml_node processingInstructionNode = doc->prepend_child(node_pi);
-
-	processingInstructionNode.set_name(piName.c_str());
-	processingInstructionNode.set_value(piValue.c_str());
+	prependStyleSheet(doc.get(), styleSheet);
 
 	saveProgram(doc.get(), program, true);
 	return toString(doc.get(), humanReadable);
@@ -268,12 +265,9 @@ string XmlWriter::save(const list<ProgramDTO>& programs) {
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) {
+string XmlWriter::save(const list<ProgramDTO>& programs, const std::string& styleSheet) {
 	unique_ptr<xml_document> doc(new xml_document());
-	xml_node processingInstructionNode = doc->prepend_child(node_pi);
-
-	processingInstructionNode.set_name(piName.c_str());
-	processingInstructionNode.set_value(piValue.c_str());
+	prependStyleSheet(doc.get(), styleSheet);
 
 	saveProgramList(doc.get(), programs, false);
 	return toString(doc.get(), humanReadable);
@@ -354,7 +348,6 @@ std::string XmlWriter::save(const TemperatureHistoryDTO& temperatureHistory, con
 
 std::string XmlWriter::save(const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) {
 	unique_ptr<xml_document> doc(new xml_document());
-
 	prependStyleSheet(doc.get(), styleSheet);
 
 	xml_node temperatureNode = doc->append_child("temperature");
@@ -366,7 +359,6 @@ std::string XmlWriter::save(const TemperatureForecastDTO& temperatureForecast, c
 
 std::string XmlWriter::save(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) {
 	unique_ptr<xml_document> doc(new xml_document());
-
 	prependStyleSheet(doc.get(), styleSheet);
 
 	xml_node temperatureNode = doc->append_child("temperature");

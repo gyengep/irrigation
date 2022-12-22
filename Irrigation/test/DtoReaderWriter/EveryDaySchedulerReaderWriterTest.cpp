@@ -1,7 +1,8 @@
-#include "XmlReaderWriterTest.h"
+#include "DtoReaderWriter/XmlReader.h"
+#include "DtoReaderWriter/XmlWriter.h"
+#include "TestCommon/XmlModify.h"
 #include "Samples/EveryDaySchedulerSamples.h"
-#include <list>
-#include <string>
+#include <gmock/gmock.h>
 
 using namespace testing;
 
@@ -14,7 +15,7 @@ TEST(EveryDaySchedulerWriterTest, save) {
 
 	std::cout << actualXml << std::endl;
 
-	EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+	EXPECT_THAT(actualXml, Eq(prependXmlHeader(expectedXml)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -25,6 +25,6 @@ public:
 	MOCK_METHOD2(save, std::string(const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet));
 	MOCK_METHOD3(save, std::string(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet));
 
-	MOCK_METHOD3(save, std::string(const ProgramDTO& program, const std::string& piName, const std::string& piValue));
-	MOCK_METHOD3(save, std::string(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue));
+	MOCK_METHOD2(save, std::string(const ProgramDTO& program, const std::string& styleSheet));
+	MOCK_METHOD2(save, std::string(const std::list<ProgramDTO>& programs, const std::string& styleSheet));
 };

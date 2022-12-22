@@ -57,6 +57,6 @@ public:
 	virtual std::string save(const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) = 0;
 	virtual std::string save(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) = 0;
 
-	virtual std::string save(const ProgramDTO& program, const std::string& piName, const std::string& piValue) = 0;
-	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& piName, const std::string& piValue) = 0;
+	virtual std::string save(const ProgramDTO& program, const std::string& styleSheet) = 0;
+	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& styleSheet) = 0;
 };

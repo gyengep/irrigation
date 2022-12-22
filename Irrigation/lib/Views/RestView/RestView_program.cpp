@@ -25,12 +25,9 @@ unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, 
 		programDtoList = irrigationDocument.getProgramContainer().toProgramDtoList();
 	}
 
-	const std::string piName = "xml-stylesheet";
-	const std::string piValue = "type=\"text/xsl\" href=\"/programlist.xsl\"";
-
 	return HttpResponse::Builder().
 			setStatus(200, "OK").
-			setBody(dtoWriter->save(programDtoList, piName, piValue)).
+			setBody(dtoWriter->save(programDtoList, "/programlist.xsl")).
 			addHeader("Content-Type", "application/xml").
 			build();
 }
@@ -84,12 +81,9 @@ unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request, cons
 			programDto = irrigationDocument.getProgramContainer().at(programId)->toProgramDto();
 		}
 
-		const std::string piName = "xml-stylesheet";
-		const std::string piValue = "type=\"text/xsl\" href=\"/program.xsl\"";
-
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
-				setBody(dtoWriter->save(programDto, piName, piValue)).
+				setBody(dtoWriter->save(programDto, "/program.xsl")).
 				addHeader("Content-Type", "application/xml").
 				build();
 

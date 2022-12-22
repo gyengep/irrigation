@@ -1,7 +1,8 @@
-#include "XmlReaderWriterTest.h"
+#include "DtoReaderWriter/XmlReader.h"
+#include "DtoReaderWriter/XmlWriter.h"
+#include "TestCommon/XmlModify.h"
 #include "Samples/ProgramListSamples.h"
-#include <list>
-#include <string>
+#include <gmock/gmock.h>
 
 using namespace testing;
 
@@ -14,7 +15,18 @@ TEST(ProgramListWriterTest, save) {
 
 		std::cout << actualXml << std::endl;
 
-		EXPECT_THAT(remove_xml_tag(actualXml), Eq(expectedXml));
+		EXPECT_THAT(actualXml, Eq(prependXmlHeader(expectedXml)));
+	}
+}
+
+TEST(ProgramListWriterTest, saveWithStyleSheet) {
+	for (const auto& programSample : DtoReaderWriterTestSamples::ProgramListSampleList()) {
+		const std::string actualXml = XmlWriter(false).save(programSample.getDtoList(), "stylesheet_123");
+		const std::string expectedXml = programSample.getXmlWithoutContainers();
+
+		std::cout << actualXml << std::endl;
+
+		EXPECT_THAT(actualXml, Eq(prependXmlAndStyleSheetHeader(expectedXml, "stylesheet_123")));
 	}
 }
 

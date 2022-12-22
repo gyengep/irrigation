@@ -1,5 +1,8 @@
-#include "XmlReaderWriterTest.h"
+#include "DtoReaderWriter/XmlReader.h"
+#include "DtoReaderWriter/XmlWriter.h"
+#include "TestCommon/XmlModify.h"
 #include "Samples/TemperatureHistorySamples.h"
+#include <gmock/gmock.h>
 
 using namespace testing;
 
