@@ -359,6 +359,10 @@ std::string XmlWriter::save(const TemperatureForecastDTO& temperatureForecast, c
 }
 
 std::string XmlWriter::save(const TemperatureHistoryDTO& temperatureHistory, const TemperatureForecastDTO& temperatureForecast, const std::string& styleSheet) {
+	if (temperatureHistory.getUnit() != temperatureForecast.getUnit()) {
+		throw std::logic_error("temperatureHistory.unit() != temperatureForecast.unit()");
+	}
+
 	auto doc = createXmlDocument(styleSheet);
 
 	xml_node temperatureNode = doc->append_child("temperature");
