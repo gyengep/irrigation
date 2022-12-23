@@ -16,7 +16,7 @@ inline std::string stripXml(const std::string& text) {
 }
 
 inline std::string prependXmlHeader(const std::string& xml) {
-	static const std::string xmlHeader("<?xml version=\"1.0\"?>");
+	static const std::string xmlHeader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 	return xmlHeader + xml;
 }
 

@@ -11,10 +11,10 @@ namespace pugi {
 class XmlWriter : public DtoWriter {
 protected:
 	static std::string toString(const pugi::xml_document* doc, bool humanReadable);
+	static std::unique_ptr<pugi::xml_document> createXmlDocument();
+	static std::unique_ptr<pugi::xml_document> createXmlDocument(const std::string& styleSheet);
 
 	const bool humanReadable;
-
-	void prependStyleSheet(pugi::xml_node* parent, const std::string& styleSheet);
 
 	void saveDocument(pugi::xml_node* parent, const DocumentDTO& document);
 	void saveProgram(pugi::xml_node* parent, const ProgramDTO& program, bool includeContainers);
