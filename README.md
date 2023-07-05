@@ -1,3 +1,12 @@
+- apt update
+- apt upgrade
+- apt install wiringpi
+- apt install git-all
+- apt install libmicrohttpd-dev (0.9.62)
+- apt install libcurl4-openssl-dev  (7.64.0)
+- apt install libssl-dev (1.1.1n)
+
+
 Disable eth0:
 sudo ifconfig eth0 down
 
