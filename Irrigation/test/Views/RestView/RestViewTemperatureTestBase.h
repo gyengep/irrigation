@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <gmock/gmock.h>
-#include "Mocks/MockTimeFunc.h"
+#include "Mocks/MockTimefunc.h"
 #include "RestViewTest.h"
 
 
