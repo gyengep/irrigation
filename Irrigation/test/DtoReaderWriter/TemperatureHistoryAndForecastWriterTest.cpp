@@ -1,4 +1,3 @@
-#include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "TestCommon/XmlModify.h"
 #include "Samples/TemperatureHistoryAndForecastSamples.h"

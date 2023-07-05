@@ -18,7 +18,6 @@ class HttpResponse;
 class HttpRequest;
 class DtoReader;
 class DtoWriter;
-class LogWriter;
 class IrrigationDocument;
 
 
@@ -36,7 +35,6 @@ class RestView : public View {
 	std::unique_ptr<WebServer> webServer;
 	std::shared_ptr<DtoReader> dtoReader;
 	std::shared_ptr<DtoWriter> dtoWriter;
-	std::shared_ptr<LogWriter> logWriter;
 
 	std::unique_ptr<HttpResponse> onGetProgram(const HttpRequest& request, const KeyValue& pathParameters);
 	std::unique_ptr<HttpResponse> onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters);
