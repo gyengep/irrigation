@@ -9,7 +9,7 @@
 class OWMWrapper : public TemperatureForecastProvider, public CurrentTemperatureProvider {
 	static const std::string currentUrl;
 	static const std::string forecastUrl;
-	static const std::string location;
+	static const std::string lat, lon;
 	static const std::string appid;
 
 	std::shared_ptr<NetworkReader> networkReader;

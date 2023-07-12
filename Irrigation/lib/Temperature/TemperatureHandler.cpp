@@ -1,6 +1,6 @@
 #include "TemperatureHandler.h"
 #include "DS18B20Wrapper.h"
-#include "DarkSkyWrapper.h"
+#include "OWMWrapper.h"
 #include "CurrentTemperatureImpl.h"
 #include "TemperatureForecastImpl.h"
 #include "TemperatureHistoryImpl.h"
@@ -66,7 +66,7 @@ void TemperatureHandler::init(
 		);
 
 	forecast = make_shared<TemperatureForecastImpl>(
-			make_shared<DarkSkyWrapper>()
+			make_shared<OWMWrapper>()
 		);
 
 	historyRepository = std::make_shared<CsvTemperatureHistoryRepository>(
@@ -127,5 +127,5 @@ shared_ptr<CurrentTemperatureProvider> TemperatureHandler::createCurrentTemperat
 		LOGGER.warning("Can not initialize DS18B20 temperature sensor", e);
 	}
 
-	return make_shared<DarkSkyWrapper>();
+	return make_shared<OWMWrapper>();
 }

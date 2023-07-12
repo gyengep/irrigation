@@ -13,7 +13,8 @@ using namespace pugi;
 
 const string OWMWrapper::currentUrl("http://api.openweathermap.org/data/2.5/weather");
 const string OWMWrapper::forecastUrl("http://api.openweathermap.org/data/2.5/forecast");
-const string OWMWrapper::location("dunakeszi,hu");
+const string OWMWrapper::lat("47.63641");
+const string OWMWrapper::lon("19.13864");
 const string OWMWrapper::appid("4560b35d4d7cfa41e7cdf944ddf59a58");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,7 +43,8 @@ std::string OWMWrapper::getForecastProviderName() const {
 float OWMWrapper::readCurrentTemperature() const {
 	ostringstream oss;
 	oss << currentUrl << "?";
-	oss << "q=" << location << "&";
+	oss << "lat=" << lat << "&";
+	oss << "lon=" << lon << "&";
 	oss << "appid=" << appid << "&";
 	oss << "mode=xml" << "&";
 	oss << "units=metric";
@@ -57,7 +59,8 @@ float OWMWrapper::readCurrentTemperature() const {
 list<TemperatureForecastProvider::ValuesWithTimes> OWMWrapper::readTemperatureForecast() const {
 	ostringstream oss;
 	oss << forecastUrl << "?";
-	oss << "q=" << location << "&";
+	oss << "lat=" << lat << "&";
+	oss << "lon=" << lon << "&";
 	oss << "appid=" << appid << "&";
 	oss << "mode=xml" << "&";
 	oss << "units=metric";
