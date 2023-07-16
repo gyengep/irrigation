@@ -7,7 +7,8 @@ LOG_FILE=$LOG_DIR/irrigation.log
 CFG_FILE=$APP_DIR/irrigation.xml
 SERVICE=/etc/init.d/irrigation_service
 WEB_ROOT_DIR=$APP_DIR/web_root
-
+UID=gyengep
+GID=gyengep
 	
 install_rpi() {
 	echo "install_rpi"
@@ -17,40 +18,40 @@ install_rpi() {
 	#################################
 	mkdir -p $APP_DIR
 	chmod 777 $APP_DIR
-	chown pi:pi $APP_DIR
+	chown $UID:$GID $APP_DIR
 	
 	# /usr/share/irrigation/irrigation
 	cp ./bin/irrigation $APP_FILE
 	chmod 544 $APP_FILE
-	chown pi:pi $APP_FILE
+	chown $UID:$GID $APP_FILE
 
 	# /usr/share/irrigation/irrigation.xml
 	cp --no-clobber ./data/irrigation.xml $CFG_FILE
 	chmod 644 $CFG_FILE
-	chown pi:pi $CFG_FILE
+	chown $UID:$GID $CFG_FILE
 	
 	#################################
 	# RESOURCES
 	#################################
 	mkdir -p $WEB_ROOT_DIR
 	chmod 777 $WEB_ROOT_DIR
-	chown pi:pi $WEB_ROOT_DIR
+	chown $UID:$GID $WEB_ROOT_DIR
 	
 	# /usr/share/irrigation/web_root/*
 	cp -f ./web_root/* $WEB_ROOT_DIR
 	chmod 444 $WEB_ROOT_DIR/*
-	chown pi:pi $WEB_ROOT_DIR/*
+	chown $UID:$GID $WEB_ROOT_DIR/*
 	
 	#################################
 	# LOGGING
 	#################################
 	mkdir -p $LOG_DIR
 	chmod 777 $LOG_DIR
-	chown pi:pi $LOG_DIR
+	chown $UID:$GID $LOG_DIR
 
 	touch $LOG_FILE
 	chmod 644 $LOG_FILE
-	chown pi:pi $LOG_FILE
+	chown $UID:$GID $LOG_FILE
 	
 	#################################
 	# SERVICE

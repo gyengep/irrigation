@@ -15,8 +15,8 @@ NAME=irrigation
 IRRIGATIOND=irrigation
 DAEMON=/usr/share/irrigation/irrigation
 PIDFILE=/var/run/irrigation.pid
-UID=pi
-GID=pi
+UID=gyengep
+GID=gyengep
 
 SCRIPTNAME=/etc/init.d/$NAME
 
