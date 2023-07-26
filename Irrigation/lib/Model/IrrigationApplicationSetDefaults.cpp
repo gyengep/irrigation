@@ -62,7 +62,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(std::chrono::minutes(15)),
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(20)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0))
 			})).
@@ -158,7 +158,7 @@ void IrrigationApplication::setMyDefaults() {
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
 				std::make_shared<RunTimeImpl>(std::chrono::minutes(0)),
-				std::make_shared<RunTimeImpl>(std::chrono::minutes(2))
+				std::make_shared<RunTimeImpl>(std::chrono::minutes(16))
 			})).
 			setStartTimeContainer(std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				{ IdType(), std::make_shared<StartTimeImpl>(7, 10) },
