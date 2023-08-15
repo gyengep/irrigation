@@ -34,14 +34,6 @@ using namespace std;
 	}
 
 
-Logger::Entry::Entry(const string& time, const string& thread, const string& level, const string& text) :
-	time(time),
-	thread(thread),
-	level(level),
-	text(text)
-{
-}
-
 string to_string(LogLevel logLevel) {
 	switch(logLevel) {
 	case LogLevel::OFF:
@@ -136,10 +128,10 @@ void Logger::log(LogLevel logLevel, const char* message, const exception* e) {
 			logEntries.pop_front();
 		}
 
-		(*output) << logEntries.back().time << " ";
-		(*output) << logEntries.back().thread << " ";
-		(*output) << to_string(logLevel) << ": ";
-		(*output) << message;
+		(*output) << logEntries.back().getTime() << " ";
+		(*output) << logEntries.back().getThread() << " ";
+		(*output) << logEntries.back().getLevel() << ": ";
+		(*output) << logEntries.back().getText();
 		(*output) << logException(e, 1);
 		(*output) << endl;
 		(*output).flush();
@@ -161,7 +153,7 @@ string Logger::getThread() {
 	return oss.str();
 }
 
-deque<Logger::Entry> Logger::getEntries() const {
+LogEntryDTOList Logger::getEntries() const {
 	lock_guard<mutex> lock(mtx);
 	return logEntries;
 }

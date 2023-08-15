@@ -13,6 +13,7 @@
 #include "DTO/TemperatureHistoryDTO.h"
 #include "DTO/TemperatureForecastDTO.h"
 #include "DTO/WeeklySchedulerDTO.h"
+#include "DTO/LogEntryDTO.h"
 
 
 class DtoReader {
@@ -59,4 +60,5 @@ public:
 
 	virtual std::string save(const ProgramDTO& program, const std::string& styleSheet) = 0;
 	virtual std::string save(const std::list<ProgramDTO>& programs, const std::string& styleSheet) = 0;
+	virtual std::string save(const LogEntryDTOList& logEntries, const std::string& styleSheet) = 0;
 };

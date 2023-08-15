@@ -1,10 +1,11 @@
 #include <gmock/gmock.h>
 #include <fstream>
+#include <iomanip>
+#include <thread>
 #include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 
-using namespace std;
-
+using namespace testing;
 
 
 #define LOG_ENTRY_ERROR 	"log_entry_error"
@@ -29,15 +30,15 @@ using namespace std;
 #define LOG_EXCEPTION_TRACE_INNER 		"log_exception_trace_inner"
 #define LOG_EXCEPTION_TRACE_OUTTER 		"log_exception_trace_outter"
 
-#define LOG_EXCEPTION(LOGGER_FUNC, MESSAGE, INNER, OUTTER)  \
-	try {													\
-		try {												\
-			throw runtime_error(INNER);						\
-		} catch (const exception& e) {						\
-			throw_with_nested(runtime_error(OUTTER));		\
-		}													\
-	} catch (const exception& e) {							\
-		LOGGER.LOGGER_FUNC(MESSAGE, e);						\
+#define LOG_EXCEPTION(LOGGER_FUNC, MESSAGE, INNER, OUTTER) 		\
+	try {														\
+		try {													\
+			throw std::runtime_error(INNER);					\
+		} catch (const std::exception& e) {						\
+			std::throw_with_nested(std::runtime_error(OUTTER));	\
+		}														\
+	} catch (const std::exception& e) {							\
+		LOGGER.LOGGER_FUNC(MESSAGE, e);							\
 	}
 
 
@@ -59,243 +60,243 @@ static void logExceptionsOnAllLevels() {
 
 
 TEST(LoggerTest, logTextOff) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::OFF);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_ERROR));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_WARNING));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logExceptionOff) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::OFF);
 
 	logExceptionsOnAllLevels();
 
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
 }
 
 TEST(LoggerTest, logTextError) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::ERROR);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_WARNING));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logExceptionError) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::ERROR);
 
 	logExceptionsOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
 }
 
 TEST(LoggerTest, logTextWarning) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::WARNING);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logExceptionWarning) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::WARNING);
 
 	logExceptionsOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
 }
 
 TEST(LoggerTest, logTextInfo) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::INFO);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_INFO));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logExceptionInfo) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::INFO);
 
 	logExceptionsOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
 }
 
 TEST(LoggerTest, logTextDebug) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::DEBUG);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_INFO));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_DEBUG));
-	EXPECT_EQ(string::npos, o->str().find(LOG_ENTRY_TRACE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logExceptionDebug) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::DEBUG);
 
 	logExceptionsOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
-	EXPECT_EQ(string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
+	EXPECT_EQ(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
 }
 
 TEST(LoggerTest, logTextTrace) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::TRACE);
 
 	logEntriesOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_ERROR));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_WARNING));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_INFO));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_DEBUG));
-	EXPECT_NE(string::npos, o->str().find(LOG_ENTRY_TRACE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_ERROR));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_WARNING));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_INFO));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_DEBUG));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_ENTRY_TRACE));
 }
 
 TEST(LoggerTest, logExceptionTrace) {
-	shared_ptr<ostringstream> o(new ostringstream);
+	std::shared_ptr<std::ostringstream> o = std::make_shared<std::ostringstream>();
 
 	LOGGER.setOutputStream(o);
 	LOGGER.setLevel(LogLevel::TRACE);
 
 	logExceptionsOnAllLevels();
 
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
-	EXPECT_NE(string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_ERROR_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_WARNING_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_INFO_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_DEBUG_OUTTER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_MESSAGE));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_INNER));
+	EXPECT_NE(std::string::npos, o->str().find(LOG_EXCEPTION_TRACE_OUTTER));
 }
 
 TEST(LoggerTest, getLevelText) {
@@ -362,13 +363,65 @@ TEST(LoggerTest, isLoggableTrace) {
 }
 
 TEST(LoggerTest, setFileName) {
-	string fileName = tmpnam(nullptr);
+	std::string fileName = tmpnam(nullptr);
 	EXPECT_NO_THROW(LOGGER.setFileName(fileName));
 
-	ifstream is(fileName);
+	std::ifstream is(fileName);
 	EXPECT_TRUE(is.good());
 }
 
 TEST(LoggerTest, setFileNameInvalid) {
 	EXPECT_THROW(LOGGER.setFileName("/////////"), IOException);
+}
+
+TEST(LoggerTest, toDto) {
+	struct tm timeinfo;
+
+	const time_t now1 = time(nullptr);
+
+	std::ostringstream now1Str;
+	now1Str << std::put_time(localtime_r(&now1, &timeinfo), "%Y.%m.%d %H:%M:%S");
+
+	LOGGER.setLevel(LogLevel::INFO);
+
+	LOGGER.error(LOG_ENTRY_ERROR);
+	void (Logger::*warningFunc)(const char* format, ...) = &Logger::warning;
+	void (Logger::*infoFunc)(const char* format, ...) = &Logger::info;
+
+	LOGGER.error(LOG_ENTRY_ERROR);
+	std::ostringstream oss0;
+	oss0 << std::setw(8) << std::setfill('0') << std::hex << std::showbase << std::this_thread::get_id();
+
+	std::thread t1(warningFunc, &LOGGER, LOG_ENTRY_WARNING);
+	std::ostringstream oss1;
+	oss1 << std::setw(8) << std::setfill('0') << std::hex << std::showbase << t1.get_id();
+	t1.join();
+
+	std::thread t2(infoFunc, &LOGGER, LOG_ENTRY_INFO);
+	std::ostringstream oss2;
+	oss2 << std::setw(8) << std::setfill('0') << std::hex << std::showbase << t2.get_id();
+	t2.join();
+
+	const time_t now2 = now1 + 1;
+	std::ostringstream now2Str;
+	now2Str << std::put_time(localtime_r(&now2, &timeinfo), "%Y.%m.%d %H:%M:%S");
+
+	const auto logEntryDTOList = LOGGER.getEntries();
+
+	EXPECT_THAT(logEntryDTOList, SizeIs(Ge(3)));
+
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getThread(), Eq(oss2.str()));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getLevel(), Eq("INFO"));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getText(), Eq(LOG_ENTRY_INFO));
+
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getThread(), Eq(oss1.str()));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getLevel(), Eq("WARNING"));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getText(), Eq(LOG_ENTRY_WARNING));
+
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getThread(), Eq(oss0.str()));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getLevel(), Eq("ERROR"));
+	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getText(), Eq(LOG_ENTRY_ERROR));
 }

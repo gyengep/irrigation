@@ -372,3 +372,19 @@ std::string XmlWriter::save(const TemperatureHistoryDTO& temperatureHistory, con
 	saveTemperatureForecast(&temperatureNode, temperatureForecast);
 	return toString(doc.get(), humanReadable);
 }
+
+std::string XmlWriter::save(const LogEntryDTOList& logEntries, const std::string& styleSheet) {
+	auto doc = createXmlDocument(styleSheet);
+
+	xml_node logEntriesListNode = doc->append_child("log_entries");
+	for (const auto& entry : logEntries) {
+		xml_node logEntryNode = logEntriesListNode.append_child("log_entry");
+
+		logEntryNode.append_child("time").text().set(entry.getTime().c_str());
+		logEntryNode.append_child("thread").text().set(entry.getThread().c_str());
+		logEntryNode.append_child("level").text().set(entry.getLevel().c_str());
+		logEntryNode.append_child("text").text().set(entry.getText().c_str());
+	}
+
+	return toString(doc.get(), humanReadable);
+}

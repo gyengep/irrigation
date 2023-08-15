@@ -2,7 +2,6 @@
 #include "RestService.h"
 #include "RestServiceException.h"
 #include "XmlErrorWriter.h"
-#include "XmlLogWriter.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
@@ -56,7 +55,6 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	webServer.reset(new WebServer(restService, port));
 	dtoReader.reset(new XmlReader());
 	dtoWriter.reset(new XmlWriter());
-	logWriter.reset(new XmlLogWriter());
 
 	using namespace placeholders;
 
@@ -191,8 +189,8 @@ unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const K
 unique_ptr<HttpResponse> RestView::onGetLogs(const HttpRequest& request, const KeyValue& pathParameters) {
 	return HttpResponse::Builder().
 			setStatus(200, "OK").
-			setBody(logWriter->toString(LOGGER.getEntries())).
-			addHeader("Content-Type", "application/xml").
+			setBody(dtoWriter->save(LOGGER.getEntries(), "/logs.xsl")).
+			addHeader("Content-Type", dtoWriter->getContentType()).
 			build();
 }
 

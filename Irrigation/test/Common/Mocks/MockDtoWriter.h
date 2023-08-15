@@ -27,4 +27,5 @@ public:
 
 	MOCK_METHOD2(save, std::string(const ProgramDTO& program, const std::string& styleSheet));
 	MOCK_METHOD2(save, std::string(const std::list<ProgramDTO>& programs, const std::string& styleSheet));
+	MOCK_METHOD2(save, std::string(const LogEntryDTOList& logEntries, const std::string& styleSheet));
 };

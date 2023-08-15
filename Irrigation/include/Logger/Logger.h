@@ -6,6 +6,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include "DTO/LogEntryDTO.h"
 
 
 #define LOGGER Logger::getInstance()
@@ -24,26 +25,11 @@ std::string to_string(LogLevel logLevel);
 
 
 class Logger {
-public:
-
-	struct Entry {
-		const std::string time;
-		const std::string thread;
-		const std::string level;
-		const std::string text;
-
-		Entry(const std::string& time,
-				const std::string& thread,
-				const std::string& level,
-				const std::string& text);
-	};
-
-private:
 	mutable std::mutex mtx;
 	std::atomic<LogLevel> logLevel;
 	std::shared_ptr<std::ostream> output_ptr;
 	std::ostream* output;
-	std::deque<Entry> logEntries;
+	LogEntryDTOList logEntries;
 
 	Logger();
 
@@ -76,5 +62,5 @@ public:
 	void debug(const char* format, ...);
 	void trace(const char* format, ...);
 
-	std::deque<Entry> getEntries() const;
+	LogEntryDTOList getEntries() const;
 };
