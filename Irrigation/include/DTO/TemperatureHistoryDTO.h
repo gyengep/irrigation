@@ -3,12 +3,12 @@
 
 
 class TemperatureHistoryDTO {
-	std::string datetimeFrom;
-	std::string datetimeTo;
-	std::string unit;
-	float minValue;
-	float maxValue;
-	float avgValue;
+	const std::string datetimeFrom;
+	const std::string datetimeTo;
+	const std::string unit;
+	const float minValue;
+	const float maxValue;
+	const float avgValue;
 
 public:
 	TemperatureHistoryDTO(const std::string& datetimeFrom, const std::string& datetimeTo, const std::string& unit, float minValue, float maxValue, float avgValue) :
