@@ -11,7 +11,7 @@ class DocumentSaver;
 
 class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
-	//std::shared_ptr<TemperatureHandler> temperature;
+	std::shared_ptr<TemperatureHandler> temperatureHandler;
 	std::unique_ptr<DocumentSaver> documentSaver;
 	std::shared_ptr<ShutdownManagerImpl> shutdownManager;
 	std::shared_ptr<EmailHandler> emailHandler;

@@ -6,10 +6,6 @@
 
 
 class SchedulerContainerImpl : public SchedulerContainer {
-public:
-	class Builder;
-
-private:
 	SchedulerContainer::container_type container;
 
 	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
@@ -52,10 +48,6 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class SchedulerContainerImplFactory : public SchedulerContainerFactory {
-public:
-	class Builder;
-
-private:
 	std::shared_ptr<EveryDaySchedulerFactory> everyDaySchedulerFactory;
 	std::shared_ptr<HotWeatherSchedulerFactory> hotWeatherSchedulerFactory;
 	std::shared_ptr<TemperatureDependentSchedulerFactory> temperatureDependentSchedulerFactory;

@@ -3,6 +3,8 @@
 #include "Model/DocumentSaver.h"
 #include "Model/IrrigationDocumentImpl.h"
 #include "Mocks/MockDtoReader.h"
+#include "Mocks/MockProgramContainer.h"
+#include "Mocks/MockWateringController.h"
 
 using namespace std;
 using namespace testing;
@@ -10,15 +12,23 @@ using namespace placeholders;
 
 
 void DocumentSaverTest::SetUp() {
-	irrigationDocument = IrrigationDocumentImpl::Builder().build();
-	mockDtoWriterFactory = make_shared<MockDtoWriterFactory>(make_shared<MockDtoWriter>());
-	mockFileWriterFactory = make_shared<MockFileWriterFactory>(make_shared<MockFileWriter>());
 
-	documentSaver.reset(new DocumentSaver(
+	mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
+
+	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
+			mockProgramContainer,
+			std::make_shared<MockWateringController>(),
+			nullptr
+		);
+
+	mockDtoWriterFactory = std::make_shared<StrictMock<MockDtoWriterFactory>>(std::make_shared<StrictMock<MockDtoWriter>>());
+	mockFileWriterFactory = std::make_shared<StrictMock<MockFileWriterFactory>>(std::make_shared<StrictMock<MockFileWriter>>());
+
+	documentSaver = std::make_shared<DocumentSaver>(
 		irrigationDocument,
 		mockDtoWriterFactory,
 		mockFileWriterFactory
-	));
+	);
 }
 
 void DocumentSaverTest::TearDown() {
@@ -26,12 +36,12 @@ void DocumentSaverTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/*
+
 TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 	irrigationDocument->setModified();
 
 	const string documentDtoAsText = "asdfghjkl";
-	const DocumentDTO expectedDocumentDto = Dto2ObjectTestSamples::DocumentSample4().getDto();
+	const DocumentDTO expectedDocumentDto;
 
 	const shared_ptr<MockDtoReader> mockDtoReader = make_shared<MockDtoReader>();
 	const shared_ptr<MockFileReader> mockFileReader = make_shared<MockFileReader>();
@@ -43,27 +53,14 @@ TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 			.WillOnce(Return(expectedDocumentDto));
 
 	irrigationDocument->setModified(true);
-	documentSaver->load(mockDtoReader, mockFileReader, ProgramImplFactory::Builder().build());
-
-	EXPECT_FALSE(irrigationDocument->isModified());
-}
-
-TEST_F(DocumentSaverTest, isModifiedAfterSave) {
-	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(A<const DocumentDTO&>()))
-			.Times(1);
-
-	EXPECT_CALL(*mockFileWriterFactory->mockFileWriter, write(_))
-			.Times(1);
-
-	irrigationDocument->setModified(true);
-	documentSaver->saveIfModified();
+	documentSaver->load(mockDtoReader, mockFileReader);
 
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
 TEST_F(DocumentSaverTest, load) {
 	const string documentDtoAsText = "asdfghjkl";
-	const DocumentDTO expectedDocumentDto = Dto2ObjectTestSamples::DocumentSample4().getDto();
+	const DocumentDTO expectedDocumentDto;
 
 	const shared_ptr<MockDtoReader> mockDtoReader = make_shared<MockDtoReader>();
 	const shared_ptr<MockFileReader> mockFileReader = make_shared<MockFileReader>();
@@ -76,15 +73,24 @@ TEST_F(DocumentSaverTest, load) {
 			.Times(1)
 			.WillOnce(Return(expectedDocumentDto));
 
-	documentSaver->load(mockDtoReader, mockFileReader, ProgramImplFactory::Builder().build());
+	documentSaver->load(mockDtoReader, mockFileReader);
 }
 
 TEST_F(DocumentSaverTest, save) {
-	const string documentDtoAsText = "123456789";
-	const DocumentDTO documentDto = Dto2ObjectTestSamples::DocumentSample4().getDto();
 
-	irrigationDocument->updateFromDocumentDto(ProgramImplFactory::Builder().build(), Dto2ObjectTestSamples::DocumentSample4().getDto());
+	const DocumentDTO documentDto(std::list<ProgramDTO>{
+		ProgramDTO(),
+		ProgramDTO(),
+		ProgramDTO()
+	});
+
+	const string documentDtoAsText = "123456789";
+
 	irrigationDocument->setModified(true);
+
+	EXPECT_CALL(*mockProgramContainer, toProgramDtoList())
+			.Times(1)
+			.WillOnce(Return(documentDto.getPrograms()));
 
 	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(documentDto))
 			.Times(1)
@@ -108,4 +114,3 @@ TEST_F(DocumentSaverTest, saveNotModified) {
 
 	documentSaver->saveIfModified();
 }
-*/

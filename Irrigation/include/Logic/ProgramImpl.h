@@ -11,10 +11,6 @@
 
 
 class ProgramImpl : public Program {
-public:
-	class Builder;
-
-private:
 	bool enabled;
 	std::string name;
 	unsigned adjustment;
@@ -73,10 +69,6 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class ProgramImplFactory : public ProgramFactory {
-public:
-	class Builder;
-
-private:
 	const std::shared_ptr<SchedulerContainerFactory> schedulerContainerFactory;
 	const std::shared_ptr<RunTimeContainerFactory> runTimeContainerFactory;
 	const std::shared_ptr<StartTimeContainerFactory> startTimeContainerFactory;

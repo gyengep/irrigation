@@ -12,10 +12,6 @@
 
 
 class IrrigationDocumentImpl : public IrrigationDocument {
-public:
-	class Builder;
-
-private:
 	const std::shared_ptr<ProgramContainer> programContainer;
 	const std::shared_ptr<WateringController> wateringController;
 	const std::shared_ptr<EmailHandler> emailHandler;
@@ -57,18 +53,4 @@ public:
 
 	nlohmann::json saveTo() const;
 	void loadFrom(const nlohmann::json& values);
-};
-
-class IrrigationDocumentImpl::Builder {
-	std::shared_ptr<ProgramContainer> programContainer;
-	std::shared_ptr<WateringController> wateringController;
-	std::shared_ptr<EmailHandler> emailHandler;
-
-public:
-
-	Builder& setProgramContainer(const std::shared_ptr<ProgramContainer>& programContainer);
-	Builder& setWateringController(const std::shared_ptr<WateringController>& wateringController);
-	Builder& setEmailHandler(const std::shared_ptr<EmailHandler>& emailHandler);
-
-	std::shared_ptr<IrrigationDocumentImpl> build();
 };

@@ -41,20 +41,7 @@ TemperatureHandler::TemperatureHistoryLoggerProperties::TemperatureHistoryLogger
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureHandler& TemperatureHandler::getInstance() {
-	static TemperatureHandler instance;
-	return instance;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TemperatureHandler::TemperatureHandler() {
-}
-
-TemperatureHandler::~TemperatureHandler() {
-}
-
-void TemperatureHandler::init(
+TemperatureHandler::TemperatureHandler(
 		const CurrentTemperatureProperties& currentTemperatureProperties,
 		const TemperatureForecastProperties& temperatureForecastProperties,
 		const TemperatureHistoryProperties& temperatureHistoryProperties,
@@ -92,7 +79,7 @@ void TemperatureHandler::init(
 	historyLogger->start();
 }
 
-void TemperatureHandler::uninit() {
+TemperatureHandler::~TemperatureHandler() {
 	historyLogger->stop();
 	history->unregisterFromListener();
 	historyRepository->save();

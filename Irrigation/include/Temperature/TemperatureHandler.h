@@ -24,8 +24,6 @@ class TemperatureHandler {
 
 	std::shared_ptr<CurrentTemperatureProvider> createCurrentTemperatureProvider();
 
-	TemperatureHandler();
-
 public:
 
 	struct CurrentTemperatureProperties {
@@ -56,19 +54,15 @@ public:
 		TemperatureHistoryLoggerProperties(const std::chrono::milliseconds& period, const std::string& fileName);
 	};
 
+	TemperatureHandler(
+		const CurrentTemperatureProperties& currentTemperatureProperties,
+		const TemperatureForecastProperties& temperatureForecastProperties,
+		const TemperatureHistoryProperties& temperatureHistoryProperties,
+		const TemperatureHistoryLoggerProperties& temperatureHistoryLoggerProperties
+	);
 	~TemperatureHandler();
 
 	const std::shared_ptr<CurrentTemperature> getCurrentTemperature() const;
 	const std::shared_ptr<TemperatureHistory> getTemperatureHistory() const;
 	const std::shared_ptr<TemperatureForecast> getTemperatureForecast() const;
-
-	void init(
-			const CurrentTemperatureProperties& currentTemperatureProperties,
-			const TemperatureForecastProperties& temperatureForecastProperties,
-			const TemperatureHistoryProperties& temperatureHistoryProperties,
-			const TemperatureHistoryLoggerProperties& temperatureHistoryLoggerProperties
-		);
-	void uninit();
-
-	static TemperatureHandler& getInstance();
 };

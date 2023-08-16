@@ -1,4 +1,6 @@
 #include "IrrigationDocumentImplTest.h"
+#include "Mocks/MockProgramContainer.h"
+#include "Mocks/MockWateringController.h"
 #include <thread>
 
 using namespace testing;
@@ -6,7 +8,11 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 void IrrigationDocumentImplTest::SetUp() {
-	irrigationDocument = IrrigationDocumentImpl::Builder().build();
+	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
+			std::make_shared<MockProgramContainer>(),
+			std::make_shared<MockWateringController>(),
+			nullptr
+		);
 }
 
 void IrrigationDocumentImplTest::TearDown() {

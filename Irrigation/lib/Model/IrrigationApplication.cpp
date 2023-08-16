@@ -7,8 +7,23 @@
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioValve.h"
+#include "Hardware/Valves/ZoneHandlerImpl.h"
+
 #include "Logger/Logger.h"
-#include "Logic/ProgramImplBuilder.h"
+
+#include "Logic/ProgramImpl.h"
+#include "Logic/RunTimeImpl.h"
+#include "Logic/StartTimeImpl.h"
+#include "Logic/ProgramContainerImpl.h"
+#include "Logic/RunTimeContainerImpl.h"
+#include "Logic/StartTimeContainerImpl.h"
+#include "Logic/SchedulerContainerImpl.h"
+#include "Logic/WateringControllerImpl.h"
+#include "Schedulers/EveryDaySchedulerImpl.h"
+#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/WeeklySchedulerImpl.h"
+
 #include "Utils/FileReaderWriterImpl.h"
 #include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
@@ -96,29 +111,29 @@ void IrrigationApplication::uninitShutdownManager() {
 
 void IrrigationApplication::initTemperature() {
 	try {
-		TemperatureHandler::getInstance().init(
-				TemperatureHandler::CurrentTemperatureProperties(
-						Configuration::getInstance().getCurrentTemperatureUpdatePeriod(),
-						std::vector<std::chrono::milliseconds> {
-							std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
-							std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
-						}
-					),
-				TemperatureHandler::TemperatureForecastProperties(
-						Configuration::getInstance().getTemperatureForecastUpdatePeriod(),
-						std::vector<std::chrono::milliseconds> {
-							std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
-							std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
-						}
-					),
-				TemperatureHandler::TemperatureHistoryProperties(
-						Configuration::getInstance().getTemperatureCacheLength(),
-						Configuration::getInstance().getTemperatureCacheFileName()
-					),
-				TemperatureHandler::TemperatureHistoryLoggerProperties(
-						Configuration::getInstance().getTemperatureHistoryPeriod(),
-						Configuration::getInstance().getTemperatureHistoryFileName()
-					)
+		temperatureHandler = std::make_shared<TemperatureHandler>(
+			TemperatureHandler::CurrentTemperatureProperties(
+					Configuration::getInstance().getCurrentTemperatureUpdatePeriod(),
+					std::vector<std::chrono::milliseconds> {
+						std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
+						std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
+					}
+				),
+			TemperatureHandler::TemperatureForecastProperties(
+					Configuration::getInstance().getTemperatureForecastUpdatePeriod(),
+					std::vector<std::chrono::milliseconds> {
+						std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
+						std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
+					}
+				),
+			TemperatureHandler::TemperatureHistoryProperties(
+					Configuration::getInstance().getTemperatureCacheLength(),
+					Configuration::getInstance().getTemperatureCacheFileName()
+				),
+			TemperatureHandler::TemperatureHistoryLoggerProperties(
+					Configuration::getInstance().getTemperatureHistoryPeriod(),
+					Configuration::getInstance().getTemperatureHistoryFileName()
+				)
 			);
 
 	} catch (const exception& e) {
@@ -128,16 +143,41 @@ void IrrigationApplication::initTemperature() {
 
 void IrrigationApplication::uninitTemperature() {
 	try {
-		TemperatureHandler::getInstance().uninit();
+		temperatureHandler.reset();
 	} catch (const exception& e) {
 		LOGGER.warning("An error during uninitialize temperature module", e);
 	}
 }
 
 void IrrigationApplication::initDocument() {
-	irrigationDocument = IrrigationDocumentImpl::Builder().
-			setEmailHandler(emailHandler).
-			build();
+
+	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
+			std::make_shared<ProgramContainerImpl>(
+				std::make_shared<ProgramImplFactory>(
+					std::make_shared<SchedulerContainerImplFactory>(
+						std::make_shared<EveryDaySchedulerImplFactory>(),
+						std::make_shared<HotWeatherSchedulerImplFactory>(
+							temperatureHandler->getTemperatureHistory()
+						),
+						std::make_shared<TemperatureDependentSchedulerImplFactory>(
+							temperatureHandler->getTemperatureForecast(),
+							temperatureHandler->getTemperatureHistory()
+						),
+						std::make_shared<WeeklySchedulerImplFactory>()
+					),
+					std::make_shared<RunTimeContainerImplFactory>(
+						std::make_shared<RunTimeImplFactory>()
+					),
+					std::make_shared<StartTimeContainerImplFactory>(
+						std::make_shared<StartTimeImplFactory>()
+					)
+				)
+			),
+			std::make_shared<WateringControllerImpl>(
+				std::make_shared<ZoneHandlerImpl>(GpioValve::getValves())
+			),
+			emailHandler
+	);
 
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,
@@ -173,9 +213,9 @@ void IrrigationApplication::initDocument() {
 	irrigationDocument->addView(unique_ptr<View>(new TimerView(*irrigationDocument)));
 	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument,
 			Configuration::getInstance().getRestPort(),
-			TemperatureHandler::getInstance().getCurrentTemperature(),
-			TemperatureHandler::getInstance().getTemperatureForecast(),
-			TemperatureHandler::getInstance().getTemperatureHistory(),
+			temperatureHandler->getCurrentTemperature(),
+			temperatureHandler->getTemperatureForecast(),
+			temperatureHandler->getTemperatureHistory(),
 			shutdownManager,
 			Configuration::getInstance().getResourceDirectory()
 		)));
