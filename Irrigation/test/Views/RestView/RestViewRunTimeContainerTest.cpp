@@ -96,6 +96,7 @@ TEST_F(RestViewRunTimeContainerTest, patch) {
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
 	EXPECT_CALL(*mockProgram, getRunTimeContainer()).Times(1).WillOnce(ReturnRef(*mockRunTimeContainer));
 	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(sample.getDtoList())).Times(1);
+	EXPECT_CALL(*mockRunTimeContainer, toString()).Times(1);
 
 	checkResponse_204_No_Content(
 			PATCH_ContentType_Xml(createRunTimeContainerUrl(programId), sample.getXml())

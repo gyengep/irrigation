@@ -76,6 +76,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/temperature-dependent", bind(&RestView::onPatchTemperatureDependentScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onGetWeeklyScheduler, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
+
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));

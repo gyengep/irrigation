@@ -119,6 +119,7 @@ TEST_F(RestViewStartTimeTest, patch) {
 	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1).WillOnce(ReturnRef(*mockStartTimeContainer));
 	EXPECT_CALL(*mockStartTimeContainer, at(startTimeId)).Times(1).WillOnce(Return(mockStartTime));
 	EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(sample.getDto())).Times(1);
+	EXPECT_CALL(*mockStartTime, toString()).Times(1);
 
 	checkResponse_204_No_Content(
 			PATCH_ContentType_Xml(createStartTimeUrl(programId, startTimeId), sample.getXml())

@@ -16,12 +16,7 @@ unique_ptr<HttpResponse> RestView::onGetTemperatureDependentScheduler(const Http
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		TemperatureDependentSchedulerDTO temperatureDependentSchedulerDto;
-
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			temperatureDependentSchedulerDto = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto();
-		}
+		const TemperatureDependentSchedulerDTO temperatureDependentSchedulerDto = getTemperatureDependentSchedulerDTO(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -44,23 +39,12 @@ unique_ptr<HttpResponse> RestView::onPatchTemperatureDependentScheduler(const Ht
 	try {
 		const IdType programId = getProgramId(pathParameters);
 		const TemperatureDependentSchedulerDTO temperatureDependentSchedulerDto = dtoReader->loadTemperatureDependentScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const std::string text = patchTemperatureDependentScheduler(irrigationDocument, programId, temperatureDependentSchedulerDto);
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			TemperatureDependentScheduler& temperatureDependentScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getTemperatureDependentScheduler();
-
-			irrigationDocument.setModified();
-			temperatureDependentScheduler.updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
-
-			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = temperatureDependentScheduler.toString();
-				lock.unlock();
-
-				LOGGER.debug("Program[%s].TemperatureDependentScheduler is modified: %s",
-						programId.toString().c_str(),
-						logText.c_str());
-			}
-		}
+		LOGGER.debug("Program[%s].TemperatureDependentScheduler is modified: %s",
+				programId.toString().c_str(),
+				text.c_str()
+			);
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

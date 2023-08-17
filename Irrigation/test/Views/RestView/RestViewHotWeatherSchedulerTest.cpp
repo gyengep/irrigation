@@ -100,6 +100,7 @@ TEST_F(RestViewHotWeatherSchedulerTest, patch) {
 	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
 	EXPECT_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).Times(1).WillOnce(ReturnRef(*mockHotWeatherScheduler));
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(sample.getDto())).Times(1);
+	EXPECT_CALL(*mockHotWeatherScheduler, toString()).Times(1);
 
 	checkResponse_204_No_Content(
 			PATCH_ContentType_Xml(createHotWeatherSchedulerUrl(programId), sample.getXml())

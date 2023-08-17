@@ -98,6 +98,7 @@ TEST_F(RestViewProgramTest, patch) {
 	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
 	EXPECT_CALL(*mockProgram, updateFromProgramDto(sample.getDto())).Times(1);
+	EXPECT_CALL(*mockProgram, toString()).Times(1);
 
 	checkResponse_204_No_Content(
 			PATCH_ContentType_Xml(createProgramUrl(programId), sample.getXml())

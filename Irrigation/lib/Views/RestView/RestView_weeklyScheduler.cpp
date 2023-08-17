@@ -16,12 +16,7 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		WeeklySchedulerDTO weeklySchedulerDto;
-
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			weeklySchedulerDto = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getWeeklyScheduler().toWeeklySchedulerDto();
-		}
+		const WeeklySchedulerDTO weeklySchedulerDto = getWeeklySchedulerDTO(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -44,23 +39,12 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 	try {
 		const IdType programId = getProgramId(pathParameters);
 		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const std::string text = patchWeeklyScheduler(irrigationDocument, programId, weeklySchedulerDto);
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			WeeklyScheduler& weeklyScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getWeeklyScheduler();
-
-			irrigationDocument.setModified();
-			weeklyScheduler.updateFromWeeklySchedulerDto(weeklySchedulerDto);
-
-			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = weeklyScheduler.toString();
-				lock.unlock();
-
-				LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
-						programId.toString().c_str(),
-						logText.c_str());
-			}
-		}
+		LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",
+				programId.toString().c_str(),
+				text.c_str()
+			);
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

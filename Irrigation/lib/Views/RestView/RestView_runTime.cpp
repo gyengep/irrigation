@@ -9,20 +9,13 @@
 #include "Logic/RunTimeContainer.h"
 #include "Model/IrrigationDocument.h"
 
-using namespace std;
 
-
-unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not retrieve runTime container";
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		list<RunTimeDTO> runTimeDtoList;
-
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			runTimeDtoList = irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer().toRunTimeDtoList();
-		}
+		const std::list<RunTimeDTO> runTimeDtoList = getRunTimeDTOList(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -39,29 +32,18 @@ unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& request, 
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not modify runTime container";
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const std::list<RunTimeDTO> runTimeDtoList = dtoReader->loadRunTimeList(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const std::string logText = patchRunTimeList(irrigationDocument, programId, runTimeDtoList);
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			RunTimeContainer& runTimes = irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer();
-
-			irrigationDocument.setModified();
-			runTimes.updateFromRunTimeDtoList(runTimeDtoList);
-
-			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = runTimes.toString();
-				lock.unlock();
-
-				LOGGER.debug("Program[%s].RunTimes are modified: %s",
-						programId.toString().c_str(),
-						logText.c_str());
-			}
-		}
+		LOGGER.debug("Program[%s].RunTimes are modified: %s",
+				programId.toString().c_str(),
+				logText.c_str()
+			);
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

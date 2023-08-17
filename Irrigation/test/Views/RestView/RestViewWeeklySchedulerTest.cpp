@@ -100,6 +100,7 @@ TEST_F(RestViewWeeklySchedulerTest, patch) {
 	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
 	EXPECT_CALL(*mockSchedulerContainer, getWeeklyScheduler()).Times(1).WillOnce(ReturnRef(*mockWeeklyScheduler));
 	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(sample.getDto())).Times(1);
+	EXPECT_CALL(*mockWeeklyScheduler, toString()).Times(1);
 
 	checkResponse_204_No_Content(
 			PATCH_ContentType_Xml(createWeeklySchedulerUrl(programId), sample.getXml())

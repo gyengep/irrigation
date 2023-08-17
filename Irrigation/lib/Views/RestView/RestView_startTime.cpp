@@ -9,8 +9,6 @@
 #include "Logic/StartTimeContainer.h"
 #include "Model/IrrigationDocument.h"
 
-using namespace std;
-
 
 IdType RestView::getStartTimeId(const KeyValue& pathParameters) {
 	return IdType::from_string(pathParameters.at("startTimeId"));
@@ -18,17 +16,12 @@ IdType RestView::getStartTimeId(const KeyValue& pathParameters) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not retrieve startTime container";
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		list<StartTimeDTO> startTimeDtoList;
-
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			startTimeDtoList = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().toStartTimeDtoList();
-		}
+		const std::list<StartTimeDTO> startTimeDtoList = getStartTimeDTOList(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -45,34 +38,23 @@ unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& request
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not create startTime container";
 
 	try {
-		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const IdType programId = getProgramId(pathParameters);
 
-		IdType startTimeId;
-		StartTimePtr startTime;
+		const auto result = postStartTimeList(irrigationDocument, programId, startTimeDto);
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.setModified();
-			const auto result = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().createFromStartTimeDto(startTimeDto);
+		const IdType startTimeId = result.first;
+		const std::string text = result.second;
 
-			startTimeId = result.first;
-			startTime = result.second;
-
-			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = startTime->toString();
-				lock.unlock();
-
-				LOGGER.debug("Program[%s].StartTime[%s] is added: %s",
-						programId.toString().c_str(),
-						startTimeId.toString().c_str(),
-						logText.c_str());
-			}
-		}
+		LOGGER.debug("Program[%s].StartTime[%s] is added: %s",
+				programId.toString().c_str(),
+				startTimeId.toString().c_str(),
+				text.c_str()
+			);
 
 		return HttpResponse::Builder().
 				setStatus(201, "Created").
@@ -93,18 +75,13 @@ unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& reques
 
 ///////////////////////////////////////////////////////////////////////////////
 
-unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not retrieve startTime";
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
 		const IdType startTimeId = getStartTimeId(pathParameters);
-		StartTimeDTO startTimeDto;
-
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			startTimeDto = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().at(startTimeId)->toStartTimeDto();
-		}
+		const StartTimeDTO startTimeDto = getStartTimeDTO(irrigationDocument, programId, startTimeId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -121,31 +98,21 @@ unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& request, co
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not modify startTime";
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
 		const IdType startTimeId = getStartTimeId(pathParameters);
-		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const StartTimeDTO startTimeDto = dtoReader->loadStartTime(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			shared_ptr<StartTime> startTime = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().at(startTimeId);
+		const std::string text = patchStartTime(irrigationDocument, programId, startTimeId, startTimeDto);
 
-			irrigationDocument.setModified();
-			startTime->updateFromStartTimeDto(startTimeDto);
-
-			if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-				const std::string logText = startTime->toString();
-				lock.unlock();
-
-				LOGGER.debug("Program[%s].StartTime[%s] is modified: %s",
-						programId.toString().c_str(),
-						startTimeId.toString().c_str(),
-						logText.c_str());
-			}
-		}
+		LOGGER.debug("Program[%s].StartTime[%s] is modified: %s",
+				programId.toString().c_str(),
+				startTimeId.toString().c_str(),
+				text.c_str()
+			);
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").
@@ -163,22 +130,19 @@ unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& request, 
 	}
 }
 
-unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& request, const KeyValue& pathParameters) {
 	static const char* logMessage = "Can not delete startTime";
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
 		const IdType startTimeId = getStartTimeId(pathParameters);
 
-		{
-			unique_lock<IrrigationDocument> lock(irrigationDocument);
-			irrigationDocument.setModified();
-			irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().erase(startTimeId);
-		}
+		deleteStartTime(irrigationDocument, programId, startTimeId);
 
 		LOGGER.debug("Program[%s].StartTime[%s] is deleted",
 				programId.toString().c_str(),
-				startTimeId.toString().c_str());
+				startTimeId.toString().c_str()
+			);
 
 		return HttpResponse::Builder().
 				setStatus(204, "No Content").

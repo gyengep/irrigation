@@ -100,6 +100,7 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, patch) {
 	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
 	EXPECT_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).Times(1).WillOnce(ReturnRef(*mockTemperatureDependentScheduler));
 	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(sample.getDto())).Times(1);
+	EXPECT_CALL(*mockTemperatureDependentScheduler, toString()).Times(1);
 
 	checkResponse_204_No_Content(
 			PATCH_ContentType_Xml(createTemperatureDependentSchedulerUrl(programId), sample.getXml())
