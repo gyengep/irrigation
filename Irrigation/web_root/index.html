@@ -81,6 +81,7 @@ function accord(id) {
 	
 		<div id="leftMenu" class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none">
 			<a id="leftMenu-Program" class="leftMenuItem w3-bar-item w3-button w3-leftbar w3-border-blue" onclick="closeLeftMenu(); markMenu('topMenu-Program', 'leftMenu-Program');" href="/api/v1/programs" target="frame"><img src="/program.png"/> Programs </a> 
+			<a id="leftMenu-Irrigation" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Irrigation', 'leftMenu-Irrigation');" href="/irrigation.xsl" target="frame"><img src="/irrigation.png"/> Irrigation </a> 
 			<a id="leftMenu-Log" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Log', 'leftMenu-Log');" href="/api/v1/logs" target="frame"><img src="/log.png"/> Logs </a> 
 
 			<button class="w3-bar-item w3-button w3-leftbar" onclick="accord('leftMenu-Temperature')">
@@ -105,6 +106,10 @@ function accord(id) {
 
 			<a id="topMenu-Program" class="topMenuItem w3-bar-item w3-button w3-bottombar w3-border-blue" onclick="markMenu('topMenu-Program', 'leftMenu-Program');" href="/api/v1/programs" target="frame">
 				<img src="/program.png"/> Programs
+			</a> 
+			
+			<a id="topMenu-Irrigation" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Irrigation', 'leftMenu-Irrigation');" href="/irrigation.xsl" target="frame">
+				<img src="/irrigation.png"/> Irrigation
 			</a> 
 			
 			<a id="topMenu-Log" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Log', 'leftMenu-Log');" href="/api/v1/logs" target="frame">

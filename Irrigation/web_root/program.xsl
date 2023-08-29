@@ -7,6 +7,19 @@
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 				<link rel="stylesheet" href="/w3.css"/>
 				<link rel="stylesheet" href="/my-styles.css"/>
+				<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+				<script src="/my-scripts.js"></script>
+				<script>
+					function startIrrigation_program() {
+					  const queryString = window.location.search;
+					  const urlParams = new URLSearchParams(queryString);
+					  
+					  console.log(queryString);
+					  console.log(urlParams);
+					  
+                      sendStartIrrigation_program('100', urlParams.get('programId'));
+					}
+				</script>			
 			</head>
 			<body class="my-container">
 					
@@ -42,7 +55,7 @@
 					</xsl:for-each>
 				</table>	
 
-				<table class="my-table w3-hoverable">
+				<table class="my-table w3-hoverable w3-border">
 					<div class="my-table-caption">Run Times (mm:ss)</div>
 					<xsl:for-each select="program/runtimes/runtime">
 						<xsl:variable name="i" select="position()"/>
@@ -54,6 +67,16 @@
 						</tr>
 					</xsl:for-each>
 				</table>
+
+				<div class="w3-row">
+					<div class="w3-col" style="width:50%">
+						<button class="w3-btn w3-light-gray w3-round w3-block w3-left" style="width:calc(100% - 8px)" onclick="startIrrigation_program()">Start</button>
+					</div>
+
+					<div class="w3-col" style="width:50%">
+						<button class="w3-btn w3-light-gray w3-round w3-block w3-right" style="width:calc(100% - 8px)" onclick="sendStopIrrigation()">Stop</button>
+					</div>
+				</div>
 
 			</body>
 		</html>

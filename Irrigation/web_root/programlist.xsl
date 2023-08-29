@@ -21,13 +21,10 @@
 						<tr>
 							<td class="w3-row">
 								
-								<div class="w3-col s11" onclick="window.location='/api/v1/programs/{$programId}'">
+								<div class="w3-col s11" onclick="window.location.href='/api/v1/programs/{$programId}?programId={$programId}'">
 									<div class="my-cell-caption"><xsl:value-of select="name"/></div>
 									<div class="my-cell-content"><xsl:value-of select="schedulertype"/> - <xsl:value-of select="format-number(adjustment*0.01, '#%')"/></div>
 								</div>
-								
-								<!-- <button class="w3-round" onclick="sendStart({$programId}, {$adjustment})">Start</button> 
-								-->
 									
 								<div class="w3-col s1">
 									<label class="switch">
