@@ -5,10 +5,10 @@
 			<head>
 				<title>Irrigation System</title>
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
-				<link rel="stylesheet" href="/w3.css"/>
-				<link rel="stylesheet" href="/my-styles.css"/>
+				<link rel="stylesheet" href="/css/w3.css"/>
+				<link rel="stylesheet" href="/css/my-styles.css"/>
+				<script src="/scripts/my-scripts.js"></script>
 				<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-				<script src="/my-scripts.js"></script>
 				<script>
 					function startIrrigation_program() {
 					  const queryString = window.location.search;

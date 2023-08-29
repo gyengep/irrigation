@@ -64,7 +64,7 @@ class RestView : public View {
 	std::unique_ptr<HttpResponse> onGetTemperatureTomorrow(const HttpRequest& request, const KeyValue& pathParameters);
 
 	std::unique_ptr<HttpResponse> onGetRoot(const HttpRequest& request, const KeyValue& pathParameters);
-	std::unique_ptr<HttpResponse> onGetFile(const HttpRequest& request, const KeyValue& pathParameters);
+	std::unique_ptr<HttpResponse> onGetFile(const HttpRequest& request, const KeyValue& pathParameters, const std::string& subDirectory);
 
 	std::unique_ptr<HttpResponse> getFile(const std::string fileName);
 

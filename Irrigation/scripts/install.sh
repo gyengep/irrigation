@@ -38,7 +38,7 @@ install_rpi() {
 	chown $USERID:$GROUPID $WEB_ROOT_DIR
 	
 	# /usr/share/irrigation/web_root/*
-	cp -f ./web_root/* $WEB_ROOT_DIR
+	cp -f -r ./web_root/* $WEB_ROOT_DIR
 	chmod 444 $WEB_ROOT_DIR/*
 	chown $USERID:$GROUPID $WEB_ROOT_DIR/*
 	
@@ -90,7 +90,7 @@ install_other() {
 	mkdir -p $WEB_ROOT_DIR
 	
 	# /usr/share/irrigation/web_root/*
-	cp -f ./web_root/* $WEB_ROOT_DIR
+	cp -f -r ./web_root/* $WEB_ROOT_DIR
 	chmod 444 $WEB_ROOT_DIR/*
 	
 	#################################

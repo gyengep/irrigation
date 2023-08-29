@@ -85,7 +85,10 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/yesterday", bind(&RestView::onGetTemperatureYesterday, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/today", bind(&RestView::onGetTemperatureToday, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/tomorrow", bind(&RestView::onGetTemperatureTomorrow, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_GET,    "/{fileName}", bind(&RestView::onGetFile, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/{fileName}", bind(&RestView::onGetFile, this, _1, _2, ""));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/css/{fileName}", bind(&RestView::onGetFile, this, _1, _2, "/css"));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/images/{fileName}", bind(&RestView::onGetFile, this, _1, _2, "/images"));
+	restService->addPath(MHD_HTTP_METHOD_GET,    "/scripts/{fileName}", bind(&RestView::onGetFile, this, _1, _2, "/scripts"));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/", bind(&RestView::onGetRoot, this, _1, _2));
 }
 
@@ -180,8 +183,8 @@ unique_ptr<HttpResponse> RestView::onGetRoot(const HttpRequest& request, const K
 	return getFile(fileName);
 }
 
-unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters) {
-	const std::string fileName = resourceDirectory + "/" + pathParameters.at("fileName");
+unique_ptr<HttpResponse> RestView::onGetFile(const HttpRequest& request, const KeyValue& pathParameters, const std::string& subDirectory) {
+	const std::string fileName = resourceDirectory + subDirectory + "/" + pathParameters.at("fileName");
 	return getFile(fileName);
 }
 
