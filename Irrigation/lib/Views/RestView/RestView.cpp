@@ -78,8 +78,8 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/programs/{programId}/schedulers/weekly", bind(&RestView::onPatchWeeklyScheduler, this, _1, _2));
 
 	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/irrigation", bind(&RestView::onPatchIrrigation, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/poweroff", bind(&RestView::onPatchPoweroff, this, _1, _2));
-	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/shutdown/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/power/shutdown", bind(&RestView::onPatchShutdown, this, _1, _2));
+	restService->addPath(MHD_HTTP_METHOD_PATCH,  "/api/v1/power/reboot", bind(&RestView::onPatchReboot, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/logs", bind(&RestView::onGetLogs, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/current", bind(&RestView::onGetCurrentTemperature, this, _1, _2));
 	restService->addPath(MHD_HTTP_METHOD_GET,    "/api/v1/temperature/yesterday", bind(&RestView::onGetTemperatureYesterday, this, _1, _2));
@@ -293,7 +293,7 @@ std::unique_ptr<HttpResponse> RestView::onPatchReboot(const HttpRequest& request
 			build();
 }
 
-std::unique_ptr<HttpResponse> RestView::onPatchPoweroff(const HttpRequest& request, const KeyValue& pathParameters) {
+std::unique_ptr<HttpResponse> RestView::onPatchShutdown(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
 		shutdownManager->powerOff();
 	} catch(const std::exception& e) {

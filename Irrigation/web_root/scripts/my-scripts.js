@@ -107,7 +107,7 @@ function send_Shutdown() {
 	
   $.ajax({
     type: "PATCH",
-    url: "/api/v1/shutdown/poweroff",
+    url: "/api/v1/power/shutdown",
 	
 //    success: function (res) {
 //        alert("Program is enabled!");
@@ -124,7 +124,7 @@ function send_Reboot() {
 	
   $.ajax({
     type: "PATCH",
-    url: "/api/v1/shutdown/reboot",
+    url: "/api/v1/power/reboot",
 	
 //    success: function (res) {
 //        alert("Program is enabled!");
