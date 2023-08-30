@@ -28,7 +28,7 @@
 									
 								<div class="w3-col s1">
 									<label class="switch">
-										<input type="checkbox" onclick="sendEnableOrDisableProgram({$programId}, this.checked)">
+										<input type="checkbox" onclick="send_EnableOrDisableProgram({$programId}, this.checked)">
 											<xsl:if test="enabled='true'">
 												<xsl:attribute name="checked">checked</xsl:attribute>
 											</xsl:if>

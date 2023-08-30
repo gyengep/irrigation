@@ -1,137 +1,80 @@
 <html>
-<head>
-	<title>Irrigation System</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="/css/w3.css"/>
-	<link rel="stylesheet" href="/css/my-styles.css"/>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		
-	<style>
+	<head>
+		<title>Irrigation System</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="/css/w3.css"/>
+		<link rel="stylesheet" href="/css/my-styles.css"/>
+		<script src="/scripts/menu.js"></script>
+	</head>
+	<body>
 
-img {
-  border: none;
-  width: 24px;
-  height: 24px;
-}
+		<div class="w3-hide-medium w3-hide-large">
 
-	</style>
-
-
-	<script>
-		
-function markTopMenu(menuItem) {
-  var i, tablinks;
- 
- tablinks = document.getElementsByClassName("topMenuItem");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
-  }
-
-  document.getElementById(menuItem).className += " w3-border-blue";
-}
-
-function markLeftMenu(menuItem) {
-  var i, tablinks;
-
-  tablinks = document.getElementsByClassName("leftMenuItem");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" w3-border-blue", "");
-  }
-
-  document.getElementById(menuItem).className += " w3-border-blue";
-}
-
-function markMenu(topMenuItem, leftMenuItem) {
-  markTopMenu(topMenuItem);
-  markLeftMenu(leftMenuItem);
-}
-
-function openLeftMenu() {
-  document.getElementById("leftMenu").style.display = "block";
-  document.getElementById("openMenuButton").style.display = "none";
-  document.getElementById("closeMenuButton").style.display = "block";
-}
-
-function closeLeftMenu() {
-  document.getElementById("leftMenu").style.display = "none";
-  document.getElementById("openMenuButton").style.display = "block";
-  document.getElementById("closeMenuButton").style.display = "none";
-}
-
-function accord(id) {
-  var x = document.getElementById(id);
-
-  if (x.className.indexOf("w3-show") == -1) {
-    x.className += " w3-show";
-  } else { 
-    x.className = x.className.replace(" w3-show", "");
-  }
-}
-
-</script>
-</head>
-<body>
-
-	<div class="w3-hide-medium w3-hide-large">
-
-		<div class="w3-bar w3-light-grey" style="height:48px">
-			<button id="openMenuButton" class="w3-button w3-left" onclick="openLeftMenu()" style="height:48px">&#9776;</button>
-			<button id="closeMenuButton" class="w3-button w3-left" onclick="closeLeftMenu()" style="height:48px;display:none">&times;</button>
-		</div>
-	
-		<div id="leftMenu" class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none">
-			<a id="leftMenu-Program" class="leftMenuItem w3-bar-item w3-button w3-leftbar w3-border-blue" onclick="closeLeftMenu(); markMenu('topMenu-Program', 'leftMenu-Program');" href="/api/v1/programs" target="frame"><img src="/images/program.png"/> Programs </a> 
-			<a id="leftMenu-Irrigation" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Irrigation', 'leftMenu-Irrigation');" href="/irrigation.xsl" target="frame"><img src="/images/irrigation.png"/> Irrigation </a> 
-			<a id="leftMenu-Log" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Log', 'leftMenu-Log');" href="/api/v1/logs" target="frame"><img src="/images/log.png"/> Logs </a> 
-
-			<button class="w3-bar-item w3-button w3-leftbar" onclick="accord('leftMenu-Temperature')">
-				<img src="/images/temperature.png"/> Temperature <i class="fa fa-caret-down"></i>
-			</button>
-			
-			<div id="leftMenu-Temperature" class="w3-hide" style="text-indent: 20px">
-				<a id="leftMenu-Temperature-Current"   class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');"   href="/api/v1/temperature/current?datetime-format=%A, %d %B, %H:%M" target="frame">Current</a>
-				<a id="leftMenu-Temperature-Yesterday" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Yesterday');" href="/api/v1/temperature/yesterday?datetime-format=%A, %d %B" target="frame">Yesterday</a>
-				<a id="leftMenu-Temperature-Today"     class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Today');"     href="/api/v1/temperature/today?datetime-format=%A, %d %B" target="frame">Today</a>
-				<a id="leftMenu-Temperature-Tomorrow"  class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Tomorrow');"  href="/api/v1/temperature/tomorrow?datetime-format=%A, %d %B" target="frame">Tomorrow</a>
+			<div class="w3-bar w3-light-grey" style="height:48px">
+				<button id="openMenuButton" class="w3-button w3-left" onclick="openLeftMenu()" style="height:48px">&#9776;</button>
+				<button id="closeMenuButton" class="w3-button w3-left" onclick="closeLeftMenu()" style="height:48px;display:none">&times;</button>
 			</div>
-		</div>
 		
-		
-	</div>
+			<div id="leftMenu" class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none">
+				<a id="leftMenu-Program" class="leftMenuItem w3-bar-item w3-button w3-leftbar w3-border-blue" onclick="closeLeftMenu(); markMenu('topMenu-Program', 'leftMenu-Program');" href="/api/v1/programs" target="frame"><img class="my-icon" src="/images/program.png"/> Programs </a> 
+				<a id="leftMenu-Irrigation" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Irrigation', 'leftMenu-Irrigation');" href="/irrigation.html" target="frame"><img class="my-icon" src="/images/irrigation.png"/> Irrigation </a> 
+				<a id="leftMenu-Log" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Log', 'leftMenu-Log');" href="/api/v1/logs" target="frame"><img class="my-icon" src="/images/log.png"/> Logs </a> 
 
-
-	<div class="w3-hide-small">
-
-		<div class="w3-bar w3-light-grey" style="height:48px">
-
-			<a id="topMenu-Program" class="topMenuItem w3-bar-item w3-button w3-bottombar w3-border-blue" onclick="markMenu('topMenu-Program', 'leftMenu-Program');" href="/api/v1/programs" target="frame">
-				<img src="/images/program.png"/> Programs
-			</a> 
-			
-			<a id="topMenu-Irrigation" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Irrigation', 'leftMenu-Irrigation');" href="/irrigation.xsl" target="frame">
-				<img src="/images/irrigation.png"/> Irrigation
-			</a> 
-			
-			<a id="topMenu-Log" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Log', 'leftMenu-Log');" href="/api/v1/logs" target="frame">
-				<img src="/images/log.png"/> Logs
-			</a> 
-			
-			<div class="w3-dropdown-hover">
-				<button id="topMenu-Temperature" class="topMenuItem w3-button w3-bottombar">
-					<img src="/images/temperature.png"/>	Temperature <i class="fa fa-caret-down"></i>
+				<button class="w3-bar-item w3-button w3-leftbar" onclick="accord('leftMenu-Temperature')">
+					<img class="my-icon" src="/images/temperature.png"/> Temperature <i class="fa fa-caret-down"></i>
 				</button>
 				
-				<div class="w3-dropdown-content w3-bar-block w3-card-4">
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');"   href="/api/v1/temperature/current?datetime-format=%A, %d %B, %H:%M" target="frame">Current</a>
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Yesterday');" href="/api/v1/temperature/yesterday?datetime-format=%A, %d %B" target="frame">Yesterday</a>
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Today');"     href="/api/v1/temperature/today?datetime-format=%A, %d %B" target="frame">Today</a>
-					<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Tomorrow');"  href="/api/v1/temperature/tomorrow?datetime-format=%A, %d %B" target="frame">Tomorrow</a>
+				<div id="leftMenu-Temperature" class="w3-hide" style="text-indent: 20px">
+					<a id="leftMenu-Temperature-Current"   class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');"   href="/api/v1/temperature/current?datetime-format=%A, %d %B, %H:%M" target="frame">Current</a>
+					<a id="leftMenu-Temperature-Yesterday" class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Yesterday');" href="/api/v1/temperature/yesterday?datetime-format=%A, %d %B" target="frame">Yesterday</a>
+					<a id="leftMenu-Temperature-Today"     class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Today');"     href="/api/v1/temperature/today?datetime-format=%A, %d %B" target="frame">Today</a>
+					<a id="leftMenu-Temperature-Tomorrow"  class="leftMenuItem w3-bar-item w3-button w3-leftbar" onclick="closeLeftMenu(); markMenu('topMenu-Temperature', 'leftMenu-Temperature-Tomorrow');"  href="/api/v1/temperature/tomorrow?datetime-format=%A, %d %B" target="frame">Tomorrow</a>
 				</div>
+
+				<a id="leftMenu-Power" class="leftMenuItem w3-bar-item w3-button w3-leftbar w3-border-blue" onclick="closeLeftMenu(); markMenu('topMenu-Power', 'leftMenu-Power');" href="/power.html" target="frame"><img class="my-icon" src="/images/shutdown.png"/> Power </a> 
+
+			</div>
+			
+		</div>
+
+
+		<div class="w3-hide-small">
+
+			<div class="w3-bar w3-light-grey" style="height:48px">
+
+				<a id="topMenu-Program" class="topMenuItem w3-bar-item w3-button w3-bottombar w3-border-blue" onclick="markMenu('topMenu-Program', 'leftMenu-Program');" href="/api/v1/programs" target="frame">
+					<img class="my-icon" src="/images/program.png"/> Programs
+				</a> 
+				
+				<a id="topMenu-Irrigation" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Irrigation', 'leftMenu-Irrigation');" href="/irrigation.html" target="frame">
+					<img class="my-icon" src="/images/irrigation.png"/> Irrigation
+				</a> 
+				
+				<a id="topMenu-Log" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Log', 'leftMenu-Log');" href="/api/v1/logs" target="frame">
+					<img class="my-icon" src="/images/log.png"/> Logs
+				</a> 
+				
+				<div class="w3-dropdown-hover">
+					<button id="topMenu-Temperature" class="topMenuItem w3-button w3-bottombar">
+						<img class="my-icon" src="/images/temperature.png"/>	Temperature <i class="fa fa-caret-down"></i>
+					</button>
+					
+					<div class="w3-dropdown-content w3-bar-block w3-card-4">
+						<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Current');"   href="/api/v1/temperature/current?datetime-format=%A, %d %B, %H:%M" target="frame">Current</a>
+						<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Yesterday');" href="/api/v1/temperature/yesterday?datetime-format=%A, %d %B" target="frame">Yesterday</a>
+						<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Today');"     href="/api/v1/temperature/today?datetime-format=%A, %d %B" target="frame">Today</a>
+						<a class="w3-button w3-bar-item" onclick="markMenu('topMenu-Temperature', 'leftMenu-Temperature-Tomorrow');"  href="/api/v1/temperature/tomorrow?datetime-format=%A, %d %B" target="frame">Tomorrow</a>
+					</div>
+				</div>
+
+				<a id="topMenu-Power" class="topMenuItem w3-bar-item w3-button w3-bottombar" onclick="markMenu('topMenu-Power', 'leftMenu-Power');" href="/power.html" target="frame">
+					<img class="my-icon" src="/images/shutdown.png"/> Power
+				</a> 
+
 			</div>
 		</div>
-	</div>
-	
-	<iframe name="frame" src="/api/v1/programs" title="Irrigation System Subpage" height="100%" width="100%" style="border:none;"/>
+		
+		<iframe name="frame" src="/api/v1/programs" title="Irrigation System Subpage" height="100%" width="100%" style="border:none;"/>
 
-</body>
+	</body>
 </html>

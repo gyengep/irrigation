@@ -1,5 +1,5 @@
 
-function sendStartIrrigation_program(adjustment, programId) {
+function send_StartIrrigation_program(adjustment, programId) {
   event.preventDefault();
   event.stopPropagation();
 
@@ -22,7 +22,7 @@ function sendStartIrrigation_program(adjustment, programId) {
 }
 
 
-function sendStartIrrigation_custom(adjustment, runTimes) {
+function send_StartIrrigation_custom(adjustment, runTimes) {
   event.preventDefault();
   event.stopPropagation();
 
@@ -59,7 +59,7 @@ function sendStartIrrigation_custom(adjustment, runTimes) {
 }
 
 
-function sendStopIrrigation() {
+function send_StopIrrigation() {
   event.preventDefault();
   event.stopPropagation();
 
@@ -82,7 +82,7 @@ function sendStopIrrigation() {
 }
 
 
-function sendEnableOrDisableProgram(programId, enabled) {
+function send_EnableOrDisableProgram(programId, enabled) {
 	
   var data = '<program><enabled>' + enabled + '</enabled></program>';
   $.ajax({
@@ -98,6 +98,40 @@ function sendEnableOrDisableProgram(programId, enabled) {
 
     error: function (res) {
         alert("XML: not working! " + res.statusText);
+    }
+  });
+}
+
+
+function send_Shutdown() {
+	
+  $.ajax({
+    type: "PATCH",
+    url: "/api/v1/shutdown/poweroff",
+	
+//    success: function (res) {
+//        alert("Program is enabled!");
+//    },
+
+    error: function (res) {
+        alert("Not working! " + res.statusText);
+    }
+  });
+}
+
+
+function send_Reboot() {
+	
+  $.ajax({
+    type: "PATCH",
+    url: "/api/v1/shutdown/reboot",
+	
+//    success: function (res) {
+//        alert("Program is enabled!");
+//    },
+
+    error: function (res) {
+        alert("Not working! " + res.statusText);
     }
   });
 }

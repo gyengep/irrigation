@@ -10,7 +10,7 @@
 			</head>
 			<body class="my-container">
 			
-				<table class="my-table w3-responsive">
+				<table class="my-table">
 					<xsl:for-each select="log_entries/log_entry">
 						<tr>
 							<td>
