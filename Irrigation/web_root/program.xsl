@@ -26,20 +26,20 @@
 				<table class="my-table">
 					<tr>
 						<td class="w3-row">
-							<div class="w3-half my-cell-caption2">Name</div>
-							<div class="w3-half my-cell-content2"><xsl:value-of select="program/name"/></div>
+							<div class="w3-col s4 my-cell-caption2">Name</div>
+							<div class="w3-col s8 my-cell-content2"><xsl:value-of select="program/name"/></div>
 						</td>
 					</tr>
 					<tr>
 						<td class="w3-row">
-							<div class="w3-half my-cell-caption2">Adjustment</div>
-							<div class="w3-half my-cell-content2"><xsl:value-of select="format-number(program/adjustment*0.01, '#%')"/></div>
+							<div class="w3-col s4 my-cell-caption2">Adjustment</div>
+							<div class="w3-col s8 my-cell-content2"><xsl:value-of select="format-number(program/adjustment*0.01, '#%')"/></div>
 						</td>
 					</tr>
 					<tr>
 						<td class="w3-row">
-							<div class="w3-half my-cell-caption2">Scheduler type</div>
-							<div class="w3-half my-cell-content2"><xsl:value-of select="program/schedulertype"/></div>
+							<div class="w3-col s4 my-cell-caption2">Scheduler type</div>
+							<div class="w3-col s8 my-cell-content2"><xsl:value-of select="program/schedulertype"/></div>
 						</td>
 					</tr>
 				</table>	
@@ -61,19 +61,19 @@
 						<xsl:variable name="i" select="position()"/>
 						<tr>
 							<td class="w3-row">
-								<div class="w3-half my-cell-caption2">Zone <xsl:value-of select="$i" /></div>
-								<div class="w3-half my-cell-content2"><xsl:value-of select="format-number(minute, '00')"/>:<xsl:value-of select="format-number(second, '00')"/></div>
+								<div class="w3-col s4 my-cell-caption2">Zone <xsl:value-of select="$i" /></div>
+								<div class="w3-col s8 my-cell-content2"><xsl:value-of select="format-number(minute, '00')"/>:<xsl:value-of select="format-number(second, '00')"/></div>
 							</td>
 						</tr>
 					</xsl:for-each>
 				</table>
 
 				<div class="w3-row">
-					<div class="w3-half">
+					<div class="w3-col s6">
 						<button class="w3-btn w3-light-gray w3-round-xxlarge w3-block w3-left" style="width:calc(100% - 8px)" onclick="startIrrigation_program()">Start</button>
 					</div>
 
-					<div class="w3-half">
+					<div class="w3-col s6">
 						<button class="w3-btn w3-light-gray w3-round-xxlarge w3-block w3-right" style="width:calc(100% - 8px)" onclick="send_StopIrrigation()">Stop</button>
 					</div>
 				</div>
