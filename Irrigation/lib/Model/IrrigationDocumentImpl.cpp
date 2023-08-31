@@ -56,27 +56,27 @@ void IrrigationDocumentImpl::startIfScheduled(const LocalDateTime& localDateTime
 
 			if (schedulerResult) {
 				if (false == schedulerResult->isSkipped()) {
-					LOGGER.debug("Program[%s] (%s) is scheduled by '%s' scheduler.\n"
-							"\tprogram adjustment:   %d%%\n"
-							"\tscheduler adjustment: %d%%",
+					LOGGER.info("Program[%s] (%s) is started by '%s' scheduler with durations: \n\t%s * %u%% * %u%%",
 							id.toString().c_str(),
 							program->getName().c_str(),
 							to_string(program->getSchedulerType()).c_str(),
+							program->getRunTimeContainer().toDurationList().toString().c_str(),
 							program->getAdjustment(),
 							schedulerResult->getAdjustment()
 						);
 
-						const EmailTopic topic = EmailTopic::WATERING_START;
-						if (emailHandler && emailHandler->isTopicEnabled(topic)) {
-							std::ostringstream oss;
-							oss << "The " << program->getName() << " is scheduled by the " << to_string(program->getSchedulerType()) << " scheduler at " << localDateTime.toString("%T") << std::endl;
-							oss << "adjustment: "<< schedulerResult->getAdjustment() << "%" << std::endl;
-							oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
-							emailHandler->send(topic, oss.str());
-						}
+					const EmailTopic topic = EmailTopic::WATERING_START;
+					if (emailHandler && emailHandler->isTopicEnabled(topic)) {
+						std::ostringstream oss;
+						oss << "The " << program->getName() << " is started by the '" << to_string(program->getSchedulerType()) << "' scheduler at " << localDateTime.toString("%T") << std::endl;
+						oss << "adjustment: "<< schedulerResult->getAdjustment() << "%" << std::endl;
+						oss << "runTimes:   " << program->getRunTimeContainer() << std::endl;
+						emailHandler->send(topic, oss.str());
+					}
 
 
-					start(program, schedulerResult->getAdjustment());
+					const DurationList durations = program->getRunTimeContainer().toDurationList().adjust(program->getAdjustment());
+					start(durations, schedulerResult->getAdjustment());
 					saveState();
 					break;
 				} else {
@@ -99,15 +99,25 @@ void IrrigationDocumentImpl::startIfScheduled(const LocalDateTime& localDateTime
 }
 
 void IrrigationDocumentImpl::startProgram(const IdType& programId, unsigned adjustment) {
-	start(programContainer->at(programId), adjustment);
-}
+	const ProgramPtr program = programContainer->at(programId);
+	const DurationList durations = program->getRunTimeContainer().toDurationList();
 
-void IrrigationDocumentImpl::startCustom(const DurationList& durations, unsigned adjustment) {
+	LOGGER.info("Program[%s] (%s) is started by user with durations: \n\t%s * %u%%",
+			programId.toString().c_str(),
+			program->getName().c_str(),
+			durations.toString().c_str(),
+			adjustment
+		);
+
 	start(durations, adjustment);
 }
 
-void IrrigationDocumentImpl::start(const ProgramPtr& program, unsigned adjustment) {
-	start(program->getRunTimeContainer().toDurationList().adjust(program->getAdjustment()), adjustment);
+void IrrigationDocumentImpl::startCustom(const DurationList& durations, unsigned adjustment) {
+	LOGGER.info("A custom program is started by user with durations: \n\t%s * %u%%",
+			durations.toString().c_str(),
+			adjustment
+		);
+	start(durations, adjustment);
 }
 
 void IrrigationDocumentImpl::start(const DurationList& durations, unsigned adjustment) {
@@ -115,6 +125,7 @@ void IrrigationDocumentImpl::start(const DurationList& durations, unsigned adjus
 }
 
 void IrrigationDocumentImpl::stop() {
+	LOGGER.info("Irrigation is stopped by user");
 	wateringController->stop();
 }
 

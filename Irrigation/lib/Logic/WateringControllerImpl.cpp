@@ -46,13 +46,9 @@ void WateringControllerImpl::startMs(const std::list<std::chrono::milliseconds>&
 		workerThread.join();
 	}
 
-	if (LOGGER.isLoggable(LogLevel::DEBUG)) {
-		LOGGER.debug("Irrigation started with the following durations: \n\t%s",
-			DurationList(durations).toString().c_str()
-		);
-	} else {
-		LOGGER.info("Irrigation started");
-	}
+	LOGGER.info("Irrigation is started: \n\t%s",
+		DurationList(durations).toString().c_str()
+	);
 
 	stopped = false;
 	active = true;
@@ -68,8 +64,6 @@ void WateringControllerImpl::stop() {
 		condition.wait(lock, [this]{ return !active; });
 		workerThread.join();
 	}
-
-	LOGGER.info("Irrigation stopped");
 }
 
 void WateringControllerImpl::workerFunc(const std::list<std::chrono::milliseconds> durations) {
@@ -80,14 +74,11 @@ void WateringControllerImpl::workerFunc(const std::list<std::chrono::millisecond
 
 		if (*it > std::chrono::milliseconds(0)) {
 			zoneHandler->activate(i);
-			LOGGER.debug("Zone[%u] activated", i);
+			LOGGER.debug("Zone[%u] is activated", i);
 
 			condition.wait_for(lock, *it, [this]{ return stopped; });
 			if (stopped) {
-				zoneHandler->deactivate();
-				active = false;
-				condition.notify_all();
-				return;
+				break;
 			}
 		}
 	}
@@ -95,7 +86,7 @@ void WateringControllerImpl::workerFunc(const std::list<std::chrono::millisecond
 	zoneHandler->deactivate();
 	active = false;
 	condition.notify_all();
-	LOGGER.info("Irrigation finished");
+	LOGGER.info("Irrigation is finished");
 }
 
 bool WateringControllerImpl::isWateringActive() const {

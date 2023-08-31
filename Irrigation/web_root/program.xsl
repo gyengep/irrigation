@@ -10,14 +10,14 @@
 				<script src="/scripts/my-scripts.js"></script>
 				<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 				<script>
-					function startIrrigation_program() {
+					function startIrrigation_program(adjustment) {
 					  const queryString = window.location.search;
 					  const urlParams = new URLSearchParams(queryString);
 					  
 					  console.log(queryString);
 					  console.log(urlParams);
 					  
-                      send_StartIrrigation_program('100', urlParams.get('programId'));
+                      send_StartIrrigation_program(urlParams.get('programId'), adjustment);
 					}
 				</script>			
 			</head>
@@ -70,7 +70,8 @@
 
 				<div class="w3-row">
 					<div class="w3-col s6">
-						<button class="w3-btn w3-light-gray w3-round-xxlarge w3-block w3-left" style="width:calc(100% - 8px)" onclick="startIrrigation_program()">Start</button>
+						<xsl:variable name="adjustment" select="program/adjustment" />
+						<button class="w3-btn w3-light-gray w3-round-xxlarge w3-block w3-left" style="width:calc(100% - 8px)" onclick="startIrrigation_program('{$adjustment}')">Start</button>
 					</div>
 
 					<div class="w3-col s6">

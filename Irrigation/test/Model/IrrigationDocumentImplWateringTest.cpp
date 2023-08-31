@@ -91,8 +91,9 @@ TEST_F(IrrigationDocumentImplWateringTest, startCustom) {
 
 TEST_F(IrrigationDocumentImplWateringTest, startProgram) {
 	const unsigned adjustment = 90;
+	const DurationList durations = runTimeContainer1->toDurationList();
 
-	EXPECT_CALL(*mockWateringController, start(runTimeContainer1->toDurationList().adjust(programAdjustment1).adjust(adjustment))).Times(1);
+	EXPECT_CALL(*mockWateringController, start(durations.adjust(adjustment))).Times(1);
 
 	irrigationDocument->startProgram(id1, adjustment);
 }

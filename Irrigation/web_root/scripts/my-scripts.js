@@ -1,5 +1,5 @@
 
-function send_StartIrrigation_program(adjustment, programId) {
+function send_StartIrrigation_program(programId, adjustment) {
   event.preventDefault();
   event.stopPropagation();
 
@@ -22,7 +22,7 @@ function send_StartIrrigation_program(adjustment, programId) {
 }
 
 
-function send_StartIrrigation_custom(adjustment, runTimes) {
+function send_StartIrrigation_custom(runTimes, adjustment) {
   event.preventDefault();
   event.stopPropagation();
 

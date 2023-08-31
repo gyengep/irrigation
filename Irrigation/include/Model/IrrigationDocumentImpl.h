@@ -19,7 +19,6 @@ class IrrigationDocumentImpl : public IrrigationDocument {
 	mutable std::mutex mtx;
 	std::atomic_bool modified;
 
-	void start(const ProgramPtr& program, unsigned adjustment);
 	void start(const DurationList& durations, unsigned adjustment);
 
 public:
