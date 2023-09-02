@@ -1,16 +1,9 @@
 #pragma once
 #include <gmock/gmock.h>
-#include "Utils/FileReaderWriter.h"
+#include "Utils/FileReader.h"
 
 
 class MockFileReader : public FileReader {
 public:
 	MOCK_CONST_METHOD0(read, std::string());
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockFileWriter : public FileWriter {
-public:
-	MOCK_CONST_METHOD1(write, void(const std::string& text));
 };

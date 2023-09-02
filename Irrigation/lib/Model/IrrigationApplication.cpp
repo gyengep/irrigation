@@ -24,7 +24,8 @@
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
 #include "Schedulers/WeeklySchedulerImpl.h"
 
-#include "Utils/FileReaderWriterImpl.h"
+#include "Utils/FileReaderImpl.h"
+#include "Utils/FileWriterImpl.h"
 #include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
 #include <stdexcept>
@@ -37,17 +38,6 @@ public:
 	virtual ~XmlWriterFactory() = default;
 	virtual shared_ptr<DtoWriter> create() override {
 		return make_shared<XmlWriter>();
-	}
-};
-
-class FileWriterFactory : public DocumentSaver::FileWriterFactory {
-	const string fileName;
-
-public:
-	FileWriterFactory(const string& fileName) : fileName(fileName) {}
-	virtual ~FileWriterFactory() = default;
-	virtual shared_ptr<FileWriter> create() override {
-		return make_shared<FileWriterImpl>(fileName);
 	}
 };
 
@@ -182,7 +172,7 @@ void IrrigationApplication::initDocument() {
 	documentSaver.reset(new DocumentSaver(
 		irrigationDocument,
 		make_shared<XmlWriterFactory>(),
-		make_shared<FileWriterFactory>(Configuration::getInstance().getConfigFileName())
+		make_shared<FileWriterFactoryImpl>(Configuration::getInstance().getConfigFileName())
 	));
 
 	try {

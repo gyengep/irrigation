@@ -2,7 +2,6 @@
 #include "IrrigationDocument.h"
 #include "DtoReaderWriter/DtoReaderWriter.h"
 #include "Logger/Logger.h"
-#include "Utils/FileReaderWriter.h"
 #include "Utils/FixedDelaySchedulerRunnable.h"
 #include "Utils/ReferenceRunnable.h"
 
@@ -63,7 +62,7 @@ void DocumentSaver::saveIfModified() {
 
 		try {
 			const string documentDtoAsText = dtoWriterFactory->create()->save(documentDto);
-			fileWriterFactory->create()->write(documentDtoAsText);
+			fileWriterFactory->create(FileWriter::Type::TRUNCATE)->write(documentDtoAsText);
 			LOGGER.debug("Configuration successfully saved");
 		} catch (const exception&) {
 			irrigationDocument->setModified(true);

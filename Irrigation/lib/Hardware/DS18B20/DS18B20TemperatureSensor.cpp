@@ -1,5 +1,6 @@
 #include "DS18B20TemperatureSensor.h"
 #include "Logger/Logger.h"
+#include "Utils/FileReaderImpl.h"
 #include <cstring>
 #include <dirent.h>
 #include <sys/stat.h>

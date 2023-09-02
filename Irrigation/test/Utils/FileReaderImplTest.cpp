@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <cstdio>
 #include "Exceptions/Exceptions.h"
-#include "Utils/FileReaderWriterImpl.h"
+#include "Utils/FileReaderImpl.h"
 
 using namespace std;
 using namespace testing;

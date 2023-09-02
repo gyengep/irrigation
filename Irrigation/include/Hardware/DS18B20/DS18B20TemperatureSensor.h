@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "Utils/FileReaderWriterImpl.h"
+#include "Utils/FileReader.h"
 
 
 class DS18B20TemperatureSensor {

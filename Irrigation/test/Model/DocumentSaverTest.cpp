@@ -3,12 +3,12 @@
 #include "Model/DocumentSaver.h"
 #include "Model/IrrigationDocumentImpl.h"
 #include "Mocks/MockDtoReader.h"
+#include "Mocks/MockFileReader.h"
 #include "Mocks/MockProgramContainer.h"
 #include "Mocks/MockWateringController.h"
 
-using namespace std;
 using namespace testing;
-using namespace placeholders;
+using namespace std::placeholders;
 
 
 void DocumentSaverTest::SetUp() {
@@ -22,7 +22,8 @@ void DocumentSaverTest::SetUp() {
 		);
 
 	mockDtoWriterFactory = std::make_shared<StrictMock<MockDtoWriterFactory>>(std::make_shared<StrictMock<MockDtoWriter>>());
-	mockFileWriterFactory = std::make_shared<StrictMock<MockFileWriterFactory>>(std::make_shared<StrictMock<MockFileWriter>>());
+	mockFileWriter = std::make_shared<StrictMock<MockFileWriter>>();
+	mockFileWriterFactory = std::make_shared<StrictMock<MockFileWriterFactory>>();
 
 	documentSaver = std::make_shared<DocumentSaver>(
 		irrigationDocument,
@@ -40,11 +41,11 @@ void DocumentSaverTest::TearDown() {
 TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 	irrigationDocument->setModified();
 
-	const string documentDtoAsText = "asdfghjkl";
+	const std::string documentDtoAsText = "asdfghjkl";
 	const DocumentDTO expectedDocumentDto;
 
-	const shared_ptr<MockDtoReader> mockDtoReader = make_shared<MockDtoReader>();
-	const shared_ptr<MockFileReader> mockFileReader = make_shared<MockFileReader>();
+	const std::shared_ptr<MockDtoReader> mockDtoReader = std::make_shared<MockDtoReader>();
+	const std::shared_ptr<MockFileReader> mockFileReader = std::make_shared<MockFileReader>();
 
 	EXPECT_CALL(*mockFileReader, read())
 			.WillOnce(Return(documentDtoAsText));
@@ -59,11 +60,11 @@ TEST_F(DocumentSaverTest, isModifiedAfterLoad) {
 }
 
 TEST_F(DocumentSaverTest, load) {
-	const string documentDtoAsText = "asdfghjkl";
+	const std::string documentDtoAsText = "asdfghjkl";
 	const DocumentDTO expectedDocumentDto;
 
-	const shared_ptr<MockDtoReader> mockDtoReader = make_shared<MockDtoReader>();
-	const shared_ptr<MockFileReader> mockFileReader = make_shared<MockFileReader>();
+	const std::shared_ptr<MockDtoReader> mockDtoReader = std::make_shared<MockDtoReader>();
+	const std::shared_ptr<MockFileReader> mockFileReader = std::make_shared<MockFileReader>();
 
 	EXPECT_CALL(*mockFileReader, read())
 			.Times(1)
@@ -84,7 +85,7 @@ TEST_F(DocumentSaverTest, save) {
 		ProgramDTO()
 	});
 
-	const string documentDtoAsText = "123456789";
+	const std::string documentDtoAsText = "123456789";
 
 	irrigationDocument->setModified(true);
 
@@ -96,7 +97,11 @@ TEST_F(DocumentSaverTest, save) {
 			.Times(1)
 			.WillOnce(Return(documentDtoAsText));
 
-	EXPECT_CALL(*mockFileWriterFactory->mockFileWriter, write(documentDtoAsText))
+	EXPECT_CALL(*mockFileWriterFactory, create(FileWriter::Type::TRUNCATE))
+			.Times(1)
+			.WillOnce(Return(mockFileWriter));
+
+	EXPECT_CALL(*mockFileWriter, write(documentDtoAsText))
 			.Times(1);
 
 	documentSaver->saveIfModified();
@@ -105,12 +110,5 @@ TEST_F(DocumentSaverTest, save) {
 
 TEST_F(DocumentSaverTest, saveNotModified) {
 	irrigationDocument->setModified(false);
-
-	EXPECT_CALL(*mockDtoWriterFactory->mockDtoWriter, save(A<const DocumentDTO&>()))
-			.Times(0);
-
-	EXPECT_CALL(*mockFileWriterFactory->mockFileWriter, write(_))
-			.Times(0);
-
 	documentSaver->saveIfModified();
 }
