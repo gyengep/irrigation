@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <microhttpd.h>
+#include "Utils/FileWriter.h"
 
 class HttpResponse;
 class HttpRequest;
@@ -19,6 +20,7 @@ class WebServer {
 
 	const std::shared_ptr<WebService> webService;
 	const uint16_t port;
+	const std::shared_ptr<FileWriterFactory> accessLogWriterFactory;
 
 	std::map<void*, std::shared_ptr<ByteBuffer>> uploadDatas;
 	std::unique_ptr<MHD_Daemon, void(*)(struct MHD_Daemon*)> daemon;
@@ -29,6 +31,7 @@ class WebServer {
 	void panicCallback(const char *file, unsigned int line, const char *reason);
 	void requestCompletedCallback(struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe);
 	int sendResponse(struct MHD_Connection* connection, const std::unique_ptr<HttpResponse>& httpResponse);
+	void writeAccessLog(const HttpRequest& request, const HttpResponse& response);
 
 	static void MHD_PanicCallback(void *cls, const char *file, unsigned int line, const char *reason);
 	static int MHD_AccessHandlerCallback(void *cls, struct MHD_Connection *connection,
@@ -37,7 +40,7 @@ class WebServer {
 	static void MHD_RequestCompletedCallback(void *cls, struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe);
 
 public:
-	WebServer(std::shared_ptr<WebService> webService, uint16_t port);
+	WebServer(const std::shared_ptr<WebService>& webService, uint16_t port, const std::shared_ptr<FileWriterFactory>& accessLogWriterFactory);
 	virtual ~WebServer();
 
 	void start();

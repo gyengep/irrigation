@@ -3,11 +3,10 @@
 #include "HttpRequest.h"
 #include "WebServerException.h"
 #include "Logger/Logger.h"
+#include "Utils/DateTime.h"
 #include <algorithm>
 #include <cinttypes>
 #include <sstream>
-
-using namespace std;
 
 
 void WebServer::MHD_PanicCallback(void *cls, const char *file, unsigned int line, const char *reason) {
@@ -26,9 +25,10 @@ void WebServer::MHD_RequestCompletedCallback(void *cls, struct MHD_Connection *c
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-WebServer::WebServer(shared_ptr<WebService> webService, uint16_t port) :
+WebServer::WebServer(const std::shared_ptr<WebService>& webService, uint16_t port, const std::shared_ptr<FileWriterFactory>& accessLogWriterFactory) :
 	webService(webService),
 	port(port),
+	accessLogWriterFactory(accessLogWriterFactory),
 	daemon(nullptr, MHD_stop_daemon)
 {
 }
@@ -50,7 +50,7 @@ void WebServer::start() {
 
 
 	if (daemon == nullptr) {
-		throw runtime_error("Can not create webserver");
+		throw std::runtime_error("Can not create webserver");
 	}
 
 	LOGGER.info("WebServer is started on port: %" PRIu16, port);
@@ -60,7 +60,7 @@ void WebServer::stop() {
 	daemon.reset();
 
 	if (!uploadDatas.empty()) {
-		logic_error("WebServer::stop() !datas.empty()");
+		std::logic_error("WebServer::stop() !datas.empty()");
 	}
 
 	LOGGER.info("WebServer is stopped");
@@ -74,7 +74,7 @@ void WebServer::requestCompletedCallback(struct MHD_Connection *connection, void
 	auto it = uploadDatas.find(*con_cls);
 
 	if (uploadDatas.end() == it) {
-		throw logic_error("WebServer::requestCompletedCallback() datas.end() == it");
+		throw std::logic_error("WebServer::requestCompletedCallback() datas.end() == it");
 	}
 
 	uploadDatas.erase(it);
@@ -104,7 +104,7 @@ int WebServer::accessHandlerCallback(
 
 	if (NULL == context) {
 		/* do never respond on first call */
-		shared_ptr<ByteBuffer> connectionUploadData(new ByteBuffer());
+		std::shared_ptr<ByteBuffer> connectionUploadData(new ByteBuffer());
 		context = connectionUploadData.get();
 		uploadDatas.insert(make_pair(context, connectionUploadData));
 //		LOGGER.trace("creating upload data: %p", connectionUploadData.get());
@@ -113,28 +113,27 @@ int WebServer::accessHandlerCallback(
 
 	auto it = uploadDatas.find(context);
 	if (uploadDatas.end() == it) {
-		throw logic_error("WebServer::accessHandlerCallback() datas.end() == it");
+		throw std::logic_error("WebServer::accessHandlerCallback() datas.end() == it");
 	}
 
-	shared_ptr<ByteBuffer> connectionUploadData = it->second;
+	std::shared_ptr<ByteBuffer> connectionUploadData = it->second;
 
 	if (0 < *upload_data_size) {
 //		LOGGER.trace("concatenate upload data");
-		copy_n(upload_data, *upload_data_size, back_inserter(*connectionUploadData));
+		std::copy_n(upload_data, *upload_data_size, back_inserter(*connectionUploadData));
 		*upload_data_size = 0;
 		return MHD_YES;
 	}
 
-	LOGGER.debug("HTTP request received: %s %s %s", method, url, version);
-
-	unique_ptr<HttpResponse> response;
+	std::unique_ptr<HttpResponse> response;
+	std::unique_ptr<HttpRequest> request;
 
 	try {
-		const HttpRequest request(connection, version, method, url, connectionUploadData);
-		response = webService->onRequest(request);
+		request = std::unique_ptr<HttpRequest>(new HttpRequest(connection, version, method, url, connectionUploadData));
+		response = webService->onRequest(*request);
 
 		if (response.get() == nullptr) {
-			throw runtime_error("HTTP response is NULL");
+			throw std::runtime_error("HTTP response is NULL");
 		}
 
 	} catch (const WebServerException& e) {
@@ -143,15 +142,28 @@ int WebServer::accessHandlerCallback(
 				setBody(e.getErrorMessage()).
 				addHeaders(e.getHeaders()).
 				build();
-	} catch (const exception& e) {
+	} catch (const std::exception& e) {
 		LOGGER.warning("WebServer caught an unhandled expection", e);
 		return MHD_NO;
 	}
 
+	writeAccessLog(*request, *response);
 	return sendResponse(connection, response);
 }
 
-int WebServer::sendResponse(struct MHD_Connection* connection, const unique_ptr<HttpResponse>& httpResponse) {
+void WebServer::writeAccessLog(const HttpRequest& request, const HttpResponse& response) {
+	std::ostringstream oss;
+	oss << LocalDateTime(DateTime::now()).toString() << " \"" << request.getMethod() << " " << request.getUrl();
+
+	if (false == request.getParametersAsText().empty()) {
+		oss << "?" << request.getParametersAsText();
+	}
+
+	oss << " " << request.getVersion() << "\" " << response.getStatusCode() << std::endl;
+	accessLogWriterFactory->create(FileWriter::Type::APPEND)->write(oss.str());
+}
+
+int WebServer::sendResponse(struct MHD_Connection* connection, const std::unique_ptr<HttpResponse>& httpResponse) {
 //	if (LOGGER.isLoggable(LogLevel::TRACE)) {
 //		ostringstream oss;
 //		oss << "Sending HTTP response" << endl;
@@ -163,12 +175,12 @@ int WebServer::sendResponse(struct MHD_Connection* connection, const unique_ptr<
 
 //		LOGGER.trace(oss.str().c_str());
 //	} else {
-		LOGGER.debug("Sending HTTP response: %u %s", httpResponse->getStatusCode(), httpResponse->getStatusMessage().c_str());
+//		LOGGER.debug("Sending HTTP response: %u %s", httpResponse->getStatusCode(), httpResponse->getStatusMessage().c_str());
 //	}
 
-	unique_ptr<MHD_Response, void(*)(struct MHD_Response*)> mhd_response(
-		MHD_create_response_from_buffer(httpResponse->getBody().length(), const_cast<char*>(httpResponse->getBody().data()), MHD_RESPMEM_MUST_COPY),
-		MHD_destroy_response
+	std::unique_ptr<MHD_Response, void(*)(struct MHD_Response*)> mhd_response(
+			MHD_create_response_from_buffer(httpResponse->getBody().length(), const_cast<char*>(httpResponse->getBody().data()), MHD_RESPMEM_MUST_COPY),
+			MHD_destroy_response
 		);
 
 	for (const auto& header : httpResponse->gerHeaders()) {

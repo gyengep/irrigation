@@ -2,6 +2,7 @@
 #include "TestCommon/CreateUrl.h"
 #include "Utils/CurlStringReader.h"
 #include "WebServer/KeyValue.h"
+#include "Mocks/MockFileWriter.h"
 #include <curl/curl.h>
 #include <functional>
 
@@ -15,7 +16,7 @@ void RestServerTest::SetUp() {
 	restService->addPath("PUT", "/programs", bind(&RestServerTest::onCreateProgram, this, _1, _2));
 	restService->addPath("GET", "/programs/{programID}", bind(&RestServerTest::onGetProgram, this, _1, _2));
 
-	webServer.reset(new WebServer(restService, port));
+	webServer.reset(new WebServer(restService, port, std::make_shared<NiceMock<MockFileWriterFactory>>()));
 	webServer->start();
 }
 

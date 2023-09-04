@@ -41,10 +41,12 @@ TEST_F(RestViewCurrentTemperatureTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat) {
+TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat1) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO("abc")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createCurrentTemperatureUrl("datetime-format=abc"));
+}
 
+TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat2) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO("%a %b")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createCurrentTemperatureUrl("datetime-format=%a %b"));
 }

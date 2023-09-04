@@ -24,6 +24,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 		const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 		const std::shared_ptr<ShutdownManager>& shutdownManager,
+		const std::shared_ptr<FileWriterFactory>& accessLogWriterFactory,
 		const std::string& resourceDirectory
 ) :
 	View(irrigationDocument),
@@ -52,7 +53,7 @@ RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 	}
 
 	restService.reset(new RestService());
-	webServer.reset(new WebServer(restService, port));
+	webServer.reset(new WebServer(restService, port, accessLogWriterFactory));
 	dtoReader.reset(new XmlReader());
 	dtoWriter.reset(new XmlWriter());
 
@@ -154,8 +155,6 @@ std::string getContentTypeForFile(const std::string& fileName) {
 
 std::unique_ptr<HttpResponse> RestView::getFile(const std::string fileName) {
 	try {
-
-		LOGGER.trace("Requested file: %s", fileName.c_str());
 		std::ifstream file(fileName);
 
 		if (file.fail()) {

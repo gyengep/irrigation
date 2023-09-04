@@ -5,14 +5,19 @@
 #include "Utils/CurlStringWriter.h"
 #include <curl/curl.h>
 
-using namespace std;
 using namespace testing;
-using testing::AllOf;
 
 
 void WebServerTest::SetUp() {
-	testWebService.reset(new TestWebService());
-	webServer.reset(new WebServer(testWebService, port));
+	testWebService = std::make_shared<TestWebService>();
+	mockFileWriter = std::make_shared<StrictMock<MockFileWriter>>();
+	mockFileWriterFactory = std::make_shared<StrictMock<MockFileWriterFactory>>();
+
+	EXPECT_CALL(*mockFileWriterFactory, create(FileWriter::Type::APPEND)).
+			Times(1).
+			WillOnce(Return(mockFileWriter));
+
+	webServer.reset(new WebServer(testWebService, port, mockFileWriterFactory));
 
 	webServer->start();
 }
@@ -26,7 +31,7 @@ WebServerTest::TestWebService::TestWebService() :
 {
 }
 
-unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequest& request) {
+std::unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequest& request) {
 	lastRequestedUrl = request.getUrl();
 	lastRequestedMethod = request.getMethod();
 	lastRequestedVersion = request.getVersion();
@@ -43,11 +48,12 @@ unique_ptr<HttpResponse> WebServerTest::TestWebService::onRequest(const HttpRequ
 
 
 TEST_F(WebServerTest, connectGET) {
-	const string expectedPath = "/connectGET";
-	const string url = createUrl(port, expectedPath);
+	const std::string expectedPath = "/connectGET";
+	const std::string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(AllOf(HasSubstr("GET"), HasSubstr("HTTP/1.1"))));
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -61,11 +67,12 @@ TEST_F(WebServerTest, connectGET) {
 }
 
 TEST_F(WebServerTest, connectPOST) {
-	const string expectedPath = "/connectPOST";
-	const string url = createUrl(port, expectedPath);
+	const std::string expectedPath = "/connectPOST";
+	const std::string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(AllOf(HasSubstr("POST"), HasSubstr("HTTP/1.1"))));
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -81,11 +88,12 @@ TEST_F(WebServerTest, connectPOST) {
 }
 
 TEST_F(WebServerTest, connectPATCH) {
-	const string expectedPath = "/connectPATCH";
-	const string url = createUrl(port, expectedPath);
+	const std::string expectedPath = "/connectPATCH";
+	const std::string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(AllOf(HasSubstr("PATCH"), HasSubstr("HTTP/1.1"))));
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -101,11 +109,12 @@ TEST_F(WebServerTest, connectPATCH) {
 }
 
 TEST_F(WebServerTest, connectDELETE) {
-	const string expectedPath = "/connectDELETE";
-	const string url = createUrl(port, expectedPath);
+	const std::string expectedPath = "/connectDELETE";
+	const std::string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(AllOf(HasSubstr("DELETE"), HasSubstr("HTTP/1.1"))));
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -120,8 +129,8 @@ TEST_F(WebServerTest, connectDELETE) {
 }
 
 TEST_F(WebServerTest, resultOK) {
-	const string path = "/result200";
-	const string url = createUrl(port, path);
+	const std::string path = "/result200";
+	const std::string url = createUrl(port, path);
 
 	const int expectedHttpResponseCode = 200;
 	const char* expectedHttpResponse = "TEST_RESPONE";
@@ -131,6 +140,7 @@ TEST_F(WebServerTest, resultOK) {
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(AllOf(HasSubstr("200"), HasSubstr("HTTP/1.1"))));
 
     long actualHttpCode = 0;
     CurlStringWriter curlStringWriter;
@@ -149,8 +159,8 @@ TEST_F(WebServerTest, resultOK) {
 }
 
 TEST_F(WebServerTest, result404) {
-	const string path = "/result404";
-	const string url = createUrl(port, path);
+	const std::string path = "/result404";
+	const std::string url = createUrl(port, path);
 
 	const int expectedHttpResponseCode = 404;
 	const char* expectedHttpResponse = "NOT FOUND";
@@ -160,6 +170,7 @@ TEST_F(WebServerTest, result404) {
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(AllOf(HasSubstr("404"), HasSubstr("HTTP/1.1"))));
 
     long actualHttpCode = 0;
     CurlStringWriter curlStringWriter;
@@ -178,12 +189,24 @@ TEST_F(WebServerTest, result404) {
 }
 
 TEST_F(WebServerTest, requestParameters) {
-	const string path = "/requestParameters";
+	const std::string path = "/requestParameters";
 	const KeyValue expectedParameters {{"name", "Tom"}, {"value", "523"}, {"project", "curl"}};
-	const string url = createUrl(port, path, expectedParameters);
+	const std::string url = createUrl(port, path, expectedParameters);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(
+			*mockFileWriter,
+			write(
+				AllOf(
+					HasSubstr("200"),
+					HasSubstr("HTTP/1.1"),
+					HasSubstr("name=Tom"),
+					HasSubstr("value=523"),
+					HasSubstr("project=curl")
+				)
+			)
+		);
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -195,12 +218,13 @@ TEST_F(WebServerTest, requestParameters) {
 }
 
 TEST_F(WebServerTest, noRequestParameters) {
-	const string path = "/noRequestParameters";
+	const std::string path = "/noRequestParameters";
 	const KeyValue expectedParameters;
-	const string url = createUrl(port, path, expectedParameters);
+	const std::string url = createUrl(port, path, expectedParameters);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(_));
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -212,12 +236,13 @@ TEST_F(WebServerTest, noRequestParameters) {
 }
 
 TEST_F(WebServerTest, uploadDataPOST) {
-	const string path = "/uploadDataPost";
-	const string url = createUrl(port, path);
-    const string uploadData = "POST_UPLOAD_DATA";
+	const std::string path = "/uploadDataPost";
+	const std::string url = createUrl(port, path);
+    const std::string uploadData = "POST_UPLOAD_DATA";
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(_));
 
     if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -231,12 +256,13 @@ TEST_F(WebServerTest, uploadDataPOST) {
 }
 
 TEST_F(WebServerTest, uploadDataPATCH) {
-	const string expectedPath = "/uploadDataPATCH";
-	const string url = createUrl(port, expectedPath);
-    const string uploadData = "PATCH_UPLOAD_DATA";
+	const std::string expectedPath = "/uploadDataPATCH";
+	const std::string url = createUrl(port, expectedPath);
+    const std::string uploadData = "PATCH_UPLOAD_DATA";
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(_));
 
 	CurlStringReader curlStringReader(uploadData);
 
@@ -254,11 +280,12 @@ TEST_F(WebServerTest, uploadDataPATCH) {
 }
 
 TEST_F(WebServerTest, requestHeader) {
-	const string expectedPath = "/requestHeader";
-	const string url = createUrl(port, expectedPath);
+	const std::string expectedPath = "/requestHeader";
+	const std::string url = createUrl(port, expectedPath);
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(_));
 
 	if (curl) {
 		struct curl_slist *list = NULL;
@@ -284,12 +311,12 @@ TEST_F(WebServerTest, requestHeader) {
 }
 
 TEST_F(WebServerTest, responseHeader) {
-	const string expectedPath = "/responseHeader";
-	const string url = createUrl(port, expectedPath);
+	const std::string expectedPath = "/responseHeader";
+	const std::string url = createUrl(port, expectedPath);
 
-	const pair<string, string> h1 {"h1", "v1"};
-	const pair<string, string> h2 {"headerName", "headerValue"};
-	const pair<string, string> h3 {"1234", "abc"};
+	const std::pair<std::string, std::string> h1 {"h1", "v1"};
+	const std::pair<std::string, std::string> h2 {"headerName", "headerValue"};
+	const std::pair<std::string, std::string> h3 {"1234", "abc"};
 
 	testWebService->httpResponseHeaders.insert(h1);
 	testWebService->httpResponseHeaders.insert(h2);
@@ -297,6 +324,7 @@ TEST_F(WebServerTest, responseHeader) {
 
 	CURL *curl = curl_easy_init();
 	ASSERT_THAT(curl, NotNull());
+	EXPECT_CALL(*mockFileWriter, write(_));
 
     CurlHeaderWriter curlHeaderWriter;
 

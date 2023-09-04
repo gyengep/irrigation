@@ -12,6 +12,7 @@ class Configuration {
 	static const std::string defaultConfigFileName;
 	static const std::string defaultPersistedDataFileName;
 	static const std::string defaultLogFileName;
+	static const std::string defaultAccessLogFileName;
 	static const std::string defaultTemperatureCacheFileName;
 	static const std::string defaultTemperatureHistoryFileName;
 	static const std::chrono::duration<int64_t> defaultCurrentTemperatureUpdatePeriod;
@@ -29,6 +30,7 @@ public:
 	const std::string& getConfigFileName() const { return defaultConfigFileName; }
 	const std::string& getPersistedDatFileName() const { return defaultPersistedDataFileName; }
 	const std::string& getLogFileName() const { return defaultLogFileName; }
+	const std::string& getAccessLogFileName() const { return defaultAccessLogFileName; }
 	const std::string& getTemperatureCacheFileName() const { return defaultTemperatureCacheFileName; }
 	const std::string& getTemperatureHistoryFileName() const { return defaultTemperatureHistoryFileName; }
 	const std::chrono::duration<int64_t>& getCurrentTemperatureUpdatePeriod() const { return defaultCurrentTemperatureUpdatePeriod; }

@@ -43,12 +43,14 @@ TEST_F(RestViewTemperatureYesterdayTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewTemperatureYesterdayTest, get_WithDatetimeFormat) {
+TEST_F(RestViewTemperatureYesterdayTest, get_WithDatetimeFormat1) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), "abc")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createTemperatureYesterdayUrl("datetime-format=abc"));
+}
 
+TEST_F(RestViewTemperatureYesterdayTest, get_WithDatetimeFormat2) {
+	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDTO(sample.getFrom(), sample.getTo(), "%a %b")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createTemperatureYesterdayUrl("datetime-format=%a %b"));
 }

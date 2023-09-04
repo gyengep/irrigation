@@ -6,6 +6,7 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 const std::string RestViewTest::defaultDateTimeFormat("%a, %d %b %G %H:%M:%S %z");
+const uint16_t RestViewTest::port = 8080;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,12 +17,19 @@ void RestViewTest::SetUp() {
 	mockTemperatureHistory = std::make_shared<StrictMock<MockTemperatureHistory>>();
 	mockTemperatureForecast = std::make_shared<StrictMock<MockTemperatureForecast>>();
 	mockShutdownManager = std::make_shared<StrictMock<MockShutdownManager>>();
+	mockFileWriter = std::make_shared<StrictMock<MockFileWriter>>();
+	mockFileWriterFactory = std::make_shared<StrictMock<MockFileWriterFactory>>();
+
+	ON_CALL(*mockFileWriterFactory, create(_)).WillByDefault(Return(mockFileWriter));
+	EXPECT_CALL(*mockFileWriter, write(_)).Times(1);
+	EXPECT_CALL(*mockFileWriterFactory, create(_)).Times(1);
 
 	restView = std::make_shared<RestView>(*mockIrrigationDocument, port,
 			mockCurrentTemperature,
 			mockTemperatureForecast,
 			mockTemperatureHistory,
 			mockShutdownManager,
+			mockFileWriterFactory,
 			"/tmp"
 		);
 

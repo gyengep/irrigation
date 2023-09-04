@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 #include "Logic/IdType.h"
 #include "Views/RestView/RestView.h"
+#include "Mocks/MockFileWriter.h"
 #include "Mocks/MockIrrigationDocument.h"
 #include "Mocks/MockCurrentTemperature.h"
 #include "Mocks/MockShutdownManager.h"
@@ -18,13 +19,15 @@ class RestViewTest : public  testing::Test {
 
 protected:
     static const std::string defaultDateTimeFormat;
-	static const uint16_t port = 8080;
+	static const uint16_t port;
 
 	std::shared_ptr<MockIrrigationDocument> mockIrrigationDocument;
 	std::shared_ptr<MockCurrentTemperature> mockCurrentTemperature;
 	std::shared_ptr<MockTemperatureHistory> mockTemperatureHistory;
 	std::shared_ptr<MockTemperatureForecast> mockTemperatureForecast;
 	std::shared_ptr<MockShutdownManager> mockShutdownManager;
+	std::shared_ptr<MockFileWriter> mockFileWriter;
+	std::shared_ptr<MockFileWriterFactory> mockFileWriterFactory;
 
 	std::shared_ptr<RestView> restView;
 

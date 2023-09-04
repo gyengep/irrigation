@@ -207,6 +207,7 @@ void IrrigationApplication::initDocument() {
 			temperatureHandler->getTemperatureForecast(),
 			temperatureHandler->getTemperatureHistory(),
 			shutdownManager,
+			std::make_shared<FileWriterFactoryImpl>(Configuration::getInstance().getAccessLogFileName()),
 			Configuration::getInstance().getResourceDirectory()
 		)));
 }

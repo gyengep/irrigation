@@ -4,6 +4,7 @@
 #include "Temperature/CurrentTemperature.h"
 #include "Temperature/TemperatureForecast.h"
 #include "Temperature/TemperatureHistory.h"
+#include "Utils/FileWriter.h"
 #include "Utils/ShutdownManager.h"
 #include "WebServer/KeyValue.h"
 #include "XmlIrrigationActionReader.h"
@@ -108,6 +109,7 @@ public:
 			const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 			const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 			const std::shared_ptr<ShutdownManager>& shutdownManager,
+			const std::shared_ptr<FileWriterFactory>& accessLogWriterFactory,
 			const std::string& resourceDirectory
 		);
 	virtual ~RestView();
