@@ -1,6 +1,6 @@
 #pragma once
 #include <gmock/gmock.h>
-#include "Model/Application.h"
+#include "DocumentView/Application.h"
 
 
 class MockApplication : public Application {

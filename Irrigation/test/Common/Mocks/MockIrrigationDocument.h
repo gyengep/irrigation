@@ -24,4 +24,7 @@ public:
 
 	MOCK_CONST_METHOD0(saveState, void());
 	MOCK_METHOD0(loadState, void());
+
+	MOCK_CONST_METHOD0(save, void());
+	MOCK_METHOD0(load, void());
 };

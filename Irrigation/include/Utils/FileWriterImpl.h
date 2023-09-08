@@ -17,10 +17,10 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class FileWriterFactoryImpl : public FileWriterFactory {
+class FileWriterImplFactory : public FileWriterFactory {
 	const std::string fileName;
 
 public:
-	FileWriterFactoryImpl(const std::string& fileName);
+	FileWriterImplFactory(const std::string& fileName);
 	virtual std::shared_ptr<FileWriter> create(FileWriter::Type) override;
 };

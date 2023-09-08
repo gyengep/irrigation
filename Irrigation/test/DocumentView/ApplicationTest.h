@@ -1,7 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
+#include "DocumentView/Application.h"
 
-class Application;
 
 
 class ApplicationTest : public ::testing::Test {

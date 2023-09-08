@@ -2,12 +2,12 @@
 #include "Exceptions/Exceptions.h"
 
 
-FileWriterFactoryImpl::FileWriterFactoryImpl(const std::string& fileName) :
+FileWriterImplFactory::FileWriterImplFactory(const std::string& fileName) :
 	fileName(fileName)
 {
 }
 
-std::shared_ptr<FileWriter> FileWriterFactoryImpl::create(FileWriter::Type type) {
+std::shared_ptr<FileWriter> FileWriterImplFactory::create(FileWriter::Type type) {
 	return std::make_shared<FileWriterImpl>(fileName, type);
 }
 

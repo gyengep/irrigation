@@ -2,13 +2,17 @@
 #include <memory>
 #include "DocumentView/Document.h"
 #include "DTO/DocumentDTO.h"
-#include "Logic/Program.h"
+#include "Logic/IdType.h"
+#include "Logic/DurationList.h"
 #include "Logic/ProgramContainer.h"
 
 
-class IrrigationDocument : public Document {
 
+class IrrigationDocument : public Document {
 public:
+	class Loader;
+	class Saver;
+
 	virtual ~IrrigationDocument() = default;
 
 	virtual void lock() const = 0;
@@ -30,4 +34,23 @@ public:
 
 	virtual void saveState() const = 0;
 	virtual void loadState() = 0;
+
+	virtual void save() const = 0;
+	virtual void load() = 0;
+};
+
+class IrrigationDocument::Loader {
+public:
+	virtual ~Loader() = default;
+	virtual bool load(IrrigationDocument&) = 0;
+
+	static std::shared_ptr<Loader> create();
+};
+
+class IrrigationDocument::Saver {
+public:
+	virtual ~Saver() = default;
+	virtual void save(const IrrigationDocument&) = 0;
+
+	static std::shared_ptr<Saver> create();
 };

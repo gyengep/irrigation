@@ -1,5 +1,7 @@
 #include "Model/IrrigationDocumentImpl.h"
 #include "Samples/DocumentSamples.h"
+#include "Mocks/MockIrrigationDocumentLoader.h"
+#include "Mocks/MockIrrigationDocumentSaver.h"
 #include "Mocks/MockProgramContainer.h"
 #include "Mocks/MockWateringController.h"
 #include <gmock/gmock.h>
@@ -35,6 +37,8 @@ void check(const DocumentDtoUpdateType updateType) {
 	std::shared_ptr<MockProgramContainer> mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
 
 	IrrigationDocumentImpl actualDocument(
+		std::make_shared<StrictMock<MockIrrigationDocumentLoader>>(),
+		std::make_shared<StrictMock<MockIrrigationDocumentSaver>>(),
 		mockProgramContainer,
 		std::make_shared<NiceMock<MockWateringController>>(),
 		nullptr

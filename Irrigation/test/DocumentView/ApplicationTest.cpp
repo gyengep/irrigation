@@ -3,13 +3,11 @@
 #include <thread>
 #include "Mocks/MockApplication.h"
 
-using namespace std;
 using namespace testing;
 
 
-
 void ApplicationTest::waitAndExit(Application* application, unsigned waitMs) {
-	this_thread::sleep_for(chrono::milliseconds(waitMs + 10));
+	std::this_thread::sleep_for(std::chrono::milliseconds(waitMs + 10));
 	application->exit();
 }
 
@@ -17,13 +15,13 @@ TEST_F(ApplicationTest, exit) {
 	const unsigned waitMs = 100;
 	Application application;
 
-	auto start = chrono::high_resolution_clock::now();
-	thread waitAndExitThread(&ApplicationTest::waitAndExit, this, &application, waitMs);
+	auto start = std::chrono::high_resolution_clock::now();
+	std::thread waitAndExitThread(&ApplicationTest::waitAndExit, this, &application, waitMs);
 
 	application.run();
-	auto end = chrono::high_resolution_clock::now();
+	auto end = std::chrono::high_resolution_clock::now();
 
-	EXPECT_THAT(chrono::duration_cast<chrono::milliseconds>(end - start).count(), Ge(waitMs));
+	EXPECT_THAT(std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count(), Ge(waitMs));
 
 	waitAndExitThread.join();
 }
@@ -35,7 +33,7 @@ TEST_F(ApplicationTest, initAndTerminate) {
 	EXPECT_CALL(application, onInitialize()).Times(1);
 	EXPECT_CALL(application, onTerminate()).Times(1);
 
-	thread waitAndExitThread(&ApplicationTest::waitAndExit, this, &application, waitMs);
+	std::thread waitAndExitThread(&ApplicationTest::waitAndExit, this, &application, waitMs);
 	application.run();
 
 	waitAndExitThread.join();

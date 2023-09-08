@@ -5,24 +5,28 @@
 #include "json.hpp"
 #include "DTO/DocumentDTO.h"
 #include "Email/EmailHandler.h"
-#include "Logic/Program.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
 #include "IrrigationDocument.h"
 
 
+
 class IrrigationDocumentImpl : public IrrigationDocument {
+	const std::shared_ptr<Loader> documentLoader;
+	const std::shared_ptr<Saver> documentSaver;
 	const std::shared_ptr<ProgramContainer> programContainer;
 	const std::shared_ptr<WateringController> wateringController;
 	const std::shared_ptr<EmailHandler> emailHandler;
 
 	mutable std::mutex mtx;
-	std::atomic_bool modified;
+	mutable std::atomic_bool modified;
 
 	void start(const DurationList& durations, unsigned adjustment);
 
 public:
 	IrrigationDocumentImpl(
+		const std::shared_ptr<Loader>& documentLoader,
+		const std::shared_ptr<Saver>& documentSaver,
 		const std::shared_ptr<ProgramContainer>& programContainer,
 		const std::shared_ptr<WateringController>& wateringController,
 		const std::shared_ptr<EmailHandler>& emailHandler
@@ -49,6 +53,9 @@ public:
 
 	virtual void saveState() const override;
 	virtual void loadState() override;
+
+	virtual void save() const override;
+	virtual void load() override;
 
 	nlohmann::json saveTo() const;
 	void loadFrom(const nlohmann::json& values);

@@ -1,18 +1,17 @@
 #pragma once
-#include "DTO/DocumentDTO.h"
+#include "DocumentView/Application.h"
 #include "Email/EmailHandler.h"
 #include "Temperature/TemperatureHandler.h"
-#include "Application.h"
 #include "ShutdownManagerImpl.h"
 #include "IrrigationDocument.h"
+#include "PeriodicDocumentSaver.h"
 
-class DocumentSaver;
 
 
 class IrrigationApplication : public Application {
 	std::shared_ptr<IrrigationDocument> irrigationDocument;
 	std::shared_ptr<TemperatureHandler> temperatureHandler;
-	std::unique_ptr<DocumentSaver> documentSaver;
+	std::unique_ptr<PeriodicDocumentSaver> periodicDocumentSaver;
 	std::shared_ptr<ShutdownManagerImpl> shutdownManager;
 	std::shared_ptr<EmailHandler> emailHandler;
 
@@ -25,7 +24,6 @@ class IrrigationApplication : public Application {
 	void uninitTemperature();
 	void uninitDocument();
 	void uninitShutdownManager();
-	void setMyDefaults();
 
 	virtual void onInitialize() override;
 	virtual void onTerminate() override;

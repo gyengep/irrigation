@@ -3,9 +3,7 @@
 #include <mutex>
 
 
-
 class Application {
-
 	std::condition_variable condition;
 	std::mutex mtx;
 	bool isTerminated;

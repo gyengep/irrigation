@@ -8,9 +8,14 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 void IrrigationDocumentImplTest::SetUp() {
+	mockIrrigationDocumentLoader = std::make_shared<StrictMock<MockIrrigationDocumentLoader>>(),
+	mockIrrigationDocumentSaver = std::make_shared<StrictMock<MockIrrigationDocumentSaver>>();
+
 	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
-			std::make_shared<MockProgramContainer>(),
-			std::make_shared<MockWateringController>(),
+			mockIrrigationDocumentLoader,
+			mockIrrigationDocumentSaver,
+			std::make_shared<StrictMock<MockProgramContainer>>(),
+			std::make_shared<StrictMock<MockWateringController>>(),
 			nullptr
 		);
 }
@@ -57,4 +62,56 @@ TEST_F(IrrigationDocumentImplTest, setModified) {
 
 	irrigationDocument->setModified(true);
 	EXPECT_TRUE(irrigationDocument->isModified());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(IrrigationDocumentImplTest, load) {
+	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
+			Times(1);
+
+	irrigationDocument->load();
+}
+
+TEST_F(IrrigationDocumentImplTest, loadWithTrue) {
+	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
+			Times(1).
+			WillRepeatedly(Return(true));
+
+	EXPECT_NO_THROW(irrigationDocument->load());
+	EXPECT_FALSE(irrigationDocument->isModified());
+}
+
+TEST_F(IrrigationDocumentImplTest, loadWithFalse) {
+	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
+			Times(1).
+			WillRepeatedly(Return(false));
+
+	EXPECT_NO_THROW(irrigationDocument->load());
+	EXPECT_TRUE(irrigationDocument->isModified());
+}
+
+TEST_F(IrrigationDocumentImplTest, loadWithExceptiom) {
+	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
+			Times(1).
+			WillRepeatedly(Throw(std::runtime_error("aaa")));
+
+	EXPECT_THROW(irrigationDocument->load(), std::runtime_error);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(IrrigationDocumentImplTest, save) {
+	EXPECT_CALL(*mockIrrigationDocumentSaver, save(Ref(*irrigationDocument))).
+			Times(1);
+
+	irrigationDocument->save();
+}
+
+TEST_F(IrrigationDocumentImplTest, saveWithExceptiom) {
+	EXPECT_CALL(*mockIrrigationDocumentSaver, save(Ref(*irrigationDocument))).
+			Times(1).
+			WillRepeatedly(Throw(std::runtime_error("aaa")));
+
+	EXPECT_THROW(irrigationDocument->save(), std::runtime_error);
 }

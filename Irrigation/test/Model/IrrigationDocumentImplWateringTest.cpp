@@ -2,6 +2,8 @@
 #include "TestCommon/cout.h"
 #include "Logic/ProgramContainerImpl.h"
 #include "Logic/RunTimeImpl.h"
+#include "Mocks/MockIrrigationDocumentLoader.h"
+#include "Mocks/MockIrrigationDocumentSaver.h"
 
 using namespace testing;
 
@@ -56,6 +58,8 @@ void IrrigationDocumentImplWateringTest::SetUp() {
 
 
 	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
+			std::make_shared<StrictMock<MockIrrigationDocumentLoader>>(),
+			std::make_shared<StrictMock<MockIrrigationDocumentSaver>>(),
 			std::make_shared<ProgramContainerImpl>(
 				std::initializer_list<ProgramContainer::value_type> {
 						{ id1, mockProgram1 },

@@ -1,9 +1,6 @@
 #include "Application.h"
 #include "Logger/Logger.h"
 
-using namespace std;
-
-
 
 Application::Application() :
 	isTerminated(false)
@@ -18,7 +15,7 @@ void Application::run() {
 
 	LOGGER.debug("Main loop started");
 
-	unique_lock<mutex> lock(mtx);
+	std::unique_lock<std::mutex> lock(mtx);
 	while (!isTerminated) {
 		condition.wait(lock);
 	}
@@ -31,7 +28,7 @@ void Application::run() {
 void Application::exit() {
 	LOGGER.debug("Terminate called");
 
-	unique_lock<mutex> lock(mtx);
+	std::unique_lock<std::mutex> lock(mtx);
 	isTerminated = true;
 	lock.unlock();
 	condition.notify_all();

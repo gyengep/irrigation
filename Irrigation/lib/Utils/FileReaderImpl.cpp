@@ -3,7 +3,9 @@
 #include <fstream>
 
 
-FileReaderImpl::FileReaderImpl(const std::string& fileName) : fileName(fileName) {
+FileReaderImpl::FileReaderImpl(const std::string& fileName) :
+	fileName(fileName)
+{
 }
 
 std::string FileReaderImpl::read() const {

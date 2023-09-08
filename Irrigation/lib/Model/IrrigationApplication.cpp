@@ -1,16 +1,16 @@
 #include "IrrigationApplication.h"
 #include "Configuration.h"
-#include "DocumentSaver.h"
 #include "IrrigationDocumentImpl.h"
+#include "IrrigationDocumentLoaderImpl.h"
+#include "IrrigationDocumentLoaderMyDefaults.h"
+#include "IrrigationDocumentSaverImpl.h"
 #include "DtoReaderWriter/XMLParseException.h"
 #include "DtoReaderWriter/XmlReader.h"
 #include "DtoReaderWriter/XmlWriter.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/GpioValve.h"
 #include "Hardware/Valves/ZoneHandlerImpl.h"
-
 #include "Logger/Logger.h"
-
 #include "Logic/ProgramImpl.h"
 #include "Logic/RunTimeImpl.h"
 #include "Logic/StartTimeImpl.h"
@@ -23,23 +23,30 @@
 #include "Schedulers/HotWeatherSchedulerImpl.h"
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
 #include "Schedulers/WeeklySchedulerImpl.h"
-
 #include "Utils/FileReaderImpl.h"
 #include "Utils/FileWriterImpl.h"
 #include "Views/RestView/RestView.h"
 #include "Views/TimerView/TimerView.h"
 #include <stdexcept>
 
-using namespace std;
 
-
-class XmlWriterFactory : public DocumentSaver::DtoWriterFactory {
-public:
-	virtual ~XmlWriterFactory() = default;
-	virtual shared_ptr<DtoWriter> create() override {
-		return make_shared<XmlWriter>();
+std::shared_ptr<IrrigationDocument::Loader> IrrigationDocument::Loader::create() {
+	if (true) {
+		return std::make_shared<IrrigationDocumentLoaderImpl>(
+			std::make_shared<XmlReader>(),
+			std::make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
+		);
+	} else {
+		return std::make_shared<IrrigationDocumentLoaderMyDefaults>();
 	}
-};
+}
+
+std::shared_ptr<IrrigationDocument::Saver> IrrigationDocument::Saver::create() {
+	return std::make_shared<IrrigationDocumentSaverImpl>(
+		std::make_shared<XmlWriter>(),
+		std::make_shared<FileWriterImplFactory>(Configuration::getInstance().getConfigFileName())
+	);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +61,7 @@ IrrigationApplication& IrrigationApplication::getInstance() {
 	return instance;
 }
 
-string IrrigationApplication::getVersion() {
+std::string IrrigationApplication::getVersion() {
 	return version_string;
 }
 
@@ -64,8 +71,8 @@ void IrrigationApplication::initEmail() {
 			Email::Contact("Gyenge Peter", "gyengep@gmail.com"),
 			EmailSender::create(),
 			std::vector<std::chrono::milliseconds> {
-					chrono::minutes(1), chrono::minutes(2), chrono::minutes(5),
-					chrono::minutes(15), chrono::minutes(30), chrono::minutes(60)
+					std::chrono::minutes(1), std::chrono::minutes(2), std::chrono::minutes(5),
+					std::chrono::minutes(15), std::chrono::minutes(30), std::chrono::minutes(60)
 				}
 		);
 
@@ -86,13 +93,13 @@ void IrrigationApplication::uninitEmail() {
 void IrrigationApplication::initGpio() {
 	try {
 		GpioValve::init();
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't initialize valves"));
+	} catch (const std::exception& e) {
+		std::throw_with_nested(std::runtime_error("Can't initialize valves"));
 	}
 }
 
 void IrrigationApplication::initShutdownManager() {
-	shutdownManager = make_shared<ShutdownManagerImpl>();
+	shutdownManager = std::make_shared<ShutdownManagerImpl>();
 }
 
 void IrrigationApplication::uninitShutdownManager() {
@@ -126,15 +133,15 @@ void IrrigationApplication::initTemperature() {
 				)
 			);
 
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't initialize temperature module"));
+	} catch (const std::exception& e) {
+		std::throw_with_nested(std::runtime_error("Can't initialize temperature module"));
 	}
 }
 
 void IrrigationApplication::uninitTemperature() {
 	try {
 		temperatureHandler.reset();
-	} catch (const exception& e) {
+	} catch (const std::exception& e) {
 		LOGGER.warning("An error during uninitialize temperature module", e);
 	}
 }
@@ -142,6 +149,8 @@ void IrrigationApplication::uninitTemperature() {
 void IrrigationApplication::initDocument() {
 
 	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
+			IrrigationDocumentImpl::Loader::create(),
+			IrrigationDocumentImpl::Saver::create(),
 			std::make_shared<ProgramContainerImpl>(
 				std::make_shared<ProgramImplFactory>(
 					std::make_shared<SchedulerContainerImplFactory>(
@@ -169,59 +178,47 @@ void IrrigationApplication::initDocument() {
 			emailHandler
 	);
 
-	documentSaver.reset(new DocumentSaver(
-		irrigationDocument,
-		make_shared<XmlWriterFactory>(),
-		make_shared<FileWriterFactoryImpl>(Configuration::getInstance().getConfigFileName())
-	));
-
 	try {
 		LOGGER.debug("Loading configuration...");
-
-		if (true) {
-			documentSaver->load(
-				make_shared<XmlReader>(),
-				make_shared<FileReaderImpl>(Configuration::getInstance().getConfigFileName())
-			);
-		} else {
-			setMyDefaults();
-		}
-
-		irrigationDocument->loadState();
-		documentSaver->startTimer();
-
+		irrigationDocument->load();
 	} catch (const FileNotFoundException& e) {
 		LOGGER.debug("Configuration file not found. Default configuration is loaded.");
 	} catch (const IOException& e) {
-		throw_with_nested(runtime_error("Can't open configuration file"));
+		std::throw_with_nested(std::runtime_error("Can't open configuration file"));
 	} catch (const XMLParseException& e) {
-		throw_with_nested(runtime_error("Can't parse configuration file"));
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't initialize document"));
+		std::throw_with_nested(std::runtime_error("Can't parse configuration file"));
+	} catch (const std::exception& e) {
+		std::throw_with_nested(std::runtime_error("Can't initialize document"));
 	}
 
-	irrigationDocument->addView(unique_ptr<View>(new TimerView(*irrigationDocument)));
-	irrigationDocument->addView(unique_ptr<View>(new RestView(*irrigationDocument,
+	irrigationDocument->loadState();
+	irrigationDocument->addView(std::unique_ptr<View>(new TimerView(*irrigationDocument)));
+	irrigationDocument->addView(std::unique_ptr<View>(new RestView(*irrigationDocument,
 			Configuration::getInstance().getRestPort(),
 			temperatureHandler->getCurrentTemperature(),
 			temperatureHandler->getTemperatureForecast(),
 			temperatureHandler->getTemperatureHistory(),
 			shutdownManager,
-			std::make_shared<FileWriterFactoryImpl>(Configuration::getInstance().getAccessLogFileName()),
+			std::make_shared<FileWriterImplFactory>(Configuration::getInstance().getAccessLogFileName()),
 			Configuration::getInstance().getResourceDirectory()
 		)));
+
+	periodicDocumentSaver.reset(new PeriodicDocumentSaver(irrigationDocument));
+	periodicDocumentSaver->startTimer();
 }
 
 void IrrigationApplication::uninitDocument() {
-	documentSaver->stopTimer();
+	periodicDocumentSaver->stopTimer();
+	periodicDocumentSaver.reset();
 
 	try {
-		documentSaver->saveIfModified();
-	} catch (const exception& e) {
-		throw_with_nested(runtime_error("Can't save configuration"));
+		if (irrigationDocument->isModified()) {
+			irrigationDocument->save();
+		}
+	} catch (const std::exception& e) {
+		std::throw_with_nested(std::runtime_error("Can't save configuration"));
 	}
 
-	documentSaver.reset();
 	irrigationDocument.reset();
 }
 

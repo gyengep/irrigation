@@ -46,7 +46,7 @@ TEST_F(FileWriterImplTest, append2) {
 	const std::string expectedText1 = "line1";
 	const std::string expectedText2 = "line2";
 
-	FileWriterFactoryImpl fileWriterFactory(fileName);
+	FileWriterImplFactory fileWriterFactory(fileName);
 
 	fileWriterFactory.create(FileWriter::Type::APPEND)->write(expectedText1);
 	EXPECT_THAT(expectedText1, getFileContent(fileName));
@@ -61,7 +61,7 @@ TEST_F(FileWriterImplTest, truncate2) {
 	const std::string expectedText1 = "line1";
 	const std::string expectedText2 = "line2";
 
-	FileWriterFactoryImpl fileWriterFactory(fileName);
+	FileWriterImplFactory fileWriterFactory(fileName);
 
 	fileWriterFactory.create(FileWriter::Type::TRUNCATE)->write(expectedText1);
 	EXPECT_THAT(expectedText1, getFileContent(fileName));

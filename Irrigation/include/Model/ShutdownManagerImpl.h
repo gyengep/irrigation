@@ -3,6 +3,7 @@
 #include "Utils/ShutdownManager.h"
 
 
+
 class ShutdownManagerImpl : public ShutdownManager {
 	enum class Task {
 		None,

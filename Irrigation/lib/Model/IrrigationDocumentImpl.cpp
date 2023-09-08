@@ -7,10 +7,14 @@
 
 
 IrrigationDocumentImpl::IrrigationDocumentImpl(
+	const std::shared_ptr<Loader>& documentLoader,
+	const std::shared_ptr<Saver>& documentSaver,
 	const std::shared_ptr<ProgramContainer>& programContainer,
 	const std::shared_ptr<WateringController>& wateringController,
 	const std::shared_ptr<EmailHandler>& emailHandler
 ) :
+	documentLoader(documentLoader),
+	documentSaver(documentSaver),
 	programContainer(programContainer),
 	wateringController(wateringController),
 	emailHandler(emailHandler),
@@ -142,8 +146,6 @@ void IrrigationDocumentImpl::updateFromDocumentDto(const DocumentDTO& documentDT
 		for (const auto& programWithId : getProgramContainer()) {
 			LOGGER.debug("Program[%s] is added: %s", programWithId.first.toString().c_str(), programWithId.second->toString().c_str());
 		}
-
- 		LOGGER.debug("Configuration is successfully loaded");
 	}
 }
 
@@ -185,4 +187,13 @@ void IrrigationDocumentImpl::loadState() {
 	} else {
 		LOGGER.debug("Document state is NOT loaded");
 	}
+}
+
+void IrrigationDocumentImpl::save() const {
+	documentSaver->save(*this);
+	modified = false;
+}
+
+void IrrigationDocumentImpl::load() {
+	modified = (false == documentLoader->load(*this));
 }
