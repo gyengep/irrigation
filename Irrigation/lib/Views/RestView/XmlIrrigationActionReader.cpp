@@ -1,5 +1,5 @@
 #include "XmlIrrigationActionReader.h"
-#include "pugixml.hpp"
+#include <pugixml/pugixml.hpp>
 
 using namespace std;
 using namespace pugi;

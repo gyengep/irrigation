@@ -17,7 +17,6 @@ public:
 	typedef typename container_type::const_iterator const_iterator;
 	typedef container_type::size_type				size_type;
 
-	StartTimeContainer() = default;
 	virtual ~StartTimeContainer() = default;
 
 	virtual const_iterator begin() const = 0;

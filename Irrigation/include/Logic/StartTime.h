@@ -7,7 +7,6 @@
 
 class StartTime {
 public:
-	StartTime() = default;
 	virtual ~StartTime() = default;
 
 	virtual bool less(const StartTime& other) const = 0;

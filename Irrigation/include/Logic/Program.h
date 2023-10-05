@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "DTO/ProgramDTO.h"
 #include "Utils/DateTime.h"
 #include "Utils/OstreamInsert.h"
@@ -12,7 +12,6 @@
 
 class Program {
 public:
-	Program() = default;
 	virtual ~Program() = default;
 
 	virtual void setEnabled(bool enabled) = 0;

@@ -1,7 +1,7 @@
 #include "DarkSkyWrapper.h"
 #include "Logger/Logger.h"
 #include "Utils/DateTime.h"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <stdexcept>
 

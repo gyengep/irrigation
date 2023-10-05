@@ -1,5 +1,5 @@
 #include "XmlWriter.h"
-#include "pugixml.hpp"
+#include <pugixml/pugixml.hpp>
 #include <iomanip>
 #include <sstream>
 

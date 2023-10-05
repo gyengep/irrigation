@@ -18,7 +18,6 @@ public:
 	typedef typename container_type::const_iterator const_iterator;
 	typedef container_type::size_type				size_type;
 
-	ProgramContainer() = default;
 	virtual ~ProgramContainer() = default;
 
 	virtual value_type& insert(const key_type& key, const mapped_type& value) = 0;

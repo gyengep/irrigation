@@ -1,5 +1,5 @@
 #include "XmlErrorWriter.h"
-#include "pugixml.hpp"
+#include <pugixml/pugixml.hpp>
 #include <sstream>
 
 using namespace std;

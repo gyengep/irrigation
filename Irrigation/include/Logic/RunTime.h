@@ -8,7 +8,6 @@
 
 class RunTime {
 public:
-	RunTime() = default;
 	virtual ~RunTime() = default;
 
 	virtual unsigned getSeconds() const = 0;

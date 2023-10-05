@@ -1,7 +1,7 @@
 #include "OWMWrapper.h"
 #include "Logger/Logger.h"
 #include "Utils/DateTime.h"
-#include "pugixml.hpp"
+#include <pugixml/pugixml.hpp>
 #include <regex>
 #include <sstream>
 #include <stdexcept>

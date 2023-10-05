@@ -2,7 +2,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "DTO/DocumentDTO.h"
 #include "Email/EmailHandler.h"
 #include "Logic/ProgramContainer.h"

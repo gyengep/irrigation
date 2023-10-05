@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "DTO/ProgramDTO.h"
 #include "Utils/DateTime.h"
 #include "RunTimeContainer.h"

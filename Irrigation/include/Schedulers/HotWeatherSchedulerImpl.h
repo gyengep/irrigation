@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 #include <memory>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "DTO/HotWeatherSchedulerDTO.h"
 #include "Temperature/TemperatureHistory.h"
 #include "HotWeatherScheduler.h"

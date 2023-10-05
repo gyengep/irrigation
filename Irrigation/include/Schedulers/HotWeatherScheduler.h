@@ -2,7 +2,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "DTO/HotWeatherSchedulerDTO.h"
 #include "Utils/OstreamInsert.h"
 #include "Scheduler.h"

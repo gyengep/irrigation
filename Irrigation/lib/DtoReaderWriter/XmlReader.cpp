@@ -1,5 +1,5 @@
 #include "XmlReader.h"
-#include "pugixml.hpp"
+#include <pugixml/pugixml.hpp>
 #include <cstring>
 
 using namespace std;

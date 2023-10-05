@@ -19,13 +19,8 @@ DEPENDS         = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCES:.$(SRC_EX
 ########################################################
 ########################################################
 
-INCLUDES            = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
-ARFLAGS             = r 
-SENDINBLUE_SMTP_KEY = $(shell printenv SENDINBLUE_SMTP_KEY)
-
-ifndef SENDINBLUE_SMTP_KEY
-$(error Error! SENDINBLUE_SMTP_KEY is not set)
-endif
+INCLUDES        = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/$(TARGET_NAME)
+ARFLAGS         = r 
 
 include ../../common.mk
 

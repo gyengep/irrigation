@@ -18,7 +18,6 @@ class Scheduler {
 public:
 	class Result;
 
-	Scheduler() = default;
 	virtual ~Scheduler() = default;
 	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) = 0;
 

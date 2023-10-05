@@ -22,7 +22,6 @@ public:
 	typedef typename container_type::const_iterator const_iterator;
 	typedef container_type::size_type				size_type;
 
-	SchedulerContainer() = default;
 	virtual ~SchedulerContainer() = default;
 
 	virtual const_iterator begin() const = 0;

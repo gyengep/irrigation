@@ -7,3 +7,11 @@ CXXFLAGS        = -std=gnu++11 -Wall -fmessage-length=0 -MMD -MP
 
 # RELEASE flags
 CXXFLAGS        += -O3
+
+INCLUDES        += -isystem $(PROJECT_ROOT)/3p
+
+SENDINBLUE_SMTP_KEY = $(shell printenv SENDINBLUE_SMTP_KEY)
+
+ifndef SENDINBLUE_SMTP_KEY
+$(error Error! SENDINBLUE_SMTP_KEY is not set)
+endif

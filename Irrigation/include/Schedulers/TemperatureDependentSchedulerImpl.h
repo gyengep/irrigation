@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "DTO/TemperatureDependentSchedulerDTO.h"
 #include "Temperature/TemperatureForecast.h"
 #include "Temperature/TemperatureHistory.h"
