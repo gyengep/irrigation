@@ -11,14 +11,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureDependentSchedulerImplFactory::TemperatureDependentSchedulerImplFactory(const std::shared_ptr<TemperatureForecast>& temperatureForecast, const std::shared_ptr<TemperatureHistory>& temperatureHistory) :
+TemperatureDependentSchedulerImplFactory::TemperatureDependentSchedulerImplFactory(
+		const std::shared_ptr<TemperatureDependentSchedulerRepository>& repository,
+		const std::shared_ptr<TemperatureForecast>& temperatureForecast,
+		const std::shared_ptr<TemperatureHistory>& temperatureHistory
+) :
+	repository(repository),
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory)
 {
 }
 
-TemperatureDependentSchedulerPtr TemperatureDependentSchedulerImplFactory::create() const {
+TemperatureDependentSchedulerPtr TemperatureDependentSchedulerImplFactory::create(unsigned id) const {
 	return std::make_shared<TemperatureDependentSchedulerImpl>(
+			std::make_shared<TemperatureDependentSchedulerImpl::PersistedData>(repository, id),
 			temperatureForecast,
 			temperatureHistory
 		);
@@ -26,10 +32,82 @@ TemperatureDependentSchedulerPtr TemperatureDependentSchedulerImplFactory::creat
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TemperatureDependentSchedulerImpl::PersistedData::PersistedData(
+	const std::shared_ptr<TemperatureDependentSchedulerRepository>& repository,
+	unsigned id
+) :
+	repository(repository),
+	id(id),
+	remainingPercent(0),
+	lastRun(DateTime::epoch())
+{
+}
+
+void TemperatureDependentSchedulerImpl::PersistedData::init() {
+/*
+	if (false == create) {
+		if (nullptr == repository->findById(id)) {
+			LOGGER.warning("Program[%u].TemperatureDependentSchedulerEntity does not exist", id);
+			create = true;
+		}
+	}
+
+	if (create) {
+		try {
+			auto entity = std::make_shared<TemperatureDependentSchedulerEntity>(id);
+			repository->insert(entity);
+			LOGGER.debug("Program[%u].TemperatureDependentSchedulerEntity is added: %s", id, entity->toString().c_str());
+		} catch (const std::runtime_error& e) {
+			LOGGER.warning("Can not create TemperatureDependentSchedulerEntity", e);
+		}
+	}
+*/
+}
+
+void TemperatureDependentSchedulerImpl::PersistedData::uninit() {
+/*
+	try {
+		repository->erase(std::make_shared<TemperatureDependentSchedulerEntity>(id));
+		LOGGER.debug("Program[%u].TemperatureDependentSchedulerEntity is deleted", id);
+	} catch (const std::runtime_error& e) {
+		LOGGER.warning("Can not delete TemperatureDependentSchedulerEntity", e);
+	}
+*/
+}
+
+void TemperatureDependentSchedulerImpl::PersistedData::save(int remainingPercent, const LocalDateTime& lastRun) {
+/*
+	try {
+		const auto entity = std::make_shared<TemperatureDependentSchedulerEntity>(id, remainingPercent, lastRun.toRawTime());
+		repository->update(entity);
+		LOGGER.debug("Program[%u].TemperatureDependentSchedulerEntity is modified: %s", id, entity->toString().c_str());
+	} catch (const std::runtime_error& e) {
+		LOGGER.warning("Can not update TemperatureDependentSchedulerEntity", e);
+	}
+*/
+}
+
+void TemperatureDependentSchedulerImpl::PersistedData::load(int& remainingPercent, LocalDateTime& lastRun) {
+/*
+	const auto entity = repository->findById(id);
+
+	if (nullptr == entity) {
+		throw std::runtime_error("TemperatureDependentSchedulerEntity[" + std::to_string(id) + "] not found");
+	}
+
+	remainingPercent = entity->getRemainingPercent();
+	lastRun = DateTime::create(entity->getLastRun());
+*/
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
+	const std::shared_ptr<PersistedData>& persistedData,
 	const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 	const std::shared_ptr<TemperatureHistory>& temperatureHistory
 ) :
+	persistedData(persistedData),
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
@@ -42,11 +120,13 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 }
 
 TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
+	const std::shared_ptr<PersistedData>& persistedData,
 	const std::shared_ptr<TemperatureForecast>& temperatureForecast,
 	const std::shared_ptr<TemperatureHistory>& temperatureHistory,
 	float remainingCorrection,
 	unsigned minAdjustment, unsigned maxAdjustment
 ) :
+	persistedData(persistedData),
 	temperatureForecast(temperatureForecast),
 	temperatureHistory(temperatureHistory),
 	remainingPercent(0),
@@ -59,6 +139,18 @@ TemperatureDependentSchedulerImpl::TemperatureDependentSchedulerImpl(
 }
 
 TemperatureDependentSchedulerImpl::~TemperatureDependentSchedulerImpl() {
+}
+
+void TemperatureDependentSchedulerImpl::createPersistedData() {
+//	persistedData->init();
+}
+
+void TemperatureDependentSchedulerImpl::deletePersistedData() {
+//	persistedData->uninit();
+}
+
+void TemperatureDependentSchedulerImpl::loadPersistedData() {
+//	persistedData->load(remainingPercent, lastRun);
 }
 
 unsigned TemperatureDependentSchedulerImpl::getRequiredPercentForNextDay(const DateTime& dateTime, float* temp) const {
@@ -258,30 +350,9 @@ std::unique_ptr<Scheduler::Result> TemperatureDependentSchedulerImpl::process(co
 
 	LOGGER.trace(oss.str().c_str());
 
+	persistedData->save(remainingPercent, lastRun);
+
 	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(adjustment));
-}
-
-nlohmann::json TemperatureDependentSchedulerImpl::saveTo() const {
-	nlohmann::json j;
-	j["remainingPercent"] = remainingPercent;
-	j["lastRun"] = lastRun.toRawTime();
-	return j;
-}
-
-void TemperatureDependentSchedulerImpl::loadFrom(const nlohmann::json& values) {
-	{
-		auto it = values.find("remainingPercent");
-		if (values.end() != it) {
-			remainingPercent = it.value();
-		}
-	}
-
-	{
-		auto it = values.find("lastRun");
-		if (values.end() != it) {
-			lastRun = DateTime::create(it.value());
-		}
-	}
 }
 
 void TemperatureDependentSchedulerImpl::setRemainingCorrection(float a) {

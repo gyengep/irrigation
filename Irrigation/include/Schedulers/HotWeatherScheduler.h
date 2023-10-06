@@ -2,7 +2,6 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include <nlohmann/json.hpp>
 #include "DTO/HotWeatherSchedulerDTO.h"
 #include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
@@ -26,11 +25,6 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 
 	virtual std::string toString() const = 0;
-
-	///////////////////////////////////////////////////////////////////////////
-
-	virtual nlohmann::json saveTo() const = 0;
-	virtual void loadFrom(const nlohmann::json& json) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,5 +41,5 @@ typedef std::shared_ptr<const HotWeatherScheduler> ConstHotWeatherSchedulerPtr;
 class HotWeatherSchedulerFactory {
 public:
 	virtual ~HotWeatherSchedulerFactory() = default;
-	virtual HotWeatherSchedulerPtr create() const = 0;
+	virtual HotWeatherSchedulerPtr create(unsigned id) const = 0;
 };

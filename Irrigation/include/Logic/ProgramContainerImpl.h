@@ -21,7 +21,7 @@ class ProgramContainerImpl : public ProgramContainer {
 	const std::shared_ptr<ProgramFactory> programFactory;
 	container_type container;
 
-	value_type& createUpdateAndInsert(const IdType& id, const ProgramDTO& programDto);
+	value_type& _createProgramAndInitPersistedData(const IdType& id, const ProgramDTO& programDto, bool create);
 
 public:
 	ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory);
@@ -42,7 +42,9 @@ public:
 
 	virtual std::list<ProgramDTO> toProgramDtoList() const override;
 	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) override;
-	virtual value_type& createFromProgramDto(const ProgramDTO& programDto) override;
+
+	virtual value_type& createAndInit(const ProgramDTO& programDto) override;
+	virtual void deleteAndUnInit(const key_type& key) override;
 
 	virtual std::string toString() const override;
 };

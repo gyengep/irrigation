@@ -15,22 +15,22 @@ namespace Dto2ObjectTestSamples {
 		HotWeatherSchedulerSampleList() {
 
 			emplace_back(
-				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(60), 35.0f),
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, nullptr, std::chrono::seconds(60), 35.0f),
 				HotWeatherSchedulerDTO(60, 35.0f)
 			);
 
 			emplace_back(
-				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(120), 30.0f),
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, nullptr, std::chrono::seconds(120), 30.0f),
 				HotWeatherSchedulerDTO(120, 30.0f)
 			);
 
 			emplace_back(
-				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(180), 33.0f),
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, nullptr, std::chrono::seconds(180), 33.0f),
 				HotWeatherSchedulerDTO(180, 33.0f)
 			);
 
 			emplace_back(
-				std::make_shared<HotWeatherSchedulerImpl>(nullptr, std::chrono::seconds(150), 25.0f),
+				std::make_shared<HotWeatherSchedulerImpl>(nullptr, nullptr, std::chrono::seconds(150), 25.0f),
 				HotWeatherSchedulerDTO(150, 25.0f)
 			);
 		}

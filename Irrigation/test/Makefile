@@ -13,6 +13,7 @@ all:
 	@$(MAKE) -C Logger all
 	@$(MAKE) -C Logic all
 	@$(MAKE) -C Model all
+	@$(MAKE) -C Persistence all
 	@$(MAKE) -C Schedulers all
 	@$(MAKE) -C Temperature all
 	@$(MAKE) -C Utils all
@@ -32,6 +33,7 @@ clean:
 	@$(MAKE) -C Logger clean
 	@$(MAKE) -C Logic clean
 	@$(MAKE) -C Model clean
+	@$(MAKE) -C Persistence clean
 	@$(MAKE) -C Schedulers clean
 	@$(MAKE) -C Temperature clean
 	@$(MAKE) -C Utils clean

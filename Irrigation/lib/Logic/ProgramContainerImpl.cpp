@@ -85,21 +85,33 @@ void ProgramContainerImpl::updateFromProgramDtoList(const std::list<ProgramDTO>&
 
 	for (const ProgramDTO& programDto : programDtoList) {
 		if (programDto.hasId()) {
-			createUpdateAndInsert(IdType(programDto.getId()), programDto);
+			_createProgramAndInitPersistedData(IdType(programDto.getId()), programDto, false);
 		} else {
-			createUpdateAndInsert(IdType(), programDto);
+			_createProgramAndInitPersistedData(IdType(), programDto, true);
 		}
 	}
 }
 
-ProgramContainer::value_type& ProgramContainerImpl::createFromProgramDto(const ProgramDTO& programDto) {
-	return createUpdateAndInsert(IdType(), programDto);
+ProgramContainer::value_type& ProgramContainerImpl::createAndInit(const ProgramDTO& programDto) {
+	return _createProgramAndInitPersistedData(IdType(), programDto, true);
 }
 
-ProgramContainer::value_type& ProgramContainerImpl::createUpdateAndInsert(const IdType& id, const ProgramDTO& programDto) {
-	auto program = programFactory->create();
+ProgramContainer::value_type& ProgramContainerImpl::_createProgramAndInitPersistedData(const IdType& id, const ProgramDTO& programDto, bool create) {
+	auto program = programFactory->create(id.getValue());
 	program->updateFromProgramDto(programDto);
+
+	if (create) {
+		program->getSchedulerContainer().createPersistedData();
+	} else {
+		program->getSchedulerContainer().loadPersistedData();
+	}
+
 	return insert(id, program);
+}
+
+void ProgramContainerImpl::deleteAndUnInit(const key_type& key) {
+	at(key)->getSchedulerContainer().deletePersistedData();
+	erase(key);
 }
 
 std::string ProgramContainerImpl::toString() const {

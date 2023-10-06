@@ -18,7 +18,9 @@ public:
 
 	MOCK_CONST_METHOD0(toProgramDtoList, std::list<ProgramDTO>());
 	MOCK_METHOD1(updateFromProgramDtoList, void(const std::list<ProgramDTO>& programDtoList));
-	MOCK_METHOD1(createFromProgramDto, value_type&(const ProgramDTO& programDto));
+
+	MOCK_METHOD1(createAndInit, value_type&(const ProgramDTO& programDto));
+	MOCK_METHOD1(deleteAndUnInit, void(const key_type& key));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };

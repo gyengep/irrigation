@@ -20,11 +20,11 @@ SchedulerContainerImplFactory::SchedulerContainerImplFactory(
 {
 }
 
-SchedulerContainerPtr SchedulerContainerImplFactory::create() const {
+SchedulerContainerPtr SchedulerContainerImplFactory::create(unsigned id) const {
 	return std::make_shared<SchedulerContainerImpl>(
 			everyDaySchedulerFactory->create(),
-			hotWeatherSchedulerFactory->create(),
-			temperatureDependentSchedulerFactory->create(),
+			hotWeatherSchedulerFactory->create(id),
+			temperatureDependentSchedulerFactory->create(id),
 			weeklySchedulerFactory->create()
 		);
 }
@@ -46,6 +46,24 @@ SchedulerContainerImpl::SchedulerContainerImpl(
 	container.insert(make_pair(SchedulerType::HOT_WEATHER, hotWeatherScheduler));
 	container.insert(make_pair(SchedulerType::TEMPERATURE_DEPENDENT, temperatureDependentScheduler));
 	container.insert(make_pair(SchedulerType::WEEKLY, weeklyScheduler));
+}
+
+void SchedulerContainerImpl::createPersistedData() {
+	for (const auto& item : container) {
+		item.second->createPersistedData();
+	}
+}
+
+void SchedulerContainerImpl::deletePersistedData() {
+	for (const auto& item : container) {
+		item.second->deletePersistedData();
+	}
+}
+
+void SchedulerContainerImpl::loadPersistedData() {
+	for (const auto& item : container) {
+		item.second->loadPersistedData();
+	}
 }
 
 SchedulerContainerImpl::const_mapped_type SchedulerContainerImpl::at(const key_type& key) const {

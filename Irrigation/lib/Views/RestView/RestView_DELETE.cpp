@@ -8,7 +8,7 @@
 void RestView::deleteProgram(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	irrigationDocument.setModified();
-	irrigationDocument.getProgramContainer().erase(programId);
+	irrigationDocument.getProgramContainer().deleteAndUnInit(programId);
 }
 
 void RestView::deleteStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId) {

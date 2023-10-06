@@ -39,6 +39,10 @@ public:
 	virtual TemperatureDependentScheduler& getTemperatureDependentScheduler() override;
 	virtual WeeklyScheduler& getWeeklyScheduler() override;
 
+	virtual void createPersistedData() override;
+	virtual void deletePersistedData() override;
+	virtual void loadPersistedData() override;
+
 	virtual SchedulersDTO toSchedulersDto() const override;
 	virtual void updateFromSchedulersDto(const SchedulersDTO& schedulersDto) override;
 
@@ -61,5 +65,5 @@ public:
 			const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory
 		);
 	virtual ~SchedulerContainerImplFactory() = default;
-	virtual SchedulerContainerPtr create() const override;
+	virtual SchedulerContainerPtr create(unsigned id) const override;
 };

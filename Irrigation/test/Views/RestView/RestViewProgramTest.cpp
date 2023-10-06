@@ -137,7 +137,7 @@ TEST_F(RestViewProgramTest, delete) {
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
 	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, erase(programId)).Times(1);
+	EXPECT_CALL(*mockProgramContainer, deleteAndUnInit(programId)).Times(1);
 
 	checkResponse_204_No_Content(
 			DELETE(createProgramUrl(programId))
@@ -150,7 +150,7 @@ TEST_F(RestViewProgramTest, delete_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
 	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, erase(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
+	EXPECT_CALL(*mockProgramContainer, deleteAndUnInit(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
 			DELETE(createProgramUrl(programId))

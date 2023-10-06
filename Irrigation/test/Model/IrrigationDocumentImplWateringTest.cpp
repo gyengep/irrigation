@@ -36,7 +36,6 @@ void IrrigationDocumentImplWateringTest::SetUp() {
 	EXPECT_CALL(*mockProgram1, getAdjustment()).Times(AnyNumber()).WillRepeatedly(Return(programAdjustment1));
 	EXPECT_CALL(*mockProgram1, getSchedulerType()).Times(AnyNumber()).WillRepeatedly(Return(SchedulerType::EVERY_DAY));
 	EXPECT_CALL(*mockProgram1, getName()).Times(AnyNumber()).WillRepeatedly(ReturnRef(name1));
-	EXPECT_CALL(*mockProgram1, saveTo()).Times(AnyNumber());
 
 
 	mockProgram2 = std::make_shared<StrictMock<MockProgram>>();
@@ -54,7 +53,6 @@ void IrrigationDocumentImplWateringTest::SetUp() {
 	EXPECT_CALL(*mockProgram2, getAdjustment()).Times(AnyNumber()).WillRepeatedly(Return(programAdjustment2));
 	EXPECT_CALL(*mockProgram2, getSchedulerType()).Times(AnyNumber()).WillRepeatedly(Return(SchedulerType::EVERY_DAY));
 	EXPECT_CALL(*mockProgram2, getName()).Times(AnyNumber()).WillRepeatedly(ReturnRef(name2));
-	EXPECT_CALL(*mockProgram2, saveTo()).Times(AnyNumber());
 
 
 	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(

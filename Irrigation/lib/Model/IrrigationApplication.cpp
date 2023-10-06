@@ -19,6 +19,8 @@
 #include "Logic/StartTimeContainerImpl.h"
 #include "Logic/SchedulerContainerImpl.h"
 #include "Logic/WateringControllerImpl.h"
+#include "Persistence/JsonHotWeatherSchedulerRepository.h"
+#include "Persistence/JsonTemperatureDependentSchedulerRepository.h"
 #include "Schedulers/EveryDaySchedulerImpl.h"
 #include "Schedulers/HotWeatherSchedulerImpl.h"
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
@@ -146,6 +148,29 @@ void IrrigationApplication::uninitTemperature() {
 	}
 }
 
+void IrrigationApplication::initPersistence() {
+	hotWeatherSchedulerRepository = std::make_shared<JsonHotWeatherSchedulerRepository>(
+			std::make_shared<FileReaderImpl>(Configuration::getInstance().getHotWeatherSchedulerRepositoryFileName()),
+			std::make_shared<FileWriterImplFactory>(Configuration::getInstance().getHotWeatherSchedulerRepositoryFileName())
+		);
+
+	temperatureDependentSchedulerRepository  = std::make_shared<JsonTemperatureDependentSchedulerRepository>(
+			std::make_shared<FileReaderImpl>(Configuration::getInstance().getTemperatureDependentSchedulerRepositoryFileName()),
+			std::make_shared<FileWriterImplFactory>(Configuration::getInstance().getTemperatureDependentSchedulerRepositoryFileName())
+		);
+
+	hotWeatherSchedulerRepository->init();
+	temperatureDependentSchedulerRepository->init();
+}
+
+void IrrigationApplication::uninitPersistence() {
+	hotWeatherSchedulerRepository->uninit();
+	hotWeatherSchedulerRepository.reset();
+
+	temperatureDependentSchedulerRepository->uninit();
+	temperatureDependentSchedulerRepository.reset();
+}
+
 void IrrigationApplication::initDocument() {
 
 	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
@@ -156,9 +181,11 @@ void IrrigationApplication::initDocument() {
 					std::make_shared<SchedulerContainerImplFactory>(
 						std::make_shared<EveryDaySchedulerImplFactory>(),
 						std::make_shared<HotWeatherSchedulerImplFactory>(
+							hotWeatherSchedulerRepository,
 							temperatureHandler->getTemperatureHistory()
 						),
 						std::make_shared<TemperatureDependentSchedulerImplFactory>(
+							temperatureDependentSchedulerRepository,
 							temperatureHandler->getTemperatureForecast(),
 							temperatureHandler->getTemperatureHistory()
 						),
@@ -191,7 +218,6 @@ void IrrigationApplication::initDocument() {
 		std::throw_with_nested(std::runtime_error("Can't initialize document"));
 	}
 
-	irrigationDocument->loadState();
 	irrigationDocument->addView(std::unique_ptr<View>(new TimerView(*irrigationDocument)));
 	irrigationDocument->addView(std::unique_ptr<View>(new RestView(*irrigationDocument,
 			Configuration::getInstance().getRestPort(),
@@ -230,6 +256,7 @@ void IrrigationApplication::onInitialize() {
 	initGpio();
 	initTemperature();
 	initShutdownManager();
+	initPersistence();
 	initDocument();
 
 	LOGGER.info("Irrigation System started");
@@ -239,6 +266,7 @@ void IrrigationApplication::onTerminate() {
 	LOGGER.debug("Irrigation System stopping ... ");
 
 	uninitDocument();
+	uninitPersistence();
 	uninitTemperature();
 	uninitEmail();
 	uninitShutdownManager();

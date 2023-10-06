@@ -38,7 +38,7 @@ TEST_F(RestViewProgramContainerTest, post) {
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
 	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, createFromProgramDto(programSample.getDto())).Times(1).WillOnce(ReturnRef(result));
+	EXPECT_CALL(*mockProgramContainer, createAndInit(programSample.getDto())).Times(1).WillOnce(ReturnRef(result));
 
 	checkResponse_201_Created(
 			POST_ContentType_Xml(createProgramContainerUrl(), programSample.getXml()),

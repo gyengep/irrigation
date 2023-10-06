@@ -1,5 +1,6 @@
 #include "Schedulers/HotWeatherSchedulerImpl.h"
 #include "Samples/HotWeatherSchedulerSamples.h"
+#include "Mocks/MockHotWeatherSchedulerRepository.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include <gmock/gmock.h>
 #include <memory>
@@ -33,6 +34,10 @@ enum class HotWeatherSchedulerDtoUpdateType {
 void check(const HotWeatherSchedulerDtoUpdateType updateType, unsigned periodInSeconds, float minTemperature) {
 
 	HotWeatherSchedulerImpl actualHotWeatherScheduler(
+		std::make_shared<HotWeatherSchedulerImpl::PersistedData>(
+				std::make_shared<StrictMock<MockHotWeatherSchedulerRepository>>(),
+				10
+			),
 		std::make_shared<MockTemperatureHistory>(),
 		std::chrono::seconds(periodInSeconds),
 		minTemperature

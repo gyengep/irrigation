@@ -16,10 +16,11 @@ public:
 	MOCK_CONST_METHOD0(toTemperatureDependentSchedulerDto, TemperatureDependentSchedulerDTO());
 	MOCK_METHOD1(updateFromTemperatureDependentSchedulerDto, void(const TemperatureDependentSchedulerDTO& schedulerDTO));
 
-	MOCK_CONST_METHOD0(toString, std::string());
+	MOCK_METHOD0(createPersistedData, void());
+	MOCK_METHOD0(deletePersistedData, void());
+	MOCK_METHOD0(loadPersistedData, void());
 
-	MOCK_CONST_METHOD0(saveTo, nlohmann::json());
-	MOCK_METHOD1(loadFrom, void(const nlohmann::json& json));
+	MOCK_CONST_METHOD0(toString, std::string());
 };
 
 ///////////////////////////////////////////////////////////////////////////////

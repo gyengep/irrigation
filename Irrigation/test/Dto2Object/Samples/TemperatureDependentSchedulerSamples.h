@@ -15,22 +15,22 @@ namespace Dto2ObjectTestSamples {
 		TemperatureDependentSchedulerSampleList() {
 
 			emplace_back(
-				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, 1.0f, 10, 20),
+				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, nullptr, 1.0f, 10, 20),
 				TemperatureDependentSchedulerDTO(1.0f, 10, 20)
 			);
 
 			emplace_back(
-				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, 2.0f, 15, 25),
+				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, nullptr, 2.0f, 15, 25),
 				TemperatureDependentSchedulerDTO(2.0f, 15, 25)
 			);
 
 			emplace_back(
-				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, 12.0f, 25, 26),
+				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, nullptr, 12.0f, 25, 26),
 				TemperatureDependentSchedulerDTO(12.0f, 25, 26)
 			);
 
 			emplace_back(
-				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, 13.0f, 25, 26),
+				std::make_shared<TemperatureDependentSchedulerImpl>(nullptr, nullptr, nullptr, 13.0f, 25, 26),
 				TemperatureDependentSchedulerDTO(13.0f, 25, 26)
 			);
 		}

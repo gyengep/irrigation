@@ -16,6 +16,12 @@ public:
 
 	////////////////////////////////////////////////////////////
 
+	virtual void createPersistedData() override;
+	virtual void deletePersistedData() override;
+	virtual void loadPersistedData() override;
+
+	////////////////////////////////////////////////////////////
+
 	virtual std::string toString() const override;
 };
 

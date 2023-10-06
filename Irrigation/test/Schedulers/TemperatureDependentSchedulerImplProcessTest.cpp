@@ -1,5 +1,6 @@
 #include "TemperatureDependentSchedulerImplProcessTest.h"
 #include "Schedulers/TemperatureToPercent.h"
+#include "Mocks/MockTemperatureDependentSchedulerRepository.h"
 
 using namespace testing;
 
@@ -9,7 +10,14 @@ void TemperatureDependentSchedulerImplProcessTest::SetUp() {
 
 	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
 	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
-	scheduler = std::make_shared<TemperatureDependentSchedulerImpl>(mockTemperatureForecast, mockTemperatureHistory);
+	scheduler = std::make_shared<TemperatureDependentSchedulerImpl>(
+			std::make_shared<TemperatureDependentSchedulerImpl::PersistedData>(
+				std::make_shared<StrictMock<MockTemperatureDependentSchedulerRepository>>(),
+				25
+			),
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		);
 
 	scheduler->setRemainingCorrection(1.0f);
 	scheduler->setMinAdjustment(0);

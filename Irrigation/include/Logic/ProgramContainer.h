@@ -33,7 +33,9 @@ public:
 
 	virtual std::list<ProgramDTO> toProgramDtoList() const = 0;
 	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) = 0;
-	virtual value_type& createFromProgramDto(const ProgramDTO& programDto) = 0;
+
+	virtual value_type& createAndInit(const ProgramDTO& programDto) = 0;
+	virtual void deleteAndUnInit(const key_type& key) = 0;
 
 	virtual std::string toString() const = 0;
 };

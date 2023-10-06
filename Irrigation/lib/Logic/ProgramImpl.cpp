@@ -21,9 +21,9 @@ ProgramImplFactory::ProgramImplFactory(
 {
 }
 
-ProgramPtr ProgramImplFactory::create() const {
+ProgramPtr ProgramImplFactory::create(unsigned id) const {
 	return std::make_shared<ProgramImpl>(
-		schedulerContainerFactory->create(),
+		schedulerContainerFactory->create(id),
 		runTimeContainerFactory->create(),
 		startTimeContainerFactory->create()
 	);
@@ -134,7 +134,7 @@ std::string ProgramImpl::toString() const {
 	oss << "Program{";
 	oss << "name=\"" << getName() << "\", ";
 	oss << "enabled=" << to_string(isEnabled()) << ", ";
-	oss << "adjustment=\"" << getAdjustment() << "\", ";
+	oss << "adjustment=" << getAdjustment() << ", ";
 	oss << "schedulerType=\"" << to_string(getSchedulerType()) << "\", ";
 	oss << "schedulers=" << getSchedulerContainer().toString() << ", ";
 	oss << "runTimes=" << getRunTimeContainer().toString() << ", ";
@@ -142,23 +142,4 @@ std::string ProgramImpl::toString() const {
 	oss << "}";
 
 	return oss.str();
-}
-
-nlohmann::json ProgramImpl::saveTo() const {
-	nlohmann::json result;
-	result["temperatureDependent"] = getSchedulerContainer().getTemperatureDependentScheduler().saveTo();
-	result["hotWeather"] = getSchedulerContainer().getHotWeatherScheduler().saveTo();
-	return result;
-}
-
-void ProgramImpl::loadFrom(const nlohmann::json& values) {
-	auto it = values.find("temperatureDependent");
-	if (values.end() != it) {
-		getSchedulerContainer().getTemperatureDependentScheduler().loadFrom(it.value());
-	}
-
-	it = values.find("hotWeather");
-	if (values.end() != it) {
-		getSchedulerContainer().getHotWeatherScheduler().loadFrom(it.value());
-	}
 }

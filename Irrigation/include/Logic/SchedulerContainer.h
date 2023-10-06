@@ -41,6 +41,10 @@ public:
 	virtual TemperatureDependentScheduler& getTemperatureDependentScheduler() = 0;
 	virtual WeeklyScheduler& getWeeklyScheduler() = 0;
 
+	virtual void createPersistedData() = 0;
+	virtual void deletePersistedData() = 0;
+	virtual void loadPersistedData() = 0;
+
 	virtual SchedulersDTO toSchedulersDto() const = 0;
 	virtual void updateFromSchedulersDto(const SchedulersDTO& schedulersDto) = 0;
 
@@ -60,7 +64,7 @@ typedef std::shared_ptr<SchedulerContainer> SchedulerContainerPtr;
 class SchedulerContainerFactory {
 public:
 	virtual ~SchedulerContainerFactory() = default;
-	virtual SchedulerContainerPtr create() const = 0;
+	virtual SchedulerContainerPtr create(unsigned id) const = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

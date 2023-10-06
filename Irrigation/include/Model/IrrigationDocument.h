@@ -31,10 +31,6 @@ public:
 
 	virtual DocumentDTO toDocumentDto() const = 0;
 	virtual void updateFromDocumentDto(const DocumentDTO& documentDTO) = 0;
-
-	virtual void saveState() const = 0;
-	virtual void loadState() = 0;
-
 	virtual void save() const = 0;
 	virtual void load() = 0;
 };

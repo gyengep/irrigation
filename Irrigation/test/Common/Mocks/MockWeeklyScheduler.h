@@ -14,6 +14,10 @@ public:
 	MOCK_CONST_METHOD0(toWeeklySchedulerDto, WeeklySchedulerDTO());
 	MOCK_METHOD1(updateFromWeeklySchedulerDto, void(const WeeklySchedulerDTO&));
 
+	MOCK_METHOD0(createPersistedData, void());
+	MOCK_METHOD0(deletePersistedData, void());
+	MOCK_METHOD0(loadPersistedData, void());
+
 	MOCK_CONST_METHOD0(toString, std::string());
 };
 

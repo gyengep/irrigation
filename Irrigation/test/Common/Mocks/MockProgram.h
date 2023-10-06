@@ -31,15 +31,12 @@ public:
 	MOCK_METHOD1(updateFromProgramDto, void(const ProgramDTO& programDTO));
 
 	MOCK_CONST_METHOD0(toString, std::string());
-
-	MOCK_CONST_METHOD0(saveTo, nlohmann::json());
-	MOCK_METHOD1(loadFrom, void(const nlohmann::json& values));
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class MockProgramFactory : public ProgramFactory {
-	std::shared_ptr<MockProgram> getNext() const {
+	std::shared_ptr<MockProgram> getNext(unsigned) const {
 		if (nextIndex >= mockPrograms.size()) {
 			throw std::runtime_error("MockProgramFactory::getNext() invalid index: " + std::to_string(nextIndex));
 		}
@@ -59,15 +56,15 @@ public:
 			mockPrograms[i] = std::make_shared<testing::StrictMock<MockProgram>>();
 		}
 
-		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
+		ON_CALL(*this, create(testing::_)).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
 	}
 
 	MockProgramFactory(std::initializer_list<std::shared_ptr<MockProgram>> initializer) :
 		mockPrograms(initializer),
 		nextIndex(0)
 	{
-		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
+		ON_CALL(*this, create(testing::_)).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
 	}
 
-	MOCK_CONST_METHOD0(create, ProgramPtr());
+	MOCK_CONST_METHOD1(create, ProgramPtr(unsigned id));
 };

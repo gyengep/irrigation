@@ -14,10 +14,11 @@ public:
 	MOCK_CONST_METHOD0(toHotWeatherSchedulerDto, HotWeatherSchedulerDTO());
 	MOCK_METHOD1(updateFromHotWeatherSchedulerDto, void(const HotWeatherSchedulerDTO& schedulerDTO));
 
-	MOCK_CONST_METHOD0(toString, std::string());
+	MOCK_METHOD0(createPersistedData, void());
+	MOCK_METHOD0(deletePersistedData, void());
+	MOCK_METHOD0(loadPersistedData, void());
 
-	MOCK_CONST_METHOD0(saveTo, nlohmann::json());
-	MOCK_METHOD1(loadFrom, void(const nlohmann::json& json));
+	MOCK_CONST_METHOD0(toString, std::string());
 };
 
 ///////////////////////////////////////////////////////////////////////////////

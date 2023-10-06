@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <nlohmann/json.hpp>
 #include "DTO/ProgramDTO.h"
 #include "Utils/DateTime.h"
 #include "Utils/OstreamInsert.h"
@@ -39,9 +38,6 @@ public:
 	virtual void updateFromProgramDto(const ProgramDTO& programDTO) = 0;
 
 	virtual std::string toString() const = 0;
-
-	virtual nlohmann::json saveTo() const = 0;
-	virtual void loadFrom(const nlohmann::json& values) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,7 +54,7 @@ typedef std::shared_ptr<const Program> ConstProgramPtr;
 class ProgramFactory {
 public:
 	virtual ~ProgramFactory() = default;
-	virtual ProgramPtr create() const = 0;
+	virtual ProgramPtr create(unsigned id) const = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

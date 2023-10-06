@@ -21,6 +21,14 @@ public:
 	virtual ~Scheduler() = default;
 	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) = 0;
 
+	///////////////////////////////////////////////////////////////////////////
+
+	virtual void createPersistedData() = 0;
+	virtual void deletePersistedData() = 0;
+	virtual void loadPersistedData() = 0;
+
+	///////////////////////////////////////////////////////////////////////////
+
 	virtual std::string toString() const = 0;
 };
 

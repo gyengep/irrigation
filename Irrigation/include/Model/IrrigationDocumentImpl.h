@@ -2,7 +2,6 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <nlohmann/json.hpp>
 #include "DTO/DocumentDTO.h"
 #include "Email/EmailHandler.h"
 #include "Logic/ProgramContainer.h"
@@ -51,12 +50,6 @@ public:
 	virtual DocumentDTO toDocumentDto() const override;
 	virtual void updateFromDocumentDto(const DocumentDTO& documentDTO) override;
 
-	virtual void saveState() const override;
-	virtual void loadState() override;
-
 	virtual void save() const override;
 	virtual void load() override;
-
-	nlohmann::json saveTo() const;
-	void loadFrom(const nlohmann::json& values);
 };

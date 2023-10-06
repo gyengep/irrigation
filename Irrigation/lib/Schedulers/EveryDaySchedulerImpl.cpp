@@ -9,6 +9,15 @@ EveryDaySchedulerPtr EveryDaySchedulerImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void EveryDaySchedulerImpl::createPersistedData() {
+}
+
+void EveryDaySchedulerImpl::deletePersistedData() {
+}
+
+void EveryDaySchedulerImpl::loadPersistedData() {
+}
+
 std::unique_ptr<Scheduler::Result> EveryDaySchedulerImpl::process(const LocalDateTime&) {
 	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(true));
 }

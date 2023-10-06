@@ -34,6 +34,15 @@ WeeklySchedulerImpl::WeeklySchedulerImpl(std::initializer_list<bool> initializer
 WeeklySchedulerImpl::~WeeklySchedulerImpl() {
 }
 
+void WeeklySchedulerImpl::createPersistedData() {
+}
+
+void WeeklySchedulerImpl::deletePersistedData() {
+}
+
+void WeeklySchedulerImpl::loadPersistedData() {
+}
+
 void WeeklySchedulerImpl::checkIndex(size_t day) const {
 	if (days.size() <= day) {
 		throw IndexOutOfBoundsException(

@@ -22,6 +22,10 @@ public:
 	MOCK_METHOD0(getTemperatureDependentScheduler, TemperatureDependentScheduler&());
 	MOCK_METHOD0(getWeeklyScheduler, WeeklyScheduler&());
 
+	MOCK_METHOD0(createPersistedData, void());
+	MOCK_METHOD0(deletePersistedData, void());
+	MOCK_METHOD0(loadPersistedData, void());
+
 	MOCK_CONST_METHOD0(toSchedulersDto, SchedulersDTO());
 	MOCK_METHOD1(updateFromSchedulersDto, void(const SchedulersDTO& schedulerdDto));
 
@@ -33,7 +37,7 @@ public:
 class MockSchedulerContainerFactory : public SchedulerContainerFactory {
 public:
 	virtual ~MockSchedulerContainerFactory() = default;
-	virtual SchedulerContainerPtr create() const override {
+	virtual SchedulerContainerPtr create(unsigned) const override {
 		return std::make_shared<MockSchedulerContainer>();
 	}
 };

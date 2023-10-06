@@ -6,9 +6,17 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 void TemperatureDependentSchedulerImplTest::SetUp() {
-	mockTemperatureForecast = std::make_shared<MockTemperatureForecast>();
-	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
-	scheduler = std::make_shared<TemperatureDependentSchedulerImpl>(mockTemperatureForecast, mockTemperatureHistory);
+	mockTemperatureDependentSchedulerRepository = std::make_shared<StrictMock<MockTemperatureDependentSchedulerRepository>>();
+	mockTemperatureForecast = std::make_shared<StrictMock<MockTemperatureForecast>>();
+	mockTemperatureHistory = std::make_shared<StrictMock<MockTemperatureHistory>>();
+
+	scheduler = std::make_shared<TemperatureDependentSchedulerImpl>(
+			std::make_shared<TemperatureDependentSchedulerImpl::PersistedData>(
+				mockTemperatureDependentSchedulerRepository, id
+			),
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		);
 
 	scheduler->setRemainingCorrection(1.0f);
 	scheduler->setMinAdjustment(0);
@@ -117,3 +125,45 @@ TEST_F(TemperatureDependentSchedulerImplTest, dayStart) {
 	EXPECT_THAT(scheduler->process(LocalDateTime(2020, 2, 28, 23, 59, 59)), Pointee(Scheduler::Result(0u)));
 	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(25));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+/*
+TEST_F(TemperatureDependentSchedulerImplTest, loadPersistedData) {
+	const int expectedRemainingPercent = 98;
+	const time_t expectedLastRun = 45;
+
+	const auto entity = std::make_shared<TemperatureDependentSchedulerEntity>(id, expectedRemainingPercent, expectedLastRun);
+
+	EXPECT_CALL(*mockTemperatureDependentSchedulerRepository, findById(id)).
+			Times(1).
+			WillOnce(Return(entity));
+
+	scheduler->loadPersistedData();
+
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(expectedRemainingPercent));
+	EXPECT_THAT(scheduler->getLastRun(), Eq(DateTime::create(expectedLastRun)));
+}
+
+TEST_F(TemperatureDependentSchedulerImplTest, savePersistedData) {
+	const unsigned id = 20;
+	const int expectedRemainingPercent = 98;
+	const time_t expectedLastRun = 45;
+
+	const auto entity = std::make_shared<TemperatureDependentSchedulerEntity>(id, expectedRemainingPercent, expectedLastRun);
+
+	EXPECT_CALL(*mockTemperatureDependentSchedulerRepository, findById(id)).
+			Times(1).
+			WillOnce(Return(entity));
+
+	EXPECT_CALL(*mockTemperatureDependentSchedulerRepository, update(Pointee(TemperatureDependentSchedulerEntity(id, expectedRemainingPercent, expectedLastRun)))).
+			Times(1);
+
+	scheduler->loadPersistedData();
+
+	EXPECT_THAT(scheduler->getRemainingPercent(), Eq(expectedRemainingPercent));
+	EXPECT_THAT(scheduler->getLastRun(), Eq(DateTime::create(expectedLastRun)));
+
+	scheduler->savePersistedData();
+}
+
+*/

@@ -1,5 +1,6 @@
 #include "Schedulers/TemperatureDependentSchedulerImpl.h"
 #include "Samples/TemperatureDependentSchedulerSamples.h"
+#include "Mocks/MockTemperatureDependentSchedulerRepository.h"
 #include "Mocks/MockTemperatureForecast.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include <gmock/gmock.h>
@@ -35,6 +36,10 @@ enum class TemperatureDependentSchedulerDtoUpdateType {
 void check(const TemperatureDependentSchedulerDtoUpdateType updateType, float remainingCorrection, unsigned minAdjustment, unsigned maxAdjustment) {
 
 	TemperatureDependentSchedulerImpl actualTemperatureDependentScheduler(
+			std::make_shared<TemperatureDependentSchedulerImpl::PersistedData>(
+					std::make_shared<MockTemperatureDependentSchedulerRepository>(),
+					15
+				),
 			std::make_shared<NiceMock<MockTemperatureForecast>>(),
 			std::make_shared<NiceMock<MockTemperatureHistory>>(),
 			remainingCorrection,

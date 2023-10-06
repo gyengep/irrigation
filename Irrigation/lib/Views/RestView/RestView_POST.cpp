@@ -11,7 +11,7 @@ std::pair<IdType, std::string> RestView::postProgramList(IrrigationDocument& irr
 
 	irrigationDocument.setModified();
 
-	const auto result = irrigationDocument.getProgramContainer().createFromProgramDto(programDto);
+	const auto result = irrigationDocument.getProgramContainer().createAndInit(programDto);
 	return std::make_pair(result.first, result.second->toString());
 }
 

@@ -8,6 +8,7 @@ all: \
 	Logger-all \
 	Logic-all \
 	Model-all \
+	Persistence-all \
 	RestView-all \
 	Schedulers-all \
 	Temperature-all \
@@ -25,6 +26,7 @@ clean: \
 	Logger-clean \
 	Logic-clean \
 	Model-clean \
+	Persistence-clean \
 	RestView-clean \
 	Schedulers-clean \
 	Temperature-clean \
@@ -88,6 +90,14 @@ Model-all:
 .PHONY: Model-clean
 Model-clean:
 	@$(MAKE) -C Model clean
+
+.PHONY: Persistence-all
+Persistence-all:
+	@$(MAKE) -C Persistence all
+
+.PHONY: Persistence-clean
+Persistence-clean:
+	@$(MAKE) -C Persistence clean
 
 .PHONY: RestView-all
 RestView-all:

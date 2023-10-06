@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <nlohmann/json.hpp>
 #include "DTO/TemperatureDependentSchedulerDTO.h"
 #include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
@@ -26,11 +25,6 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 
 	virtual std::string toString() const = 0;
-
-	///////////////////////////////////////////////////////////////////////////
-
-	virtual nlohmann::json saveTo() const = 0;
-	virtual void loadFrom(const nlohmann::json& json) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,5 +41,5 @@ typedef std::shared_ptr<const TemperatureDependentScheduler> ConstTemperatureDep
 class TemperatureDependentSchedulerFactory {
 public:
 	virtual ~TemperatureDependentSchedulerFactory() = default;
-	virtual TemperatureDependentSchedulerPtr create() const = 0;
+	virtual TemperatureDependentSchedulerPtr create(unsigned id) const = 0;
 };

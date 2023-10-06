@@ -40,7 +40,6 @@ void PeriodicDocumentSaver::run() {
 
 		if (irrigationDocument->isModified()) {
 			irrigationDocument->save();
-			LOGGER.debug("Configuration successfully saved");
 		}
 	} catch (const std::exception& e) {
 		LOGGER.warning("Can't save configuration", e);

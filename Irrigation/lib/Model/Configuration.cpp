@@ -2,7 +2,8 @@
 #include "Logger/Logger.h"
 
 const std::string Configuration::defaultConfigFileName = "/usr/share/irrigation/irrigation.xml";
-const std::string Configuration::defaultPersistedDataFileName = "/usr/share/irrigation/persist.json";
+const std::string Configuration::defaultHotWeatherSchedulerRepositoryFileName = "/usr/share/irrigation/hotWeatherSchedulerRepository.json";
+const std::string Configuration::defaultTemperatureDependentSchedulerRepositoryFileName = "/usr/share/irrigation/temperatureDependentSchedulerRepository.json";
 const std::string Configuration::defaultLogFileName = "/var/log/irrigation/irrigation.log";
 const std::string Configuration::defaultAccessLogFileName = "/var/log/irrigation/access_log.txt";
 const std::string Configuration::defaultTemperatureCacheFileName = "/usr/share/irrigation/temperature_cache.csv";

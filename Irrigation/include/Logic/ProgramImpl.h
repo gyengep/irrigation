@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <nlohmann/json.hpp>
 #include "DTO/ProgramDTO.h"
 #include "Utils/DateTime.h"
 #include "RunTimeContainer.h"
@@ -61,9 +60,6 @@ public:
 	virtual void updateFromProgramDto(const ProgramDTO& programDTO) override;
 
 	virtual std::string toString() const override;
-
-	virtual nlohmann::json saveTo() const override;
-	virtual void loadFrom(const nlohmann::json& values) override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,5 +77,5 @@ public:
 	);
 
 	virtual ~ProgramImplFactory() = default;
-	virtual ProgramPtr create() const override;
+	virtual ProgramPtr create(unsigned id) const override;
 };

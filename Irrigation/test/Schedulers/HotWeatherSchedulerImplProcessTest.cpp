@@ -4,8 +4,16 @@ using namespace testing;
 
 
 void HotWeatherSchedulerImplProcessTest::SetUp() {
+	mockHotWeatherSchedulerRepository = std::make_shared<StrictMock<MockHotWeatherSchedulerRepository>>();
 	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
-	scheduler = std::make_shared<HotWeatherSchedulerImpl>(mockTemperatureHistory);
+
+	scheduler = std::make_shared<HotWeatherSchedulerImpl>(
+			std::make_shared<HotWeatherSchedulerImpl::PersistedData>(
+				mockHotWeatherSchedulerRepository,
+				10
+			),
+			mockTemperatureHistory
+		);
 }
 
 void HotWeatherSchedulerImplProcessTest::TearDown() {
