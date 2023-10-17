@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "DTO/WeeklySchedulerDTO.h"
-#include "WeeklyScheduler.h"
+#include "Schedulers/WeeklyScheduler.h"
 
 
 class WeeklySchedulerImpl : public WeeklyScheduler {

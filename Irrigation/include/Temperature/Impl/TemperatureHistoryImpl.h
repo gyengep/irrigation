@@ -2,9 +2,9 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
-#include "CurrentTemperature.h"
-#include "TemperatureHistory.h"
-#include "TemperatureHistoryRepository.h"
+#include "Temperature/CurrentTemperature.h"
+#include "Temperature/TemperatureHistory.h"
+#include "Temperature/TemperatureHistoryRepository.h"
 #include "Utils/DateTime.h"
 
 

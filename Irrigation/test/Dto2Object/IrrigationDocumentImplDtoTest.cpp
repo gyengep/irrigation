@@ -1,4 +1,4 @@
-#include "Model/IrrigationDocumentImpl.h"
+#include "Model/Impl/IrrigationDocumentImpl.h"
 #include "Samples/DocumentSamples.h"
 #include "Mocks/MockIrrigationDocumentLoader.h"
 #include "Mocks/MockIrrigationDocumentSaver.h"

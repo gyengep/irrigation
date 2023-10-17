@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "DTO/WeeklySchedulerDTO.h"
-#include "Schedulers/WeeklySchedulerImpl.h"
+#include "Schedulers/Impl/WeeklySchedulerImpl.h"
 #include "SampleBase.h"
 
 

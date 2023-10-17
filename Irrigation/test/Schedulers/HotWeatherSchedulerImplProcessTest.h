@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <memory>
 #include "Mocks/MockTemperatureHistory.h"
-#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Schedulers/Impl/HotWeatherSchedulerImpl.h"
 
 
 class HotWeatherSchedulerImplProcessTest : public ::testing::Test {

@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "Temperature/CurrentTemperatureImpl.h"
+#include "Temperature/Impl/CurrentTemperatureImpl.h"
 #include "Temperature/TemperatureException.h"
 #include "Mocks/MockCurrentTemperatureProvider.h"
 #include "Mocks/MockCurrentTemperatureListener.h"

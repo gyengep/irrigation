@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "Temperature/TemperatureException.h"
-#include "Temperature/TemperatureForecastImpl.h"
+#include "Temperature/Impl/TemperatureForecastImpl.h"
 #include "Mocks/MockTemperatureForecastProvider.h"
 
 using namespace std;

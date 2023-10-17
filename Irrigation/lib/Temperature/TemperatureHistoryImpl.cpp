@@ -1,4 +1,4 @@
-#include "TemperatureHistoryImpl.h"
+#include "Impl/TemperatureHistoryImpl.h"
 #include "TemperatureException.h"
 #include "Logger/Logger.h"
 #include "Utils/ToString.h"

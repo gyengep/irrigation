@@ -3,8 +3,8 @@
 #include <memory>
 #include <thread>
 #include "Hardware/Valves/ZoneHandler.h"
-#include "DurationList.h"
-#include "WateringController.h"
+#include "Logic/DurationList.h"
+#include "Logic/WateringController.h"
 
 
 class WateringControllerImpl : public WateringController {

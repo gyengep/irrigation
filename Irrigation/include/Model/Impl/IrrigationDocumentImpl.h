@@ -7,7 +7,7 @@
 #include "Email/EmailHandler.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
-#include "IrrigationDocument.h"
+#include "Model/IrrigationDocument.h"
 
 
 

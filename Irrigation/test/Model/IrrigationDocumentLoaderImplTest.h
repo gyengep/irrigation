@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 #include "Mocks/MockDtoReader.h"
 #include "Mocks/MockFileReader.h"
-#include "Model/IrrigationDocumentLoaderImpl.h"
+#include "Model/Impl/IrrigationDocumentLoaderImpl.h"
 
 
 

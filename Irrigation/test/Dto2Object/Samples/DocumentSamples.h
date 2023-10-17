@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "DTO/DocumentDTO.h"
-#include "Model/IrrigationDocumentImpl.h"
+#include "Model/Impl/IrrigationDocumentImpl.h"
 #include "Mocks/MockIrrigationDocumentLoader.h"
 #include "Mocks/MockIrrigationDocumentSaver.h"
 #include "ProgramContainerSamples.h"

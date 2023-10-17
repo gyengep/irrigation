@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Mocks/MockZoneHandler.h"
-#include "Logic/WateringControllerImpl.h"
+#include "Logic/Impl/WateringControllerImpl.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

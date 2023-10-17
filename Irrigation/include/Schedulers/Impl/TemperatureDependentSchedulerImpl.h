@@ -5,7 +5,7 @@
 #include "Temperature/TemperatureForecast.h"
 #include "Temperature/TemperatureHistory.h"
 #include "Utils/DateTime.h"
-#include "TemperatureDependentScheduler.h"
+#include "Schedulers/TemperatureDependentScheduler.h"
 
 
 class TemperatureDependentSchedulerImpl : public TemperatureDependentScheduler {

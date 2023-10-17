@@ -1,4 +1,4 @@
-#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Schedulers/Impl/HotWeatherSchedulerImpl.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include <gmock/gmock.h>
 

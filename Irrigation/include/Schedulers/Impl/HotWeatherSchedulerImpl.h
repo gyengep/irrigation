@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include "DTO/HotWeatherSchedulerDTO.h"
 #include "Temperature/TemperatureHistory.h"
-#include "HotWeatherScheduler.h"
+#include "Schedulers/HotWeatherScheduler.h"
 
 
 class HotWeatherSchedulerImpl : public HotWeatherScheduler {

@@ -1,7 +1,7 @@
 #include "IrrigationDocumentImplWateringTest.h"
 #include "TestCommon/cout.h"
-#include "Logic/ProgramContainerImpl.h"
-#include "Logic/RunTimeImpl.h"
+#include "Logic/Impl/ProgramContainerImpl.h"
+#include "Logic/Impl/RunTimeImpl.h"
 #include "Mocks/MockIrrigationDocumentLoader.h"
 #include "Mocks/MockIrrigationDocumentSaver.h"
 

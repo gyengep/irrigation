@@ -2,7 +2,7 @@
 #include <fstream>
 #include "Mocks/MockCurrentTemperature.h"
 #include "Mocks/MockTemperatureHistoryRepository.h"
-#include "Temperature/TemperatureHistoryImpl.h"
+#include "Temperature/Impl/TemperatureHistoryImpl.h"
 #include "Temperature/TemperatureException.h"
 #include "Utils/CsvReaderImpl.h"
 #include "Utils/CsvWriterImpl.h"

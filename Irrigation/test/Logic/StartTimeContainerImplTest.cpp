@@ -1,5 +1,5 @@
-#include "Logic/StartTimeContainerImpl.h"
-#include "Logic/StartTimeImpl.h"
+#include "Logic/Impl/StartTimeContainerImpl.h"
+#include "Logic/Impl/StartTimeImpl.h"
 #include "Exceptions/Exceptions.h"
 #include "Mocks/MockStartTime.h"
 #include <gmock/gmock.h>

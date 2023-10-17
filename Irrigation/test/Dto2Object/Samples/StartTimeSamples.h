@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "DTO/StartTimeDTO.h"
-#include "Logic/StartTimeImpl.h"
+#include "Logic/Impl/StartTimeImpl.h"
 #include "SampleBase.h"
 
 

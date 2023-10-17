@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "DTO/HotWeatherSchedulerDTO.h"
-#include "Schedulers/HotWeatherSchedulerImpl.h"
+#include "Schedulers/Impl/HotWeatherSchedulerImpl.h"
 #include "SampleBase.h"
 
 

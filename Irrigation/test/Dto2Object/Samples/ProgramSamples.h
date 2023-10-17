@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "DTO/ProgramDTO.h"
-#include "Logic/ProgramImpl.h"
+#include "Logic/Impl/ProgramImpl.h"
 #include "RunTimeContainerSamples.h"
 #include "StartTimeContainerSamples.h"
 #include "SchedulerContainerSamples.h"

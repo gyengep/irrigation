@@ -4,10 +4,10 @@
 #include <nlohmann/json.hpp>
 #include "DTO/ProgramDTO.h"
 #include "Utils/DateTime.h"
-#include "RunTimeContainer.h"
-#include "StartTimeContainer.h"
-#include "SchedulerContainer.h"
-#include "Program.h"
+#include "Logic/RunTimeContainer.h"
+#include "Logic/StartTimeContainer.h"
+#include "Logic/SchedulerContainer.h"
+#include "Logic/Program.h"
 
 
 class ProgramImpl : public Program {

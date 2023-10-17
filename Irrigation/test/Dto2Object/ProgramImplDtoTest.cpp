@@ -1,4 +1,4 @@
-#include "Logic/ProgramImpl.h"
+#include "Logic/Impl/ProgramImpl.h"
 #include "Samples/ProgramSamples.h"
 #include "Mocks/MockSchedulerContainer.h"
 #include "Mocks/MockRunTimeContainer.h"

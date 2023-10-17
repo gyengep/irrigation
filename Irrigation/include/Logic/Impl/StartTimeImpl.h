@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "DTO/StartTimeDTO.h"
-#include "StartTime.h"
+#include "Logic/StartTime.h"
 
 
 class StartTimeImpl : public StartTime {

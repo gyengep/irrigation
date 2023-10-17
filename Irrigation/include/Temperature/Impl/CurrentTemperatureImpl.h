@@ -5,8 +5,8 @@
 #include <mutex>
 #include <vector>
 #include "Utils/Thread.h"
-#include "CurrentTemperature.h"
-#include "CurrentTemperatureProvider.h"
+#include "Temperature/CurrentTemperature.h"
+#include "Temperature/CurrentTemperatureProvider.h"
 
 
 class CurrentTemperatureImpl : public CurrentTemperature {

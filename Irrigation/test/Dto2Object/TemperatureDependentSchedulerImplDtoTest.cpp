@@ -1,4 +1,4 @@
-#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/Impl/TemperatureDependentSchedulerImpl.h"
 #include "Samples/TemperatureDependentSchedulerSamples.h"
 #include "Mocks/MockTemperatureForecast.h"
 #include "Mocks/MockTemperatureHistory.h"

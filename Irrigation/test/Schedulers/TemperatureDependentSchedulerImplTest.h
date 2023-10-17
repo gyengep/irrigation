@@ -2,7 +2,7 @@
 #include <memory>
 #include "Mocks/MockTemperatureForecast.h"
 #include "Mocks/MockTemperatureHistory.h"
-#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/Impl/TemperatureDependentSchedulerImpl.h"
 
 
 class TemperatureDependentSchedulerImplTest : public ::testing::Test {

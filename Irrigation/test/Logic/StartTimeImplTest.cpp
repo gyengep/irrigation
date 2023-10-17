@@ -1,4 +1,4 @@
-#include "Logic/StartTimeImpl.h"
+#include "Logic/Impl/StartTimeImpl.h"
 #include "Exceptions/Exceptions.h"
 #include <gmock/gmock.h>
 

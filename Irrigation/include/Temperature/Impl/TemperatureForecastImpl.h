@@ -5,8 +5,8 @@
 #include <mutex>
 #include <vector>
 #include "Utils/Thread.h"
-#include "TemperatureForecast.h"
-#include "TemperatureForecastProvider.h"
+#include "Temperature/TemperatureForecast.h"
+#include "Temperature/TemperatureForecastProvider.h"
 
 
 class TemperatureForecastImpl : public TemperatureForecast {

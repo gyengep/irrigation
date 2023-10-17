@@ -2,11 +2,11 @@
 #include <gmock/gmock.h>
 #include <memory>
 #include "Logic/IdType.h"
-#include "Logic/RunTimeContainerImpl.h"
+#include "Logic/Impl/RunTimeContainerImpl.h"
 #include "Mocks/MockProgram.h"
 #include "Mocks/MockScheduler.h"
 #include "Mocks/MockWateringController.h"
-#include "Model/IrrigationDocumentImpl.h"
+#include "Model/Impl/IrrigationDocumentImpl.h"
 #include "Utils/DateTime.h"
 #include "Views/TimerView/TimerView.h"
 

@@ -1,8 +1,8 @@
 #include "WateringControllerImplTest.h"
-#include "Logic/RunTimeImpl.h"
-#include "Logic/RunTimeContainerImpl.h"
+#include "Logic/Impl/RunTimeImpl.h"
+#include "Logic/Impl/RunTimeContainerImpl.h"
 #include "Hardware/Valves/GpioValve.h"
-#include "Hardware/Valves/ZoneHandlerImpl.h"
+#include "Hardware/Valves/Impl/ZoneHandlerImpl.h"
 #include <numeric>
 #include <iterator>
 

@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "DTO/TemperatureDependentSchedulerDTO.h"
-#include "Schedulers/TemperatureDependentSchedulerImpl.h"
+#include "Schedulers/Impl/TemperatureDependentSchedulerImpl.h"
 #include "SampleBase.h"
 
 

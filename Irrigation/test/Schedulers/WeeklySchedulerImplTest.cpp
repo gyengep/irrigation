@@ -1,4 +1,4 @@
-#include "Schedulers/WeeklySchedulerImpl.h"
+#include "Schedulers/Impl/WeeklySchedulerImpl.h"
 #include "Exceptions/Exceptions.h"
 #include <gmock/gmock.h>
 #include <list>

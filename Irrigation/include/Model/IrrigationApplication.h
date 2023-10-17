@@ -2,7 +2,7 @@
 #include "DocumentView/Application.h"
 #include "Email/EmailHandler.h"
 #include "Temperature/TemperatureHandler.h"
-#include "ShutdownManagerImpl.h"
+#include "Impl/ShutdownManagerImpl.h"
 #include "IrrigationDocument.h"
 #include "PeriodicDocumentSaver.h"
 

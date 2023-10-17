@@ -1,4 +1,4 @@
-#include "Logic/StartTimeImpl.h"
+#include "Logic/Impl/StartTimeImpl.h"
 #include "Samples/StartTimeSamples.h"
 #include <gmock/gmock.h>
 #include <memory>
