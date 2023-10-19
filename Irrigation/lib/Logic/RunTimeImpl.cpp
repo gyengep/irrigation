@@ -11,34 +11,37 @@ RunTimePtr RunTimeImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeImpl::RunTimeImpl() {
-	setSeconds(0);
+const std::chrono::hours RunTimeImpl::maxTime(24);
+
+RunTimeImpl::RunTimeImpl() :
+	RunTimeImpl(std::chrono::seconds(0))
+{
 }
 
-RunTimeImpl::RunTimeImpl(const std::chrono::seconds& seconds) {
-	setSeconds(seconds.count());
+RunTimeImpl::RunTimeImpl(const std::chrono::seconds& time) {
+	set(time);
 }
 
-unsigned RunTimeImpl::getSeconds() const {
-	return seconds;
+std::chrono::seconds RunTimeImpl::get() const {
+	return time;
 }
 
-void RunTimeImpl::setSeconds(unsigned seconds) {
-	if (seconds > maxSeconds) {
+void RunTimeImpl::set(const std::chrono::seconds& time) {
+	if (time > maxTime) {
 		throw ValueOutOfBoundsException(
-				"RunTimeImpl value shall not be greater than " + std::to_string(maxSeconds) +
-				", while actual value is " + std::to_string(seconds));
+				"RunTimeImpl value shall not be greater than " + std::to_string(maxTime.count()) +
+				", while actual value is " + std::to_string(time.count()));
 	}
 
-	this->seconds = seconds;
+	this->time = time;
 }
 
 std::chrono::seconds RunTimeImpl::toDuration() const {
-	return std::chrono::seconds(seconds);
+	return time;
 }
 
 RunTimeDTO RunTimeImpl::toRunTimeDto() const {
-	const unsigned seconds = getSeconds();
+	const unsigned seconds = std::chrono::duration_cast<std::chrono::seconds>(get()).count();
 	return RunTimeDTO(seconds / 60, seconds % 60);
 }
 
@@ -55,13 +58,15 @@ void RunTimeImpl::updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) {
 			seconds = runTimeDTO.getSeconds();
 		}
 
-		setSeconds(60 * minutes + seconds);
+		set(std::chrono::minutes(minutes) + std::chrono::seconds(seconds));
 	}
 }
 
 std::string RunTimeImpl::toString() const {
+	const unsigned seconds = std::chrono::duration_cast<std::chrono::seconds>(get()).count();
+
 	std::ostringstream oss;
-	oss << std::setfill('0') << std::setw(2) << (getSeconds() / 60) << ":";
-	oss << std::setfill('0') << std::setw(2) << (getSeconds() % 60);
+	oss << std::setfill('0') << std::setw(2) << (seconds / 60) << ":";
+	oss << std::setfill('0') << std::setw(2) << (seconds % 60);
 	return oss.str();
 }

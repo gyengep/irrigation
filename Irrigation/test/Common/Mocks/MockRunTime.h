@@ -6,8 +6,8 @@
 
 class MockRunTime : public RunTime {
 public:
-	MOCK_CONST_METHOD0(getSeconds, unsigned());
-	MOCK_METHOD1(setSeconds, void(unsigned));
+	MOCK_CONST_METHOD0(get, std::chrono::seconds());
+	MOCK_METHOD1(set, void(const std::chrono::seconds&));
 
 	MOCK_CONST_METHOD0(toRunTimeDto, RunTimeDTO());
 	MOCK_METHOD1(updateFromRunTimeDto, void(const RunTimeDTO&));

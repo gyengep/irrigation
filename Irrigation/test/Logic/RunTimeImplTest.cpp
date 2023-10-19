@@ -7,12 +7,12 @@ using namespace testing;
 
 TEST(RunTimeImplConstructorTest, defaultConstructor) {
 	RunTimeImpl runTime;
-	EXPECT_THAT(runTime.getSeconds(), Eq(0));
+	EXPECT_THAT(runTime.get(), Eq(std::chrono::seconds(0)));
 }
 
 TEST(RunTimeImplConstructorTest, parametrizedConstructor) {
 	RunTimeImpl runTime(std::chrono::seconds(10));
-	EXPECT_THAT(runTime.getSeconds(), Eq(10));
+	EXPECT_THAT(runTime.get(), Eq(std::chrono::seconds(10)));
 
 	EXPECT_NO_THROW(RunTimeImpl(std::chrono::hours(24)));
 	EXPECT_THROW(RunTimeImpl(std::chrono::hours(24) + std::chrono::seconds(1)), ValueOutOfBoundsException);
@@ -30,16 +30,16 @@ void RunTimeImplTest::TearDown() {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RunTimeImplTest, setValue) {
-	runTime->setSeconds(25);
-	EXPECT_THAT(runTime->getSeconds(), Eq(25));
+	runTime->set(std::chrono::seconds(25));
+	EXPECT_THAT(runTime->get(), Eq(std::chrono::seconds(25)));
 
-	runTime->setSeconds(38);
-	EXPECT_THAT(runTime->getSeconds(), Eq(38));
+	runTime->set(std::chrono::seconds(38));
+	EXPECT_THAT(runTime->get(), Eq(std::chrono::seconds(38)));
 }
 
 TEST_F(RunTimeImplTest, setValueMax) {
-	EXPECT_NO_THROW(RunTimeImpl().setSeconds(24 * 60 * 60));
-	EXPECT_THROW(RunTimeImpl().setSeconds(24 * 60 * 60 + 1), ValueOutOfBoundsException);
+	EXPECT_NO_THROW(RunTimeImpl().set(std::chrono::hours(24)));
+	EXPECT_THROW(RunTimeImpl().set(std::chrono::hours(24) + std::chrono::seconds(1)), ValueOutOfBoundsException);
 }
 
 TEST_F(RunTimeImplTest, toDuration) {

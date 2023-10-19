@@ -6,17 +6,17 @@
 
 
 class RunTimeImpl : public RunTime {
-	static const unsigned maxSeconds = 60 * 60 * 24;
+	static const std::chrono::hours maxTime;
 
-	unsigned seconds;
+	std::chrono::seconds time;
 
 public:
 	RunTimeImpl();
-	RunTimeImpl(const std::chrono::seconds& seconds);
+	RunTimeImpl(const std::chrono::seconds& time);
 	virtual ~RunTimeImpl() = default;
 
-	virtual unsigned getSeconds() const override;
-	virtual void setSeconds(unsigned seconds) override;	// throws ValueOutOfBoundsException
+	virtual std::chrono::seconds get() const override;
+	virtual void set(const std::chrono::seconds& time) override;	// throws ValueOutOfBoundsException
 
 	virtual RunTimeDTO toRunTimeDto() const override;
 	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) override;
