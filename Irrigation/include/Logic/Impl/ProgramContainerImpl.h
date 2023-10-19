@@ -25,7 +25,6 @@ class ProgramContainerImpl : public ProgramContainer {
 
 public:
 	ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory);
-	ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory, std::initializer_list<value_type> initializer);
 	ProgramContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~ProgramContainerImpl() = default;
 

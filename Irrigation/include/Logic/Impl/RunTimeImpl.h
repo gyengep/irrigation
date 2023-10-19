@@ -12,7 +12,6 @@ class RunTimeImpl : public RunTime {
 
 public:
 	RunTimeImpl();
-	RunTimeImpl(unsigned seconds);
 	RunTimeImpl(const std::chrono::seconds& seconds);
 	virtual ~RunTimeImpl() = default;
 

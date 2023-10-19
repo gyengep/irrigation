@@ -22,7 +22,7 @@ TEST(StartTimeContainerImplConstructorTest, initializerConstructor) {
 		{ IdType(15), std::make_shared<MockStartTime>() },
 	};
 
-	const StartTimeContainerImpl startTimeContainer(std::make_shared<StrictMock<MockStartTimeFactory>>(), initializer);
+	const StartTimeContainerImpl startTimeContainer(initializer);
 
 	ASSERT_THAT(startTimeContainer, SizeIs(initializer.size()));
 

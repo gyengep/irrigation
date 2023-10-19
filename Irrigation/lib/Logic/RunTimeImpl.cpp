@@ -11,19 +11,12 @@ RunTimePtr RunTimeImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeImpl::RunTimeImpl() :
-	RunTimeImpl(0)
-{
+RunTimeImpl::RunTimeImpl() {
+	setSeconds(0);
 }
 
-RunTimeImpl::RunTimeImpl(const std::chrono::seconds& seconds) :
-	RunTimeImpl(seconds.count())
-{
-}
-
-RunTimeImpl::RunTimeImpl(unsigned seconds) :
-	seconds(seconds)
-{
+RunTimeImpl::RunTimeImpl(const std::chrono::seconds& seconds) {
+	setSeconds(seconds.count());
 }
 
 unsigned RunTimeImpl::getSeconds() const {

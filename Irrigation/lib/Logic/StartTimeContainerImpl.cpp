@@ -21,12 +21,6 @@ StartTimeContainerImpl::StartTimeContainerImpl(const std::shared_ptr<StartTimeFa
 {
 }
 
-StartTimeContainerImpl::StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory, std::initializer_list<StartTimeContainer::value_type> initializer) :
-	startTimeFactory(startTimeFactory),
-	container(initializer)
-{
-}
-
 StartTimeContainerImpl::StartTimeContainerImpl(std::initializer_list<StartTimeContainer::value_type> initializer) :
 	startTimeFactory(nullptr),
 	container(initializer)

@@ -25,7 +25,6 @@ class StartTimeContainerImpl : public StartTimeContainer {
 
 public:
 	StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
-	StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory, std::initializer_list<value_type> initializer);
 	StartTimeContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~StartTimeContainerImpl() = default;
 

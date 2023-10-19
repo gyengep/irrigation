@@ -21,12 +21,6 @@ ProgramContainerImpl::ProgramContainerImpl(const std::shared_ptr<ProgramFactory>
 {
 }
 
-ProgramContainerImpl::ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory, std::initializer_list<ProgramContainer::value_type> initializer) :
-	programFactory(programFactory),
-	container(initializer)
-{
-}
-
 ProgramContainerImpl::ProgramContainerImpl(std::initializer_list<ProgramContainer::value_type> initializer) :
 	programFactory(nullptr),
 	container(initializer)

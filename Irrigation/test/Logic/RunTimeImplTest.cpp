@@ -11,8 +11,11 @@ TEST(RunTimeImplConstructorTest, defaultConstructor) {
 }
 
 TEST(RunTimeImplConstructorTest, parametrizedConstructor) {
-	RunTimeImpl runTime(10);
+	RunTimeImpl runTime(std::chrono::seconds(10));
 	EXPECT_THAT(runTime.getSeconds(), Eq(10));
+
+	EXPECT_NO_THROW(RunTimeImpl(std::chrono::hours(24)));
+	EXPECT_THROW(RunTimeImpl(std::chrono::hours(24) + std::chrono::seconds(1)), ValueOutOfBoundsException);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,13 +43,13 @@ TEST_F(RunTimeImplTest, setValueMax) {
 }
 
 TEST_F(RunTimeImplTest, toDuration) {
-	EXPECT_THAT(RunTimeImpl(0).toDuration(), Eq(std::chrono::seconds(0)));
-	EXPECT_THAT(RunTimeImpl(12).toDuration(), Eq(std::chrono::seconds(12)));
-	EXPECT_THAT(RunTimeImpl(85).toDuration(), Eq(std::chrono::seconds(85)));
+	EXPECT_THAT(RunTimeImpl(std::chrono::seconds(0)).toDuration(), Eq(std::chrono::seconds(0)));
+	EXPECT_THAT(RunTimeImpl(std::chrono::seconds(12)).toDuration(), Eq(std::chrono::seconds(12)));
+	EXPECT_THAT(RunTimeImpl(std::chrono::seconds(85)).toDuration(), Eq(std::chrono::seconds(85)));
 }
 
 TEST_F(RunTimeImplTest, toDurationStatic) {
-	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 0)), Eq(std::chrono::seconds(0)));
-	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 12)), Eq(std::chrono::seconds(12)));
-	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(1, 25)), Eq(std::chrono::seconds(85)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 0)), Eq(std::chrono::minutes(0) + std::chrono::seconds(0)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 12)), Eq(std::chrono::minutes(0) + std::chrono::seconds(12)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(1, 25)), Eq(std::chrono::minutes(1) + std::chrono::seconds(25)));
 }
