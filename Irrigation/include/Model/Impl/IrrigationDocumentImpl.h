@@ -44,7 +44,7 @@ public:
 	virtual void setModified(bool modified = true) override;
 
 	virtual void startIfScheduled(const LocalDateTime& localDateTime) override;
-	virtual void startProgram(const IdType& programId, unsigned adjustment) override;
+	virtual void startProgram(const IdType& programId, unsigned adjustment) override; 	// throw NoSuchElementException
 	virtual void startCustom(const DurationList& durations, unsigned adjustment) override;
 	virtual void stop() override;
 
@@ -54,8 +54,8 @@ public:
 	virtual void saveState() const override;
 	virtual void loadState() override;
 
-	virtual void save() const override;
-	virtual void load() override;
+	virtual void save() const override;	// throws std::runtime_error
+	virtual void load() override;		// throws std::runtime_error
 
 	nlohmann::json saveTo() const;
 	void loadFrom(const nlohmann::json& values);

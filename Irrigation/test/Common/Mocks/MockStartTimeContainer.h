@@ -28,7 +28,5 @@ public:
 
 class MockStartTimeContainerFactory : public StartTimeContainerFactory {
 public:
-	virtual StartTimeContainerPtr create() const override {
-		return std::make_shared<testing::StrictMock<MockStartTimeContainer>>();
-	}
+	MOCK_CONST_METHOD0(create, StartTimeContainerPtr());
 };

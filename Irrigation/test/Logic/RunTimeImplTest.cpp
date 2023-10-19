@@ -1,43 +1,51 @@
+#include "RunTimeImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Logic/Impl/RunTimeImpl.h"
-#include <gmock/gmock.h>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(RunTimeImplTest, defaultConstructor) {
+TEST(RunTimeImplConstructorTest, defaultConstructor) {
 	RunTimeImpl runTime;
 	EXPECT_THAT(runTime.getSeconds(), Eq(0));
 }
 
-TEST(RunTimeImplTest, parametrizedConstructor) {
+TEST(RunTimeImplConstructorTest, parametrizedConstructor) {
 	RunTimeImpl runTime(10);
 	EXPECT_THAT(runTime.getSeconds(), Eq(10));
 }
 
-TEST(RunTimeImplTest, setValue) {
-	RunTimeImpl runTime;
+///////////////////////////////////////////////////////////////////////////////
 
-	runTime.setSeconds(25);
-	EXPECT_THAT(runTime.getSeconds(), Eq(25));
-
-	runTime.setSeconds(38);
-	EXPECT_THAT(runTime.getSeconds(), Eq(38));
+void RunTimeImplTest::SetUp() {
+	runTime = std::make_shared<RunTimeImpl>();
 }
 
-TEST(RunTimeImplTest, setValueMax) {
+void RunTimeImplTest::TearDown() {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(RunTimeImplTest, setValue) {
+	runTime->setSeconds(25);
+	EXPECT_THAT(runTime->getSeconds(), Eq(25));
+
+	runTime->setSeconds(38);
+	EXPECT_THAT(runTime->getSeconds(), Eq(38));
+}
+
+TEST_F(RunTimeImplTest, setValueMax) {
 	EXPECT_NO_THROW(RunTimeImpl().setSeconds(24 * 60 * 60));
 	EXPECT_THROW(RunTimeImpl().setSeconds(24 * 60 * 60 + 1), ValueOutOfBoundsException);
 }
 
-TEST(RunTimeImplTest, toDuration) {
+TEST_F(RunTimeImplTest, toDuration) {
 	EXPECT_THAT(RunTimeImpl(0).toDuration(), Eq(std::chrono::seconds(0)));
 	EXPECT_THAT(RunTimeImpl(12).toDuration(), Eq(std::chrono::seconds(12)));
 	EXPECT_THAT(RunTimeImpl(85).toDuration(), Eq(std::chrono::seconds(85)));
 }
 
-TEST(RunTimeImplTest, toDurationStatic) {
+TEST_F(RunTimeImplTest, toDurationStatic) {
 	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 0)), Eq(std::chrono::seconds(0)));
 	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 12)), Eq(std::chrono::seconds(12)));
 	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(1, 25)), Eq(std::chrono::seconds(85)));

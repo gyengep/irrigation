@@ -19,34 +19,17 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class MockRunTimeFactory : public RunTimeFactory {
-	std::shared_ptr<MockRunTime> getNext() const {
-		if (nextIndex >= mockRunTimes.size()) {
-			throw std::runtime_error("MockRunTimeFactory::getNext() invalid index: " + std::to_string(nextIndex));
-		}
-
-		return mockRunTimes[nextIndex++];
-	}
+	unsigned idx = 0;
 
 public:
 	std::vector<std::shared_ptr<MockRunTime>> mockRunTimes;
-	mutable size_t nextIndex;
 
-	MockRunTimeFactory(size_t size) :
-		mockRunTimes(size),
-		nextIndex(0)
-	{
-		for (size_t i = 0; i < mockRunTimes.size(); ++i) {
-			mockRunTimes[i] = std::make_shared<testing::StrictMock<MockRunTime>>();
+	RunTimePtr createMockRunTime() {
+		if (mockRunTimes.size() <= idx) {
+			throw std::logic_error("MockRunTimeFactory::createMockRunTime()");
 		}
 
-		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockRunTimeFactory::getNext));
-	}
-
-	MockRunTimeFactory(std::initializer_list<std::shared_ptr<MockRunTime>> initializer) :
-		mockRunTimes(initializer),
-		nextIndex(0)
-	{
-		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockRunTimeFactory::getNext));
+		return mockRunTimes[idx++];
 	}
 
 	MOCK_CONST_METHOD0(create, RunTimePtr());

@@ -24,12 +24,12 @@ public:
 	virtual size_t size() const = 0;
 	virtual bool empty() const = 0;
 
-	virtual value_type& insert(const key_type& key, const mapped_type& value) = 0;
-	virtual void erase(const key_type& key) = 0;
+	virtual value_type& insert(const key_type& key, const mapped_type& value) = 0;		// throw AlreadyExistException
+	virtual void erase(const key_type& key) = 0;										// throw NoSuchElementException
 	virtual void sort() = 0;
 
-	virtual const_mapped_type at(const key_type& key) const = 0;
-	virtual mapped_type at(const key_type& key) = 0;
+	virtual const_mapped_type at(const key_type& key) const = 0;						// throw NoSuchElementException
+	virtual mapped_type at(const key_type& key) = 0;									// throw NoSuchElementException
 
 	virtual std::list<StartTimeDTO> toStartTimeDtoList() const = 0;
 	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) = 0;

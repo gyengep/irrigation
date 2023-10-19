@@ -1,66 +1,72 @@
-#include "Logic/Impl/StartTimeImpl.h"
+#include "StartTimeImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include <gmock/gmock.h>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(StartTimeImplTest, defaultConstructor) {
+TEST(StartTimeImplConstructorTest, defaultConstructor) {
 	const StartTimeImpl startTime;
 
 	EXPECT_THAT(startTime.getHours(), Eq(0));
 	EXPECT_THAT(startTime.getMinutes(), Eq(0));
 }
 
-TEST(StartTimeImplTest, parametrizedConstructor) {
+TEST(StartTimeImplConstructorTest, parametrizedConstructor) {
 	const StartTimeImpl startTime(1, 30);
 
 	EXPECT_THAT(startTime.getHours(), Eq(1));
 	EXPECT_THAT(startTime.getMinutes(), Eq(30));
 }
 
-TEST(StartTimeImplTest, parametrizedConstructor_invalid) {
+TEST(StartTimeImplConstructorTest, parametrizedConstructor_invalid) {
 	EXPECT_NO_THROW(StartTimeImpl(23, 59));
 	EXPECT_THROW(StartTimeImpl(24, 0), ValueOutOfBoundsException);
 	EXPECT_THROW(StartTimeImpl(23, 60), ValueOutOfBoundsException);
 }
 
-TEST(StartTimeImplTest, less) {
+///////////////////////////////////////////////////////////////////////////////
+
+void StartTimeImplTest::SetUp() {
+	startTime = std::make_shared<StartTimeImpl>();
+}
+
+void StartTimeImplTest::TearDown() {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(StartTimeImplTest, less) {
 	const unsigned hour = 15;
 	const unsigned minute = 25;
 
-	const StartTimeImpl startTime(hour, minute);
+	startTime->set(hour, minute);
 
-	EXPECT_TRUE(StartTimeImpl(hour - 1, minute - 1).less(startTime));
-	EXPECT_TRUE(StartTimeImpl(hour - 1, minute).less(startTime));
-	EXPECT_TRUE(StartTimeImpl(hour - 1, minute + 1).less(startTime));
+	EXPECT_FALSE(startTime->less(StartTimeImpl(hour - 1, minute - 1)));
+	EXPECT_FALSE(startTime->less(StartTimeImpl(hour - 1, minute)));
+	EXPECT_FALSE(startTime->less(StartTimeImpl(hour - 1, minute + 1)));
 
-	EXPECT_TRUE(StartTimeImpl(hour, minute - 1).less(startTime));
-	EXPECT_FALSE(StartTimeImpl(hour, minute).less(startTime));
-	EXPECT_FALSE(StartTimeImpl(hour, minute + 1).less(startTime));
+	EXPECT_FALSE(startTime->less(StartTimeImpl(hour, minute - 1)));
+	EXPECT_FALSE(startTime->less(StartTimeImpl(hour, minute)));
+	EXPECT_TRUE(startTime->less(StartTimeImpl(hour, minute + 1)));
 
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute - 1).less(startTime));
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute).less(startTime));
-	EXPECT_FALSE(StartTimeImpl(hour + 1, minute + 1).less(startTime));
+	EXPECT_TRUE(startTime->less(StartTimeImpl(hour + 1, minute - 1)));
+	EXPECT_TRUE(startTime->less(StartTimeImpl(hour + 1, minute)));
+	EXPECT_TRUE(startTime->less(StartTimeImpl(hour + 1, minute + 1)));
 }
 
-TEST(StartTimeImplTest, set) {
-	StartTimeImpl startTime;
+TEST_F(StartTimeImplTest, set) {
+	startTime->set(21, 36);
+	EXPECT_THAT(startTime->getHours(), Eq(21));
+	EXPECT_THAT(startTime->getMinutes(), Eq(36));
 
-	startTime.set(21, 36);
-	EXPECT_THAT(startTime.getHours(), Eq(21));
-	EXPECT_THAT(startTime.getMinutes(), Eq(36));
-
-	startTime.set(8, 12);
-	EXPECT_THAT(startTime.getHours(), Eq(8));
-	EXPECT_THAT(startTime.getMinutes(), Eq(12));
+	startTime->set(8, 12);
+	EXPECT_THAT(startTime->getHours(), Eq(8));
+	EXPECT_THAT(startTime->getMinutes(), Eq(12));
 }
 
-TEST(StartTimeImplTest, setValueMax) {
-	StartTimeImpl startTime;
-
-	EXPECT_NO_THROW(startTime.set(23, 59));
-	EXPECT_THROW(startTime.set(24, 0), ValueOutOfBoundsException);
-	EXPECT_THROW(startTime.set(23, 60), ValueOutOfBoundsException);
+TEST_F(StartTimeImplTest, setValueMax) {
+	EXPECT_NO_THROW(startTime->set(23, 59));
+	EXPECT_THROW(startTime->set(24, 0), ValueOutOfBoundsException);
+	EXPECT_THROW(startTime->set(23, 60), ValueOutOfBoundsException);
 }

@@ -1,142 +1,191 @@
-#include "Logic/Impl/ProgramContainerImpl.h"
+#include "ProgramContainerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Mocks/MockProgram.h"
-#include <gmock/gmock.h>
+#include "Dto2ObjectSamples/ProgramSamples.h"
+#include <vector>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(ProgramContainerImplImplTest, defaultConstructor) {
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0));
+TEST(ProgramContainerImplConstructorTest, defaultConstructor) {
+	ProgramContainerImpl programContainer(std::make_shared<StrictMock<MockProgramFactory>>());
 
-	EXPECT_THAT(programs.begin(), Eq(programs.end()));
-	EXPECT_THAT(programs, IsEmpty());
-	EXPECT_THAT(programs, SizeIs(0));
+	EXPECT_THAT(programContainer.begin(), Eq(programContainer.end()));
+	EXPECT_THAT(programContainer, IsEmpty());
+	EXPECT_THAT(programContainer, SizeIs(0));
 }
 
-TEST(ProgramContainerImplImplTest, initializerConstructor) {
+TEST(ProgramContainerImplConstructorTest, initializerConstructor) {
 	const std::initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, std::make_shared<MockProgram>() },
-		{ 20, std::make_shared<MockProgram>() },
-		{ 15, std::make_shared<MockProgram>() },
+		{ IdType(10), std::make_shared<StrictMock<MockProgram>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockProgram>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockProgram>>() },
 	};
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0), initializer);
 
-	ASSERT_THAT(programs, SizeIs(initializer.size()));
+	ProgramContainerImpl programContainer(initializer);
+
+	ASSERT_THAT(programContainer, SizeIs(initializer.size()));
 
 	for (size_t i = 0; i < initializer.size(); ++i) {
-		EXPECT_THAT(next(programs.begin(), i)->first, Eq(next(initializer.begin(), i)->first));
-		EXPECT_THAT(next(programs.begin(), i)->second.get(), Eq(next(initializer.begin(), i)->second.get()));
+		EXPECT_THAT(std::next(programContainer.begin(), i)->first, Eq(std::next(initializer.begin(), i)->first));
+		EXPECT_THAT(std::next(programContainer.begin(), i)->second, Eq(std::next(initializer.begin(), i)->second));
 	}
 }
 
-TEST(ProgramContainerImplImplTest, size) {
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0));
-	EXPECT_THAT(programs, SizeIs(0));
+///////////////////////////////////////////////////////////////////////////////
 
-	programs.insert(0, std::make_shared<MockProgram>());
-	EXPECT_THAT(programs, SizeIs(1));
+void ProgramContainerImplTest::SetUp() {
+	mockProgramFactory = std::make_shared<StrictMock<MockProgramFactory>>(),
 
-	programs.insert(1, std::make_shared<MockProgram>());
-	programs.insert(2, std::make_shared<MockProgram>());
-	EXPECT_THAT(programs, SizeIs(3));
-}
-
-TEST(ProgramContainerImplImplTest, insert) {
-	const std::initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, std::make_shared<MockProgram>() },
-		{ 20, std::make_shared<MockProgram>() },
-		{ 15, std::make_shared<MockProgram>() },
-	};
-
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0));
-
-	for (const auto& value : initializer) {
-		programs.insert(value.first, value.second);
-	}
-
-	EXPECT_THAT(programs, ElementsAreArray(initializer));
-}
-
-TEST(ProgramContainerImplImplTest, insertExisting) {
-	ProgramContainerImpl programs(
-			std::make_shared<StrictMock<MockProgramFactory>>(0),
-			{
-				{ 100, std::make_shared<MockProgram>() },
-				{ 101, std::make_shared<MockProgram>() },
-				{ 102, std::make_shared<MockProgram>() },
-			}
+	programContainer = std::make_shared<ProgramContainerImpl>(
+			mockProgramFactory
 		);
-
-	EXPECT_THROW(programs.insert(101, std::make_shared<StrictMock<MockProgram>>()), AlreadyExistException);
 }
 
-TEST(ProgramContainerImplImplTest, erase) {
-	const std::initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 50, std::make_shared<MockProgram>() },
-		{ 40, std::make_shared<MockProgram>() },
-		{ 70, std::make_shared<MockProgram>() },
-		{ 60, std::make_shared<MockProgram>() }
+void ProgramContainerImplTest::TearDown() {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(ProgramContainerImplTest, size) {
+	EXPECT_THAT(*programContainer, SizeIs(0));
+
+	programContainer->insert(0, std::make_shared<StrictMock<MockProgram>>());
+	EXPECT_THAT(*programContainer, SizeIs(1));
+
+	programContainer->insert(1, std::make_shared<StrictMock<MockProgram>>());
+	programContainer->insert(2, std::make_shared<StrictMock<MockProgram>>());
+	EXPECT_THAT(*programContainer, SizeIs(3));
+}
+
+TEST_F(ProgramContainerImplTest, insert) {
+	const std::vector<ProgramContainerImpl::value_type> items {
+		{ IdType(10), std::make_shared<StrictMock<MockProgram>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockProgram>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockProgram>>() },
 	};
 
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0), initializer);
+	for (const auto& value : items) {
+		programContainer->insert(value.first, value.second);
+	}
 
-	EXPECT_THAT(programs, SizeIs(initializer.size()));
-	EXPECT_NO_THROW(programs.erase(40));
-	EXPECT_THAT(programs, SizeIs(initializer.size() - 1));
+	EXPECT_THAT(*programContainer, ElementsAreArray(items));
+}
 
-	EXPECT_THAT(programs,
+TEST_F(ProgramContainerImplTest, insert_existing) {
+	const std::vector<ProgramContainerImpl::value_type> items {
+		{ IdType(10), std::make_shared<StrictMock<MockProgram>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockProgram>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockProgram>>() },
+	};
+
+	for (const auto& value : items) {
+		programContainer->insert(value.first, value.second);
+	}
+
+	EXPECT_THROW(programContainer->insert(20, std::make_shared<StrictMock<MockProgram>>()), AlreadyExistException);
+}
+
+TEST_F(ProgramContainerImplTest, erase) {
+	const std::vector<ProgramContainerImpl::value_type> items {
+		{ 50, std::make_shared<StrictMock<MockProgram>>() },
+		{ 40, std::make_shared<StrictMock<MockProgram>>() },
+		{ 70, std::make_shared<StrictMock<MockProgram>>() },
+		{ 60, std::make_shared<StrictMock<MockProgram>>() }
+	};
+
+	for (const auto& value : items) {
+		programContainer->insert(value.first, value.second);
+	}
+
+	EXPECT_THAT(*programContainer, SizeIs(items.size()));
+	EXPECT_NO_THROW(programContainer->erase(40));
+	EXPECT_THAT(*programContainer, SizeIs(items.size() - 1));
+
+	EXPECT_THAT(*programContainer,
 			ElementsAre(
-				*next(initializer.begin(), 0),
-				*next(initializer.begin(), 2),
-				*next(initializer.begin(), 3)
+				*next(items.begin(), 0),
+				*next(items.begin(), 2),
+				*next(items.begin(), 3)
 			));
 }
 
-TEST(ProgramContainerImplImplTest, eraseInvalid) {
-	const std::initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, std::make_shared<MockProgram>() },
-		{ 20, std::make_shared<MockProgram>() },
-		{ 15, std::make_shared<MockProgram>() },
+TEST_F(ProgramContainerImplTest, erase_notExisting) {
+	const std::vector<ProgramContainerImpl::value_type> items {
+		{ 10, std::make_shared<StrictMock<MockProgram>>() },
+		{ 20, std::make_shared<StrictMock<MockProgram>>() },
+		{ 15, std::make_shared<StrictMock<MockProgram>>() },
 	};
 
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0), initializer);
+	for (const auto& value : items) {
+		programContainer->insert(value.first, value.second);
+	}
 
-	EXPECT_THAT(programs, SizeIs(initializer.size()));
-	EXPECT_THROW(programs.erase(30), NoSuchElementException);
-	EXPECT_THAT(programs, SizeIs(initializer.size()));
+	EXPECT_THAT(*programContainer, SizeIs(items.size()));
+	EXPECT_THROW(programContainer->erase(30), NoSuchElementException);
+	EXPECT_THAT(*programContainer, SizeIs(items.size()));
 }
 
-TEST(ProgramContainerImplImplTest, at) {
-	const std::initializer_list<ProgramContainerImpl::value_type> initializer {
-		{ 10, std::make_shared<MockProgram>() },
-		{ 15, std::make_shared<MockProgram>() },
-		{ 20, std::make_shared<MockProgram>() },
+TEST_F(ProgramContainerImplTest, at) {
+	const std::vector<ProgramContainerImpl::value_type> items {
+		{ 10, std::make_shared<StrictMock<MockProgram>>() },
+		{ 20, std::make_shared<StrictMock<MockProgram>>() },
+		{ 15, std::make_shared<StrictMock<MockProgram>>() },
 	};
 
-	ProgramContainerImpl programs(std::make_shared<StrictMock<MockProgramFactory>>(0), initializer);
+	for (const auto& value : items) {
+		programContainer->insert(value.first, value.second);
+	}
 
-	ASSERT_THAT(programs, SizeIs(initializer.size()));
+	ASSERT_THAT(*programContainer, SizeIs(items.size()));
 
-	for (unsigned i = 0; i < initializer.size(); ++i) {
-		const ProgramContainerImpl::value_type& value = *next(initializer.begin(), i);
-		const ProgramContainerImpl::key_type& requiredKey = value.first;
-		const ProgramContainerImpl::mapped_type& requiredValue = value.second;
+	for (const auto& keyValue : items) {
+		const ProgramContainerImpl::key_type& requiredKey = keyValue.first;
+		const ProgramContainerImpl::mapped_type& requiredValue = keyValue.second;
 
-		EXPECT_THAT(programs.at(requiredKey), Eq(requiredValue));
+		EXPECT_THAT(programContainer->at(requiredKey), Eq(requiredValue));
+		EXPECT_THAT(Const(programContainer)->at(requiredKey), Eq(requiredValue));
 	}
 }
 
-TEST(ProgramContainerImplImplTest, atInvalid) {
-	ProgramContainerImpl programs(
-			std::make_shared<StrictMock<MockProgramFactory>>(0),
-			{
-				{ 10, std::make_shared<MockProgram>() },
-				{ 15, std::make_shared<MockProgram>() },
-				{ 20, std::make_shared<MockProgram>() }
-			}
-		);
+TEST_F(ProgramContainerImplTest, at_notExisting) {
+	const std::vector<ProgramContainerImpl::value_type> items {
+		{ 10, std::make_shared<StrictMock<MockProgram>>() },
+		{ 20, std::make_shared<StrictMock<MockProgram>>() },
+		{ 15, std::make_shared<StrictMock<MockProgram>>() },
+	};
 
-	EXPECT_THROW(programs.at(6), NoSuchElementException);
+	for (const auto& value : items) {
+		programContainer->insert(value.first, value.second);
+	}
+
+	EXPECT_THROW(programContainer->at(6), NoSuchElementException);
+	EXPECT_THROW(Const(programContainer)->at(6), NoSuchElementException);
+}
+
+TEST_F(ProgramContainerImplTest, create) {
+	const auto programSampleList = Dto2ObjectTestSamples::ProgramSampleList();
+
+	ASSERT_THAT(*programContainer, SizeIs(0));
+	EXPECT_CALL(*mockProgramFactory, create()).
+			Times(programSampleList.size()).
+			WillRepeatedly(Invoke(mockProgramFactory.get(), &MockProgramFactory::createMockProgram));
+
+	for (const auto& programSample : programSampleList) {
+		const ProgramDTO expectedDTO = programSample.getDto();
+
+		mockProgramFactory->mockPrograms.push_back(std::make_shared<StrictMock<MockProgram>>());
+
+		EXPECT_CALL(*mockProgramFactory->mockPrograms.back(), updateFromProgramDto(expectedDTO)).
+				Times(1);
+
+		programContainer->createFromProgramDto(expectedDTO);
+	}
+
+	ASSERT_THAT(*programContainer, SizeIs(programSampleList.size()));
+	ASSERT_THAT(*programContainer, SizeIs(mockProgramFactory->mockPrograms.size()));
+
+	for (unsigned i = 0; i < programContainer->size(); ++i) {
+		EXPECT_THAT(std::next(programContainer->begin(), i)->second, Eq(mockProgramFactory->mockPrograms[i]));
+	}
 }

@@ -11,7 +11,7 @@ public:
 	virtual ~RunTime() = default;
 
 	virtual unsigned getSeconds() const = 0;
-	virtual void setSeconds(unsigned seconds) = 0;
+	virtual void setSeconds(unsigned seconds) = 0;	// throws ValueOutOfBoundsException
 
 	virtual RunTimeDTO toRunTimeDto() const = 0;
 	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) = 0;

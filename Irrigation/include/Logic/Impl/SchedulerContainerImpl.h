@@ -26,8 +26,8 @@ public:
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
 
-	virtual const_mapped_type at(const key_type& key) const override;
-	virtual mapped_type at(const key_type& key) override;
+	virtual const_mapped_type at(const key_type& key) const override;	// throws NoSuchElementException
+	virtual mapped_type at(const key_type& key) override;				// throws NoSuchElementException
 
 	virtual const EveryDayScheduler& getEveryDayScheduler() const override;
 	virtual const HotWeatherScheduler& getHotWeatherScheduler() const override;

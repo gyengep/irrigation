@@ -1,102 +1,130 @@
-#include "Logic/Impl/RunTimeContainerImpl.h"
+#include "RunTimeContainerImplTest.h"
 #include "Exceptions/Exceptions.h"
 #include "Hardware/Valves/ZoneHandler.h"
-#include "Mocks/MockRunTime.h"
-#include <gmock/gmock.h>
-#include <memory>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(RunTimeContainerImplTest, defaultConstructor) {
-	auto mockRunTimeFactory = std::make_shared<StrictMock<MockRunTimeFactory>>(6);
-	EXPECT_CALL(*mockRunTimeFactory, create()).Times(6);
+TEST(RunTimeContainerImplConstructorTest, defaultConstructor) {
+	std::shared_ptr<MockRunTimeFactory> mockRunTimeFactory = std::make_shared<StrictMock<MockRunTimeFactory>>();
 
-	const RunTimeContainerImpl runTimes(mockRunTimeFactory);
+	EXPECT_CALL(*mockRunTimeFactory, create()).
+			Times(6).
+			WillRepeatedly(Invoke(mockRunTimeFactory.get(), &MockRunTimeFactory::createMockRunTime));
 
-	ASSERT_THAT(runTimes, SizeIs(mockRunTimeFactory->mockRunTimes.size()));
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+
+	const RunTimeContainerImpl runTimeContainer(mockRunTimeFactory);
+
+	ASSERT_THAT(runTimeContainer, SizeIs(mockRunTimeFactory->mockRunTimes.size()));
 
 	for (size_t i = 0; i < mockRunTimeFactory->mockRunTimes.size(); ++i) {
-		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
-		EXPECT_THAT(next(runTimes.begin(), i)->second, Eq(*next(mockRunTimeFactory->mockRunTimes.begin(), i)));
+		EXPECT_THAT(std::next(runTimeContainer.begin(), i)->first, Eq(IdType(i)));
+		EXPECT_THAT(std::next(runTimeContainer.begin(), i)->second, Eq(*std::next(mockRunTimeFactory->mockRunTimes.begin(), i)));
 	}
 }
 
-TEST(RunTimeContainerImplTest, initializerConstructor) {
+TEST(RunTimeContainerImplConstructorTest, initializerConstructor) {
 	const std::initializer_list<RunTimePtr> initializer {
-		std::make_shared<MockRunTime>(),
-		std::make_shared<MockRunTime>(),
-		std::make_shared<MockRunTime>(),
-		std::make_shared<MockRunTime>(),
-		std::make_shared<MockRunTime>(),
-		std::make_shared<MockRunTime>()
+		std::make_shared<StrictMock<MockRunTime>>(),
+		std::make_shared<StrictMock<MockRunTime>>(),
+		std::make_shared<StrictMock<MockRunTime>>(),
+		std::make_shared<StrictMock<MockRunTime>>(),
+		std::make_shared<StrictMock<MockRunTime>>(),
+		std::make_shared<StrictMock<MockRunTime>>()
 	};
 
-	const RunTimeContainerImpl runTimes(initializer);
+	const RunTimeContainerImpl runTimeContainer(initializer);
 
-	ASSERT_THAT(runTimes, SizeIs(initializer.size()));
+	ASSERT_THAT(runTimeContainer, SizeIs(initializer.size()));
 
 	for (size_t i = 0; i < initializer.size(); ++i) {
-		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
-		EXPECT_THAT(next(runTimes.begin(), i)->second, Eq(*next(initializer.begin(), i)));
+		EXPECT_THAT(std::next(runTimeContainer.begin(), i)->first, Eq(IdType(i)));
+		EXPECT_THAT(std::next(runTimeContainer.begin(), i)->second, Eq(*std::next(initializer.begin(), i)));
 	}
 }
 
-TEST(RunTimeContainerImplTest, initializerConstructorWithWrongInitializer) {
+TEST_F(RunTimeContainerImplTest, initializerConstructorWithWrongInitializer) {
 	EXPECT_THROW(
 		RunTimeContainerImpl({
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>()
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>()
 		}),
 		std::logic_error
 	);
 
 	EXPECT_THROW(
 		RunTimeContainerImpl({
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>(),
-			std::make_shared<MockRunTime>()
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>(),
+			std::make_shared<StrictMock<MockRunTime>>()
 		}),
 		std::logic_error
 	);
 }
 
-TEST(RunTimeContainerImplTest, size) {
-	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
-	EXPECT_THAT(runTimes, SizeIs(ZoneHandler::getZoneCount()));
+///////////////////////////////////////////////////////////////////////////////
+
+void RunTimeContainerImplTest::SetUp() {
+	mockRunTimeFactory = std::make_shared<StrictMock<MockRunTimeFactory>>();
+
+	EXPECT_CALL(*mockRunTimeFactory, create()).
+			Times(6).
+			WillRepeatedly(Invoke(mockRunTimeFactory.get(), &MockRunTimeFactory::createMockRunTime));
+
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+	mockRunTimeFactory->mockRunTimes.push_back(std::make_shared<StrictMock<MockRunTime>>());
+
+	runTimeContainer = std::make_shared<RunTimeContainerImpl>(
+			mockRunTimeFactory
+		);
 }
 
-TEST(RunTimeContainerImplTest, id) {
-	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
+void RunTimeContainerImplTest::TearDown() {
+}
 
-	for (size_t i = 0; i < runTimes.size(); ++i) {
-		EXPECT_THAT(next(runTimes.begin(), i)->first, Eq(IdType(i)));
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(RunTimeContainerImplTest, size) {
+	EXPECT_THAT(*runTimeContainer, SizeIs(ZoneHandler::getZoneCount()));
+}
+
+TEST_F(RunTimeContainerImplTest, id) {
+	for (size_t i = 0; i < runTimeContainer->size(); ++i) {
+		EXPECT_THAT(std::next(runTimeContainer->begin(), i)->first, Eq(IdType(i)));
 	}
 }
 
-TEST(RunTimeContainerImplTest, at) {
-	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
-
-	for (size_t i = 0; i < runTimes.size(); ++i) {
-		EXPECT_THAT(runTimes.at(i), Eq(next(runTimes.begin(), i)->second));
+TEST_F(RunTimeContainerImplTest, at) {
+	for (size_t i = 0; i < runTimeContainer->size(); ++i) {
+		EXPECT_THAT(runTimeContainer->at(i), Eq(std::next(runTimeContainer->begin(), i)->second));
+		EXPECT_THAT(Const(runTimeContainer)->at(i), Eq(std::next(runTimeContainer->begin(), i)->second));
 	}
 }
 
-TEST(RunTimeContainerImplTest, atInvalid) {
-	RunTimeContainerImpl runTimes(std::make_shared<MockRunTimeFactory>(6));
-	EXPECT_THROW(runTimes.at(ZoneHandler::getZoneCount()), NoSuchElementException);
+TEST_F(RunTimeContainerImplTest, at_notExisting) {
+	EXPECT_THROW(runTimeContainer->at(ZoneHandler::getZoneCount()), NoSuchElementException);
+	EXPECT_THROW(Const(runTimeContainer)->at(ZoneHandler::getZoneCount()), NoSuchElementException);
 }
 
-TEST(RunTimeContainerImplTest, toDurationList) {
-	auto mockRunTimeFactory = std::make_shared<MockRunTimeFactory>(6);
+TEST_F(RunTimeContainerImplTest, toDurationList) {
 
 	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[0], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(0)));
 	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[1], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(50)));
@@ -106,7 +134,7 @@ TEST(RunTimeContainerImplTest, toDurationList) {
 	EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[5], toDuration()).Times(1).WillOnce(Return(std::chrono::seconds(60)));
 
 	EXPECT_THAT(
-			RunTimeContainerImpl(mockRunTimeFactory).toDurationList(),
+			runTimeContainer->toDurationList(),
 			ContainerEq(
 				DurationList {
 					std::chrono::seconds(0),
@@ -120,7 +148,7 @@ TEST(RunTimeContainerImplTest, toDurationList) {
 		);
 }
 
-TEST(RunTimeContainerImplTest, toDurationsStatic) {
+TEST_F(RunTimeContainerImplTest, toDurationsStatic) {
 	EXPECT_THAT(
 			RunTimeContainer::toDurationList(
 				std::list<RunTimeDTO>{

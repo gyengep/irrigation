@@ -28,8 +28,8 @@ public:
 	virtual const_iterator end() const = 0;
 	virtual size_t size() const = 0;
 
-	virtual const_mapped_type at(const key_type& key) const = 0;
-	virtual mapped_type at(const key_type& key) = 0;
+	virtual const_mapped_type at(const key_type& key) const = 0;	// throws NoSuchElementException
+	virtual mapped_type at(const key_type& key) = 0;				// throws NoSuchElementException
 
 	virtual const EveryDayScheduler& getEveryDayScheduler() const = 0;
 	virtual const HotWeatherScheduler& getHotWeatherScheduler() const = 0;

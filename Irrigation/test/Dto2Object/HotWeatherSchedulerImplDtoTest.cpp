@@ -1,5 +1,5 @@
 #include "Schedulers/Impl/HotWeatherSchedulerImpl.h"
-#include "Samples/HotWeatherSchedulerSamples.h"
+#include "Dto2ObjectSamples/HotWeatherSchedulerSamples.h"
 #include "Mocks/MockTemperatureHistory.h"
 #include <gmock/gmock.h>
 #include <memory>

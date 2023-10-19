@@ -1,95 +1,107 @@
-#include "Logic/Impl/StartTimeContainerImpl.h"
-#include "Logic/Impl/StartTimeImpl.h"
+#include "StartTimeContainerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Mocks/MockStartTime.h"
-#include <gmock/gmock.h>
-#include <memory>
+#include "Dto2ObjectSamples/StartTimeSamples.h"
+#include <vector>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(StartTimeContainerImplTest, defaultConstructor) {
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0));
+TEST(StartTimeContainerImplConstructorTest, defaultConstructor) {
+	StartTimeContainerImpl startTimeContainer(std::make_shared<StrictMock<MockStartTimeFactory>>());
 
-	EXPECT_THAT(startTimes.begin(), Eq(startTimes.end()));
-	EXPECT_THAT(startTimes, IsEmpty());
-	EXPECT_THAT(startTimes, SizeIs(0));
+	EXPECT_THAT(startTimeContainer.begin(), Eq(startTimeContainer.end()));
+	EXPECT_THAT(startTimeContainer, IsEmpty());
+	EXPECT_THAT(startTimeContainer, SizeIs(0));
 }
 
-TEST(StartTimeContainerImplTest, initializerConstructor) {
+TEST(StartTimeContainerImplConstructorTest, initializerConstructor) {
 	const std::initializer_list<StartTimeContainer::value_type> initializer {
 		{ IdType(10), std::make_shared<MockStartTime>() },
 		{ IdType(20), std::make_shared<MockStartTime>() },
 		{ IdType(15), std::make_shared<MockStartTime>() },
 	};
 
-	const StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0), initializer);
+	const StartTimeContainerImpl startTimeContainer(std::make_shared<StrictMock<MockStartTimeFactory>>(), initializer);
 
-	ASSERT_THAT(startTimes, SizeIs(initializer.size()));
+	ASSERT_THAT(startTimeContainer, SizeIs(initializer.size()));
 
 	for (size_t i = 0; i < initializer.size(); ++i) {
-		EXPECT_THAT(next(startTimes.begin(), i)->first, Eq(next(initializer.begin(), i)->first));
-		EXPECT_THAT(next(startTimes.begin(), i)->second, Eq(next(initializer.begin(), i)->second));
+		EXPECT_THAT(std::next(startTimeContainer.begin(), i)->first, Eq(next(initializer.begin(), i)->first));
+		EXPECT_THAT(std::next(startTimeContainer.begin(), i)->second, Eq(next(initializer.begin(), i)->second));
 	}
 }
 
-TEST(StartTimeContainerImplTest, size) {
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0));
+///////////////////////////////////////////////////////////////////////////////
 
-	startTimes.insert(IdType(), std::make_shared<MockStartTime>());
-	EXPECT_THAT(startTimes, SizeIs(1));
+void StartTimeContainerImplTest::SetUp() {
+	mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>();
 
-	startTimes.insert(IdType(), std::make_shared<MockStartTime>());
-	startTimes.insert(IdType(), std::make_shared<MockStartTime>());
-	EXPECT_THAT(startTimes, SizeIs(3));
+	startTimeContainer = std::make_shared<StartTimeContainerImpl>(
+			mockStartTimeFactory
+		);
 }
 
-TEST(StartTimeContainerImplTest, insert) {
-	const std::initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<MockStartTime>() },
-		{ 20, std::make_shared<MockStartTime>() },
-		{ 15, std::make_shared<MockStartTime>() },
+void StartTimeContainerImplTest::TearDown() {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(StartTimeContainerImplTest, size) {
+	startTimeContainer->insert(IdType(), std::make_shared<MockStartTime>());
+	EXPECT_THAT(*startTimeContainer, SizeIs(1));
+
+	startTimeContainer->insert(IdType(), std::make_shared<MockStartTime>());
+	startTimeContainer->insert(IdType(), std::make_shared<MockStartTime>());
+	EXPECT_THAT(*startTimeContainer, SizeIs(3));
+}
+
+TEST_F(StartTimeContainerImplTest, insert) {
+	const std::vector<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockStartTime>>() },
 	};
 
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0));
-
 	for (const auto& value : initializer) {
-		startTimes.insert(value.first, value.second);
+		startTimeContainer->insert(value.first, value.second);
 	}
 
-	EXPECT_THAT(startTimes, ElementsAreArray(initializer));
+	EXPECT_THAT(*startTimeContainer, ElementsAreArray(initializer));
 }
 
-TEST(StartTimeContainerImplTest, insertExisted) {
-	StartTimeContainerImpl startTimes(
-			std::make_shared<StrictMock<MockStartTimeFactory>>(0),
-			{
-				{ 10, std::make_shared<MockStartTime>() },
-				{ 20, std::make_shared<MockStartTime>() },
-				{ 15, std::make_shared<MockStartTime>() },
-			}
-		);
+TEST_F(StartTimeContainerImplTest, insert_existing) {
+	const std::vector<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockStartTime>>() },
+	};
 
-	EXPECT_THROW(startTimes.insert(20, std::make_shared<MockStartTime>()), AlreadyExistException);
+	for (const auto& value : initializer) {
+		startTimeContainer->insert(value.first, value.second);
+	}
+
+	EXPECT_THROW(startTimeContainer->insert(IdType(20), std::make_shared<StrictMock<MockStartTime>>()), AlreadyExistException);
 }
 
-TEST(StartTimeContainerImplTest, erase) {
-	const std::initializer_list<StartTimeContainer::value_type> initializer {
+TEST_F(StartTimeContainerImplTest, erase) {
+	const std::vector<StartTimeContainer::value_type> initializer {
 		{ 10, std::make_shared<MockStartTime>() },
 		{ 20, std::make_shared<MockStartTime>() },
 		{ 30, std::make_shared<MockStartTime>() },
 		{ 15, std::make_shared<MockStartTime>() },
 	};
 
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0), initializer);
+	for (const auto& value : initializer) {
+		startTimeContainer->insert(value.first, value.second);
+	}
 
-	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
-	EXPECT_NO_THROW(startTimes.erase(30));
-	EXPECT_THAT(startTimes, SizeIs(initializer.size() - 1));
+	EXPECT_THAT(*startTimeContainer, SizeIs(initializer.size()));
+	EXPECT_NO_THROW(startTimeContainer->erase(IdType(30)));
+	EXPECT_THAT(*startTimeContainer, SizeIs(initializer.size() - 1));
 
 	EXPECT_THAT(
-		startTimes,
+		*startTimeContainer,
 		ElementsAre(
 			*next(initializer.begin(), 0),
 			*next(initializer.begin(), 1),
@@ -98,70 +110,108 @@ TEST(StartTimeContainerImplTest, erase) {
 	);
 }
 
-TEST(StartTimeContainerImplTest, eraseInvalid) {
-	const std::initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<MockStartTime>() },
-		{ 20, std::make_shared<MockStartTime>() },
-		{ 15, std::make_shared<MockStartTime>() },
+TEST_F(StartTimeContainerImplTest, erase_notExisting) {
+	const std::vector<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockStartTime>>() },
 	};
 
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0), initializer);
+	for (const auto& value : initializer) {
+		startTimeContainer->insert(value.first, value.second);
+	}
 
-	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
-	EXPECT_THROW(startTimes.erase(30), NoSuchElementException);
-	EXPECT_THAT(startTimes, SizeIs(initializer.size()));
+	EXPECT_THAT(*startTimeContainer, SizeIs(initializer.size()));
+	EXPECT_THROW(startTimeContainer->erase(IdType(30)), NoSuchElementException);
+	EXPECT_THAT(*startTimeContainer, SizeIs(initializer.size()));
 }
 
-TEST(StartTimeContainerImplTest, at) {
-	const std::initializer_list<StartTimeContainer::value_type> initializer {
-		{ 10, std::make_shared<MockStartTime>() },
-		{ 15, std::make_shared<MockStartTime>() },
-		{ 20, std::make_shared<MockStartTime>() },
+TEST_F(StartTimeContainerImplTest, at) {
+	const std::vector<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockStartTime>>() },
 	};
 
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0), initializer);
+	for (const auto& value : initializer) {
+		startTimeContainer->insert(value.first, value.second);
+	}
 
-	ASSERT_THAT(startTimes, SizeIs(3));
+	ASSERT_THAT(*startTimeContainer, SizeIs(3));
 
 	for (size_t i = 0; i < initializer.size(); i++) {
 		const IdType& key = std::next(initializer.begin(), 0)->first;
 		const StartTimePtr& value = std::next(initializer.begin(), 0)->second;
 
-		EXPECT_THAT(startTimes.at(key), Eq(value));
+		EXPECT_THAT(startTimeContainer->at(key), Eq(value));
+		EXPECT_THAT(Const(startTimeContainer)->at(key), Eq(value));
 	}
 }
 
-TEST(StartTimeContainerImplTest, atInvalid) {
-	StartTimeContainerImpl startTimes(
-			std::make_shared<StrictMock<MockStartTimeFactory>>(0),
-			{
-				{ 10, std::make_shared<MockStartTime>() },
-				{ 15, std::make_shared<MockStartTime>() },
-				{ 20, std::make_shared<MockStartTime>() },
-			}
-		);
-
-	EXPECT_THROW(startTimes.at(6), NoSuchElementException);
-}
-
-TEST(StartTimeContainerImplTest, sort) {
-	const std::initializer_list<StartTimeContainer::value_type> initializer {
-		{ 0, std::make_shared<StartTimeImpl>(0, 15) },
-		{ 1, std::make_shared<StartTimeImpl>(0, 25) },
-		{ 2, std::make_shared<StartTimeImpl>(0, 10) },
-		{ 3, std::make_shared<StartTimeImpl>(0, 20) },
+TEST_F(StartTimeContainerImplTest, at_notExisting) {
+	const std::vector<StartTimeContainer::value_type> initializer {
+		{ IdType(10), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(20), std::make_shared<StrictMock<MockStartTime>>() },
+		{ IdType(15), std::make_shared<StrictMock<MockStartTime>>() },
 	};
 
-	StartTimeContainerImpl startTimes(std::make_shared<StrictMock<MockStartTimeFactory>>(0), initializer);
-	startTimes.sort();
+	for (const auto& value : initializer) {
+		startTimeContainer->insert(value.first, value.second);
+	}
+
+	ASSERT_THAT(*startTimeContainer, SizeIs(3));
+	EXPECT_THROW(startTimeContainer->at(6), NoSuchElementException);
+	EXPECT_THROW(Const(startTimeContainer)->at(6), NoSuchElementException);
+}
+
+TEST_F(StartTimeContainerImplTest, sort) {
+	const std::vector<StartTimeContainer::value_type> initializer {
+		{ IdType(0), std::make_shared<StartTimeImpl>(0, 15) },
+		{ IdType(1), std::make_shared<StartTimeImpl>(0, 25) },
+		{ IdType(2), std::make_shared<StartTimeImpl>(0, 10) },
+		{ IdType(3), std::make_shared<StartTimeImpl>(0, 20) },
+	};
+
+	for (const auto& value : initializer) {
+		startTimeContainer->insert(value.first, value.second);
+	}
+
+	startTimeContainer->sort();
 
 	EXPECT_THAT(
-		startTimes,
+		*startTimeContainer,
 		ElementsAre(
-			*next(initializer.begin(), 2),
-			*next(initializer.begin(), 0),
-			*next(initializer.begin(), 3),
-			*next(initializer.begin(), 1)
+			*std::next(initializer.begin(), 2),
+			*std::next(initializer.begin(), 0),
+			*std::next(initializer.begin(), 3),
+			*std::next(initializer.begin(), 1)
 		)
 	);
+}
+
+TEST_F(StartTimeContainerImplTest, create) {
+	const auto startTimeSampleList = Dto2ObjectTestSamples::StartTimeSampleList();
+
+	ASSERT_THAT(*startTimeContainer, SizeIs(0));
+	EXPECT_CALL(*mockStartTimeFactory, create()).
+			Times(startTimeSampleList.size()).
+			WillRepeatedly(Invoke(mockStartTimeFactory.get(), &MockStartTimeFactory::createMockStartTime));
+
+	for (const auto& startTimeSample : startTimeSampleList) {
+		const StartTimeDTO expectedDTO = startTimeSample.getDto();
+
+		mockStartTimeFactory->mockStartTimes.push_back(std::make_shared<StrictMock<MockStartTime>>());
+
+		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(expectedDTO)).
+				Times(1);
+
+		startTimeContainer->createFromStartTimeDto(expectedDTO);
+	}
+
+	ASSERT_THAT(*startTimeContainer, SizeIs(startTimeSampleList.size()));
+	ASSERT_THAT(*startTimeContainer, SizeIs(mockStartTimeFactory->mockStartTimes.size()));
+
+	for (unsigned i = 0; i < startTimeContainer->size(); ++i) {
+		EXPECT_THAT(std::next(startTimeContainer->begin(), i)->second, Eq(mockStartTimeFactory->mockStartTimes[i]));
+	}
 }

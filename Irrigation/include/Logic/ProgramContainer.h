@@ -20,16 +20,16 @@ public:
 
 	virtual ~ProgramContainer() = default;
 
-	virtual value_type& insert(const key_type& key, const mapped_type& value) = 0;
-	virtual void erase(const key_type& key) = 0;
+	virtual value_type& insert(const key_type& key, const mapped_type& value) = 0;		// throw AlreadyExistException
+	virtual void erase(const key_type& key) = 0;										// throw NoSuchElementException
 
 	virtual const_iterator begin() const = 0;
 	virtual const_iterator end() const = 0;
 	virtual size_t size() const = 0;
 	virtual bool empty() const = 0;
 
-	virtual const_mapped_type at(const key_type& key) const = 0;
-	virtual mapped_type at(const key_type& key) = 0;
+	virtual const_mapped_type at(const key_type& key) const = 0;	// throw NoSuchElementException
+	virtual mapped_type at(const key_type& key) = 0;				// throw NoSuchElementException
 
 	virtual std::list<ProgramDTO> toProgramDtoList() const = 0;
 	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) = 0;

@@ -39,34 +39,17 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class MockProgramFactory : public ProgramFactory {
-	std::shared_ptr<MockProgram> getNext() const {
-		if (nextIndex >= mockPrograms.size()) {
-			throw std::runtime_error("MockProgramFactory::getNext() invalid index: " + std::to_string(nextIndex));
-		}
-
-		return mockPrograms[nextIndex++];
-	}
+	unsigned idx = 0;
 
 public:
 	std::vector<std::shared_ptr<MockProgram>> mockPrograms;
-	mutable size_t nextIndex;
 
-	MockProgramFactory(size_t size) :
-		mockPrograms(size),
-		nextIndex(0)
-	{
-		for (size_t i = 0; i < mockPrograms.size(); ++i) {
-			mockPrograms[i] = std::make_shared<testing::StrictMock<MockProgram>>();
+	ProgramPtr createMockProgram() {
+		if (mockPrograms.size() <= idx) {
+			throw std::logic_error("MockProgramFactory::createMockProgram()");
 		}
 
-		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
-	}
-
-	MockProgramFactory(std::initializer_list<std::shared_ptr<MockProgram>> initializer) :
-		mockPrograms(initializer),
-		nextIndex(0)
-	{
-		ON_CALL(*this, create()).WillByDefault(testing::Invoke(this, &MockProgramFactory::getNext));
+		return mockPrograms[idx++];
 	}
 
 	MOCK_CONST_METHOD0(create, ProgramPtr());

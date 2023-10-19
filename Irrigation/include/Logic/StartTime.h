@@ -11,7 +11,7 @@ public:
 
 	virtual bool less(const StartTime& other) const = 0;
 
-	virtual void set(unsigned hour, unsigned minute) = 0;
+	virtual void set(unsigned hour, unsigned minute) = 0;	// thows ValueOutOfBoundsException
 
 	virtual unsigned getHours() const = 0;
 	virtual unsigned getMinutes() const = 0;

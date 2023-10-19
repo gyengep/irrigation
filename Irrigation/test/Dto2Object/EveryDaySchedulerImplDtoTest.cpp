@@ -1,5 +1,5 @@
 #include "Schedulers/Impl/EveryDaySchedulerImpl.h"
-#include "Samples/EveryDaySchedulerSamples.h"
+#include "Dto2ObjectSamples/EveryDaySchedulerSamples.h"
 #include <gmock/gmock.h>
 
 using namespace testing;

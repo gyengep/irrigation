@@ -32,8 +32,5 @@ public:
 
 class MockSchedulerContainerFactory : public SchedulerContainerFactory {
 public:
-	virtual ~MockSchedulerContainerFactory() = default;
-	virtual SchedulerContainerPtr create() const override {
-		return std::make_shared<MockSchedulerContainer>();
-	}
+	MOCK_CONST_METHOD0(create, SchedulerContainerPtr());
 };

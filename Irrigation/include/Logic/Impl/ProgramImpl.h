@@ -48,7 +48,6 @@ public:
 
 	virtual std::unique_ptr<Scheduler::Result> isScheduled(const LocalDateTime& localDateTime) override;
 
-
 	virtual const SchedulerContainer& getSchedulerContainer() const 	{ return *schedulerContainer; }
 	virtual const RunTimeContainer& getRunTimeContainer() const 		{ return *runTimeContainer; }
 	virtual const StartTimeContainer& getStartTimeContainer() const 	{ return *startTimeContainer; }

@@ -29,16 +29,16 @@ public:
 	ProgramContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~ProgramContainerImpl() = default;
 
-	virtual value_type& insert(const key_type& key, const mapped_type& value) override;
-	virtual void erase(const key_type& key) override;
+	virtual value_type& insert(const key_type& key, const mapped_type& value) override;	// throw AlreadyExistException
+	virtual void erase(const key_type& key) override;									// throw NoSuchElementException
 
 	virtual const_iterator begin() const override 	{ return container.begin(); }
 	virtual const_iterator end() const override 	{ return container.end(); }
 	virtual size_t size() const override 			{ return container.size(); }
 	virtual bool empty() const override	 			{ return container.empty(); }
 
-	virtual const_mapped_type at(const key_type& key) const override;
-	virtual mapped_type at(const key_type& key) override;
+	virtual const_mapped_type at(const key_type& key) const override;					// throw NoSuchElementException
+	virtual mapped_type at(const key_type& key) override;								// throw NoSuchElementException
 
 	virtual std::list<ProgramDTO> toProgramDtoList() const override;
 	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) override;

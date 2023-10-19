@@ -25,7 +25,7 @@ public:
 	virtual void setModified(bool modified = true) = 0;
 
 	virtual void startIfScheduled(const LocalDateTime& localDateTime) = 0;
-	virtual void startProgram(const IdType& programId, unsigned adjustment) = 0;
+	virtual void startProgram(const IdType& programId, unsigned adjustment) = 0;		// throw NoSuchElementException
 	virtual void startCustom(const DurationList& durations, unsigned adjustment) = 0;
 	virtual void stop() = 0;
 
@@ -35,8 +35,8 @@ public:
 	virtual void saveState() const = 0;
 	virtual void loadState() = 0;
 
-	virtual void save() const = 0;
-	virtual void load() = 0;
+	virtual void save() const = 0;		// throws std::runtime_error
+	virtual void load() = 0;			// throws std::runtime_error
 };
 
 class IrrigationDocument::Loader {

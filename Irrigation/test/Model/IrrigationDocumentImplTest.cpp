@@ -1,21 +1,42 @@
 #include "IrrigationDocumentImplTest.h"
-#include "Mocks/MockProgramContainer.h"
-#include "Mocks/MockWateringController.h"
+#include "Exceptions/Exceptions.h"
+#include "Mocks/MockProgram.h"
+#include "Mocks/MockRunTimeContainer.h"
 #include <thread>
 
 using namespace testing;
+
+
+TEST(IrrigationDocumentImplConstructorTest, defaultConstructor) {
+
+	auto mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
+
+	IrrigationDocumentImpl irrigationDocument(
+			std::make_shared<StrictMock<MockIrrigationDocumentLoader>>(),
+			std::make_shared<StrictMock<MockIrrigationDocumentSaver>>(),
+			mockProgramContainer,
+			std::make_shared<StrictMock<MockWateringController>>(),
+			nullptr
+		);
+
+	EXPECT_THAT(&irrigationDocument.getProgramContainer(), Eq(mockProgramContainer.get()));
+	EXPECT_THAT(&Const(irrigationDocument).getProgramContainer(), Eq(mockProgramContainer.get()));
+	EXPECT_FALSE(irrigationDocument.isModified());
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void IrrigationDocumentImplTest::SetUp() {
 	mockIrrigationDocumentLoader = std::make_shared<StrictMock<MockIrrigationDocumentLoader>>(),
 	mockIrrigationDocumentSaver = std::make_shared<StrictMock<MockIrrigationDocumentSaver>>();
+	mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
+	mockWateringController = std::make_shared<StrictMock<MockWateringController>>();
 
 	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
 			mockIrrigationDocumentLoader,
 			mockIrrigationDocumentSaver,
-			std::make_shared<StrictMock<MockProgramContainer>>(),
-			std::make_shared<StrictMock<MockWateringController>>(),
+			mockProgramContainer,
+			mockWateringController,
 			nullptr
 		);
 }
@@ -49,10 +70,6 @@ TEST_F(IrrigationDocumentImplTest, lockUnlock) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(IrrigationDocumentImplTest, isModified) {
-	EXPECT_FALSE(irrigationDocument->isModified());
-}
-
 TEST_F(IrrigationDocumentImplTest, setModified) {
 	irrigationDocument->setModified();
 	EXPECT_TRUE(irrigationDocument->isModified());
@@ -73,7 +90,7 @@ TEST_F(IrrigationDocumentImplTest, load) {
 	irrigationDocument->load();
 }
 
-TEST_F(IrrigationDocumentImplTest, loadWithTrue) {
+TEST_F(IrrigationDocumentImplTest, load_returnTrue) {
 	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
 			Times(1).
 			WillRepeatedly(Return(true));
@@ -82,7 +99,7 @@ TEST_F(IrrigationDocumentImplTest, loadWithTrue) {
 	EXPECT_FALSE(irrigationDocument->isModified());
 }
 
-TEST_F(IrrigationDocumentImplTest, loadWithFalse) {
+TEST_F(IrrigationDocumentImplTest, load_returnFalse) {
 	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
 			Times(1).
 			WillRepeatedly(Return(false));
@@ -91,7 +108,7 @@ TEST_F(IrrigationDocumentImplTest, loadWithFalse) {
 	EXPECT_TRUE(irrigationDocument->isModified());
 }
 
-TEST_F(IrrigationDocumentImplTest, loadWithExceptiom) {
+TEST_F(IrrigationDocumentImplTest, load_throwExceptiom) {
 	EXPECT_CALL(*mockIrrigationDocumentLoader, load(Ref(*irrigationDocument))).
 			Times(1).
 			WillRepeatedly(Throw(std::runtime_error("aaa")));
@@ -108,10 +125,10 @@ TEST_F(IrrigationDocumentImplTest, save) {
 	irrigationDocument->save();
 }
 
-TEST_F(IrrigationDocumentImplTest, saveWithExceptiom) {
+TEST_F(IrrigationDocumentImplTest, save_throwExceptiom) {
 	EXPECT_CALL(*mockIrrigationDocumentSaver, save(Ref(*irrigationDocument))).
 			Times(1).
-			WillRepeatedly(Throw(std::runtime_error("aaa")));
+			WillOnce(Throw(std::runtime_error("aaa")));
 
 	EXPECT_THROW(irrigationDocument->save(), std::runtime_error);
 }

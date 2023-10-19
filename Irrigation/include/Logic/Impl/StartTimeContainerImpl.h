@@ -34,12 +34,12 @@ public:
 	virtual size_t size() const override 			{ return container.size(); }
 	virtual bool empty() const override	 			{ return container.empty(); }
 
-	virtual value_type& insert(const key_type& key, const mapped_type& value) override;
-	virtual void erase(const key_type& key) override;
+	virtual value_type& insert(const key_type& key, const mapped_type& value) override;		// throw AlreadyExistException
+	virtual void erase(const key_type& key) override;										// throw NoSuchElementException
 	virtual void sort() override;
 
-	virtual const_mapped_type at(const key_type& key) const override;
-	virtual mapped_type at(const key_type& key) override;
+	virtual const_mapped_type at(const key_type& key) const override;						// throw NoSuchElementException
+	virtual mapped_type at(const key_type& key) override;									// throw NoSuchElementException
 
 	virtual std::list<StartTimeDTO> toStartTimeDtoList() const override;
 	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) override;

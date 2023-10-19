@@ -17,7 +17,7 @@ public:
 	virtual ~RunTimeImpl() = default;
 
 	virtual unsigned getSeconds() const override;
-	virtual void setSeconds(unsigned seconds) override;
+	virtual void setSeconds(unsigned seconds) override;	// throws ValueOutOfBoundsException
 
 	virtual RunTimeDTO toRunTimeDto() const override;
 	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) override;

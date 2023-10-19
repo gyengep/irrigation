@@ -14,7 +14,7 @@ public:
 
 	virtual bool less(const StartTime& other) const override;
 
-	virtual void set(unsigned hour, unsigned minute) override;
+	virtual void set(unsigned hour, unsigned minute) override;	// thows ValueOutOfBoundsException
 
 	virtual unsigned getHours() const override;
 	virtual unsigned getMinutes() const override;

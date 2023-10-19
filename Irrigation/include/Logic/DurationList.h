@@ -2,6 +2,7 @@
 #include <chrono>
 #include <list>
 #include <string>
+#include "Utils/OstreamInsert.h"
 
 
 class DurationList : public std::list<std::chrono::seconds> {
@@ -18,3 +19,8 @@ public:
 
 	std::string toString() const;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+OSTREAM_INSERT(DurationList);
+
