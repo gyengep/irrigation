@@ -16,7 +16,7 @@ unique_ptr<HttpResponse> RestView::onGetHotWeatherScheduler(const HttpRequest& r
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const HotWeatherSchedulerDTO hotWeatherSchedulerDto = getHotWeatherSchedulerDTO(irrigationDocument, programId);
+		const HotWeatherSchedulerDto hotWeatherSchedulerDto = getHotWeatherSchedulerDto(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -38,7 +38,7 @@ unique_ptr<HttpResponse> RestView::onPatchHotWeatherScheduler(const HttpRequest&
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const HotWeatherSchedulerDTO hotWeatherSchedulerDto = dtoReader->loadHotWeatherScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const HotWeatherSchedulerDto hotWeatherSchedulerDto = dtoReader->loadHotWeatherScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const std::string text = patchHotWeatherScheduler(irrigationDocument, programId, hotWeatherSchedulerDto);
 
 		LOGGER.debug("Program[%s].HotWeatherScheduler is modified: %s",

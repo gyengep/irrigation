@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include <string>
-#include "DTO/StartTimeDTO.h"
+#include "DTO/StartTimeDto.h"
 #include "Logic/StartTimeContainer.h"
 
 
@@ -21,7 +21,7 @@ class StartTimeContainerImpl : public StartTimeContainer {
 	const StartTimeFactoryPtr startTimeFactory;
 	container_type container;
 
-	value_type& createUpdateAndInsert(const IdType& id, const StartTimeDTO& startTimeDto);
+	value_type& createUpdateAndInsert(const IdType& id, const StartTimeDto& startTimeDto);
 
 public:
 	StartTimeContainerImpl(const StartTimeFactoryPtr& startTimeFactory);
@@ -40,9 +40,9 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;						// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) override;									// throw NoSuchElementException
 
-	virtual std::list<StartTimeDTO> toStartTimeDtoList() const override;
-	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) override;
-	virtual value_type& createFromStartTimeDto(const StartTimeDTO& startTimeDto) override;
+	virtual std::list<StartTimeDto> toStartTimeDtoList() const override;
+	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDto>& startTimeDtoList) override;
+	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) override;
 
 	virtual std::string toString() const override;
 };

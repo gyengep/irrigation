@@ -2,13 +2,13 @@
 #include <string>
 
 
-class CurrentTemperatureDTO {
+class CurrentTemperatureDto {
 	std::string datetime;
 	std::string unit;
 	float value;
 
 public:
-	CurrentTemperatureDTO(const std::string& datetime, const std::string& unit, float value) :
+	CurrentTemperatureDto(const std::string& datetime, const std::string& unit, float value) :
 		datetime(datetime),
 		unit(unit),
 		value(value)

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/SchedulersDto.h"
 #include "EveryDaySchedulerSamples.h"
 #include "HotWeatherSchedulerSamples.h"
 #include "TemperatureDependentSchedulerSamples.h"
@@ -11,14 +11,14 @@
 
 namespace RestViewTestSamples {
 
-	typedef Sample<SchedulersDTO> SchedulerContainerSample;
+	typedef Sample<SchedulersDto> SchedulerContainerSample;
 
 	class SchedulerContainerSampleList : public std::vector<SchedulerContainerSample> {
 	public:
 		SchedulerContainerSampleList() {
 
 			emplace_back(
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(1).getDto(),
 					TemperatureDependentSchedulerSampleList().at(2).getDto(),
@@ -33,7 +33,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(2).getDto(),
 					TemperatureDependentSchedulerSampleList().at(3).getDto(),
@@ -48,7 +48,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(3).getDto(),
 					TemperatureDependentSchedulerSampleList().at(1).getDto(),
@@ -63,7 +63,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(0).getDto(),
 					TemperatureDependentSchedulerSampleList().at(1).getDto(),

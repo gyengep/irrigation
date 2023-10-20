@@ -3,26 +3,26 @@
 #include <string>
 #include <vector>
 #include "SampleBase.h"
-#include "DTO/LogEntryDTO.h"
+#include "DTO/LogEntryDto.h"
 
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef Sample<LogEntryDTOList> LogEntryListSample;
+	typedef Sample<LogEntryDtoList> LogEntryListSample;
 
 	class LogEntryListSampleList : public std::vector<LogEntryListSample> {
 	public:
 		LogEntryListSampleList() {
 
 			emplace_back(
-				LogEntryDTOList {
+				LogEntryDtoList {
 				},
 				"<log_entries/>"
 			);
 
 			emplace_back(
-				LogEntryDTOList {
-					LogEntryDTO("2022.11.05 19:33:25", "0x12345678", "DEBUG", "Text1")
+				LogEntryDtoList {
+					LogEntryDto("2022.11.05 19:33:25", "0x12345678", "DEBUG", "Text1")
 				},
 				"<log_entries>"
 					"<log_entry>"
@@ -35,10 +35,10 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				LogEntryDTOList {
-					LogEntryDTO("2022.11.05 19:33:25", "0x12345678", "DEBUG", "Text1"),
-					LogEntryDTO("2022.11.05 19:33:26", "0x12345678", "TRACE", "Text2"),
-					LogEntryDTO("2022.11.05 19:33:27", "0x12345678", "INFO", "Text3")
+				LogEntryDtoList {
+					LogEntryDto("2022.11.05 19:33:25", "0x12345678", "DEBUG", "Text1"),
+					LogEntryDto("2022.11.05 19:33:26", "0x12345678", "TRACE", "Text2"),
+					LogEntryDto("2022.11.05 19:33:27", "0x12345678", "INFO", "Text3")
 				},
 				"<log_entries>"
 					"<log_entry>"

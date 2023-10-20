@@ -23,8 +23,8 @@ TEST(DocumentWriterTest, save) {
 
 TEST(DocumentReaderTest, load) {
 	for (const auto& documentSample : DtoReaderWriterTestSamples::DocumentSampleList()) {
-		const DocumentDTO actualDto = XmlReader().loadDocument(documentSample.getXml());
-		const DocumentDTO expectedDto = documentSample.getDto();
+		const DocumentDto actualDto = XmlReader().loadDocument(documentSample.getXml());
+		const DocumentDto expectedDto = documentSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

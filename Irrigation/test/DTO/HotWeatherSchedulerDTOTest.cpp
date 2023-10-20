@@ -1,73 +1,73 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "DTO/HotWeatherSchedulerDTO.h"
+#include "DTO/HotWeatherSchedulerDto.h"
 #include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
 
 
-TEST(HotWeatherSchedulerDTOTest, defaultConstructor) {
-	const HotWeatherSchedulerDTO schedulerDTO;
+TEST(HotWeatherSchedulerDtoTest, defaultConstructor) {
+	const HotWeatherSchedulerDto schedulerDto;
 
-	EXPECT_FALSE(schedulerDTO.hasPeriodInSeconds());
-	EXPECT_FALSE(schedulerDTO.hasMinTemperature());
+	EXPECT_FALSE(schedulerDto.hasPeriodInSeconds());
+	EXPECT_FALSE(schedulerDto.hasMinTemperature());
 
-	EXPECT_THROW(schedulerDTO.getPeriodInSeconds(), logic_error);
-	EXPECT_THROW(schedulerDTO.getMinTemperature(), logic_error);
+	EXPECT_THROW(schedulerDto.getPeriodInSeconds(), logic_error);
+	EXPECT_THROW(schedulerDto.getMinTemperature(), logic_error);
 }
 
-TEST(HotWeatherSchedulerDTOTest, parametrizedConstructor) {
+TEST(HotWeatherSchedulerDtoTest, parametrizedConstructor) {
 	const unsigned expectedPeriodInSeconds = 19.0f;
 	const float expectedMinTemperature= 7.3f;
 
-	const HotWeatherSchedulerDTO schedulerDTO(expectedPeriodInSeconds, expectedMinTemperature);
+	const HotWeatherSchedulerDto schedulerDto(expectedPeriodInSeconds, expectedMinTemperature);
 
-	EXPECT_TRUE(schedulerDTO.hasPeriodInSeconds());
-	EXPECT_TRUE(schedulerDTO.hasMinTemperature());
+	EXPECT_TRUE(schedulerDto.hasPeriodInSeconds());
+	EXPECT_TRUE(schedulerDto.hasMinTemperature());
 
-	EXPECT_THAT(schedulerDTO.getPeriodInSeconds(), Eq(expectedPeriodInSeconds));
-	EXPECT_THAT(schedulerDTO.getMinTemperature(), Eq(expectedMinTemperature));
+	EXPECT_THAT(schedulerDto.getPeriodInSeconds(), Eq(expectedPeriodInSeconds));
+	EXPECT_THAT(schedulerDto.getMinTemperature(), Eq(expectedMinTemperature));
 }
 
-TEST(HotWeatherSchedulerDTOTest, copyConstructor) {
+TEST(HotWeatherSchedulerDtoTest, copyConstructor) {
 	const unsigned expectedPeriodInSeconds = 19.0f;
 	const float expectedMinTemperature= 7.3f;
 
-	const HotWeatherSchedulerDTO source(expectedPeriodInSeconds, expectedMinTemperature);
-	const HotWeatherSchedulerDTO schedulerDTO(source);
+	const HotWeatherSchedulerDto source(expectedPeriodInSeconds, expectedMinTemperature);
+	const HotWeatherSchedulerDto schedulerDto(source);
 
-	EXPECT_TRUE(schedulerDTO.hasPeriodInSeconds());
-	EXPECT_TRUE(schedulerDTO.hasMinTemperature());
+	EXPECT_TRUE(schedulerDto.hasPeriodInSeconds());
+	EXPECT_TRUE(schedulerDto.hasMinTemperature());
 
-	EXPECT_THAT(schedulerDTO.getPeriodInSeconds(), Eq(expectedPeriodInSeconds));
-	EXPECT_THAT(schedulerDTO.getMinTemperature(), Eq(expectedMinTemperature));
+	EXPECT_THAT(schedulerDto.getPeriodInSeconds(), Eq(expectedPeriodInSeconds));
+	EXPECT_THAT(schedulerDto.getMinTemperature(), Eq(expectedMinTemperature));
 }
 
-TEST(HotWeatherSchedulerDTOTest, moveConstructor) {
+TEST(HotWeatherSchedulerDtoTest, moveConstructor) {
 	const unsigned expectedPeriodInSeconds = 19.0f;
 	const float expectedMinTemperature= 7.3f;
 
-	HotWeatherSchedulerDTO source(expectedPeriodInSeconds, expectedMinTemperature);
-	const HotWeatherSchedulerDTO schedulerDTO(move(source));
+	HotWeatherSchedulerDto source(expectedPeriodInSeconds, expectedMinTemperature);
+	const HotWeatherSchedulerDto schedulerDto(move(source));
 
-	EXPECT_TRUE(schedulerDTO.hasPeriodInSeconds());
-	EXPECT_TRUE(schedulerDTO.hasMinTemperature());
+	EXPECT_TRUE(schedulerDto.hasPeriodInSeconds());
+	EXPECT_TRUE(schedulerDto.hasMinTemperature());
 
-	EXPECT_THAT(schedulerDTO.getPeriodInSeconds(), Eq(expectedPeriodInSeconds));
-	EXPECT_THAT(schedulerDTO.getMinTemperature(), Eq(expectedMinTemperature));
+	EXPECT_THAT(schedulerDto.getPeriodInSeconds(), Eq(expectedPeriodInSeconds));
+	EXPECT_THAT(schedulerDto.getMinTemperature(), Eq(expectedMinTemperature));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CHECK_DTO_FUNCTIONS(HotWeatherSchedulerDTO, float, MinTemperature, 21.2f);
-CHECK_DTO_FUNCTIONS(HotWeatherSchedulerDTO, int, PeriodInSeconds, 15);
+CHECK_DTO_FUNCTIONS(HotWeatherSchedulerDto, float, MinTemperature, 21.2f);
+CHECK_DTO_FUNCTIONS(HotWeatherSchedulerDto, int, PeriodInSeconds, 15);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(HotWeatherSchedulerDTOTest, equalsOperator) {
-	HotWeatherSchedulerDTO dto1;
-	HotWeatherSchedulerDTO dto2;
+TEST(HotWeatherSchedulerDtoTest, equalsOperator) {
+	HotWeatherSchedulerDto dto1;
+	HotWeatherSchedulerDto dto2;
 
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);

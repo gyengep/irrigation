@@ -100,8 +100,8 @@ WeeklyScheduler& SchedulerContainerImpl::getWeeklyScheduler() {
 	return *weeklyScheduler;
 }
 
-SchedulersDTO SchedulerContainerImpl::toSchedulersDto() const {
-	return SchedulersDTO(
+SchedulersDto SchedulerContainerImpl::toSchedulersDto() const {
+	return SchedulersDto(
 		everyDayScheduler->toEveryDaySchedulerDto(),
 		hotWeatherScheduler->toHotWeatherSchedulerDto(),
 		temperatureDependentScheduler->toTemperatureDependentSchedulerDto(),
@@ -109,7 +109,7 @@ SchedulersDTO SchedulerContainerImpl::toSchedulersDto() const {
 	);
 }
 
-void SchedulerContainerImpl::updateFromSchedulersDto(const SchedulersDTO& schedulersDto) {
+void SchedulerContainerImpl::updateFromSchedulersDto(const SchedulersDto& schedulersDto) {
 	if (schedulersDto.hasEveryDayScheduler()) {
 		everyDayScheduler->updateFromEveryDaySchedulerDto(schedulersDto.getEveryDayScheduler());
 	}

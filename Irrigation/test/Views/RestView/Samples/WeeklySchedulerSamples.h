@@ -1,20 +1,20 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "DTO/WeeklySchedulerDTO.h"
+#include "DTO/WeeklySchedulerDto.h"
 #include "SampleBase.h"
 
 
 namespace RestViewTestSamples {
 
-	typedef Sample<WeeklySchedulerDTO> WeeklySchedulerSample;
+	typedef Sample<WeeklySchedulerDto> WeeklySchedulerSample;
 
 	class WeeklySchedulerSampleList : public std::vector<WeeklySchedulerSample> {
 	public:
 		WeeklySchedulerSampleList() {
 
 			emplace_back(
-				WeeklySchedulerDTO(std::list<bool> { true, false, true, false, true, false, true }),
+				WeeklySchedulerDto(std::list<bool> { true, false, true, false, true, false, true }),
 				"<scheduler type=\"weekly\">"
 					"<days>"
 						"<day>true</day>"
@@ -29,7 +29,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				WeeklySchedulerDTO(std::list<bool> { false, true, false, true, false, true, false }),
+				WeeklySchedulerDto(std::list<bool> { false, true, false, true, false, true, false }),
 				"<scheduler type=\"weekly\">"
 					"<days>"
 						"<day>false</day>"
@@ -44,7 +44,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				WeeklySchedulerDTO(std::list<bool> { true, true, false, false, true, false, true }),
+				WeeklySchedulerDto(std::list<bool> { true, true, false, false, true, false, true }),
 				"<scheduler type=\"weekly\">"
 					"<days>"
 						"<day>true</day>"
@@ -59,7 +59,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				WeeklySchedulerDTO(std::list<bool> { false, false, false, false, true, false, true }),
+				WeeklySchedulerDto(std::list<bool> { false, false, false, false, true, false, true }),
 				"<scheduler type=\"weekly\">"
 					"<days>"
 						"<day>false</day>"

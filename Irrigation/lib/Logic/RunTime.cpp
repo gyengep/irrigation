@@ -1,15 +1,15 @@
 #include "RunTime.h"
 
 
-std::chrono::seconds RunTime::toDuration(const RunTimeDTO& runTimeDTO) {
+std::chrono::seconds RunTime::toDuration(const RunTimeDto& runTimeDto) {
 	std::chrono::seconds result(0);
 
-	if (runTimeDTO.hasMinutes()) {
-		result += std::chrono::minutes(runTimeDTO.getMinutes());
+	if (runTimeDto.hasMinutes()) {
+		result += std::chrono::minutes(runTimeDto.getMinutes());
 	}
 
-	if (runTimeDTO.hasSeconds()) {
-		result += std::chrono::seconds(runTimeDTO.getSeconds());
+	if (runTimeDto.hasSeconds()) {
+		result += std::chrono::seconds(runTimeDto.getSeconds());
 	}
 
 	return result;

@@ -23,8 +23,8 @@ TEST(WeeklySchedulerWriterTest, save) {
 
 TEST(WeeklySchedulerReaderTest, load) {
 	for (const auto& weeklySchedulerSample : DtoReaderWriterTestSamples::WeeklySchedulerSampleList()) {
-		const WeeklySchedulerDTO actualDto = XmlReader().loadWeeklyScheduler(weeklySchedulerSample.getXml());
-		const WeeklySchedulerDTO expectedDto = weeklySchedulerSample.getDto();
+		const WeeklySchedulerDto actualDto = XmlReader().loadWeeklyScheduler(weeklySchedulerSample.getXml());
+		const WeeklySchedulerDto expectedDto = weeklySchedulerSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

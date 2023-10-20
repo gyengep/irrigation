@@ -22,8 +22,8 @@ public:
 	MOCK_METHOD0(getTemperatureDependentScheduler, TemperatureDependentScheduler&());
 	MOCK_METHOD0(getWeeklyScheduler, WeeklyScheduler&());
 
-	MOCK_CONST_METHOD0(toSchedulersDto, SchedulersDTO());
-	MOCK_METHOD1(updateFromSchedulersDto, void(const SchedulersDTO& schedulerdDto));
+	MOCK_CONST_METHOD0(toSchedulersDto, SchedulersDto());
+	MOCK_METHOD1(updateFromSchedulersDto, void(const SchedulersDto& schedulerdDto));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };

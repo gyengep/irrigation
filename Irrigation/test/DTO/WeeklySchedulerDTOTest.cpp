@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "DTO/WeeklySchedulerDTO.h"
+#include "DTO/WeeklySchedulerDto.h"
 #include "DtoTestMacros.h"
 
 using namespace std;
@@ -8,50 +8,50 @@ using namespace testing;
 
 
 
-TEST(WeeklySchedulerDTOTest, defaultConstructor) {
-	WeeklySchedulerDTO schedulerDTO;
+TEST(WeeklySchedulerDtoTest, defaultConstructor) {
+	WeeklySchedulerDto schedulerDto;
 
-	EXPECT_FALSE(schedulerDTO.hasValues());
-	EXPECT_THROW(schedulerDTO.getValues(), logic_error);
+	EXPECT_FALSE(schedulerDto.hasValues());
+	EXPECT_THROW(schedulerDto.getValues(), logic_error);
 }
 
-TEST(WeeklySchedulerDTOTest, parametrizedConstructor) {
+TEST(WeeklySchedulerDtoTest, parametrizedConstructor) {
 	const list<bool> expectedValues({ false, true });
-	WeeklySchedulerDTO schedulerDTO(move(list<bool>(expectedValues)));
+	WeeklySchedulerDto schedulerDto(move(list<bool>(expectedValues)));
 
-	EXPECT_TRUE(schedulerDTO.hasValues());
-	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
+	EXPECT_TRUE(schedulerDto.hasValues());
+	EXPECT_THAT(schedulerDto.getValues(), ContainerEq(expectedValues));
 }
 
-TEST(WeeklySchedulerDTOTest, copyConstructor) {
+TEST(WeeklySchedulerDtoTest, copyConstructor) {
 	const list<bool> expectedValues({ false, true, false, false });
 
-	const WeeklySchedulerDTO source(move(list<bool>(expectedValues)));
-	const WeeklySchedulerDTO schedulerDTO(source);
+	const WeeklySchedulerDto source(move(list<bool>(expectedValues)));
+	const WeeklySchedulerDto schedulerDto(source);
 
-	EXPECT_TRUE(schedulerDTO.hasValues());
-	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
+	EXPECT_TRUE(schedulerDto.hasValues());
+	EXPECT_THAT(schedulerDto.getValues(), ContainerEq(expectedValues));
 }
 
-TEST(WeeklySchedulerDTOTest, moveConstructor) {
+TEST(WeeklySchedulerDtoTest, moveConstructor) {
 	const list<bool> expectedValues({ false, true, false, false });
 
-	WeeklySchedulerDTO source(move(list<bool>(expectedValues)));
-	const WeeklySchedulerDTO schedulerDTO(move(source));
+	WeeklySchedulerDto source(move(list<bool>(expectedValues)));
+	const WeeklySchedulerDto schedulerDto(move(source));
 
-	EXPECT_TRUE(schedulerDTO.hasValues());
-	EXPECT_THAT(schedulerDTO.getValues(), ContainerEq(expectedValues));
+	EXPECT_TRUE(schedulerDto.hasValues());
+	EXPECT_THAT(schedulerDto.getValues(), ContainerEq(expectedValues));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CHECK_DTO_FUNCTIONS(WeeklySchedulerDTO, list<bool>, Values, list<bool>({ false, false, true }));
+CHECK_DTO_FUNCTIONS(WeeklySchedulerDto, list<bool>, Values, list<bool>({ false, false, true }));
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(WeeklySchedulerDTOTest, equalsOperator) {
-	WeeklySchedulerDTO dto1;
-	WeeklySchedulerDTO dto2;
+TEST(WeeklySchedulerDtoTest, equalsOperator) {
+	WeeklySchedulerDto dto1;
+	WeeklySchedulerDto dto2;
 
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);

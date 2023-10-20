@@ -74,31 +74,31 @@ void StartTimeContainerImpl::sort() {
 	container.sort(comp);
 }
 
-std::list<StartTimeDTO> StartTimeContainerImpl::toStartTimeDtoList() const {
-	std::list<StartTimeDTO> startTimeDtoList;
+std::list<StartTimeDto> StartTimeContainerImpl::toStartTimeDtoList() const {
+	std::list<StartTimeDto> startTimeDtoList;
 	for (const value_type& value : container) {
 		startTimeDtoList.push_back(value.second->toStartTimeDto().setId(value.first.getValue()));
 	}
 	return startTimeDtoList;
 }
 
-void StartTimeContainerImpl::updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) {
+void StartTimeContainerImpl::updateFromStartTimeDtoList(const std::list<StartTimeDto>& startTimeDtoList) {
 	container.clear();
 
-	for (const StartTimeDTO& startTimeDTO : startTimeDtoList) {
-		if (startTimeDTO.hasId()) {
-			createUpdateAndInsert(IdType(startTimeDTO.getId()), startTimeDTO);
+	for (const StartTimeDto& startTimeDto : startTimeDtoList) {
+		if (startTimeDto.hasId()) {
+			createUpdateAndInsert(IdType(startTimeDto.getId()), startTimeDto);
 		} else {
-			createUpdateAndInsert(IdType(), startTimeDTO);
+			createUpdateAndInsert(IdType(), startTimeDto);
 		}
 	}
 }
 
-StartTimeContainer::value_type& StartTimeContainerImpl::createFromStartTimeDto(const StartTimeDTO& startTimeDto) {
+StartTimeContainer::value_type& StartTimeContainerImpl::createFromStartTimeDto(const StartTimeDto& startTimeDto) {
 	return createUpdateAndInsert(IdType(), startTimeDto);
 }
 
-StartTimeContainer::value_type& StartTimeContainerImpl::createUpdateAndInsert(const IdType& id, const StartTimeDTO& startTimeDto) {
+StartTimeContainer::value_type& StartTimeContainerImpl::createUpdateAndInsert(const IdType& id, const StartTimeDto& startTimeDto) {
 	auto startTime = startTimeFactory->create();
 	startTime->updateFromStartTimeDto(startTimeDto);
 	return insert(id, startTime);

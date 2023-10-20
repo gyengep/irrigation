@@ -27,8 +27,8 @@ public:
 	MOCK_METHOD0(getRunTimeContainer, RunTimeContainer&());
 	MOCK_METHOD0(getStartTimeContainer, StartTimeContainer&());
 
-	MOCK_CONST_METHOD0(toProgramDto, ProgramDTO());
-	MOCK_METHOD1(updateFromProgramDto, void(const ProgramDTO& programDTO));
+	MOCK_CONST_METHOD0(toProgramDto, ProgramDto());
+	MOCK_METHOD1(updateFromProgramDto, void(const ProgramDto& programDto));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 

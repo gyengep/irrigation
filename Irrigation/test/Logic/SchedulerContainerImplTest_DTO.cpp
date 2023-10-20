@@ -12,7 +12,7 @@ TEST(SchedulerContainerImplToDtoTest, toSchedulerContainerDto) {
 
 	for (const auto& sample : sampleList) {
 		const SchedulerContainerImpl& actual = sample.getObject();
-		const SchedulersDTO& expected = sample.getDto();
+		const SchedulersDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toSchedulersDto(), Eq(expected));
 	}
@@ -35,37 +35,37 @@ void SchedulerContainerImplFromDtoTest::checkUpdateFromSchedulersDto(const Updat
 	);
 
 	for (const auto& sample : Dto2ObjectTestSamples::SchedulerContainerSampleList()) {
-		SchedulersDTO actualSchedulersDTO;
+		SchedulersDto actualSchedulersDto;
 
 		if (UpdateType::EveryDayScheduler == updateType || UpdateType::All == updateType) {
-			const EveryDaySchedulerDTO expectedEveryDaySchedulerDTO = sample.getDto().getEveryDayScheduler();
+			const EveryDaySchedulerDto expectedEveryDaySchedulerDto = sample.getDto().getEveryDayScheduler();
 
-			actualSchedulersDTO.setEveryDayScheduler(EveryDaySchedulerDTO(expectedEveryDaySchedulerDTO));
-			EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(expectedEveryDaySchedulerDTO));
+			actualSchedulersDto.setEveryDayScheduler(EveryDaySchedulerDto(expectedEveryDaySchedulerDto));
+			EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(expectedEveryDaySchedulerDto));
 		}
 
 		if (UpdateType::HotWeatherScheduler == updateType || UpdateType::All == updateType) {
-			const HotWeatherSchedulerDTO expectedHotWeatherSchedulerDTO = sample.getDto().getHotWeatherScheduler();
+			const HotWeatherSchedulerDto expectedHotWeatherSchedulerDto = sample.getDto().getHotWeatherScheduler();
 
-			actualSchedulersDTO.setHotWeatherScheduler(HotWeatherSchedulerDTO(expectedHotWeatherSchedulerDTO));
-			EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDTO));
+			actualSchedulersDto.setHotWeatherScheduler(HotWeatherSchedulerDto(expectedHotWeatherSchedulerDto));
+			EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDto));
 		}
 
 		if (UpdateType::TemperatureDependentScheduler == updateType || UpdateType::All == updateType) {
-			const TemperatureDependentSchedulerDTO expectedTemperatureDependentSchedulerDTO = sample.getDto().getTemperatureDependentScheduler();
+			const TemperatureDependentSchedulerDto expectedTemperatureDependentSchedulerDto = sample.getDto().getTemperatureDependentScheduler();
 
-			actualSchedulersDTO.setTemperatureDependentScheduler(TemperatureDependentSchedulerDTO(expectedTemperatureDependentSchedulerDTO));
-			EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDTO));
+			actualSchedulersDto.setTemperatureDependentScheduler(TemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto));
+			EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto));
 		}
 
 		if (UpdateType::WeeklyScheduler == updateType || UpdateType::All == updateType) {
-			const WeeklySchedulerDTO expectedWeeklySchedulerDTO = sample.getDto().getWeeklyScheduler();
+			const WeeklySchedulerDto expectedWeeklySchedulerDto = sample.getDto().getWeeklyScheduler();
 
-			actualSchedulersDTO.setWeeklyScheduler(WeeklySchedulerDTO(expectedWeeklySchedulerDTO));
-			EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDTO));
+			actualSchedulersDto.setWeeklyScheduler(WeeklySchedulerDto(expectedWeeklySchedulerDto));
+			EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto));
 		}
 
-		actualSchedulerContainer.updateFromSchedulersDto(actualSchedulersDTO);
+		actualSchedulerContainer.updateFromSchedulersDto(actualSchedulersDto);
 	}
 }
 

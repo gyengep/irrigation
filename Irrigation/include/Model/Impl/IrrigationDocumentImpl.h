@@ -3,7 +3,7 @@
 #include <memory>
 #include <mutex>
 #include <nlohmann/json.hpp>
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "Email/EmailHandler.h"
 #include "Logic/ProgramContainer.h"
 #include "Logic/WateringController.h"
@@ -48,8 +48,8 @@ public:
 	virtual void startCustom(const DurationList& durations, unsigned adjustment) override;
 	virtual void stop() override;
 
-	virtual DocumentDTO toDocumentDto() const override;
-	virtual void updateFromDocumentDto(const DocumentDTO& documentDTO) override;
+	virtual DocumentDto toDocumentDto() const override;
+	virtual void updateFromDocumentDto(const DocumentDto& documentDto) override;
 
 	virtual void saveState() const override;
 	virtual void loadState() override;

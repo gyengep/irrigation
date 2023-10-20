@@ -1,5 +1,5 @@
 #include "Impl/IrrigationDocumentSaverImpl.h"
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "Logger/Logger.h"
 #include <string>
 
@@ -16,7 +16,7 @@ IrrigationDocumentSaverImpl::~IrrigationDocumentSaverImpl() {
 }
 
 void IrrigationDocumentSaverImpl::save(const IrrigationDocument& document) {
-	const DocumentDTO documentDto = document.toDocumentDto();
+	const DocumentDto documentDto = document.toDocumentDto();
 	const std::string documentDtoAsText = dtoWriter->save(documentDto);
 
 	fileWriterFactory->create(FileWriter::Type::TRUNCATE)->write(documentDtoAsText);

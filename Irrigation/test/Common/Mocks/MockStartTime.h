@@ -13,8 +13,8 @@ public:
 	MOCK_CONST_METHOD0(getHours, unsigned());
 	MOCK_CONST_METHOD0(getMinutes, unsigned());
 
-	MOCK_CONST_METHOD0(toStartTimeDto, StartTimeDTO());
-	MOCK_METHOD1(updateFromStartTimeDto, void(const StartTimeDTO& startTimeDTO));
+	MOCK_CONST_METHOD0(toStartTimeDto, StartTimeDto());
+	MOCK_METHOD1(updateFromStartTimeDto, void(const StartTimeDto& startTimeDto));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 	MOCK_CONST_METHOD0(toShortString, std::string());

@@ -55,7 +55,7 @@ TEST_F(RunTimeImplTest, toDuration) {
 }
 
 TEST_F(RunTimeImplTest, toDurationStatic) {
-	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 0)), Eq(std::chrono::minutes(0) + std::chrono::seconds(0)));
-	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(0, 12)), Eq(std::chrono::minutes(0) + std::chrono::seconds(12)));
-	EXPECT_THAT(RunTime::toDuration(RunTimeDTO(1, 25)), Eq(std::chrono::minutes(1) + std::chrono::seconds(25)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDto(0, 0)), Eq(std::chrono::minutes(0) + std::chrono::seconds(0)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDto(0, 12)), Eq(std::chrono::minutes(0) + std::chrono::seconds(12)));
+	EXPECT_THAT(RunTime::toDuration(RunTimeDto(1, 25)), Eq(std::chrono::minutes(1) + std::chrono::seconds(25)));
 }

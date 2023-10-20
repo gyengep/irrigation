@@ -29,5 +29,5 @@ public:
 
 	virtual Values getTemperatureHistory(const DateTime& from, const DateTime& to) const override;
 	virtual void onTemperatureUpdated(const DateTime& dateTime, float temperature) override;
-	virtual TemperatureHistoryDTO toTemperatureHistoryDTO(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const override;
+	virtual TemperatureHistoryDto toTemperatureHistoryDto(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const override;
 };

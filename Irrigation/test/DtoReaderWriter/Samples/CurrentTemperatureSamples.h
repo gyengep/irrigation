@@ -1,20 +1,20 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "DTO/CurrentTemperatureDTO.h"
+#include "DTO/CurrentTemperatureDto.h"
 #include "SampleBase.h"
 
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef Sample<CurrentTemperatureDTO> CurrentTemperatureSample;
+	typedef Sample<CurrentTemperatureDto> CurrentTemperatureSample;
 
 	class CurrentTemperatureSampleList : public std::vector<CurrentTemperatureSample> {
 	public:
 		CurrentTemperatureSampleList() {
 
 			emplace_back(
-				CurrentTemperatureDTO("2021-10-11", "celsius", 28.0),
+				CurrentTemperatureDto("2021-10-11", "celsius", 28.0),
 				"<temperature>"
 					"<value>28</value>"
 					"<datetime>2021-10-11</datetime>"
@@ -23,7 +23,7 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				CurrentTemperatureDTO("2021-01-02 20:21:22", "C", 29.5),
+				CurrentTemperatureDto("2021-01-02 20:21:22", "C", 29.5),
 				"<temperature>"
 					"<value>29</value>"
 					"<datetime>2021-01-02 20:21:22</datetime>"
@@ -32,7 +32,7 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				CurrentTemperatureDTO("2021 oct 11", "unit", 30.456),
+				CurrentTemperatureDto("2021 oct 11", "unit", 30.456),
 				"<temperature>"
 					"<value>30</value>"
 					"<datetime>2021 oct 11</datetime>"

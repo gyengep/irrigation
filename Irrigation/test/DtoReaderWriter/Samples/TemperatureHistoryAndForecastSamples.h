@@ -2,22 +2,22 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "DTO/TemperatureForecastDTO.h"
-#include "DTO/TemperatureHistoryDTO.h"
+#include "DTO/TemperatureForecastDto.h"
+#include "DTO/TemperatureHistoryDto.h"
 #include "SampleBase.h"
 
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef Sample<std::pair<TemperatureHistoryDTO, TemperatureForecastDTO>> TemperatureHistoryAndForecastSample;
+	typedef Sample<std::pair<TemperatureHistoryDto, TemperatureForecastDto>> TemperatureHistoryAndForecastSample;
 
 	class TemperatureHistoryAndForecastSampleList : public std::vector<TemperatureHistoryAndForecastSample> {
 	public:
 		TemperatureHistoryAndForecastSampleList() {
 
 			emplace_back(std::make_pair(
-				TemperatureHistoryDTO("2021-10-11", "2021-10-12", "celsius", 28.0, 30.0, 29.0),
-				TemperatureForecastDTO("2021-10-11", "2021-10-12", "celsius", 28.0, 30.0)),
+				TemperatureHistoryDto("2021-10-11", "2021-10-12", "celsius", 28.0, 30.0, 29.0),
+				TemperatureForecastDto("2021-10-11", "2021-10-12", "celsius", 28.0, 30.0)),
 				"<temperature>"
 					"<unit>celsius</unit>"
 					"<historical>"
@@ -37,8 +37,8 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(std::make_pair(
-				TemperatureHistoryDTO("2021-01-02 20:21:22", "2021-01-02 10:11:12", "C", 29.5, 25.6, 30.1),
-				TemperatureForecastDTO("2021-01-02 20:21:22", "2021-01-02 10:11:12", "C", 25.5, 29.6)),
+				TemperatureHistoryDto("2021-01-02 20:21:22", "2021-01-02 10:11:12", "C", 29.5, 25.6, 30.1),
+				TemperatureForecastDto("2021-01-02 20:21:22", "2021-01-02 10:11:12", "C", 25.5, 29.6)),
 				"<temperature>"
 					"<unit>C</unit>"
 					"<historical>"
@@ -58,8 +58,8 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(std::make_pair(
-				TemperatureHistoryDTO("2021 oct 11", "2022 jan 03", "unit", 30.456, 31.234, 33.235),
-				TemperatureForecastDTO("2021 oct 11", "2022 jan 03", "unit", 30.456, 31.234)),
+				TemperatureHistoryDto("2021 oct 11", "2022 jan 03", "unit", 30.456, 31.234, 33.235),
+				TemperatureForecastDto("2021 oct 11", "2022 jan 03", "unit", 30.456, 31.234)),
 				"<temperature>"
 					"<unit>unit</unit>"
 					"<historical>"

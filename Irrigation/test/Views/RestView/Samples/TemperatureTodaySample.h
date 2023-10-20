@@ -1,21 +1,21 @@
 #pragma once
-#include "DTO/TemperatureForecastDTO.h"
-#include "DTO/TemperatureHistoryDTO.h"
+#include "DTO/TemperatureForecastDto.h"
+#include "DTO/TemperatureHistoryDto.h"
 #include "Utils/DateTime.h"
 #include "SampleBase.h"
 
 
 namespace RestViewTestSamples {
 
-	class TemperatureTodaySample  : public Sample<std::pair<TemperatureHistoryDTO, TemperatureForecastDTO>> {
+	class TemperatureTodaySample  : public Sample<std::pair<TemperatureHistoryDto, TemperatureForecastDto>> {
 		const LocalDateTime now;
 		const LocalDateTime from;
 		const LocalDateTime to;
 
 	public:
-		TemperatureTodaySample() : Sample<std::pair<TemperatureHistoryDTO, TemperatureForecastDTO>>(
-				{ TemperatureHistoryDTO("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 12:21:22 +0200", "C", 20, 25, 23),
-					TemperatureForecastDTO("Sun, 30 May 2021 12:21:22 +0200", "Sun, 30 May 2021 23:59:59 +0200", "C", 30, 35) },
+		TemperatureTodaySample() : Sample<std::pair<TemperatureHistoryDto, TemperatureForecastDto>>(
+				{ TemperatureHistoryDto("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 12:21:22 +0200", "C", 20, 25, 23),
+					TemperatureForecastDto("Sun, 30 May 2021 12:21:22 +0200", "Sun, 30 May 2021 23:59:59 +0200", "C", 30, 35) },
 				"<temperature>"
 					"<unit>C</unit>"
 					"<historical>"

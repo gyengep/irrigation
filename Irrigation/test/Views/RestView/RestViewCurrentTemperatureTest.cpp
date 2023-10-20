@@ -24,7 +24,7 @@ std::string RestViewCurrentTemperatureTest::createCurrentTemperatureUrl(const st
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewCurrentTemperatureTest, get) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET(createCurrentTemperatureUrl()),
@@ -33,7 +33,7 @@ TEST_F(RestViewCurrentTemperatureTest, get) {
 }
 
 TEST_F(RestViewCurrentTemperatureTest, get_WithAcceptHeader) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createCurrentTemperatureUrl()),
@@ -42,17 +42,17 @@ TEST_F(RestViewCurrentTemperatureTest, get_WithAcceptHeader) {
 }
 
 TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat1) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO("abc")).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto("abc")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createCurrentTemperatureUrl("datetime-format=abc"));
 }
 
 TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat2) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO("%a %b")).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto("%a %b")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createCurrentTemperatureUrl("datetime-format=%a %b"));
 }
 
 TEST_F(RestViewCurrentTemperatureTest, get_NotFound) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDTO(defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
 
 	checkResponse_404_Not_Found(
 			GET(createCurrentTemperatureUrl())

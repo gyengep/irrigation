@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include <string>
-#include "DTO/ProgramDTO.h"
+#include "DTO/ProgramDto.h"
 #include "Utils/OstreamInsert.h"
 #include "IdType.h"
 #include "Program.h"
@@ -31,9 +31,9 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;	// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) = 0;				// throw NoSuchElementException
 
-	virtual std::list<ProgramDTO> toProgramDtoList() const = 0;
-	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) = 0;
-	virtual value_type& createFromProgramDto(const ProgramDTO& programDto) = 0;
+	virtual std::list<ProgramDto> toProgramDtoList() const = 0;
+	virtual void updateFromProgramDtoList(const std::list<ProgramDto>& programDtoList) = 0;
+	virtual value_type& createFromProgramDto(const ProgramDto& programDto) = 0;
 
 	virtual std::string toString() const = 0;
 };

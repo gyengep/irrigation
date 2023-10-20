@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "DTO/TemperatureDependentSchedulerDTO.h"
+#include "DTO/TemperatureDependentSchedulerDto.h"
 #include "Temperature/TemperatureForecast.h"
 #include "Temperature/TemperatureHistory.h"
 #include "Utils/DateTime.h"
@@ -63,8 +63,8 @@ public:
 
 	////////////////////////////////////////////////////
 
-	virtual TemperatureDependentSchedulerDTO toTemperatureDependentSchedulerDto() const override;
-	virtual void updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDTO& schedulerDTO) override;
+	virtual TemperatureDependentSchedulerDto toTemperatureDependentSchedulerDto() const override;
+	virtual void updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDto& schedulerDto) override;
 
 	////////////////////////////////////////////////////
 

@@ -23,8 +23,8 @@ TEST(RunTimeWriterTest, save) {
 
 TEST(RunTimeReaderTest, load) {
 	for (const auto& runTimeSample : DtoReaderWriterTestSamples::RunTimeSampleList()) {
-		const RunTimeDTO actualDto = XmlReader().loadRunTime(runTimeSample.getXml());
-		const RunTimeDTO expectedDto = runTimeSample.getDto();
+		const RunTimeDto actualDto = XmlReader().loadRunTime(runTimeSample.getXml());
+		const RunTimeDto expectedDto = runTimeSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

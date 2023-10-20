@@ -1,79 +1,79 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "DTO/RunTimeDTO.h"
+#include "DTO/RunTimeDto.h"
 #include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
 
 
-TEST(RunTimeDTOTest, defaultConstructor) {
-	RunTimeDTO runTimeDTO;
+TEST(RunTimeDtoTest, defaultConstructor) {
+	RunTimeDto runTimeDto;
 
-	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_FALSE(runTimeDTO.hasMinutes());
-	EXPECT_FALSE(runTimeDTO.hasSeconds());
+	EXPECT_FALSE(runTimeDto.hasId());
+	EXPECT_FALSE(runTimeDto.hasMinutes());
+	EXPECT_FALSE(runTimeDto.hasSeconds());
 
-	EXPECT_THROW(runTimeDTO.getId(), logic_error);
-	EXPECT_THROW(runTimeDTO.getMinutes(), logic_error);
-	EXPECT_THROW(runTimeDTO.getSeconds(), logic_error);
+	EXPECT_THROW(runTimeDto.getId(), logic_error);
+	EXPECT_THROW(runTimeDto.getMinutes(), logic_error);
+	EXPECT_THROW(runTimeDto.getSeconds(), logic_error);
 }
 
-TEST(RunTimeDTOTest, parametrizedConstructor) {
+TEST(RunTimeDtoTest, parametrizedConstructor) {
 	const unsigned expectedMinutes = 5;
 	const unsigned expectedSeconds = 30;
 
-	const RunTimeDTO runTimeDTO(expectedMinutes, expectedSeconds);
+	const RunTimeDto runTimeDto(expectedMinutes, expectedSeconds);
 
-	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_TRUE(runTimeDTO.hasMinutes());
-	EXPECT_TRUE(runTimeDTO.hasSeconds());
+	EXPECT_FALSE(runTimeDto.hasId());
+	EXPECT_TRUE(runTimeDto.hasMinutes());
+	EXPECT_TRUE(runTimeDto.hasSeconds());
 
-	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
-	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
+	EXPECT_THAT(runTimeDto.getMinutes(), Eq(expectedMinutes));
+	EXPECT_THAT(runTimeDto.getSeconds(), Eq(expectedSeconds));
 }
 
-TEST(RunTimeDTOTest, copyConstructor) {
+TEST(RunTimeDtoTest, copyConstructor) {
 	const unsigned expectedMinutes = 5;
 	const unsigned expectedSeconds = 30;
 
-	const RunTimeDTO source(expectedMinutes, expectedSeconds);
-	const RunTimeDTO runTimeDTO(source);
+	const RunTimeDto source(expectedMinutes, expectedSeconds);
+	const RunTimeDto runTimeDto(source);
 
-	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_TRUE(runTimeDTO.hasMinutes());
-	EXPECT_TRUE(runTimeDTO.hasSeconds());
+	EXPECT_FALSE(runTimeDto.hasId());
+	EXPECT_TRUE(runTimeDto.hasMinutes());
+	EXPECT_TRUE(runTimeDto.hasSeconds());
 
-	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
-	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
+	EXPECT_THAT(runTimeDto.getMinutes(), Eq(expectedMinutes));
+	EXPECT_THAT(runTimeDto.getSeconds(), Eq(expectedSeconds));
 }
 
-TEST(RunTimeDTOTest, moveConstructor) {
+TEST(RunTimeDtoTest, moveConstructor) {
 	const unsigned expectedMinutes = 5;
 	const unsigned expectedSeconds = 30;
 
-	RunTimeDTO source(expectedMinutes, expectedSeconds);
-	const RunTimeDTO runTimeDTO(move(source));
+	RunTimeDto source(expectedMinutes, expectedSeconds);
+	const RunTimeDto runTimeDto(move(source));
 
-	EXPECT_FALSE(runTimeDTO.hasId());
-	EXPECT_TRUE(runTimeDTO.hasMinutes());
-	EXPECT_TRUE(runTimeDTO.hasSeconds());
+	EXPECT_FALSE(runTimeDto.hasId());
+	EXPECT_TRUE(runTimeDto.hasMinutes());
+	EXPECT_TRUE(runTimeDto.hasSeconds());
 
-	EXPECT_THAT(runTimeDTO.getMinutes(), Eq(expectedMinutes));
-	EXPECT_THAT(runTimeDTO.getSeconds(), Eq(expectedSeconds));
+	EXPECT_THAT(runTimeDto.getMinutes(), Eq(expectedMinutes));
+	EXPECT_THAT(runTimeDto.getSeconds(), Eq(expectedSeconds));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CHECK_DTO_FUNCTIONS(RunTimeDTO, unsigned, Id, 100);
-CHECK_DTO_FUNCTIONS(RunTimeDTO, unsigned, Minutes, 25);
-CHECK_DTO_FUNCTIONS(RunTimeDTO, unsigned, Seconds, 48);
+CHECK_DTO_FUNCTIONS(RunTimeDto, unsigned, Id, 100);
+CHECK_DTO_FUNCTIONS(RunTimeDto, unsigned, Minutes, 25);
+CHECK_DTO_FUNCTIONS(RunTimeDto, unsigned, Seconds, 48);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(RunTimeDTOTest, equalsOperator) {
-	RunTimeDTO dto1;
-	RunTimeDTO dto2;
+TEST(RunTimeDtoTest, equalsOperator) {
+	RunTimeDto dto1;
+	RunTimeDto dto2;
 
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);

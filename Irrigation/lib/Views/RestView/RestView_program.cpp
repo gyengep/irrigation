@@ -16,7 +16,7 @@ IdType RestView::getProgramId(const KeyValue& pathParameters) {
 
 std::unique_ptr<HttpResponse> RestView::onGetProgramList(const HttpRequest& request, const KeyValue& pathParameters) {
 
-	const std::list<ProgramDTO> programDtoList = getProgramDTOList(irrigationDocument);
+	const std::list<ProgramDto> programDtoList = getProgramDtoList(irrigationDocument);
 
 	return HttpResponse::Builder().
 			setStatus(200, "OK").
@@ -29,7 +29,7 @@ std::unique_ptr<HttpResponse> RestView::onPostProgramList(const HttpRequest& req
 	static const char* logMessage = "Can not create program";
 
 	try {
-		const ProgramDTO programDto = dtoReader->loadProgram(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const ProgramDto programDto = dtoReader->loadProgram(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const std::pair<IdType, std::string> result = postProgramList(irrigationDocument, programDto);
 
 		const IdType& programId = result.first;
@@ -58,7 +58,7 @@ std::unique_ptr<HttpResponse> RestView::onGetProgram(const HttpRequest& request,
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const ProgramDTO programDto = getProgramDTO(irrigationDocument, programId);
+		const ProgramDto programDto = getProgramDto(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -80,7 +80,7 @@ std::unique_ptr<HttpResponse> RestView::onPatchProgram(const HttpRequest& reques
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const ProgramDTO programDto = dtoReader->loadProgram(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const ProgramDto programDto = dtoReader->loadProgram(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const std::string text = patchProgram(irrigationDocument, programId, programDto);
 
 		LOGGER.debug("Program[%s] is modified: %s",

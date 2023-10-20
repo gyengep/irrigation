@@ -69,9 +69,9 @@ class RestView : public View {
 
 	std::unique_ptr<HttpResponse> getFile(const std::string fileName);
 
-	void onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO);
-	void onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO);
-	void onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActionDTO);
+	void onPatchIrrigation_startCustom(const IrrigationActionDto& irrigationActionDto);
+	void onPatchIrrigation_startProgram(const IrrigationActionDto& irrigationActionDto);
+	void onPatchIrrigation_stop(const IrrigationActionDto& irrigationActionDto);
 
 	static IdType getProgramId(const KeyValue& pathParameters);
 	static IdType getStartTimeId(const KeyValue& pathParameters);
@@ -79,29 +79,29 @@ class RestView : public View {
 	static std::string getProgramUrl(const IdType& programId);
 	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 
-	static std::list<ProgramDTO> getProgramDTOList(IrrigationDocument& irrigationDocument);
-	static std::list<RunTimeDTO> getRunTimeDTOList(IrrigationDocument& irrigationDocument, const IdType& programId);
-	static std::list<StartTimeDTO> getStartTimeDTOList(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static std::list<ProgramDto> getProgramDtoList(IrrigationDocument& irrigationDocument);
+	static std::list<RunTimeDto> getRunTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static std::list<StartTimeDto> getStartTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId);
 
-	static ProgramDTO getProgramDTO(IrrigationDocument& irrigationDocument, const IdType& programId);
-	static StartTimeDTO getStartTimeDTO(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId);
+	static ProgramDto getProgramDto(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static StartTimeDto getStartTimeDto(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId);
 
-	static HotWeatherSchedulerDTO           getHotWeatherSchedulerDTO(IrrigationDocument& irrigationDocument, const IdType& programId);
-	static TemperatureDependentSchedulerDTO getTemperatureDependentSchedulerDTO(IrrigationDocument& irrigationDocument, const IdType& programId);
-	static WeeklySchedulerDTO               getWeeklySchedulerDTO(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static HotWeatherSchedulerDto           getHotWeatherSchedulerDto(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static TemperatureDependentSchedulerDto getTemperatureDependentSchedulerDto(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static WeeklySchedulerDto               getWeeklySchedulerDto(IrrigationDocument& irrigationDocument, const IdType& programId);
 
-	static std::string patchProgram(IrrigationDocument& irrigationDocument, const IdType& programId, const ProgramDTO& programDto);
-	static std::string patchStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId, const StartTimeDTO& startTimeDto);
-	static std::string patchHotWeatherScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const HotWeatherSchedulerDTO& hotWeatherSchedulerDto);
-	static std::string patchTemperatureDependentScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const TemperatureDependentSchedulerDTO& temperatureDependentSchedulerDto);
-	static std::string patchWeeklyScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const WeeklySchedulerDTO& weeklySchedulerDto);
-	static std::string patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const std::list<RunTimeDTO>& runTimeDtoList);
+	static std::string patchProgram(IrrigationDocument& irrigationDocument, const IdType& programId, const ProgramDto& programDto);
+	static std::string patchStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId, const StartTimeDto& startTimeDto);
+	static std::string patchHotWeatherScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const HotWeatherSchedulerDto& hotWeatherSchedulerDto);
+	static std::string patchTemperatureDependentScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const TemperatureDependentSchedulerDto& temperatureDependentSchedulerDto);
+	static std::string patchWeeklyScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const WeeklySchedulerDto& weeklySchedulerDto);
+	static std::string patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const std::list<RunTimeDto>& runTimeDtoList);
 
 	static void deleteProgram(IrrigationDocument& irrigationDocument, const IdType& programId);
 	static void deleteStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId);
 
-	std::pair<IdType, std::string> postProgramList(IrrigationDocument& irrigationDocument, const ProgramDTO& programDto);
-	std::pair<IdType, std::string> postStartTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const StartTimeDTO& startTimeDto);
+	std::pair<IdType, std::string> postProgramList(IrrigationDocument& irrigationDocument, const ProgramDto& programDto);
+	std::pair<IdType, std::string> postStartTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const StartTimeDto& startTimeDto);
 
 public:
 	RestView(IrrigationDocument& irrigationDocument, uint16_t port,

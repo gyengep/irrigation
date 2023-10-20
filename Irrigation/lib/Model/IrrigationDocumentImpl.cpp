@@ -133,13 +133,13 @@ void IrrigationDocumentImpl::stop() {
 	wateringController->stop();
 }
 
-DocumentDTO IrrigationDocumentImpl::toDocumentDto() const {
-	return DocumentDTO(programContainer->toProgramDtoList());
+DocumentDto IrrigationDocumentImpl::toDocumentDto() const {
+	return DocumentDto(programContainer->toProgramDtoList());
 }
 
-void IrrigationDocumentImpl::updateFromDocumentDto(const DocumentDTO& documentDTO) {
-	if (documentDTO.hasPrograms()) {
-		programContainer->updateFromProgramDtoList(documentDTO.getPrograms());
+void IrrigationDocumentImpl::updateFromDocumentDto(const DocumentDto& documentDto) {
+	if (documentDto.hasPrograms()) {
+		programContainer->updateFromProgramDtoList(documentDto.getPrograms());
 	}
 
 	if (LOGGER.isLoggable(LogLevel::DEBUG)) {

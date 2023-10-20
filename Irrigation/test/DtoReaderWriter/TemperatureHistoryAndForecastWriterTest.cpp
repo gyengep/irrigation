@@ -31,16 +31,16 @@ TEST(TemperatureHistoryAndForecastWriterTest, saveWithDifferentUnit) {
 	const float avgTemperature = 30.f;
 
 	EXPECT_THROW(XmlWriter(false).save(
-				TemperatureHistoryDTO(dateTimeFrom, dateTimeTo, "C1", minTemperature, maxTemperature, avgTemperature),
-				TemperatureForecastDTO(dateTimeFrom, dateTimeTo, "C2", minTemperature, maxTemperature),
+				TemperatureHistoryDto(dateTimeFrom, dateTimeTo, "C1", minTemperature, maxTemperature, avgTemperature),
+				TemperatureForecastDto(dateTimeFrom, dateTimeTo, "C2", minTemperature, maxTemperature),
 				"MyStyleSheetFile"
 			),
 			std::logic_error
 		);
 
 	EXPECT_NO_THROW(XmlWriter(false).save(
-				TemperatureHistoryDTO(dateTimeFrom, dateTimeTo, "C1", minTemperature, maxTemperature, avgTemperature),
-				TemperatureForecastDTO(dateTimeFrom, dateTimeTo, "C1", minTemperature, maxTemperature),
+				TemperatureHistoryDto(dateTimeFrom, dateTimeTo, "C1", minTemperature, maxTemperature, avgTemperature),
+				TemperatureForecastDto(dateTimeFrom, dateTimeTo, "C1", minTemperature, maxTemperature),
 				"MyStyleSheetFile"
 			)
 		);

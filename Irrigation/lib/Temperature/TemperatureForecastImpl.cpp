@@ -147,10 +147,10 @@ TemperatureForecastImpl::Values TemperatureForecastImpl::getTemperatureForecast(
 	return Values(minValue, maxValue);
 }
 
-TemperatureForecastDTO TemperatureForecastImpl::toTemperatureForecastDTO(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const {
+TemperatureForecastDto TemperatureForecastImpl::toTemperatureForecastDto(const DateTime& from, const DateTime& to, const std::string& dateTimeFormat) const {
 	const auto values = getTemperatureForecast(from, to);
 
-	return TemperatureForecastDTO(
+	return TemperatureForecastDto(
 			LocalDateTime(from).toString(dateTimeFormat),
 			LocalDateTime(to).toString(dateTimeFormat),
 			"\xE2\x84\x83",

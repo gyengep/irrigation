@@ -1,5 +1,5 @@
 #include "Impl/IrrigationDocumentLoaderMyDefaults.h"
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "Logger/Logger.h"
 
 
@@ -11,108 +11,108 @@ IrrigationDocumentLoaderMyDefaults::~IrrigationDocumentLoaderMyDefaults() {
 
 bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 
-	const DocumentDTO documentDto(
-		std::list<ProgramDTO> {
-			ProgramDTO(true, "Fűlocsolás", 100, "temperature-dependent",
-					SchedulersDTO(
-							EveryDaySchedulerDTO(),
-							HotWeatherSchedulerDTO(),
-							TemperatureDependentSchedulerDTO(0.75f, 50, 0),
-							WeeklySchedulerDTO()
+	const DocumentDto documentDto(
+		std::list<ProgramDto> {
+			ProgramDto(true, "Fűlocsolás", 100, "temperature-dependent",
+					SchedulersDto(
+							EveryDaySchedulerDto(),
+							HotWeatherSchedulerDto(),
+							TemperatureDependentSchedulerDto(0.75f, 50, 0),
+							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDTO>({
-							RunTimeDTO(26, 0),
-							RunTimeDTO(38, 0),
-							RunTimeDTO(32, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
+					std::list<RunTimeDto>({
+							RunTimeDto(26, 0),
+							RunTimeDto(38, 0),
+							RunTimeDto(32, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDTO>({
-							StartTimeDTO(4, 0)
+					std::list<StartTimeDto>({
+							StartTimeDto(4, 0)
 						})
 				),
-			ProgramDTO(true, "Buxus", 100, "temperature-dependent",
-					SchedulersDTO(
-							EveryDaySchedulerDTO(),
-							HotWeatherSchedulerDTO(),
-							TemperatureDependentSchedulerDTO(1.0f, 100, 0),
-							WeeklySchedulerDTO()
+			ProgramDto(true, "Buxus", 100, "temperature-dependent",
+					SchedulersDto(
+							EveryDaySchedulerDto(),
+							HotWeatherSchedulerDto(),
+							TemperatureDependentSchedulerDto(1.0f, 100, 0),
+							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDTO>({
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(20, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
+					std::list<RunTimeDto>({
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(20, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDTO>({
-							StartTimeDTO(6, 0)
+					std::list<StartTimeDto>({
+							StartTimeDto(6, 0)
 						})
 				),
-			ProgramDTO(true, "Kánikula", 100, "hot-weather",
-					SchedulersDTO(
-							EveryDaySchedulerDTO(),
-							HotWeatherSchedulerDTO(2 * 3600, 33),
-							TemperatureDependentSchedulerDTO(),
-							WeeklySchedulerDTO()
+			ProgramDto(true, "Kánikula", 100, "hot-weather",
+					SchedulersDto(
+							EveryDaySchedulerDto(),
+							HotWeatherSchedulerDto(2 * 3600, 33),
+							TemperatureDependentSchedulerDto(),
+							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDTO>({
-							RunTimeDTO(2, 30),
-							RunTimeDTO(3, 30),
-							RunTimeDTO(3, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
+					std::list<RunTimeDto>({
+							RunTimeDto(2, 30),
+							RunTimeDto(3, 30),
+							RunTimeDto(3, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDTO>({
-							StartTimeDTO(12, 0),
-							StartTimeDTO(13, 0),
-							StartTimeDTO(14, 0),
-							StartTimeDTO(15, 0),
-							StartTimeDTO(16, 0),
-							StartTimeDTO(17, 0),
+					std::list<StartTimeDto>({
+							StartTimeDto(12, 0),
+							StartTimeDto(13, 0),
+							StartTimeDto(14, 0),
+							StartTimeDto(15, 0),
+							StartTimeDto(16, 0),
+							StartTimeDto(17, 0),
 						})
 				),
-			ProgramDTO(true, "Paradicsom", 100, "temperature-dependent",
-					SchedulersDTO(
-							EveryDaySchedulerDTO(),
-							HotWeatherSchedulerDTO(),
-							TemperatureDependentSchedulerDTO(1.0f, 75, 75),
-							WeeklySchedulerDTO()
+			ProgramDto(true, "Paradicsom", 100, "temperature-dependent",
+					SchedulersDto(
+							EveryDaySchedulerDto(),
+							HotWeatherSchedulerDto(),
+							TemperatureDependentSchedulerDto(1.0f, 75, 75),
+							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDTO>({
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(1, 0),
-							RunTimeDTO(0, 0),
+					std::list<RunTimeDto>({
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(1, 0),
+							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDTO>({
-							StartTimeDTO(7, 0),
-							StartTimeDTO(20, 0)
+					std::list<StartTimeDto>({
+							StartTimeDto(7, 0),
+							StartTimeDto(20, 0)
 						})
 				),
-			ProgramDTO(true, "Virág", 100, "temperature-dependent",
-					SchedulersDTO(
-							EveryDaySchedulerDTO(),
-							HotWeatherSchedulerDTO(),
-							TemperatureDependentSchedulerDTO(1.0f, 75, 75),
-							WeeklySchedulerDTO()
+			ProgramDto(true, "Virág", 100, "temperature-dependent",
+					SchedulersDto(
+							EveryDaySchedulerDto(),
+							HotWeatherSchedulerDto(),
+							TemperatureDependentSchedulerDto(1.0f, 75, 75),
+							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDTO>({
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(0, 0),
-							RunTimeDTO(16, 0),
+					std::list<RunTimeDto>({
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(0, 0),
+							RunTimeDto(16, 0),
 						}),
-					std::list<StartTimeDTO>({
-							StartTimeDTO(7, 10),
-							StartTimeDTO(20, 10)
+					std::list<StartTimeDto>({
+							StartTimeDto(7, 10),
+							StartTimeDto(20, 10)
 						})
 				)
 		}

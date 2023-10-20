@@ -6,7 +6,7 @@
 #include <mutex>
 
 
-std::string RestView::patchProgram(IrrigationDocument& irrigationDocument, const IdType& programId, const ProgramDTO& programDto) {
+std::string RestView::patchProgram(IrrigationDocument& irrigationDocument, const IdType& programId, const ProgramDto& programDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	ProgramPtr program = irrigationDocument.getProgramContainer().at(programId);
 
@@ -16,7 +16,7 @@ std::string RestView::patchProgram(IrrigationDocument& irrigationDocument, const
 	return program->toString();
 }
 
-std::string RestView::patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const std::list<RunTimeDTO>& runTimeDtoList) {
+std::string RestView::patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const std::list<RunTimeDto>& runTimeDtoList) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	RunTimeContainer& runTimes = irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer();
 
@@ -26,7 +26,7 @@ std::string RestView::patchRunTimeList(IrrigationDocument& irrigationDocument, c
 	return runTimes.toString();
 }
 
-std::string RestView::patchStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId, const StartTimeDTO& startTimeDto) {
+std::string RestView::patchStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId, const StartTimeDto& startTimeDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	StartTimePtr startTime = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().at(startTimeId);
 
@@ -36,7 +36,7 @@ std::string RestView::patchStartTime(IrrigationDocument& irrigationDocument, con
 	return startTime->toString();
 }
 
-std::string RestView::patchHotWeatherScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const HotWeatherSchedulerDTO& hotWeatherSchedulerDto) {
+std::string RestView::patchHotWeatherScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const HotWeatherSchedulerDto& hotWeatherSchedulerDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	HotWeatherScheduler& hotWeatherScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getHotWeatherScheduler();
 
@@ -46,7 +46,7 @@ std::string RestView::patchHotWeatherScheduler(IrrigationDocument& irrigationDoc
 	return hotWeatherScheduler.toString();
 }
 
-std::string RestView::patchTemperatureDependentScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const TemperatureDependentSchedulerDTO& temperatureDependentSchedulerDto) {
+std::string RestView::patchTemperatureDependentScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const TemperatureDependentSchedulerDto& temperatureDependentSchedulerDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	TemperatureDependentScheduler& temperatureDependentScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getTemperatureDependentScheduler();
 
@@ -56,7 +56,7 @@ std::string RestView::patchTemperatureDependentScheduler(IrrigationDocument& irr
 	return temperatureDependentScheduler.toString();
 }
 
-std::string RestView::patchWeeklyScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const WeeklySchedulerDTO& weeklySchedulerDto) {
+std::string RestView::patchWeeklyScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const WeeklySchedulerDto& weeklySchedulerDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	WeeklyScheduler& weeklyScheduler = irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getWeeklyScheduler();
 

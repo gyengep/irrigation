@@ -1,25 +1,25 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "DTO/WeeklySchedulerDTO.h"
+#include "DTO/WeeklySchedulerDto.h"
 #include "SampleBase.h"
 
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef Sample<WeeklySchedulerDTO> WeeklySchedulerSample;
+	typedef Sample<WeeklySchedulerDto> WeeklySchedulerSample;
 
 	class WeeklySchedulerSampleList : public std::vector<WeeklySchedulerSample> {
 	public:
 		WeeklySchedulerSampleList() {
 
 			emplace_back(
-				WeeklySchedulerDTO(),
+				WeeklySchedulerDto(),
 				"<scheduler type=\"weekly\"/>"
 			);
 
 			emplace_back(
-				WeeklySchedulerDTO().setValues(std::list<bool> { true, true, true, false, true, false, false }),
+				WeeklySchedulerDto().setValues(std::list<bool> { true, true, true, false, true, false, false }),
 				"<scheduler type=\"weekly\">"
 					"<days>"
 						"<day>true</day>"
@@ -34,7 +34,7 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				WeeklySchedulerDTO(std::list<bool> { true, false, false, true, true, false, true }),
+				WeeklySchedulerDto(std::list<bool> { true, false, false, true, true, false, true }),
 				"<scheduler type=\"weekly\">"
 					"<days>"
 						"<day>true</day>"

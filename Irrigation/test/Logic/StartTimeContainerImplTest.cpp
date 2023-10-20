@@ -208,14 +208,14 @@ TEST_F(StartTimeContainerImplTest, create) {
 			WillRepeatedly(Invoke(mockStartTimeFactory.get(), &MockStartTimeFactory::createMockStartTime));
 
 	for (const auto& startTimeSample : startTimeSampleList) {
-		const StartTimeDTO expectedDTO = startTimeSample.getDto();
+		const StartTimeDto expectedStartTimeDto = startTimeSample.getDto();
 
 		mockStartTimeFactory->mockStartTimes.push_back(std::make_shared<StrictMock<MockStartTime>>());
 
-		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(expectedDTO)).
+		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(expectedStartTimeDto)).
 				Times(1);
 
-		startTimeContainer->createFromStartTimeDto(expectedDTO);
+		startTimeContainer->createFromStartTimeDto(expectedStartTimeDto);
 	}
 
 	ASSERT_THAT(*startTimeContainer, SizeIs(startTimeSampleList.size()));

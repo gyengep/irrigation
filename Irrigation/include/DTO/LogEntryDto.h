@@ -3,14 +3,14 @@
 #include <string>
 
 
-class LogEntryDTO {
+class LogEntryDto {
 	const std::string time;
 	const std::string thread;
 	const std::string level;
 	const std::string text;
 
 public:
-	LogEntryDTO(const std::string& time, const std::string& thread, const std::string& level, const std::string& text) :
+	LogEntryDto(const std::string& time, const std::string& thread, const std::string& level, const std::string& text) :
 		time(time),
 		thread(thread),
 		level(level),
@@ -24,4 +24,4 @@ public:
 	const std::string& getText() const { return text; }
 };
 
-typedef std::list<LogEntryDTO> LogEntryDTOList;
+typedef std::list<LogEntryDto> LogEntryDtoList;

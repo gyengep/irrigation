@@ -16,9 +16,9 @@ public:
 	MOCK_CONST_METHOD1(at, const_mapped_type(const key_type& key));
 	MOCK_METHOD1(at, mapped_type(const key_type& key));
 
-	MOCK_CONST_METHOD0(toProgramDtoList, std::list<ProgramDTO>());
-	MOCK_METHOD1(updateFromProgramDtoList, void(const std::list<ProgramDTO>& programDtoList));
-	MOCK_METHOD1(createFromProgramDto, value_type&(const ProgramDTO& programDto));
+	MOCK_CONST_METHOD0(toProgramDtoList, std::list<ProgramDto>());
+	MOCK_METHOD1(updateFromProgramDtoList, void(const std::list<ProgramDto>& programDtoList));
+	MOCK_METHOD1(createFromProgramDto, value_type&(const ProgramDto& programDto));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };

@@ -1,14 +1,14 @@
 #pragma once
-#include "DTO/CurrentTemperatureDTO.h"
+#include "DTO/CurrentTemperatureDto.h"
 #include "SampleBase.h"
 
 
 namespace RestViewTestSamples {
 
-	class CurrentTemperatureSample : public Sample<CurrentTemperatureDTO> {
+	class CurrentTemperatureSample : public Sample<CurrentTemperatureDto> {
 	public:
-		CurrentTemperatureSample() : Sample<CurrentTemperatureDTO>(
-				CurrentTemperatureDTO("Tue, 22 Jun 2021 23:36:57 +0200", "celsius", 28.1),
+		CurrentTemperatureSample() : Sample<CurrentTemperatureDto>(
+				CurrentTemperatureDto("Tue, 22 Jun 2021 23:36:57 +0200", "celsius", 28.1),
 				"<temperature>"
 					"<value>28</value>"
 					"<datetime>Tue, 22 Jun 2021 23:36:57 +0200</datetime>"

@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "DTO/ProgramDTO.h"
+#include "DTO/ProgramDto.h"
 #include "Utils/DateTime.h"
 #include "Utils/OstreamInsert.h"
 #include "RunTimeContainer.h"
@@ -35,8 +35,8 @@ public:
 	virtual RunTimeContainer& getRunTimeContainer() = 0;
 	virtual StartTimeContainer& getStartTimeContainer() = 0;
 
-	virtual ProgramDTO toProgramDto() const = 0;
-	virtual void updateFromProgramDto(const ProgramDTO& programDTO) = 0;
+	virtual ProgramDto toProgramDto() const = 0;
+	virtual void updateFromProgramDto(const ProgramDto& programDto) = 0;
 
 	virtual std::string toString() const = 0;
 

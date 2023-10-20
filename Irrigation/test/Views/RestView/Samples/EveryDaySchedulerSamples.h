@@ -1,17 +1,17 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "DTO/EveryDaySchedulerDTO.h"
+#include "DTO/EveryDaySchedulerDto.h"
 #include "SampleBase.h"
 
 
 namespace RestViewTestSamples {
 
-	class EveryDaySchedulerSample : public Sample<EveryDaySchedulerDTO> {
+	class EveryDaySchedulerSample : public Sample<EveryDaySchedulerDto> {
 	public:
 		EveryDaySchedulerSample() :
-			Sample<EveryDaySchedulerDTO>(
-					EveryDaySchedulerDTO(),
+			Sample<EveryDaySchedulerDto>(
+					EveryDaySchedulerDto(),
 					"<scheduler type=\"every-day\" />"
 			)
 		{

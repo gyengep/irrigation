@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "DTO/ProgramDTO.h"
+#include "DTO/ProgramDto.h"
 #include "Utils/DateTime.h"
 #include "Logic/RunTimeContainer.h"
 #include "Logic/StartTimeContainer.h"
@@ -56,8 +56,8 @@ public:
 	virtual RunTimeContainer& getRunTimeContainer() 					{ return *runTimeContainer; }
 	virtual StartTimeContainer& getStartTimeContainer() 				{ return *startTimeContainer; }
 
-	virtual ProgramDTO toProgramDto() const override;
-	virtual void updateFromProgramDto(const ProgramDTO& programDTO) override;
+	virtual ProgramDto toProgramDto() const override;
+	virtual void updateFromProgramDto(const ProgramDto& programDto) override;
 
 	virtual std::string toString() const override;
 

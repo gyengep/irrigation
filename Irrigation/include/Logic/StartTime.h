@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "DTO/StartTimeDTO.h"
+#include "DTO/StartTimeDto.h"
 #include "Utils/OstreamInsert.h"
 
 
@@ -16,8 +16,8 @@ public:
 	virtual unsigned getHours() const = 0;
 	virtual unsigned getMinutes() const = 0;
 
-	virtual StartTimeDTO toStartTimeDto() const = 0;
-	virtual void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) = 0;
+	virtual StartTimeDto toStartTimeDto() const = 0;
+	virtual void updateFromStartTimeDto(const StartTimeDto& startTimeDto) = 0;
 
 	virtual std::string toString() const = 0;
 	virtual std::string toShortString() const = 0;

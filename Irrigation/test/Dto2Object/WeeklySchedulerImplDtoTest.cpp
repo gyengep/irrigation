@@ -16,7 +16,7 @@ TEST(WeeklySchedulerImplToDtoTest, toWeeklySchedulerDto) {
 
 	for (const auto& sample : sampleList) {
 		const WeeklySchedulerImpl& actual = sample.getObject();
-		const WeeklySchedulerDTO& expected = sample.getDto();
+		const WeeklySchedulerDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toWeeklySchedulerDto(), Eq(expected));
 	}
@@ -55,14 +55,14 @@ void check(const WeeklySchedulerDtoUpdateType updateType, const std::vector<bool
 	std::vector<bool> expected = days;
 
 	for (const auto& sample : Dto2ObjectTestSamples::WeeklySchedulerSampleList()) {
-		WeeklySchedulerDTO actualWeeklySchedulerDTO;
+		WeeklySchedulerDto actualWeeklySchedulerDto;
 
 		if (WeeklySchedulerDtoUpdateType::Days == updateType || WeeklySchedulerDtoUpdateType::All == updateType) {
 			expected = toDays(sample.getObject());
-			actualWeeklySchedulerDTO.setValues(std::list<bool>(expected.begin(), expected.end()));
+			actualWeeklySchedulerDto.setValues(std::list<bool>(expected.begin(), expected.end()));
 		}
 
-		actualWeeklyScheduler.updateFromWeeklySchedulerDto(actualWeeklySchedulerDTO);
+		actualWeeklyScheduler.updateFromWeeklySchedulerDto(actualWeeklySchedulerDto);
 
 		EXPECT_THAT(actualWeeklyScheduler.isDayEnabled(0), Eq(expected[0]));
 		EXPECT_THAT(actualWeeklyScheduler.isDayEnabled(1), Eq(expected[1]));

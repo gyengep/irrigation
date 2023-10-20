@@ -1,96 +1,96 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "DTO/TemperatureDependentSchedulerDTO.h"
+#include "DTO/TemperatureDependentSchedulerDto.h"
 #include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
 
 
-TEST(TemperatureDependentSchedulerDTOTest, defaultConstructor) {
-	const TemperatureDependentSchedulerDTO schedulerDTO;
+TEST(TemperatureDependentSchedulerDtoTest, defaultConstructor) {
+	const TemperatureDependentSchedulerDto schedulerDto;
 
-	EXPECT_FALSE(schedulerDTO.hasRemainingCorrection());
-	EXPECT_FALSE(schedulerDTO.hasMinAdjustment());
-	EXPECT_FALSE(schedulerDTO.hasMaxAdjustment());
+	EXPECT_FALSE(schedulerDto.hasRemainingCorrection());
+	EXPECT_FALSE(schedulerDto.hasMinAdjustment());
+	EXPECT_FALSE(schedulerDto.hasMaxAdjustment());
 
-	EXPECT_THROW(schedulerDTO.getRemainingCorrection(), logic_error);
-	EXPECT_THROW(schedulerDTO.getMinAdjustment(), logic_error);
-	EXPECT_THROW(schedulerDTO.getMaxAdjustment(), logic_error);
+	EXPECT_THROW(schedulerDto.getRemainingCorrection(), logic_error);
+	EXPECT_THROW(schedulerDto.getMinAdjustment(), logic_error);
+	EXPECT_THROW(schedulerDto.getMaxAdjustment(), logic_error);
 }
 
-TEST(TemperatureDependentSchedulerDTOTest, parametrizedConstructor) {
+TEST(TemperatureDependentSchedulerDtoTest, parametrizedConstructor) {
 	const float expectedRemainingCorrection = 19.1f;
 	const int expectedMinAdjustment = 33;
 	const int expectedMaxAdjustment = 76;
 
-	const TemperatureDependentSchedulerDTO schedulerDTO(
+	const TemperatureDependentSchedulerDto schedulerDto(
 			expectedRemainingCorrection,
 			expectedMinAdjustment, expectedMaxAdjustment
 		);
 
-	EXPECT_TRUE(schedulerDTO.hasRemainingCorrection());
-	EXPECT_TRUE(schedulerDTO.hasMinAdjustment());
-	EXPECT_TRUE(schedulerDTO.hasMaxAdjustment());
+	EXPECT_TRUE(schedulerDto.hasRemainingCorrection());
+	EXPECT_TRUE(schedulerDto.hasMinAdjustment());
+	EXPECT_TRUE(schedulerDto.hasMaxAdjustment());
 
-	EXPECT_THAT(schedulerDTO.getRemainingCorrection(), Eq(expectedRemainingCorrection));
-	EXPECT_THAT(schedulerDTO.getMinAdjustment(), Eq(expectedMinAdjustment));
-	EXPECT_THAT(schedulerDTO.getMaxAdjustment(), Eq(expectedMaxAdjustment));
+	EXPECT_THAT(schedulerDto.getRemainingCorrection(), Eq(expectedRemainingCorrection));
+	EXPECT_THAT(schedulerDto.getMinAdjustment(), Eq(expectedMinAdjustment));
+	EXPECT_THAT(schedulerDto.getMaxAdjustment(), Eq(expectedMaxAdjustment));
 }
 
-TEST(TemperatureDependentSchedulerDTOTest, copyConstructor) {
+TEST(TemperatureDependentSchedulerDtoTest, copyConstructor) {
 	const float expectedRemainingCorrection = 19.1f;
 	const int expectedMinAdjustment = 33;
 	const int expectedMaxAdjustment = 76;
 
-	const TemperatureDependentSchedulerDTO source(
+	const TemperatureDependentSchedulerDto source(
 			expectedRemainingCorrection,
 			expectedMinAdjustment, expectedMaxAdjustment
 		);
 
-	const TemperatureDependentSchedulerDTO schedulerDTO(source);
+	const TemperatureDependentSchedulerDto schedulerDto(source);
 
-	EXPECT_TRUE(schedulerDTO.hasRemainingCorrection());
-	EXPECT_TRUE(schedulerDTO.hasMinAdjustment());
-	EXPECT_TRUE(schedulerDTO.hasMaxAdjustment());
+	EXPECT_TRUE(schedulerDto.hasRemainingCorrection());
+	EXPECT_TRUE(schedulerDto.hasMinAdjustment());
+	EXPECT_TRUE(schedulerDto.hasMaxAdjustment());
 
-	EXPECT_THAT(schedulerDTO.getRemainingCorrection(), Eq(expectedRemainingCorrection));
-	EXPECT_THAT(schedulerDTO.getMinAdjustment(), Eq(expectedMinAdjustment));
-	EXPECT_THAT(schedulerDTO.getMaxAdjustment(), Eq(expectedMaxAdjustment));
+	EXPECT_THAT(schedulerDto.getRemainingCorrection(), Eq(expectedRemainingCorrection));
+	EXPECT_THAT(schedulerDto.getMinAdjustment(), Eq(expectedMinAdjustment));
+	EXPECT_THAT(schedulerDto.getMaxAdjustment(), Eq(expectedMaxAdjustment));
 }
 
-TEST(TemperatureDependentSchedulerDTOTest, moveConstructor) {
+TEST(TemperatureDependentSchedulerDtoTest, moveConstructor) {
 	const float expectedRemainingCorrection = 19.1f;
 	const int expectedMinAdjustment = 33;
 	const int expectedMaxAdjustment = 76;
 
-	TemperatureDependentSchedulerDTO source(
+	TemperatureDependentSchedulerDto source(
 			expectedRemainingCorrection,
 			expectedMinAdjustment, expectedMaxAdjustment
 		);
 
-	const TemperatureDependentSchedulerDTO schedulerDTO(move(source));
+	const TemperatureDependentSchedulerDto schedulerDto(move(source));
 
-	EXPECT_TRUE(schedulerDTO.hasRemainingCorrection());
-	EXPECT_TRUE(schedulerDTO.hasMinAdjustment());
-	EXPECT_TRUE(schedulerDTO.hasMaxAdjustment());
+	EXPECT_TRUE(schedulerDto.hasRemainingCorrection());
+	EXPECT_TRUE(schedulerDto.hasMinAdjustment());
+	EXPECT_TRUE(schedulerDto.hasMaxAdjustment());
 
-	EXPECT_THAT(schedulerDTO.getRemainingCorrection(), Eq(expectedRemainingCorrection));
-	EXPECT_THAT(schedulerDTO.getMinAdjustment(), Eq(expectedMinAdjustment));
-	EXPECT_THAT(schedulerDTO.getMaxAdjustment(), Eq(expectedMaxAdjustment));
+	EXPECT_THAT(schedulerDto.getRemainingCorrection(), Eq(expectedRemainingCorrection));
+	EXPECT_THAT(schedulerDto.getMinAdjustment(), Eq(expectedMinAdjustment));
+	EXPECT_THAT(schedulerDto.getMaxAdjustment(), Eq(expectedMaxAdjustment));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, float, RemainingCorrection, 21.2f);
-CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, int, MinAdjustment, 23);
-CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDTO, int, MaxAdjustment, 46);
+CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDto, float, RemainingCorrection, 21.2f);
+CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDto, int, MinAdjustment, 23);
+CHECK_DTO_FUNCTIONS(TemperatureDependentSchedulerDto, int, MaxAdjustment, 46);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(TemperatureDependentSchedulerDTOTest, equalsOperator) {
-	TemperatureDependentSchedulerDTO dto1;
-	TemperatureDependentSchedulerDTO dto2;
+TEST(TemperatureDependentSchedulerDtoTest, equalsOperator) {
+	TemperatureDependentSchedulerDto dto1;
+	TemperatureDependentSchedulerDto dto2;
 
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);

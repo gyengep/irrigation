@@ -13,11 +13,11 @@ std::unique_ptr<Scheduler::Result> EveryDaySchedulerImpl::process(const LocalDat
 	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(true));
 }
 
-EveryDaySchedulerDTO EveryDaySchedulerImpl::toEveryDaySchedulerDto() const {
-	return EveryDaySchedulerDTO();
+EveryDaySchedulerDto EveryDaySchedulerImpl::toEveryDaySchedulerDto() const {
+	return EveryDaySchedulerDto();
 }
 
-void EveryDaySchedulerImpl::updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO) {
+void EveryDaySchedulerImpl::updateFromEveryDaySchedulerDto(const EveryDaySchedulerDto& schedulerDto) {
 }
 
 std::string EveryDaySchedulerImpl::toString() const {

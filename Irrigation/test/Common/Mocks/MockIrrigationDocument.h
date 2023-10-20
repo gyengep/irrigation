@@ -19,8 +19,8 @@ public:
 	MOCK_METHOD2(startCustom, void(const DurationList& durations, unsigned adjustment));
 	MOCK_METHOD0(stop, void());
 
-	MOCK_CONST_METHOD0(toDocumentDto, DocumentDTO());
-	MOCK_METHOD1(updateFromDocumentDto, void(const DocumentDTO& documentDTO));
+	MOCK_CONST_METHOD0(toDocumentDto, DocumentDto());
+	MOCK_METHOD1(updateFromDocumentDto, void(const DocumentDto& documentDto));
 
 	MOCK_CONST_METHOD0(saveState, void());
 	MOCK_METHOD0(loadState, void());

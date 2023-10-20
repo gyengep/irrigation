@@ -202,22 +202,22 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 	static const char* logMessage = "Can not start or stop irrigation";
 
 	try {
-		const IrrigationActionDTO irrigationActionDTO = XmlIrrigationActionReader().load(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const IrrigationActionDto irrigationActionDto = XmlIrrigationActionReader().load(string(request.getUploadData()->data(), request.getUploadData()->size()));
 
-		if (irrigationActionDTO.action.get() == nullptr) {
+		if (irrigationActionDto.action.get() == nullptr) {
 			const char* message = "The 'action' element tag not found";
 			LOGGER.warning(message);
 			throw RestBadRequest(restService->getErrorWriter(), message);
 		}
 
-		const string action = *irrigationActionDTO.action.get();
+		const string action = *irrigationActionDto.action.get();
 
 		if (action == "start") {
-			onPatchIrrigation_startCustom(irrigationActionDTO);
+			onPatchIrrigation_startCustom(irrigationActionDto);
 		} else if (action == "start-program") {
-			onPatchIrrigation_startProgram(irrigationActionDTO);
+			onPatchIrrigation_startProgram(irrigationActionDto);
 		} else if (action == "stop") {
-			onPatchIrrigation_stop(irrigationActionDTO);
+			onPatchIrrigation_stop(irrigationActionDto);
 		} else {
 			const string message = "Invalid value of 'action' element: " + action;
 			LOGGER.warning(message.c_str());
@@ -240,8 +240,8 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 	}
 }
 
-void RestView::onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigationActionDTO) {
-	if (irrigationActionDTO.runTimeDtoList.get() == nullptr) {
+void RestView::onPatchIrrigation_startCustom(const IrrigationActionDto& irrigationActionDto) {
+	if (irrigationActionDto.runTimeDtoList.get() == nullptr) {
 		const char* message = "The 'runtimes' element tag not found";
 		LOGGER.warning(message);
 		throw RestBadRequest(restService->getErrorWriter(), message);
@@ -250,13 +250,13 @@ void RestView::onPatchIrrigation_startCustom(const IrrigationActionDTO& irrigati
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
 
 	irrigationDocument.startCustom(
-		RunTimeContainer::toDurationList(*irrigationActionDTO.runTimeDtoList),
-		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : 100
+		RunTimeContainer::toDurationList(*irrigationActionDto.runTimeDtoList),
+		irrigationActionDto.adjustment.get() ? *irrigationActionDto.adjustment : 100
 	);
 }
 
-void RestView::onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigationActionDTO) {
-	if (irrigationActionDTO.programId.get() == nullptr) {
+void RestView::onPatchIrrigation_startProgram(const IrrigationActionDto& irrigationActionDto) {
+	if (irrigationActionDto.programId.get() == nullptr) {
 		const char* message = "The 'program-id' element tag not found";
 		LOGGER.warning(message);
 		throw RestBadRequest(restService->getErrorWriter(), message);
@@ -264,15 +264,15 @@ void RestView::onPatchIrrigation_startProgram(const IrrigationActionDTO& irrigat
 
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
 
-	const IdType programId = *irrigationActionDTO.programId;
+	const IdType programId = *irrigationActionDto.programId;
 
 	irrigationDocument.startProgram(
 		programId,
-		irrigationActionDTO.adjustment.get() ? *irrigationActionDTO.adjustment : 100
+		irrigationActionDto.adjustment.get() ? *irrigationActionDto.adjustment : 100
 	);
 }
 
-void RestView::onPatchIrrigation_stop(const IrrigationActionDTO& irrigationActionDTO) {
+void RestView::onPatchIrrigation_stop(const IrrigationActionDto& irrigationActionDto) {
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
 	irrigationDocument.stop();
 }

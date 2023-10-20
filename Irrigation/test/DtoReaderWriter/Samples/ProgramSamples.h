@@ -2,7 +2,7 @@
 #include <list>
 #include <string>
 #include <vector>
-#include "DTO/ProgramDTO.h"
+#include "DTO/ProgramDto.h"
 #include "SampleBase.h"
 #include "RunTimeListSamples.h"
 #include "StartTimeListSamples.h"
@@ -11,12 +11,12 @@
 
 namespace DtoReaderWriterTestSamples {
 
-	class ProgramSample : public Sample<ProgramDTO> {
+	class ProgramSample : public Sample<ProgramDto> {
 		const std::string xmlWithoutContainers;
 
 	public:
-		ProgramSample(const ProgramDTO& dto, const std::string& xml, const std::string& xmlWithoutContainers) :
-			Sample<ProgramDTO>(dto, xml),
+		ProgramSample(const ProgramDto& dto, const std::string& xml, const std::string& xmlWithoutContainers) :
+			Sample<ProgramDto>(dto, xml),
 			xmlWithoutContainers(xmlWithoutContainers)
 			{
 			}
@@ -29,19 +29,19 @@ namespace DtoReaderWriterTestSamples {
 		ProgramSampleList() {
 
 			emplace_back(
-				ProgramDTO(),
+				ProgramDto(),
 				"<program/>",
 				"<program/>"
 			);
 
 			emplace_back(
-				ProgramDTO().setId(94),
+				ProgramDto().setId(94),
 				"<program id=\"94\"/>",
 				"<program id=\"94\"/>"
 			);
 
 			emplace_back(
-				ProgramDTO().setName("abcdefg"),
+				ProgramDto().setName("abcdefg"),
 				"<program>"
 					"<name>abcdefg</name>"
 				"</program>",
@@ -51,7 +51,7 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				ProgramDTO().setEnabled(true),
+				ProgramDto().setEnabled(true),
 				"<program>"
 					"<enabled>true</enabled>"
 				"</program>",
@@ -61,7 +61,7 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				ProgramDTO().setAdjustment(57),
+				ProgramDto().setAdjustment(57),
 				"<program>"
 					"<adjustment>57</adjustment>"
 				"</program>",
@@ -71,7 +71,7 @@ namespace DtoReaderWriterTestSamples {
 			);
 
 			emplace_back(
-				ProgramDTO().setSchedulerType("weekly"),
+				ProgramDto().setSchedulerType("weekly"),
 				"<program>"
 					"<schedulertype>weekly</schedulertype>"
 				"</program>",
@@ -82,7 +82,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& runTimeListSample : RunTimeListSampleList()) {
 				emplace_back(
-					ProgramDTO().setRunTimes(runTimeListSample.getDtoList()),
+					ProgramDto().setRunTimes(runTimeListSample.getDtoList()),
 					"<program>" +
 						runTimeListSample.getXml() +
 					"</program>",
@@ -92,7 +92,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& startTimeListSample : StartTimeListSampleList()) {
 				emplace_back(
-					ProgramDTO().setStartTimes(startTimeListSample.getDtoList()),
+					ProgramDto().setStartTimes(startTimeListSample.getDtoList()),
 					"<program>" +
 						startTimeListSample.getXml() +
 					"</program>",
@@ -102,7 +102,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& schedulersSample : SchedulersSampleList()) {
 				emplace_back(
-					ProgramDTO().setSchedulers(schedulersSample.getDto()),
+					ProgramDto().setSchedulers(schedulersSample.getDto()),
 					"<program>" +
 						schedulersSample.getXml() +
 					"</program>",
@@ -111,7 +111,7 @@ namespace DtoReaderWriterTestSamples {
 			}
 
 			emplace_back(
-				ProgramDTO(false, "Qwert", 183, "every-day",
+				ProgramDto(false, "Qwert", 183, "every-day",
 					SchedulersSampleList().back().getDto(),
 					RunTimeListSampleList().back().getDtoList(),
 					StartTimeListSampleList().back().getDtoList()

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/SchedulersDto.h"
 #include "Logic/SchedulerContainer.h"
 
 
@@ -39,8 +39,8 @@ public:
 	virtual TemperatureDependentScheduler& getTemperatureDependentScheduler() override;
 	virtual WeeklyScheduler& getWeeklyScheduler() override;
 
-	virtual SchedulersDTO toSchedulersDto() const override;
-	virtual void updateFromSchedulersDto(const SchedulersDTO& schedulersDto) override;
+	virtual SchedulersDto toSchedulersDto() const override;
+	virtual void updateFromSchedulersDto(const SchedulersDto& schedulersDto) override;
 
 	virtual std::string toString() const override;
 };

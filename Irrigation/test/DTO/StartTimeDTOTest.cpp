@@ -1,79 +1,79 @@
 #include <gmock/gmock.h>
 #include <stdexcept>
-#include "DTO/StartTimeDTO.h"
+#include "DTO/StartTimeDto.h"
 #include "DtoTestMacros.h"
 
 using namespace std;
 using namespace testing;
 
 
-TEST(StartTimeDTOTest, defaultConstructor) {
-	StartTimeDTO startTimeDTO;
+TEST(StartTimeDtoTest, defaultConstructor) {
+	StartTimeDto startTimeDto;
 
-	EXPECT_FALSE(startTimeDTO.hasId());
-	EXPECT_FALSE(startTimeDTO.hasHours());
-	EXPECT_FALSE(startTimeDTO.hasMinutes());
+	EXPECT_FALSE(startTimeDto.hasId());
+	EXPECT_FALSE(startTimeDto.hasHours());
+	EXPECT_FALSE(startTimeDto.hasMinutes());
 
-	EXPECT_THROW(startTimeDTO.getId(), logic_error);
-	EXPECT_THROW(startTimeDTO.getHours(), logic_error);
-	EXPECT_THROW(startTimeDTO.getMinutes(), logic_error);
+	EXPECT_THROW(startTimeDto.getId(), logic_error);
+	EXPECT_THROW(startTimeDto.getHours(), logic_error);
+	EXPECT_THROW(startTimeDto.getMinutes(), logic_error);
 }
 
-TEST(StartTimeDTOTest, parametrizedConstructor) {
+TEST(StartTimeDtoTest, parametrizedConstructor) {
 	const unsigned expectedHour = 5;
 	const unsigned expectedMinute = 30;
 
-	const StartTimeDTO startTimeDTO(expectedHour, expectedMinute);
+	const StartTimeDto startTimeDto(expectedHour, expectedMinute);
 
-	EXPECT_FALSE(startTimeDTO.hasId());
-	EXPECT_TRUE(startTimeDTO.hasHours());
-	EXPECT_TRUE(startTimeDTO.hasMinutes());
+	EXPECT_FALSE(startTimeDto.hasId());
+	EXPECT_TRUE(startTimeDto.hasHours());
+	EXPECT_TRUE(startTimeDto.hasMinutes());
 
-	EXPECT_THAT(startTimeDTO.getHours(), Eq(expectedHour));
-	EXPECT_THAT(startTimeDTO.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(startTimeDto.getHours(), Eq(expectedHour));
+	EXPECT_THAT(startTimeDto.getMinutes(), Eq(expectedMinute));
 }
 
-TEST(StartTimeDTOTest, copyConstructor) {
+TEST(StartTimeDtoTest, copyConstructor) {
 	const unsigned expectedHour = 15;
 	const unsigned expectedMinute = 55;
 
-	const StartTimeDTO source(expectedHour, expectedMinute);
-	const StartTimeDTO startTimeDTO(source);
+	const StartTimeDto source(expectedHour, expectedMinute);
+	const StartTimeDto startTimeDto(source);
 
-	EXPECT_FALSE(startTimeDTO.hasId());
-	EXPECT_TRUE(startTimeDTO.hasHours());
-	EXPECT_TRUE(startTimeDTO.hasMinutes());
+	EXPECT_FALSE(startTimeDto.hasId());
+	EXPECT_TRUE(startTimeDto.hasHours());
+	EXPECT_TRUE(startTimeDto.hasMinutes());
 
-	EXPECT_THAT(startTimeDTO.getHours(), Eq(expectedHour));
-	EXPECT_THAT(startTimeDTO.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(startTimeDto.getHours(), Eq(expectedHour));
+	EXPECT_THAT(startTimeDto.getMinutes(), Eq(expectedMinute));
 }
 
-TEST(StartTimeDTOTest, moveConstructor) {
+TEST(StartTimeDtoTest, moveConstructor) {
 	const unsigned expectedHour = 15;
 	const unsigned expectedMinute = 55;
 
-	StartTimeDTO source(expectedHour, expectedMinute);
-	const StartTimeDTO startTimeDTO(move(source));
+	StartTimeDto source(expectedHour, expectedMinute);
+	const StartTimeDto startTimeDto(move(source));
 
-	EXPECT_FALSE(startTimeDTO.hasId());
-	EXPECT_TRUE(startTimeDTO.hasHours());
-	EXPECT_TRUE(startTimeDTO.hasMinutes());
+	EXPECT_FALSE(startTimeDto.hasId());
+	EXPECT_TRUE(startTimeDto.hasHours());
+	EXPECT_TRUE(startTimeDto.hasMinutes());
 
-	EXPECT_THAT(startTimeDTO.getHours(), Eq(expectedHour));
-	EXPECT_THAT(startTimeDTO.getMinutes(), Eq(expectedMinute));
+	EXPECT_THAT(startTimeDto.getHours(), Eq(expectedHour));
+	EXPECT_THAT(startTimeDto.getMinutes(), Eq(expectedMinute));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CHECK_DTO_FUNCTIONS(StartTimeDTO, unsigned, Id, 2100);
-CHECK_DTO_FUNCTIONS(StartTimeDTO, unsigned, Hours, 23);
-CHECK_DTO_FUNCTIONS(StartTimeDTO, unsigned, Minutes, 48);
+CHECK_DTO_FUNCTIONS(StartTimeDto, unsigned, Id, 2100);
+CHECK_DTO_FUNCTIONS(StartTimeDto, unsigned, Hours, 23);
+CHECK_DTO_FUNCTIONS(StartTimeDto, unsigned, Minutes, 48);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(StartTimeDTOTest, equalsOperator) {
-	StartTimeDTO dto1;
-	StartTimeDTO dto2;
+TEST(StartTimeDtoTest, equalsOperator) {
+	StartTimeDto dto1;
+	StartTimeDto dto2;
 
 	EXPECT_TRUE(dto1 == dto2);
 	EXPECT_TRUE(dto2 == dto1);

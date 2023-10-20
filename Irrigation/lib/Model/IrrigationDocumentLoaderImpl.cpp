@@ -1,5 +1,5 @@
 #include "Impl/IrrigationDocumentLoaderImpl.h"
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "Logger/Logger.h"
 #include <string>
 
@@ -18,7 +18,7 @@ IrrigationDocumentLoaderImpl::~IrrigationDocumentLoaderImpl() {
 
 bool IrrigationDocumentLoaderImpl::load(IrrigationDocument& document) {
 	const std::string documentDtoAsText = fileReader->read();
-	const DocumentDTO documentDto = dtoReader->loadDocument(documentDtoAsText);
+	const DocumentDto documentDto = dtoReader->loadDocument(documentDtoAsText);
 
 	document.updateFromDocumentDto(documentDto);
 	LOGGER.debug("Configuration successfully loaded");

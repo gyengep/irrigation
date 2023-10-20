@@ -23,8 +23,8 @@ TEST(SchedulersWriterTest, save) {
 
 TEST(SchedulersReaderTest, load) {
 	for (const auto& schedulersSample : DtoReaderWriterTestSamples::SchedulersSampleList()) {
-		const SchedulersDTO actualDto = XmlReader().loadSchedulers(schedulersSample.getXml());
-		const SchedulersDTO expectedDto = schedulersSample.getDto();
+		const SchedulersDto actualDto = XmlReader().loadSchedulers(schedulersSample.getXml());
+		const SchedulersDto expectedDto = schedulersSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

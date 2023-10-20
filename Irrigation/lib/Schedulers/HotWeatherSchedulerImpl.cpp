@@ -89,17 +89,17 @@ void HotWeatherSchedulerImpl::loadFrom(const nlohmann::json& values) {
 	}
 }
 
-HotWeatherSchedulerDTO HotWeatherSchedulerImpl::toHotWeatherSchedulerDto() const {
-	return HotWeatherSchedulerDTO(getPeriod(), minTemperature);
+HotWeatherSchedulerDto HotWeatherSchedulerImpl::toHotWeatherSchedulerDto() const {
+	return HotWeatherSchedulerDto(getPeriod(), minTemperature);
 }
 
-void HotWeatherSchedulerImpl::updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasMinTemperature()) {
-		setMinTemperature(schedulerDTO.getMinTemperature());
+void HotWeatherSchedulerImpl::updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDto& schedulerDto) {
+	if (schedulerDto.hasMinTemperature()) {
+		setMinTemperature(schedulerDto.getMinTemperature());
 	}
 
-	if (schedulerDTO.hasPeriodInSeconds()) {
-		setPeriod(std::chrono::seconds(schedulerDTO.getPeriodInSeconds()));
+	if (schedulerDto.hasPeriodInSeconds()) {
+		setPeriod(std::chrono::seconds(schedulerDto.getPeriodInSeconds()));
 	}
 }
 

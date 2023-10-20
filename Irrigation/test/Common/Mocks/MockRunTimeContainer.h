@@ -12,8 +12,8 @@ public:
 	MOCK_CONST_METHOD1(at, const_mapped_type(const key_type& key));
 	MOCK_METHOD1(at, mapped_type(const key_type& key));
 
-	MOCK_CONST_METHOD0(toRunTimeDtoList, std::list<RunTimeDTO>());
-	MOCK_METHOD1(updateFromRunTimeDtoList, void(const std::list<RunTimeDTO>&));
+	MOCK_CONST_METHOD0(toRunTimeDtoList, std::list<RunTimeDto>());
+	MOCK_METHOD1(updateFromRunTimeDtoList, void(const std::list<RunTimeDto>&));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 	MOCK_CONST_METHOD0(toDurationList, DurationList());

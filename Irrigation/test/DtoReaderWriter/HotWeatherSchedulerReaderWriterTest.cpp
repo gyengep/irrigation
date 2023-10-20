@@ -23,8 +23,8 @@ TEST(HotWeatherSchedulerWriterTest, save) {
 
 TEST(HotWeatherSchedulerReaderTest, load) {
 	for (const auto& hotWeatherSchedulerSample : DtoReaderWriterTestSamples::HotWeatherSchedulerSampleList()) {
-		const HotWeatherSchedulerDTO actualDto = XmlReader().loadHotWeatherScheduler(hotWeatherSchedulerSample.getXml());
-		const HotWeatherSchedulerDTO expectedDto = hotWeatherSchedulerSample.getDto();
+		const HotWeatherSchedulerDto actualDto = XmlReader().loadHotWeatherScheduler(hotWeatherSchedulerSample.getXml());
+		const HotWeatherSchedulerDto expectedDto = hotWeatherSchedulerSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

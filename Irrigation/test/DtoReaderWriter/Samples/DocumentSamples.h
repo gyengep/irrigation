@@ -2,27 +2,27 @@
 #include <list>
 #include <string>
 #include <vector>
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "SampleBase.h"
 #include "ProgramListSamples.h"
 
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef Sample<DocumentDTO> DocumentSample;
+	typedef Sample<DocumentDto> DocumentSample;
 
 	class DocumentSampleList : public std::vector<DocumentSample> {
 	public:
 		DocumentSampleList() {
 
 			emplace_back(
-				DocumentDTO(),
+				DocumentDto(),
 				"<irrigation/>"
 			);
 
 			for (const auto& programListSample : ProgramListSampleList()) {
 				emplace_back(
-					DocumentDTO().setPrograms(programListSample.getDtoList()),
+					DocumentDto().setPrograms(programListSample.getDtoList()),
 					"<irrigation>" +
 						programListSample.getXml() +
 					"</irrigation>"
@@ -31,7 +31,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& programListSample : ProgramListSampleList()) {
 				emplace_back(
-					DocumentDTO(programListSample.getDtoList()),
+					DocumentDto(programListSample.getDtoList()),
 					"<irrigation>" +
 						programListSample.getXml() +
 					"</irrigation>"

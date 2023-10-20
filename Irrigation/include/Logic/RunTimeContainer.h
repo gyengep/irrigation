@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "DTO/RunTimeDTO.h"
+#include "DTO/RunTimeDto.h"
 #include "Utils/OstreamInsert.h"
 #include "DurationList.h"
 #include "IdType.h"
@@ -31,13 +31,13 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;
 	virtual mapped_type at(const key_type& key) = 0;
 
-	virtual std::list<RunTimeDTO> toRunTimeDtoList() const = 0;
-	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) = 0;
+	virtual std::list<RunTimeDto> toRunTimeDtoList() const = 0;
+	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDto>& runTimeDtoList) = 0;
 
 	virtual std::string toString() const = 0;
 	virtual DurationList toDurationList() const = 0;
 
-	static DurationList toDurationList(const std::list<RunTimeDTO>& runTimeDtoList);
+	static DurationList toDurationList(const std::list<RunTimeDto>& runTimeDtoList);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

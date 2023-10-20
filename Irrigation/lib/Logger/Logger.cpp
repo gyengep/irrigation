@@ -153,7 +153,7 @@ string Logger::getThread() {
 	return oss.str();
 }
 
-LogEntryDTOList Logger::getEntries() const {
+LogEntryDtoList Logger::getEntries() const {
 	lock_guard<mutex> lock(mtx);
 	return logEntries;
 }

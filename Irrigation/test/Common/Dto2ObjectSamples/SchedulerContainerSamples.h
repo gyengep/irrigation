@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/SchedulersDto.h"
 #include "Logic/Impl/SchedulerContainerImpl.h"
 #include "EveryDaySchedulerSamples.h"
 #include "HotWeatherSchedulerSamples.h"
@@ -12,7 +12,7 @@
 
 namespace Dto2ObjectTestSamples {
 
-	typedef ObjectSample<SchedulerContainerImpl, SchedulersDTO> SchedulerContainerSample;
+	typedef ObjectSample<SchedulerContainerImpl, SchedulersDto> SchedulerContainerSample;
 
 	class SchedulerContainerSampleList : public std::vector<SchedulerContainerSample> {
 	public:
@@ -25,7 +25,7 @@ namespace Dto2ObjectTestSamples {
 					TemperatureDependentSchedulerSampleList().at(2).getObjectPtr(),
 					WeeklySchedulerSampleList().at(3).getObjectPtr()
 				),
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(1).getDto(),
 					TemperatureDependentSchedulerSampleList().at(2).getDto(),
@@ -40,7 +40,7 @@ namespace Dto2ObjectTestSamples {
 					TemperatureDependentSchedulerSampleList().at(3).getObjectPtr(),
 					WeeklySchedulerSampleList().at(1).getObjectPtr()
 				),
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(2).getDto(),
 					TemperatureDependentSchedulerSampleList().at(3).getDto(),
@@ -55,7 +55,7 @@ namespace Dto2ObjectTestSamples {
 					TemperatureDependentSchedulerSampleList().at(1).getObjectPtr(),
 					WeeklySchedulerSampleList().at(2).getObjectPtr()
 				),
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(3).getDto(),
 					TemperatureDependentSchedulerSampleList().at(1).getDto(),
@@ -70,7 +70,7 @@ namespace Dto2ObjectTestSamples {
 					TemperatureDependentSchedulerSampleList().at(1).getObjectPtr(),
 					WeeklySchedulerSampleList().at(2).getObjectPtr()
 				),
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().at(0).getDto(),
 					TemperatureDependentSchedulerSampleList().at(1).getDto(),

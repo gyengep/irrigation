@@ -11,8 +11,8 @@ public:
 
 	////////////////////////////////////////////////////////////
 
-	virtual EveryDaySchedulerDTO toEveryDaySchedulerDto() const override;
-	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO) override;
+	virtual EveryDaySchedulerDto toEveryDaySchedulerDto() const override;
+	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDto& schedulerDto) override;
 
 	////////////////////////////////////////////////////////////
 

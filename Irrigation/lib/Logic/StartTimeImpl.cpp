@@ -52,21 +52,21 @@ bool StartTimeImpl::less(const StartTime& other) const {
 	return ((60 * getHours() + getMinutes()) < (60 * other.getHours() + other.getMinutes()));
 }
 
-StartTimeDTO StartTimeImpl::toStartTimeDto() const {
-	return StartTimeDTO(getHours(), getMinutes());
+StartTimeDto StartTimeImpl::toStartTimeDto() const {
+	return StartTimeDto(getHours(), getMinutes());
 }
 
-void StartTimeImpl::updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) {
-	if (startTimeDTO.hasHours() || startTimeDTO.hasMinutes()) {
+void StartTimeImpl::updateFromStartTimeDto(const StartTimeDto& startTimeDto) {
+	if (startTimeDto.hasHours() || startTimeDto.hasMinutes()) {
 		unsigned hour = 0;
 		unsigned minute = 0;
 
-		if (startTimeDTO.hasHours()) {
-			hour = startTimeDTO.getHours();
+		if (startTimeDto.hasHours()) {
+			hour = startTimeDto.getHours();
 		}
 
-		if (startTimeDTO.hasMinutes()) {
-			minute = startTimeDTO.getMinutes();
+		if (startTimeDto.hasMinutes()) {
+			minute = startTimeDto.getMinutes();
 		}
 
 		set(hour, minute);

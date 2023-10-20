@@ -16,7 +16,7 @@ TEST(TemperatureDependentSchedulerImplToDtoTest, toTemperatureDependentScheduler
 
 	for (const auto& sample : sampleList) {
 		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
-		const TemperatureDependentSchedulerDTO& expected = sample.getDto();
+		const TemperatureDependentSchedulerDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toTemperatureDependentSchedulerDto(), Eq(expected));
 	}
@@ -47,24 +47,24 @@ void check(const TemperatureDependentSchedulerDtoUpdateType updateType, float re
 	unsigned expectedMaxAdjustment = maxAdjustment;
 
 	for (const auto& sample : Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList()) {
-		TemperatureDependentSchedulerDTO actualTemperatureDependentSchedulerDTO;
+		TemperatureDependentSchedulerDto actualTemperatureDependentSchedulerDto;
 
 		if (TemperatureDependentSchedulerDtoUpdateType::RemainingCorrection == updateType || TemperatureDependentSchedulerDtoUpdateType::All == updateType) {
 			expectedRemainingCorrection = sample.getDto().getRemainingCorrection();
-			actualTemperatureDependentSchedulerDTO.setRemainingCorrection(expectedRemainingCorrection);
+			actualTemperatureDependentSchedulerDto.setRemainingCorrection(expectedRemainingCorrection);
 		}
 
 		if (TemperatureDependentSchedulerDtoUpdateType::MinAdjustment == updateType || TemperatureDependentSchedulerDtoUpdateType::All == updateType) {
 			expectedMinAdjustment = sample.getDto().getMinAdjustment();
-			actualTemperatureDependentSchedulerDTO.setMinAdjustment(expectedMinAdjustment);
+			actualTemperatureDependentSchedulerDto.setMinAdjustment(expectedMinAdjustment);
 		}
 
 		if (TemperatureDependentSchedulerDtoUpdateType::MaxAdjustment == updateType || TemperatureDependentSchedulerDtoUpdateType::All == updateType) {
 			expectedMaxAdjustment = sample.getDto().getMaxAdjustment();
-			actualTemperatureDependentSchedulerDTO.setMaxAdjustment(expectedMaxAdjustment);
+			actualTemperatureDependentSchedulerDto.setMaxAdjustment(expectedMaxAdjustment);
 		}
 
-		actualTemperatureDependentScheduler.updateFromTemperatureDependentSchedulerDto(actualTemperatureDependentSchedulerDTO);
+		actualTemperatureDependentScheduler.updateFromTemperatureDependentSchedulerDto(actualTemperatureDependentSchedulerDto);
 
 		EXPECT_THAT(actualTemperatureDependentScheduler.getRemainingCorrection(), Eq(expectedRemainingCorrection));
 		EXPECT_THAT(actualTemperatureDependentScheduler.getMinAdjustment(), Eq(expectedMinAdjustment));

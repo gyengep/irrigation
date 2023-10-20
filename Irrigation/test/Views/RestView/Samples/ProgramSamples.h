@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "DTO/ProgramDTO.h"
+#include "DTO/ProgramDto.h"
 #include "RunTimeContainerSamples.h"
 #include "StartTimeContainerSamples.h"
 #include "SchedulerContainerSamples.h"
@@ -10,12 +10,12 @@
 
 namespace RestViewTestSamples {
 
-	class ProgramSample : public Sample<ProgramDTO> {
+	class ProgramSample : public Sample<ProgramDto> {
 		const std::string xmlWithoutContainers;
 
 	public:
-		ProgramSample(const ProgramDTO& dto, const std::string& xml, const std::string& xmlWithoutContainers) :
-			Sample<ProgramDTO>(dto, xml),
+		ProgramSample(const ProgramDto& dto, const std::string& xml, const std::string& xmlWithoutContainers) :
+			Sample<ProgramDto>(dto, xml),
 			xmlWithoutContainers(xmlWithoutContainers)
 		{
 		}
@@ -30,7 +30,7 @@ namespace RestViewTestSamples {
 		ProgramSampleList() {
 
 			emplace_back(
-				ProgramDTO(
+				ProgramDto(
 					false, "program1", 54, to_string(SchedulerType::EVERY_DAY),
 					SchedulerContainerSampleList().at(0).getDto(),
 					RunTimeContainerSampleList().at(0).getDtoList(),
@@ -54,11 +54,11 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				ProgramDTO(
+				ProgramDto(
 					true, "program2", 61, to_string(SchedulerType::HOT_WEATHER),
-					SchedulersDTO(SchedulerContainerSampleList().at(1).getDto()),
-					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(1).getDtoList()),
-					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(1).getDtoList())
+					SchedulersDto(SchedulerContainerSampleList().at(1).getDto()),
+					std::list<RunTimeDto>(RunTimeContainerSampleList().at(1).getDtoList()),
+					std::list<StartTimeDto>(StartTimeContainerSampleList().at(1).getDtoList())
 				),
 				"<program%s>"
 					"<name>program2</name>"
@@ -78,11 +78,11 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				ProgramDTO(
+				ProgramDto(
 					false, "program3", 159, to_string(SchedulerType::TEMPERATURE_DEPENDENT),
-					SchedulersDTO(SchedulerContainerSampleList().at(2).getDto()),
-					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(2).getDtoList()),
-					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(2).getDtoList())
+					SchedulersDto(SchedulerContainerSampleList().at(2).getDto()),
+					std::list<RunTimeDto>(RunTimeContainerSampleList().at(2).getDtoList()),
+					std::list<StartTimeDto>(StartTimeContainerSampleList().at(2).getDtoList())
 				),
 				"<program%s>"
 					"<name>program3</name>"
@@ -102,11 +102,11 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				ProgramDTO(
+				ProgramDto(
 					true, "program4", 238, to_string(SchedulerType::WEEKLY),
-					SchedulersDTO(SchedulerContainerSampleList().at(3).getDto()),
-					std::list<RunTimeDTO>(RunTimeContainerSampleList().at(3).getDtoList()),
-					std::list<StartTimeDTO>(StartTimeContainerSampleList().at(3).getDtoList())
+					SchedulersDto(SchedulerContainerSampleList().at(3).getDto()),
+					std::list<RunTimeDto>(RunTimeContainerSampleList().at(3).getDtoList()),
+					std::list<StartTimeDto>(StartTimeContainerSampleList().at(3).getDtoList())
 				),
 				"<program%s>"
 					"<name>program4</name>"

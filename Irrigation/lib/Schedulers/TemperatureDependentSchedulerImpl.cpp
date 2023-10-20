@@ -316,24 +316,24 @@ unsigned TemperatureDependentSchedulerImpl::getMaxAdjustment() const {
 	return (maxAdjustment ? *maxAdjustment : 0);
 }
 
-TemperatureDependentSchedulerDTO TemperatureDependentSchedulerImpl::toTemperatureDependentSchedulerDto() const {
-	return TemperatureDependentSchedulerDTO(
+TemperatureDependentSchedulerDto TemperatureDependentSchedulerImpl::toTemperatureDependentSchedulerDto() const {
+	return TemperatureDependentSchedulerDto(
 			remainingCorrection,
 			minAdjustment ? *minAdjustment : 0, maxAdjustment ? *maxAdjustment : 0
 		);
 }
 
-void TemperatureDependentSchedulerImpl::updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasRemainingCorrection()) {
-		setRemainingCorrection(schedulerDTO.getRemainingCorrection());
+void TemperatureDependentSchedulerImpl::updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDto& schedulerDto) {
+	if (schedulerDto.hasRemainingCorrection()) {
+		setRemainingCorrection(schedulerDto.getRemainingCorrection());
 	}
 
-	if (schedulerDTO.hasMinAdjustment()) {
-		setMinAdjustment(schedulerDTO.getMinAdjustment());
+	if (schedulerDto.hasMinAdjustment()) {
+		setMinAdjustment(schedulerDto.getMinAdjustment());
 	}
 
-	if (schedulerDTO.hasMaxAdjustment()) {
-		setMaxAdjustment(schedulerDTO.getMaxAdjustment());
+	if (schedulerDto.hasMaxAdjustment()) {
+		setMaxAdjustment(schedulerDto.getMaxAdjustment());
 	}
 }
 

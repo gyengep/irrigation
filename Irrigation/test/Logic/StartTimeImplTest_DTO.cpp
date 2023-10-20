@@ -12,7 +12,7 @@ TEST(StartTimeImplToDtoTest, toStartTimeDto) {
 
 	for (const auto& sample : sampleList) {
 		const StartTimeImpl& actual = sample.getObject();
-		const StartTimeDTO& expected = sample.getDto();
+		const StartTimeDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toStartTimeDto(), Eq(expected));
 	}
@@ -27,28 +27,28 @@ void StartTimeImplFromDtoTest::checkUpdateFromStartTimeDto(const UpdateType upda
 	unsigned expectedMinutes = startTime->getMinutes();
 
 	for (const auto& sample : sampleList) {
-		StartTimeDTO actualStartTimeDTO;
+		StartTimeDto actualStartTimeDto;
 
 		if (UpdateType::Hours == updateType) {
 			expectedHours = sample.getDto().getHours();
 			expectedMinutes = 0;
-			actualStartTimeDTO.setHours(expectedHours);
+			actualStartTimeDto.setHours(expectedHours);
 		}
 
 		if (UpdateType::Minutes == updateType) {
 			expectedHours = 0;
 			expectedMinutes = sample.getDto().getMinutes();
-			actualStartTimeDTO.setMinutes(expectedMinutes);
+			actualStartTimeDto.setMinutes(expectedMinutes);
 		}
 
 		if (UpdateType::All == updateType) {
 			expectedHours = sample.getDto().getHours();
 			expectedMinutes = sample.getDto().getMinutes();
-			actualStartTimeDTO.setHours(expectedHours);
-			actualStartTimeDTO.setMinutes(expectedMinutes);
+			actualStartTimeDto.setHours(expectedHours);
+			actualStartTimeDto.setMinutes(expectedMinutes);
 		}
 
-		startTime->updateFromStartTimeDto(actualStartTimeDTO);
+		startTime->updateFromStartTimeDto(actualStartTimeDto);
 
 		EXPECT_THAT(startTime->getHours(), Eq(expectedHours));
 		EXPECT_THAT(startTime->getMinutes(), Eq(expectedMinutes));

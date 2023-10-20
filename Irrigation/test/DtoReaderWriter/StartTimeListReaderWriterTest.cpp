@@ -23,8 +23,8 @@ TEST(StartTimeListWriterTest, save) {
 
 TEST(StartTimeListReaderTest, load) {
 	for (const auto& startTimeSample : DtoReaderWriterTestSamples::StartTimeListSampleList()) {
-		const std::list<StartTimeDTO> actualDtoList = XmlReader().loadStartTimeList(startTimeSample.getXml());
-		const std::list<StartTimeDTO> expectedDtoList = startTimeSample.getDtoList();
+		const std::list<StartTimeDto> actualDtoList = XmlReader().loadStartTimeList(startTimeSample.getXml());
+		const std::list<StartTimeDto> expectedDtoList = startTimeSample.getDtoList();
 
 		EXPECT_THAT(actualDtoList, Eq(expectedDtoList));
 	}

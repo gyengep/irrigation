@@ -58,18 +58,18 @@ std::unique_ptr<Scheduler::Result> WeeklySchedulerImpl::process(const LocalDateT
 	return std::unique_ptr<Scheduler::Result>(new Scheduler::Result(days[weekDay]));
 }
 
-WeeklySchedulerDTO WeeklySchedulerImpl::toWeeklySchedulerDto() const {
-	return WeeklySchedulerDTO(std::list<bool>(days.begin(), days.end()));
+WeeklySchedulerDto WeeklySchedulerImpl::toWeeklySchedulerDto() const {
+	return WeeklySchedulerDto(std::list<bool>(days.begin(), days.end()));
 }
 
-void WeeklySchedulerImpl::updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) {
-	if (schedulerDTO.hasValues()) {
-		if (schedulerDTO.getValues().size() != days.size()) {
-			throw IllegalArgumentException("WeeklySchedulerImpl::updateFromDTO(): " + std::to_string(days.size()) +
+void WeeklySchedulerImpl::updateFromWeeklySchedulerDto(const WeeklySchedulerDto& schedulerDto) {
+	if (schedulerDto.hasValues()) {
+		if (schedulerDto.getValues().size() != days.size()) {
+			throw IllegalArgumentException("WeeklySchedulerImpl::updateFromWeeklySchedulerDto(): " + std::to_string(days.size()) +
 					"\"days\" have to be exist");
 		}
 
-		std::copy(schedulerDTO.getValues().begin(), schedulerDTO.getValues().end(), days.begin());
+		std::copy(schedulerDto.getValues().begin(), schedulerDto.getValues().end(), days.begin());
 	}
 }
 

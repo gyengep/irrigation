@@ -8,14 +8,14 @@
 
 namespace RestViewTestSamples {
 
-	typedef SampleList<RunTimeDTO> RunTimeContainerSample;
+	typedef SampleList<RunTimeDto> RunTimeContainerSample;
 
 	class RunTimeContainerSampleList : public std::vector<RunTimeContainerSample> {
 	public:
 		RunTimeContainerSampleList() {
 
 			emplace_back(
-				std::list<RunTimeDTO>({
+				std::list<RunTimeDto>({
 					RunTimeSampleList().at(0).getDto().setId(0),
 					RunTimeSampleList().at(1).getDto().setId(1),
 					RunTimeSampleList().at(2).getDto().setId(2),
@@ -34,7 +34,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<RunTimeDTO>({
+				std::list<RunTimeDto>({
 					RunTimeSampleList().at(5).getDto().setId(0),
 					RunTimeSampleList().at(4).getDto().setId(1),
 					RunTimeSampleList().at(3).getDto().setId(2),
@@ -53,7 +53,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<RunTimeDTO>({
+				std::list<RunTimeDto>({
 					RunTimeSampleList().at(0).getDto().setId(0),
 					RunTimeSampleList().at(2).getDto().setId(1),
 					RunTimeSampleList().at(4).getDto().setId(2),
@@ -72,7 +72,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<RunTimeDTO>({
+				std::list<RunTimeDto>({
 					RunTimeSampleList().at(2).getDto().setId(0),
 					RunTimeSampleList().at(0).getDto().setId(1),
 					RunTimeSampleList().at(5).getDto().setId(2),

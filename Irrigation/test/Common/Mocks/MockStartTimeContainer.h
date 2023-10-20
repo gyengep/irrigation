@@ -17,9 +17,9 @@ public:
 	MOCK_CONST_METHOD1(at, const_mapped_type(const key_type& key));
 	MOCK_METHOD1(at, mapped_type(const key_type& key));
 
-	MOCK_CONST_METHOD0(toStartTimeDtoList, std::list<StartTimeDTO>());
-	MOCK_METHOD1(updateFromStartTimeDtoList, void(const std::list<StartTimeDTO>& startTimeDtoList));
-	MOCK_METHOD1(createFromStartTimeDto, value_type&(const StartTimeDTO& startTimeDto));
+	MOCK_CONST_METHOD0(toStartTimeDtoList, std::list<StartTimeDto>());
+	MOCK_METHOD1(updateFromStartTimeDtoList, void(const std::list<StartTimeDto>& startTimeDtoList));
+	MOCK_METHOD1(createFromStartTimeDto, value_type&(const StartTimeDto& startTimeDto));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };

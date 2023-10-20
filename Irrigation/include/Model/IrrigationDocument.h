@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "DocumentView/Document.h"
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "Logic/IdType.h"
 #include "Logic/DurationList.h"
 #include "Logic/ProgramContainer.h"
@@ -29,8 +29,8 @@ public:
 	virtual void startCustom(const DurationList& durations, unsigned adjustment) = 0;
 	virtual void stop() = 0;
 
-	virtual DocumentDTO toDocumentDto() const = 0;
-	virtual void updateFromDocumentDto(const DocumentDTO& documentDTO) = 0;
+	virtual DocumentDto toDocumentDto() const = 0;
+	virtual void updateFromDocumentDto(const DocumentDto& documentDto) = 0;
 
 	virtual void saveState() const = 0;
 	virtual void loadState() = 0;

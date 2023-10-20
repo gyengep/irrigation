@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "DTO/HotWeatherSchedulerDTO.h"
+#include "DTO/HotWeatherSchedulerDto.h"
 #include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
 
@@ -20,8 +20,8 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	virtual HotWeatherSchedulerDTO toHotWeatherSchedulerDto() const = 0;
-	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) = 0;
+	virtual HotWeatherSchedulerDto toHotWeatherSchedulerDto() const = 0;
+	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDto& schedulerDto) = 0;
 
 	///////////////////////////////////////////////////////////////////////////
 

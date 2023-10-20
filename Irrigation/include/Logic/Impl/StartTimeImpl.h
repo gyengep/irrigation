@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "DTO/StartTimeDTO.h"
+#include "DTO/StartTimeDto.h"
 #include "Logic/StartTime.h"
 
 
@@ -19,8 +19,8 @@ public:
 	virtual unsigned getHours() const override;
 	virtual unsigned getMinutes() const override;
 
-	virtual StartTimeDTO toStartTimeDto() const override;
-	virtual void updateFromStartTimeDto(const StartTimeDTO& startTimeDTO) override;
+	virtual StartTimeDto toStartTimeDto() const override;
+	virtual void updateFromStartTimeDto(const StartTimeDto& startTimeDto) override;
 
 	virtual std::string toString() const override;
 	virtual std::string toShortString() const override;

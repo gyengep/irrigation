@@ -34,8 +34,8 @@ TEST(ProgramWriterTest, saveWithStyleSheet) {
 
 TEST(ProgramReaderTest, load) {
 	for (const auto& programSample : DtoReaderWriterTestSamples::ProgramSampleList()) {
-		const ProgramDTO actualDto = XmlReader().loadProgram(programSample.getXml());
-		const ProgramDTO expectedDto = programSample.getDto();
+		const ProgramDto actualDto = XmlReader().loadProgram(programSample.getXml());
+		const ProgramDto expectedDto = programSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

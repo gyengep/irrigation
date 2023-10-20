@@ -172,14 +172,14 @@ TEST_F(ProgramContainerImplTest, create) {
 			WillRepeatedly(Invoke(mockProgramFactory.get(), &MockProgramFactory::createMockProgram));
 
 	for (const auto& programSample : programSampleList) {
-		const ProgramDTO expectedDTO = programSample.getDto();
+		const ProgramDto expectedProgramDto = programSample.getDto();
 
 		mockProgramFactory->mockPrograms.push_back(std::make_shared<StrictMock<MockProgram>>());
 
-		EXPECT_CALL(*mockProgramFactory->mockPrograms.back(), updateFromProgramDto(expectedDTO)).
+		EXPECT_CALL(*mockProgramFactory->mockPrograms.back(), updateFromProgramDto(expectedProgramDto)).
 				Times(1);
 
-		programContainer->createFromProgramDto(expectedDTO);
+		programContainer->createFromProgramDto(expectedProgramDto);
 	}
 
 	ASSERT_THAT(*programContainer, SizeIs(programSampleList.size()));

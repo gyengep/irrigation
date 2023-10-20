@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/SchedulersDto.h"
 #include "SampleBase.h"
 #include "EveryDaySchedulerSamples.h"
 #include "HotWeatherSchedulerSamples.h"
@@ -12,19 +12,19 @@
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef Sample<SchedulersDTO> SchedulersSample;
+	typedef Sample<SchedulersDto> SchedulersSample;
 
 	class SchedulersSampleList : public std::vector<SchedulersSample> {
 	public:
 		SchedulersSampleList() {
 
 			emplace_back(
-				SchedulersDTO(),
+				SchedulersDto(),
 				"<schedulers/>"
 			);
 
 			emplace_back(
-				SchedulersDTO().setEveryDayScheduler(EveryDaySchedulerSample().getDto()),
+				SchedulersDto().setEveryDayScheduler(EveryDaySchedulerSample().getDto()),
 				"<schedulers>" +
 					EveryDaySchedulerSample().getXml() +
 				"</schedulers>"
@@ -32,7 +32,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& hotWeatherSchedulerSample : HotWeatherSchedulerSampleList()) {
 				emplace_back(
-					SchedulersDTO().setHotWeatherScheduler(hotWeatherSchedulerSample.getDto()),
+					SchedulersDto().setHotWeatherScheduler(hotWeatherSchedulerSample.getDto()),
 					"<schedulers>" +
 						hotWeatherSchedulerSample.getXml() +
 					"</schedulers>"
@@ -41,7 +41,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& temperatureDependentSchedulerSample : TemperatureDependentSchedulerSampleList()) {
 				emplace_back(
-					SchedulersDTO().setTemperatureDependentScheduler(temperatureDependentSchedulerSample.getDto()),
+					SchedulersDto().setTemperatureDependentScheduler(temperatureDependentSchedulerSample.getDto()),
 					"<schedulers>" +
 						temperatureDependentSchedulerSample.getXml() +
 					"</schedulers>"
@@ -50,7 +50,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& weeklySchedulerSample : WeeklySchedulerSampleList()) {
 				emplace_back(
-					SchedulersDTO().setWeeklyScheduler(weeklySchedulerSample.getDto()),
+					SchedulersDto().setWeeklyScheduler(weeklySchedulerSample.getDto()),
 					"<schedulers>" +
 						weeklySchedulerSample.getXml() +
 					"</schedulers>"
@@ -58,7 +58,7 @@ namespace DtoReaderWriterTestSamples {
 			}
 
 			emplace_back(
-				SchedulersDTO(
+				SchedulersDto(
 					EveryDaySchedulerSample().getDto(),
 					HotWeatherSchedulerSampleList().back().getDto(),
 					TemperatureDependentSchedulerSampleList().back().getDto(),

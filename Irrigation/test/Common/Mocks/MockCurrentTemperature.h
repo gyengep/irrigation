@@ -8,5 +8,5 @@ public:
 	MOCK_CONST_METHOD0(getCurrentTemperature, float());
 	MOCK_METHOD1(addListener, void(CurrentTemperatureListener* currentTemperatureListener));
 	MOCK_METHOD1(removeListener, void(CurrentTemperatureListener* currentTemperatureListener));
-	MOCK_CONST_METHOD1(toCurrentTemperatureDTO, CurrentTemperatureDTO(const std::string& dateTimeFormat));
+	MOCK_CONST_METHOD1(toCurrentTemperatureDto, CurrentTemperatureDto(const std::string& dateTimeFormat));
 };

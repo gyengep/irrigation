@@ -6,7 +6,7 @@
 #include <utility>
 
 
-std::pair<IdType, std::string> RestView::postProgramList(IrrigationDocument& irrigationDocument, const ProgramDTO& programDto) {
+std::pair<IdType, std::string> RestView::postProgramList(IrrigationDocument& irrigationDocument, const ProgramDto& programDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 
 	irrigationDocument.setModified();
@@ -15,7 +15,7 @@ std::pair<IdType, std::string> RestView::postProgramList(IrrigationDocument& irr
 	return std::make_pair(result.first, result.second->toString());
 }
 
-std::pair<IdType, std::string> RestView::postStartTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const StartTimeDTO& startTimeDto) {
+std::pair<IdType, std::string> RestView::postStartTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const StartTimeDto& startTimeDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 
 	irrigationDocument.setModified();

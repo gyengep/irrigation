@@ -6,7 +6,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
-#include "DTO/LogEntryDTO.h"
+#include "DTO/LogEntryDto.h"
 
 
 #define LOGGER Logger::getInstance()
@@ -29,7 +29,7 @@ class Logger {
 	std::atomic<LogLevel> logLevel;
 	std::shared_ptr<std::ostream> output_ptr;
 	std::ostream* output;
-	LogEntryDTOList logEntries;
+	LogEntryDtoList logEntries;
 
 	Logger();
 
@@ -62,5 +62,5 @@ public:
 	void debug(const char* format, ...);
 	void trace(const char* format, ...);
 
-	LogEntryDTOList getEntries() const;
+	LogEntryDtoList getEntries() const;
 };

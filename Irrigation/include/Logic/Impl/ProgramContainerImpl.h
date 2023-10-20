@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include <string>
-#include "DTO/ProgramDTO.h"
+#include "DTO/ProgramDto.h"
 #include "Logic/ProgramContainer.h"
 
 
@@ -21,7 +21,7 @@ class ProgramContainerImpl : public ProgramContainer {
 	const ProgramFactoryPtr programFactory;
 	container_type container;
 
-	value_type& createUpdateAndInsert(const IdType& id, const ProgramDTO& programDto);
+	value_type& createUpdateAndInsert(const IdType& id, const ProgramDto& programDto);
 
 public:
 	ProgramContainerImpl(const ProgramFactoryPtr& programFactory);
@@ -39,9 +39,9 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;					// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) override;								// throw NoSuchElementException
 
-	virtual std::list<ProgramDTO> toProgramDtoList() const override;
-	virtual void updateFromProgramDtoList(const std::list<ProgramDTO>& programDtoList) override;
-	virtual value_type& createFromProgramDto(const ProgramDTO& programDto) override;
+	virtual std::list<ProgramDto> toProgramDtoList() const override;
+	virtual void updateFromProgramDtoList(const std::list<ProgramDto>& programDtoList) override;
+	virtual value_type& createFromProgramDto(const ProgramDto& programDto) override;
 
 	virtual std::string toString() const override;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "DTO/DocumentDTO.h"
+#include "DTO/DocumentDto.h"
 #include "Model/Impl/IrrigationDocumentImpl.h"
 #include "Mocks/MockIrrigationDocumentLoader.h"
 #include "Mocks/MockIrrigationDocumentSaver.h"
@@ -14,7 +14,7 @@ using namespace testing;
 
 namespace Dto2ObjectTestSamples {
 
-	typedef ObjectSample<IrrigationDocumentImpl, DocumentDTO> DocumentSample;
+	typedef ObjectSample<IrrigationDocumentImpl, DocumentDto> DocumentSample;
 
 	class DocumentSampleList : public std::vector<DocumentSample> {
 	public:
@@ -28,7 +28,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(0).getDtoList()))
+				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(0).getDtoList()))
 			);
 
 			emplace_back(
@@ -39,7 +39,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(1).getDtoList()))
+				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(1).getDtoList()))
 			);
 
 			emplace_back(
@@ -50,7 +50,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(2).getDtoList()))
+				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(2).getDtoList()))
 			);
 
 			emplace_back(
@@ -61,7 +61,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDTO(std::list<ProgramDTO>(ProgramContainerSampleList().at(3).getDtoList()))
+				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(3).getDtoList()))
 			);
 		}
 	};

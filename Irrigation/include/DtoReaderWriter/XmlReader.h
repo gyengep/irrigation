@@ -13,30 +13,30 @@ class XmlReader : public DtoReader {
 protected:
 	static void loadFromString(pugi::xml_document* doc, const std::string& text);
 
-	DocumentDTO loadDocument(const pugi::xml_node& node) const;
-	ProgramDTO loadProgram(const pugi::xml_node& node) const;
-	RunTimeDTO loadRunTime(const pugi::xml_node& node) const;
-	StartTimeDTO loadStartTime(const pugi::xml_node& node) const;
-	EveryDaySchedulerDTO loadEveryDayScheduler(const pugi::xml_node& node) const;
-	HotWeatherSchedulerDTO loadHotWeatherScheduler(const pugi::xml_node& node) const;
-	TemperatureDependentSchedulerDTO loadTemperatureDependentScheduler(const pugi::xml_node& node) const;
-	WeeklySchedulerDTO loadWeeklyScheduler(const pugi::xml_node& node) const;
-	std::list<ProgramDTO> loadProgramList(const pugi::xml_node& node) const;
-	std::list<RunTimeDTO> loadRunTimeList(const pugi::xml_node& node) const;
-	std::list<StartTimeDTO> loadStartTimeList(const pugi::xml_node& node) const;
-	SchedulersDTO loadSchedulers(const pugi::xml_node& node) const;
+	DocumentDto loadDocument(const pugi::xml_node& node) const;
+	ProgramDto loadProgram(const pugi::xml_node& node) const;
+	RunTimeDto loadRunTime(const pugi::xml_node& node) const;
+	StartTimeDto loadStartTime(const pugi::xml_node& node) const;
+	EveryDaySchedulerDto loadEveryDayScheduler(const pugi::xml_node& node) const;
+	HotWeatherSchedulerDto loadHotWeatherScheduler(const pugi::xml_node& node) const;
+	TemperatureDependentSchedulerDto loadTemperatureDependentScheduler(const pugi::xml_node& node) const;
+	WeeklySchedulerDto loadWeeklyScheduler(const pugi::xml_node& node) const;
+	std::list<ProgramDto> loadProgramList(const pugi::xml_node& node) const;
+	std::list<RunTimeDto> loadRunTimeList(const pugi::xml_node& node) const;
+	std::list<StartTimeDto> loadStartTimeList(const pugi::xml_node& node) const;
+	SchedulersDto loadSchedulers(const pugi::xml_node& node) const;
 
 public:
-	virtual DocumentDTO loadDocument(const std::string& text) const override;
-	virtual ProgramDTO loadProgram(const std::string& text) const override;
-	virtual RunTimeDTO loadRunTime(const std::string& text) const override;
-	virtual StartTimeDTO loadStartTime(const std::string& text) const override;
-	virtual EveryDaySchedulerDTO loadEveryDayScheduler(const std::string& text) const override;
-	virtual HotWeatherSchedulerDTO loadHotWeatherScheduler(const std::string& text) const override;
-	virtual TemperatureDependentSchedulerDTO loadTemperatureDependentScheduler(const std::string& text) const override;
-	virtual WeeklySchedulerDTO loadWeeklyScheduler(const std::string& text) const override;
-	virtual std::list<ProgramDTO> loadProgramList(const std::string& text) const override;
-	virtual std::list<RunTimeDTO> loadRunTimeList(const std::string& text) const override;
-	virtual std::list<StartTimeDTO> loadStartTimeList(const std::string& text) const override;
-	virtual SchedulersDTO loadSchedulers(const std::string& text) const override;
+	virtual DocumentDto loadDocument(const std::string& text) const override;
+	virtual ProgramDto loadProgram(const std::string& text) const override;
+	virtual RunTimeDto loadRunTime(const std::string& text) const override;
+	virtual StartTimeDto loadStartTime(const std::string& text) const override;
+	virtual EveryDaySchedulerDto loadEveryDayScheduler(const std::string& text) const override;
+	virtual HotWeatherSchedulerDto loadHotWeatherScheduler(const std::string& text) const override;
+	virtual TemperatureDependentSchedulerDto loadTemperatureDependentScheduler(const std::string& text) const override;
+	virtual WeeklySchedulerDto loadWeeklyScheduler(const std::string& text) const override;
+	virtual std::list<ProgramDto> loadProgramList(const std::string& text) const override;
+	virtual std::list<RunTimeDto> loadRunTimeList(const std::string& text) const override;
+	virtual std::list<StartTimeDto> loadStartTimeList(const std::string& text) const override;
+	virtual SchedulersDto loadSchedulers(const std::string& text) const override;
 };

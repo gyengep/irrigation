@@ -34,8 +34,8 @@ TEST(ProgramListWriterTest, saveWithStyleSheet) {
 
 TEST(ProgramListReaderTest, load) {
 	for (const auto& programSample : DtoReaderWriterTestSamples::ProgramListSampleList()) {
-		const std::list<ProgramDTO> actualDtoList = XmlReader().loadProgramList(programSample.getXml());
-		const std::list<ProgramDTO> expectedDtoList = programSample.getDtoList();
+		const std::list<ProgramDto> actualDtoList = XmlReader().loadProgramList(programSample.getXml());
+		const std::list<ProgramDto> expectedDtoList = programSample.getDtoList();
 
 		EXPECT_THAT(actualDtoList, Eq(expectedDtoList));
 	}

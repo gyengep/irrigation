@@ -11,7 +11,7 @@ XmlIrrigationActionReader::XmlIrrigationActionReader() {
 XmlIrrigationActionReader::~XmlIrrigationActionReader() {
 }
 
-IrrigationActionDTO XmlIrrigationActionReader::load(const string& text) const {
+IrrigationActionDto XmlIrrigationActionReader::load(const string& text) const {
 	const char* tagName = "irrigation";
 
 	unique_ptr<xml_document> doc(new xml_document());
@@ -23,7 +23,7 @@ IrrigationActionDTO XmlIrrigationActionReader::load(const string& text) const {
 		throw RequiredTagMissing("The 'irrigation' element tag not found");
 	}
 
-	IrrigationActionDTO result;
+	IrrigationActionDto result;
 	xml_node tmpNode;
 
 	if ((tmpNode = node.child("action")) != nullptr) {
@@ -39,7 +39,7 @@ IrrigationActionDTO XmlIrrigationActionReader::load(const string& text) const {
 	}
 
 	if ((tmpNode = node.child("runtimes")) != nullptr) {
-		result.runTimeDtoList.reset(new list<RunTimeDTO>(loadRunTimeList(tmpNode)));
+		result.runTimeDtoList.reset(new list<RunTimeDto>(loadRunTimeList(tmpNode)));
 	}
 
 	return result;

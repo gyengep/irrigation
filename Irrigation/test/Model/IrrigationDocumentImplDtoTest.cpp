@@ -8,14 +8,14 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(IrrigationDocumentImplToDtoTest, toIrrigationDocumentDto) {
+TEST(IrrigationDocumentImplToDtoTest, toDocumentDto) {
 	const Dto2ObjectTestSamples::DocumentSampleList sampleList;
 
 	ASSERT_THAT(sampleList, SizeIs(4));
 
 	for (const auto& sample : sampleList) {
 		const IrrigationDocumentImpl& actual = sample.getObject();
-		const DocumentDTO& expected = sample.getDto();
+		const DocumentDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toDocumentDto(), Eq(expected));
 	}
@@ -42,16 +42,16 @@ void IrrigationDocumentImplFromDtoTest::check(const UpdateType updateType) {
 	const auto sampleList = Dto2ObjectTestSamples::DocumentSampleList();
 
 	for (const auto& sample : sampleList) {
-		DocumentDTO actualDocumentDTO;
+		DocumentDto actualDocumentDto;
 
 		if (UpdateType::ProgramContainer == updateType || UpdateType::All == updateType) {
-			const std::list<ProgramDTO> expectedProgramDtoList = sample.getDto().getPrograms();
+			const std::list<ProgramDto> expectedProgramDtoList = sample.getDto().getPrograms();
 
-			actualDocumentDTO.setPrograms(std::list<ProgramDTO>(expectedProgramDtoList));
+			actualDocumentDto.setPrograms(std::list<ProgramDto>(expectedProgramDtoList));
 			EXPECT_CALL(*mockProgramContainer, updateFromProgramDtoList(expectedProgramDtoList));
 		}
 
-		irrigationDocument->updateFromDocumentDto(actualDocumentDTO);
+		irrigationDocument->updateFromDocumentDto(actualDocumentDto);
 	}
 }
 

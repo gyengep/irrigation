@@ -406,22 +406,22 @@ TEST(LoggerTest, toDto) {
 	std::ostringstream now2Str;
 	now2Str << std::put_time(localtime_r(&now2, &timeinfo), "%Y.%m.%d %H:%M:%S");
 
-	const auto logEntryDTOList = LOGGER.getEntries();
+	const auto logEntryDtoList = LOGGER.getEntries();
 
-	EXPECT_THAT(logEntryDTOList, SizeIs(Ge(3)));
+	EXPECT_THAT(logEntryDtoList, SizeIs(Ge(3)));
 
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getThread(), Eq(oss2.str()));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getLevel(), Eq("INFO"));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 0)->getText(), Eq(LOG_ENTRY_INFO));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 0)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 0)->getThread(), Eq(oss2.str()));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 0)->getLevel(), Eq("INFO"));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 0)->getText(), Eq(LOG_ENTRY_INFO));
 
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getThread(), Eq(oss1.str()));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getLevel(), Eq("WARNING"));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 1)->getText(), Eq(LOG_ENTRY_WARNING));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 1)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 1)->getThread(), Eq(oss1.str()));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 1)->getLevel(), Eq("WARNING"));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 1)->getText(), Eq(LOG_ENTRY_WARNING));
 
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getThread(), Eq(oss0.str()));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getLevel(), Eq("ERROR"));
-	EXPECT_THAT(std::next(logEntryDTOList.rbegin(), 2)->getText(), Eq(LOG_ENTRY_ERROR));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 2)->getTime(), AnyOf(now1Str.str(), now2Str.str()));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 2)->getThread(), Eq(oss0.str()));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 2)->getLevel(), Eq("ERROR"));
+	EXPECT_THAT(std::next(logEntryDtoList.rbegin(), 2)->getText(), Eq(LOG_ENTRY_ERROR));
 }

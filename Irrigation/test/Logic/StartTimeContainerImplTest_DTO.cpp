@@ -12,7 +12,7 @@ TEST(StartTimeContainerImplToDtoTest, toStartTimeContainerDtoList) {
 
 	for (const auto& sample : sampleList) {
 		const StartTimeContainerImpl& actual = sample.getContainer();
-		const std::list<StartTimeDTO>& expected = sample.getDtoList();
+		const std::list<StartTimeDto>& expected = sample.getDtoList();
 
 		EXPECT_THAT(actual.toStartTimeDtoList(), ContainerEq(expected));
 	}
@@ -35,9 +35,9 @@ void StartTimeContainerImplFromDtoTest::checkUpdateFromStartTimeDtoList() {
 	for (const auto& sample : sampleList) {
 		const size_t expectedSize = sample.getDtoList().size();
 
-		for (const StartTimeDTO& startTimeDTO : sample.getDtoList()) {
+		for (const StartTimeDto& startTimeDto : sample.getDtoList()) {
 			mockStartTimeFactory->mockStartTimes.push_back(std::make_shared<StrictMock<MockStartTime>>());
-			EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(startTimeDTO)).
+			EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(startTimeDto)).
 					Times(1);
 		}
 

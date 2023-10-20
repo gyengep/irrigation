@@ -9,8 +9,8 @@ public:
 	MOCK_CONST_METHOD0(get, std::chrono::seconds());
 	MOCK_METHOD1(set, void(const std::chrono::seconds&));
 
-	MOCK_CONST_METHOD0(toRunTimeDto, RunTimeDTO());
-	MOCK_METHOD1(updateFromRunTimeDto, void(const RunTimeDTO&));
+	MOCK_CONST_METHOD0(toRunTimeDto, RunTimeDto());
+	MOCK_METHOD1(updateFromRunTimeDto, void(const RunTimeDto&));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 	MOCK_CONST_METHOD0(toDuration, std::chrono::seconds());

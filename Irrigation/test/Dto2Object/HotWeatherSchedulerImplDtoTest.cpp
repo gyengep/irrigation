@@ -15,7 +15,7 @@ TEST(HotWeatherSchedulerImplToDtoTest, toHotWeatherSchedulerDto) {
 
 	for (const auto& sample : sampleList) {
 		const HotWeatherSchedulerImpl& actual = sample.getObject();
-		const HotWeatherSchedulerDTO& expected = sample.getDto();
+		const HotWeatherSchedulerDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toHotWeatherSchedulerDto(), Eq(expected));
 	}
@@ -42,19 +42,19 @@ void check(const HotWeatherSchedulerDtoUpdateType updateType, unsigned periodInS
 	float expectedMinTemperature = minTemperature;
 
 	for (const auto& sample : Dto2ObjectTestSamples::HotWeatherSchedulerSampleList()) {
-		HotWeatherSchedulerDTO actualHotWeatherSchedulerDTO;
+		HotWeatherSchedulerDto actualHotWeatherSchedulerDto;
 
 		if (HotWeatherSchedulerDtoUpdateType::Period == updateType || HotWeatherSchedulerDtoUpdateType::All == updateType) {
 			expectedPeriodInSeconds = sample.getDto().getPeriodInSeconds();
-			actualHotWeatherSchedulerDTO.setPeriodInSeconds(expectedPeriodInSeconds);
+			actualHotWeatherSchedulerDto.setPeriodInSeconds(expectedPeriodInSeconds);
 		}
 
 		if (HotWeatherSchedulerDtoUpdateType::MinTemperature == updateType || HotWeatherSchedulerDtoUpdateType::All == updateType) {
 			expectedMinTemperature = sample.getDto().getMinTemperature();
-			actualHotWeatherSchedulerDTO.setMinTemperature(expectedMinTemperature);
+			actualHotWeatherSchedulerDto.setMinTemperature(expectedMinTemperature);
 		}
 
-		actualHotWeatherScheduler.updateFromHotWeatherSchedulerDto(actualHotWeatherSchedulerDTO);
+		actualHotWeatherScheduler.updateFromHotWeatherSchedulerDto(actualHotWeatherSchedulerDto);
 
 		EXPECT_THAT(actualHotWeatherScheduler.getPeriod(), Eq(expectedPeriodInSeconds));
 		EXPECT_THAT(actualHotWeatherScheduler.getMinTemperature(), Eq(expectedMinTemperature));

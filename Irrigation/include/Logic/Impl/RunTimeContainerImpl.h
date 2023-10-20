@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include <string>
-#include "DTO/RunTimeDTO.h"
+#include "DTO/RunTimeDto.h"
 #include "Logic/RunTimeContainer.h"
 
 
@@ -21,8 +21,8 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;
 	virtual mapped_type at(const key_type& key) override;
 
-	virtual std::list<RunTimeDTO> toRunTimeDtoList() const override;
-	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) override;
+	virtual std::list<RunTimeDto> toRunTimeDtoList() const override;
+	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDto>& runTimeDtoList) override;
 
 	virtual std::string toString() const override;
 	virtual DurationList toDurationList() const override;

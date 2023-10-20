@@ -1,19 +1,19 @@
 #pragma once
-#include "DTO/TemperatureForecastDTO.h"
+#include "DTO/TemperatureForecastDto.h"
 #include "Utils/DateTime.h"
 #include "SampleBase.h"
 
 
 namespace RestViewTestSamples {
 
-	class TemperatureTomorrowSample : public Sample<TemperatureForecastDTO> {
+	class TemperatureTomorrowSample : public Sample<TemperatureForecastDto> {
 		const LocalDateTime now;
 		const LocalDateTime from;
 		const LocalDateTime to;
 
 	public:
-		TemperatureTomorrowSample() : Sample<TemperatureForecastDTO>(
-				TemperatureForecastDTO("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 23:59:59 +0200", "C", 25, 30),
+		TemperatureTomorrowSample() : Sample<TemperatureForecastDto>(
+				TemperatureForecastDto("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 23:59:59 +0200", "C", 25, 30),
 				"<temperature>"
 					"<unit>C</unit>"
 					"<forecast>"

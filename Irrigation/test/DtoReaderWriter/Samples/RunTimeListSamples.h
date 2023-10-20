@@ -8,21 +8,21 @@
 
 namespace DtoReaderWriterTestSamples {
 
-	typedef ContainerSample<RunTimeDTO> RunTimeListSample;
+	typedef ContainerSample<RunTimeDto> RunTimeListSample;
 
 	class RunTimeListSampleList : public std::vector<RunTimeListSample> {
 	public:
 		RunTimeListSampleList() {
 
 			emplace_back(
-				std::list<RunTimeDTO> {
+				std::list<RunTimeDto> {
 				},
 				"<runtimes/>"
 			);
 
 			for (const auto& runTimeSample : RunTimeSampleList()) {
 				emplace_back(
-					std::list<RunTimeDTO> {
+					std::list<RunTimeDto> {
 						runTimeSample.getDto()
 					},
 					"<runtimes>" +
@@ -32,7 +32,7 @@ namespace DtoReaderWriterTestSamples {
 			}
 
 			{
-				std::list<RunTimeDTO> runTimeDtoList;
+				std::list<RunTimeDto> runTimeDtoList;
 				std::string xml;
 
 				for (const auto& runTimeSample : RunTimeSampleList()) {

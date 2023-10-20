@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "DTO/TemperatureDependentSchedulerDTO.h"
+#include "DTO/TemperatureDependentSchedulerDto.h"
 #include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
 
@@ -20,8 +20,8 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	virtual TemperatureDependentSchedulerDTO toTemperatureDependentSchedulerDto() const = 0;
-	virtual void updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDTO& schedulerDTO) = 0;
+	virtual TemperatureDependentSchedulerDto toTemperatureDependentSchedulerDto() const = 0;
+	virtual void updateFromTemperatureDependentSchedulerDto(const TemperatureDependentSchedulerDto& schedulerDto) = 0;
 
 	///////////////////////////////////////////////////////////////////////////
 

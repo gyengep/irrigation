@@ -2,7 +2,7 @@
 #include <chrono>
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "DTO/HotWeatherSchedulerDTO.h"
+#include "DTO/HotWeatherSchedulerDto.h"
 #include "Temperature/TemperatureHistory.h"
 #include "Schedulers/HotWeatherScheduler.h"
 
@@ -36,8 +36,8 @@ public:
 
 	////////////////////////////////////////////////////////////
 
-	virtual HotWeatherSchedulerDTO toHotWeatherSchedulerDto() const override;
-	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDTO& schedulerDTO) override;
+	virtual HotWeatherSchedulerDto toHotWeatherSchedulerDto() const override;
+	virtual void updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDto& schedulerDto) override;
 
 	////////////////////////////////////////////////////////////
 

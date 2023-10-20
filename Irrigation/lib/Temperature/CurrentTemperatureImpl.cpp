@@ -121,8 +121,8 @@ float CurrentTemperatureImpl::getCurrentTemperature() const {
 	return value;
 }
 
-CurrentTemperatureDTO CurrentTemperatureImpl::toCurrentTemperatureDTO(const std::string& dateTimeFormat) const {
-	return CurrentTemperatureDTO(
+CurrentTemperatureDto CurrentTemperatureImpl::toCurrentTemperatureDto(const std::string& dateTimeFormat) const {
+	return CurrentTemperatureDto(
 			LocalDateTime::now().toString(dateTimeFormat),
 			"\xE2\x84\x83",
 			getCurrentTemperature()

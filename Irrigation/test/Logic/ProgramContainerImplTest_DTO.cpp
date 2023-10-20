@@ -12,7 +12,7 @@ TEST(ProgramContainerImplToDtoTest, toProgramContainerDtoList) {
 
 	for (const auto& sample : sampleList) {
 		const ProgramContainerImpl& actual = sample.getContainer();
-		const std::list<ProgramDTO>& expected = sample.getDtoList();
+		const std::list<ProgramDto>& expected = sample.getDtoList();
 
 		EXPECT_THAT(actual.toProgramDtoList(), ContainerEq(expected));
 	}
@@ -35,9 +35,9 @@ void ProgramContainerImplFromDtoTest::checkUpdateFromProgramDtoList() {
 	for (const auto& sample : sampleList) {
 		const size_t expectedSize = sample.getDtoList().size();
 
-		for (const ProgramDTO& programDTO : sample.getDtoList()) {
+		for (const ProgramDto& programDto : sample.getDtoList()) {
 			mockProgramFactory->mockPrograms.push_back(std::make_shared<StrictMock<MockProgram>>());
-			EXPECT_CALL(*mockProgramFactory->mockPrograms.back(), updateFromProgramDto(programDTO)).
+			EXPECT_CALL(*mockProgramFactory->mockPrograms.back(), updateFromProgramDto(programDto)).
 					Times(1);
 		}
 

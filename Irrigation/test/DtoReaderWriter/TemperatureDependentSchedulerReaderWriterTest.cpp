@@ -23,8 +23,8 @@ TEST(TemperatureDependentSchedulerWriterTest, save) {
 
 TEST(TemperatureDependentSchedulerReaderTest, load) {
 	for (const auto& temperatureDependentSchedulerSample : DtoReaderWriterTestSamples::TemperatureDependentSchedulerSampleList()) {
-		const TemperatureDependentSchedulerDTO actualDto = XmlReader().loadTemperatureDependentScheduler(temperatureDependentSchedulerSample.getXml());
-		const TemperatureDependentSchedulerDTO expectedDto = temperatureDependentSchedulerSample.getDto();
+		const TemperatureDependentSchedulerDto actualDto = XmlReader().loadTemperatureDependentScheduler(temperatureDependentSchedulerSample.getXml());
+		const TemperatureDependentSchedulerDto expectedDto = temperatureDependentSchedulerSample.getDto();
 
 		std::cout << actualDto << std::endl;
 

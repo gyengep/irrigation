@@ -22,8 +22,8 @@ TEST(EveryDaySchedulerWriterTest, save) {
 
 TEST(EveryDaySchedulerReaderTest, load) {
 	const DtoReaderWriterTestSamples::EveryDaySchedulerSample everyDaySchedulerSample;
-	const EveryDaySchedulerDTO actualDto = XmlReader().loadEveryDayScheduler(everyDaySchedulerSample.getXml());
-	const EveryDaySchedulerDTO expectedDto = everyDaySchedulerSample.getDto();
+	const EveryDaySchedulerDto actualDto = XmlReader().loadEveryDayScheduler(everyDaySchedulerSample.getXml());
+	const EveryDaySchedulerDto expectedDto = everyDaySchedulerSample.getDto();
 
 	std::cout << actualDto << std::endl;
 

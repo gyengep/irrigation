@@ -60,22 +60,22 @@ DurationList RunTimeContainerImpl::toDurationList() const {
 	return result;
 }
 
-std::list<RunTimeDTO> RunTimeContainerImpl::toRunTimeDtoList() const {
-	std::list<RunTimeDTO> runTimeDtoList;
+std::list<RunTimeDto> RunTimeContainerImpl::toRunTimeDtoList() const {
+	std::list<RunTimeDto> runTimeDtoList;
 	for (size_t i = 0; i < container.size(); ++i) {
 		runTimeDtoList.emplace_back(container[i].second->toRunTimeDto().setId(container[i].first.getValue()));
 	}
 	return runTimeDtoList;
 }
 
-void RunTimeContainerImpl::updateFromRunTimeDtoList(const std::list<RunTimeDTO>& runTimeDtoList) {
+void RunTimeContainerImpl::updateFromRunTimeDtoList(const std::list<RunTimeDto>& runTimeDtoList) {
 	if (runTimeDtoList.size() != container.size()) {
 		throw IllegalArgumentException("RunTimeDtoList has to contain " + std::to_string(size()) + " elements");
 	}
 
 	auto it = runTimeDtoList.begin();
 	for (size_t i = 0; i < container.size(); ++i, ++it) {
-		const RunTimeDTO& runTimeDto = *it;
+		const RunTimeDto& runTimeDto = *it;
 
 		if (runTimeDto.hasId()) {
 			if (runTimeDto.getId() != i) {

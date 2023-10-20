@@ -2,7 +2,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include "DTO/RunTimeDTO.h"
+#include "DTO/RunTimeDto.h"
 #include "Utils/OstreamInsert.h"
 
 
@@ -13,13 +13,13 @@ public:
 	virtual std::chrono::seconds get() const = 0;
 	virtual void set(const std::chrono::seconds& time) = 0;	// throws ValueOutOfBoundsException
 
-	virtual RunTimeDTO toRunTimeDto() const = 0;
-	virtual void updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) = 0;
+	virtual RunTimeDto toRunTimeDto() const = 0;
+	virtual void updateFromRunTimeDto(const RunTimeDto& runTimeDto) = 0;
 
 	virtual std::string toString() const = 0;
 	virtual std::chrono::seconds toDuration() const = 0;
 
-	static std::chrono::seconds toDuration(const RunTimeDTO& runTimeDTO);
+	static std::chrono::seconds toDuration(const RunTimeDto& runTimeDto);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

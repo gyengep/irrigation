@@ -12,7 +12,7 @@ TEST(ProgramImplToDtoTest, toProgramDto) {
 
 	for (const auto& sample : sampleList) {
 		const ProgramImpl& actual = sample.getObject();
-		const ProgramDTO& expected = sample.getDto();
+		const ProgramDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toProgramDto(), Eq(expected));
 	}
@@ -29,50 +29,50 @@ void ProgramImplFromDtoTest::checkUpdateFromProgramDto(const UpdateType updateTy
 	std::string expectedSchedulerType = to_string(program->getSchedulerType());
 
 	for (const auto& sample : sampleList) {
-		ProgramDTO actualProgramDTO;
+		ProgramDto actualProgramDto;
 
 		if (UpdateType::Enabled == updateType || UpdateType::All == updateType) {
 			expectedEnabled = sample.getDto().getEnabled();
-			actualProgramDTO.setEnabled(expectedEnabled);
+			actualProgramDto.setEnabled(expectedEnabled);
 		}
 
 		if (UpdateType::Name == updateType || UpdateType::All == updateType) {
 			expectedName = sample.getDto().getName();
-			actualProgramDTO.setName(expectedName);
+			actualProgramDto.setName(expectedName);
 		}
 
 		if (UpdateType::Adjustment == updateType || UpdateType::All == updateType) {
 			expectedAdjustment = sample.getDto().getAdjustment();
-			actualProgramDTO.setAdjustment(expectedAdjustment);
+			actualProgramDto.setAdjustment(expectedAdjustment);
 		}
 
 		if (UpdateType::SchedulerType == updateType || UpdateType::All == updateType) {
 			expectedSchedulerType = sample.getDto().getSchedulerType();
-			actualProgramDTO.setSchedulerType(expectedSchedulerType);
+			actualProgramDto.setSchedulerType(expectedSchedulerType);
 		}
 
 		if (UpdateType::SchedulerContainer == updateType || UpdateType::All == updateType) {
-			const SchedulersDTO expectedSchedulersDTO = sample.getDto().getSchedulers();
+			const SchedulersDto expectedSchedulersDto = sample.getDto().getSchedulers();
 
-			actualProgramDTO.setSchedulers(SchedulersDTO(expectedSchedulersDTO));
-			EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDTO));
+			actualProgramDto.setSchedulers(SchedulersDto(expectedSchedulersDto));
+			EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDto));
 		}
 
 		if (UpdateType::RunTimeContainer == updateType || UpdateType::All == updateType) {
-			const std::list<RunTimeDTO> expectedRunTimeDtoList = sample.getDto().getRunTimes();
+			const std::list<RunTimeDto> expectedRunTimeDtoList = sample.getDto().getRunTimes();
 
-			actualProgramDTO.setRunTimes(std::list<RunTimeDTO>(expectedRunTimeDtoList));
+			actualProgramDto.setRunTimes(std::list<RunTimeDto>(expectedRunTimeDtoList));
 			EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList));
 		}
 
 		if (UpdateType::StartTimeContainer == updateType || UpdateType::All == updateType) {
-			const std::list<StartTimeDTO> expectedStartTimeDtoList = sample.getDto().getStartTimes();
+			const std::list<StartTimeDto> expectedStartTimeDtoList = sample.getDto().getStartTimes();
 
-			actualProgramDTO.setStartTimes(std::list<StartTimeDTO>(expectedStartTimeDtoList));
+			actualProgramDto.setStartTimes(std::list<StartTimeDto>(expectedStartTimeDtoList));
 			EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(expectedStartTimeDtoList));
 		}
 
-		program->updateFromProgramDto(actualProgramDTO);
+		program->updateFromProgramDto(actualProgramDto);
 
 		EXPECT_THAT(program->isEnabled(), Eq(expectedEnabled));
 		EXPECT_THAT(program->getName(), Eq(expectedName));

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "DTO/EveryDaySchedulerDTO.h"
+#include "DTO/EveryDaySchedulerDto.h"
 #include "Utils/OstreamInsert.h"
 #include "Scheduler.h"
 
@@ -13,8 +13,8 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	virtual EveryDaySchedulerDTO toEveryDaySchedulerDto() const = 0;
-	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDTO& schedulerDTO) = 0;
+	virtual EveryDaySchedulerDto toEveryDaySchedulerDto() const = 0;
+	virtual void updateFromEveryDaySchedulerDto(const EveryDaySchedulerDto& schedulerDto) = 0;
 
 	///////////////////////////////////////////////////////////////////////////
 

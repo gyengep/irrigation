@@ -74,8 +74,8 @@ std::unique_ptr<Scheduler::Result> ProgramImpl::isScheduled(const LocalDateTime&
 	return std::unique_ptr<Scheduler::Result>();
 }
 
-ProgramDTO ProgramImpl::toProgramDto() const {
-	return ProgramDTO(enabled, name, adjustment,
+ProgramDto ProgramImpl::toProgramDto() const {
+	return ProgramDto(enabled, name, adjustment,
 			to_string(getSchedulerType()),
 			getSchedulerContainer().toSchedulersDto(),
 			getRunTimeContainer().toRunTimeDtoList(),
@@ -83,48 +83,48 @@ ProgramDTO ProgramImpl::toProgramDto() const {
 		);
 }
 
-void ProgramImpl::updateFromProgramDto(const ProgramDTO& programDTO) {
-	if (programDTO.hasEnabled()) {
-		setEnabled(programDTO.getEnabled());
+void ProgramImpl::updateFromProgramDto(const ProgramDto& programDto) {
+	if (programDto.hasEnabled()) {
+		setEnabled(programDto.getEnabled());
 	}
 
-	if (programDTO.hasName()) {
-		setName(programDTO.getName());
+	if (programDto.hasName()) {
+		setName(programDto.getName());
 	}
 
-	if (programDTO.hasAdjustment()) {
-		setAdjustment(programDTO.getAdjustment());
+	if (programDto.hasAdjustment()) {
+		setAdjustment(programDto.getAdjustment());
 	}
 
-	if (programDTO.hasSchedulerType()) {
+	if (programDto.hasSchedulerType()) {
 		const static std::string everyDaySchedulerText = to_string(SchedulerType::EVERY_DAY);
 		const static std::string hotWeatherSchedulerText = to_string(SchedulerType::HOT_WEATHER);
 		const static std::string temperatureDependentSchedulerText = to_string(SchedulerType::TEMPERATURE_DEPENDENT);
 		const static std::string weeklySchedulerText = to_string(SchedulerType::WEEKLY);
 
-		if (everyDaySchedulerText == programDTO.getSchedulerType()) {
+		if (everyDaySchedulerText == programDto.getSchedulerType()) {
 			setSchedulerType(SchedulerType::EVERY_DAY);
-		} else if (hotWeatherSchedulerText == programDTO.getSchedulerType()) {
+		} else if (hotWeatherSchedulerText == programDto.getSchedulerType()) {
 			setSchedulerType(SchedulerType::HOT_WEATHER);
-		} else if (temperatureDependentSchedulerText == programDTO.getSchedulerType()) {
+		} else if (temperatureDependentSchedulerText == programDto.getSchedulerType()) {
 			setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT);
-		} else if (weeklySchedulerText == programDTO.getSchedulerType()) {
+		} else if (weeklySchedulerText == programDto.getSchedulerType()) {
 			setSchedulerType(SchedulerType::WEEKLY);
 		} else {
-			throw std::invalid_argument("ProgramImpl::updateFromDTO(): invalid SchedulerType: " + programDTO.getSchedulerType());
+			throw std::invalid_argument("ProgramImpl::updateFromProgramDto(): invalid SchedulerType: " + programDto.getSchedulerType());
 		}
 	}
 
-	if (programDTO.hasSchedulers()) {
-		schedulerContainer->updateFromSchedulersDto(programDTO.getSchedulers());
+	if (programDto.hasSchedulers()) {
+		schedulerContainer->updateFromSchedulersDto(programDto.getSchedulers());
 	}
 
-	if (programDTO.hasRunTimes()) {
-		runTimeContainer->updateFromRunTimeDtoList(programDTO.getRunTimes());
+	if (programDto.hasRunTimes()) {
+		runTimeContainer->updateFromRunTimeDtoList(programDto.getRunTimes());
 	}
 
-	if (programDTO.hasStartTimes()) {
-		startTimeContainer->updateFromStartTimeDtoList(programDTO.getStartTimes());
+	if (programDto.hasStartTimes()) {
+		startTimeContainer->updateFromStartTimeDtoList(programDto.getStartTimes());
 	}
 }
 

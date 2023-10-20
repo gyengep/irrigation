@@ -16,7 +16,7 @@ unique_ptr<HttpResponse> RestView::onGetWeeklyScheduler(const HttpRequest& reque
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const WeeklySchedulerDTO weeklySchedulerDto = getWeeklySchedulerDTO(irrigationDocument, programId);
+		const WeeklySchedulerDto weeklySchedulerDto = getWeeklySchedulerDto(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -38,7 +38,7 @@ unique_ptr<HttpResponse> RestView::onPatchWeeklyScheduler(const HttpRequest& req
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const WeeklySchedulerDTO weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const WeeklySchedulerDto weeklySchedulerDto = dtoReader->loadWeeklyScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const std::string text = patchWeeklyScheduler(irrigationDocument, programId, weeklySchedulerDto);
 
 		LOGGER.debug("Program[%s].WeeklyScheduler is modified: %s",

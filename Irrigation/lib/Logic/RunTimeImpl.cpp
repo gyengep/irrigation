@@ -40,22 +40,22 @@ std::chrono::seconds RunTimeImpl::toDuration() const {
 	return time;
 }
 
-RunTimeDTO RunTimeImpl::toRunTimeDto() const {
+RunTimeDto RunTimeImpl::toRunTimeDto() const {
 	const unsigned seconds = std::chrono::duration_cast<std::chrono::seconds>(get()).count();
-	return RunTimeDTO(seconds / 60, seconds % 60);
+	return RunTimeDto(seconds / 60, seconds % 60);
 }
 
-void RunTimeImpl::updateFromRunTimeDto(const RunTimeDTO& runTimeDTO) {
-	if (runTimeDTO.hasMinutes() || runTimeDTO.hasSeconds()) {
+void RunTimeImpl::updateFromRunTimeDto(const RunTimeDto& runTimeDto) {
+	if (runTimeDto.hasMinutes() || runTimeDto.hasSeconds()) {
 		unsigned minutes = 0;
 		unsigned seconds = 0;
 
-		if (runTimeDTO.hasMinutes()) {
-			minutes = runTimeDTO.getMinutes();
+		if (runTimeDto.hasMinutes()) {
+			minutes = runTimeDto.getMinutes();
 		}
 
-		if (runTimeDTO.hasSeconds()) {
-			seconds = runTimeDTO.getSeconds();
+		if (runTimeDto.hasSeconds()) {
+			seconds = runTimeDto.getSeconds();
 		}
 
 		set(std::chrono::minutes(minutes) + std::chrono::seconds(seconds));

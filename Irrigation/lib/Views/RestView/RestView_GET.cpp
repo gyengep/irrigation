@@ -6,42 +6,42 @@
 #include <mutex>
 
 
-std::list<ProgramDTO> RestView::getProgramDTOList(IrrigationDocument& irrigationDocument) {
+std::list<ProgramDto> RestView::getProgramDtoList(IrrigationDocument& irrigationDocument) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().toProgramDtoList();
 }
 
-std::list<RunTimeDTO> RestView::getRunTimeDTOList(IrrigationDocument& irrigationDocument, const IdType& programId) {
+std::list<RunTimeDto> RestView::getRunTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer().toRunTimeDtoList();
 }
 
-std::list<StartTimeDTO> RestView::getStartTimeDTOList(IrrigationDocument& irrigationDocument, const IdType& programId) {
+std::list<StartTimeDto> RestView::getStartTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().toStartTimeDtoList();
 }
 
-ProgramDTO RestView::getProgramDTO(IrrigationDocument& irrigationDocument, const IdType& programId) {
+ProgramDto RestView::getProgramDto(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->toProgramDto();
 }
 
-StartTimeDTO RestView::getStartTimeDTO(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId) {
+StartTimeDto RestView::getStartTimeDto(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().at(startTimeId)->toStartTimeDto();
 }
 
-HotWeatherSchedulerDTO RestView::getHotWeatherSchedulerDTO(IrrigationDocument& irrigationDocument, const IdType& programId) {
+HotWeatherSchedulerDto RestView::getHotWeatherSchedulerDto(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getHotWeatherScheduler().toHotWeatherSchedulerDto();
 }
 
-TemperatureDependentSchedulerDTO RestView::getTemperatureDependentSchedulerDTO(IrrigationDocument& irrigationDocument, const IdType& programId) {
+TemperatureDependentSchedulerDto RestView::getTemperatureDependentSchedulerDto(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getTemperatureDependentScheduler().toTemperatureDependentSchedulerDto();
 }
 
-WeeklySchedulerDTO RestView::getWeeklySchedulerDTO(IrrigationDocument& irrigationDocument, const IdType& programId) {
+WeeklySchedulerDto RestView::getWeeklySchedulerDto(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getSchedulerContainer().getWeeklyScheduler().toWeeklySchedulerDto();
 }

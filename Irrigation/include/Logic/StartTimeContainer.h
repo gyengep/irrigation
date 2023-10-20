@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 #include <memory>
-#include "DTO/StartTimeDTO.h"
+#include "DTO/StartTimeDto.h"
 #include "Utils/OstreamInsert.h"
 #include "IdType.h"
 #include "StartTime.h"
@@ -31,9 +31,9 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;						// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) = 0;									// throw NoSuchElementException
 
-	virtual std::list<StartTimeDTO> toStartTimeDtoList() const = 0;
-	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDTO>& startTimeDtoList) = 0;
-	virtual value_type& createFromStartTimeDto(const StartTimeDTO& startTimeDto) = 0;
+	virtual std::list<StartTimeDto> toStartTimeDtoList() const = 0;
+	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDto>& startTimeDtoList) = 0;
+	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) = 0;
 
 	virtual std::string toString() const = 0;
 };

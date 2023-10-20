@@ -9,7 +9,7 @@
 
 namespace Dto2ObjectTestSamples {
 
-	typedef ContainerSample<StartTimeContainerImpl, StartTimeDTO> StartTimeContainerSample;
+	typedef ContainerSample<StartTimeContainerImpl, StartTimeDto> StartTimeContainerSample;
 
 	class StartTimeContainerSampleList : public std::vector<StartTimeContainerSample> {
 	public:
@@ -18,7 +18,7 @@ namespace Dto2ObjectTestSamples {
 			emplace_back(
 				std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 				}),
-				std::list<StartTimeDTO>({
+				std::list<StartTimeDto>({
 				})
 			);
 
@@ -26,7 +26,7 @@ namespace Dto2ObjectTestSamples {
 				std::make_shared<StartTimeContainerImpl>(std::initializer_list<StartTimeContainer::value_type> {
 					{ 10, StartTimeSampleList().at(0).getObjectPtr() }
 				}),
-				std::list<StartTimeDTO>({
+				std::list<StartTimeDto>({
 					StartTimeSampleList().at(0).getDto().setId(10)
 				})
 			);
@@ -37,7 +37,7 @@ namespace Dto2ObjectTestSamples {
 					{ 101, StartTimeSampleList().at(1).getObjectPtr() },
 					{ 102, StartTimeSampleList().at(2).getObjectPtr() }
 				}),
-				std::list<StartTimeDTO>({
+				std::list<StartTimeDto>({
 					StartTimeSampleList().at(0).getDto().setId(100),
 					StartTimeSampleList().at(1).getDto().setId(101),
 					StartTimeSampleList().at(2).getDto().setId(102)
@@ -51,7 +51,7 @@ namespace Dto2ObjectTestSamples {
 					{ 400, StartTimeSampleList().at(0).getObjectPtr() },
 					{ 500, StartTimeSampleList().at(1).getObjectPtr() }
 				}),
-				std::list<StartTimeDTO>({
+				std::list<StartTimeDto>({
 					StartTimeSampleList().at(3).getDto().setId(200),
 					StartTimeSampleList().at(2).getDto().setId(300),
 					StartTimeSampleList().at(0).getDto().setId(400),

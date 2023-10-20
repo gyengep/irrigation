@@ -23,11 +23,11 @@ void IrrigationDocumentLoaderImplTest::TearDown() {
 
 TEST_F(IrrigationDocumentLoaderImplTest, load) {
 	const std::string documentDtoAsText = "asdfghjkl";
-	const DocumentDTO expectedDocumentDto(
-			std::list<ProgramDTO> {
-				ProgramDTO().setName("111"),
-				ProgramDTO().setName("222"),
-				ProgramDTO().setName("333"),
+	const DocumentDto expectedDocumentDto(
+			std::list<ProgramDto> {
+				ProgramDto().setName("111"),
+				ProgramDto().setName("222"),
+				ProgramDto().setName("333"),
 			}
 		);
 

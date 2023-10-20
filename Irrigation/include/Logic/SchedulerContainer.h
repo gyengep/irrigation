@@ -2,7 +2,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "DTO/SchedulersDTO.h"
+#include "DTO/SchedulersDto.h"
 #include "Utils/OstreamInsert.h"
 #include "Schedulers/Scheduler.h"
 #include "Schedulers/EveryDayScheduler.h"
@@ -41,8 +41,8 @@ public:
 	virtual TemperatureDependentScheduler& getTemperatureDependentScheduler() = 0;
 	virtual WeeklyScheduler& getWeeklyScheduler() = 0;
 
-	virtual SchedulersDTO toSchedulersDto() const = 0;
-	virtual void updateFromSchedulersDto(const SchedulersDTO& schedulersDto) = 0;
+	virtual SchedulersDto toSchedulersDto() const = 0;
+	virtual void updateFromSchedulersDto(const SchedulersDto& schedulersDto) = 0;
 
 	virtual std::string toString() const = 0;
 };

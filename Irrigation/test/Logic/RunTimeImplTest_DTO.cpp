@@ -12,7 +12,7 @@ TEST(RunTimeImplToDtoTest, toRunTimeDto) {
 
 	for (const auto& sample : sampleList) {
 		const RunTimeImpl& actual = sample.getObject();
-		const RunTimeDTO& expected = sample.getDto();
+		const RunTimeDto& expected = sample.getDto();
 
 		EXPECT_THAT(actual.toRunTimeDto(), Eq(expected));
 	}
@@ -28,28 +28,28 @@ void RunTimeImplFromDtoTest::checkUpdateFromRunTimeDto(const UpdateType updateTy
 	unsigned expectedSeconds = seconds.count() % 60;
 
 	for (const auto& sample : sampleList) {
-		RunTimeDTO actualRunTimeDTO;
+		RunTimeDto actualRunTimeDto;
 
 		if (UpdateType::Minutes == updateType) {
 			expectedMinutes = sample.getDto().getMinutes();
 			expectedSeconds = 0;
-			actualRunTimeDTO.setMinutes(expectedMinutes);
+			actualRunTimeDto.setMinutes(expectedMinutes);
 		}
 
 		if (UpdateType::Seconds == updateType) {
 			expectedMinutes = 0;
 			expectedSeconds = sample.getDto().getSeconds();
-			actualRunTimeDTO.setSeconds(expectedSeconds);
+			actualRunTimeDto.setSeconds(expectedSeconds);
 		}
 
 		if (UpdateType::All == updateType) {
 			expectedMinutes = sample.getDto().getMinutes();
 			expectedSeconds = sample.getDto().getSeconds();
-			actualRunTimeDTO.setMinutes(expectedMinutes);
-			actualRunTimeDTO.setSeconds(expectedSeconds);
+			actualRunTimeDto.setMinutes(expectedMinutes);
+			actualRunTimeDto.setSeconds(expectedSeconds);
 		}
 
-		runTime->updateFromRunTimeDto(actualRunTimeDTO);
+		runTime->updateFromRunTimeDto(actualRunTimeDto);
 
 		EXPECT_THAT(runTime->get(), Eq(std::chrono::minutes(expectedMinutes) + std::chrono::seconds(expectedSeconds)));
 	}

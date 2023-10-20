@@ -13,8 +13,8 @@ public:
 	MOCK_METHOD1(setMaxAdjustment, void(unsigned maxAdjustment));
 	MOCK_METHOD1(trimAdjustmentOver, void(unsigned percent));
 
-	MOCK_CONST_METHOD0(toTemperatureDependentSchedulerDto, TemperatureDependentSchedulerDTO());
-	MOCK_METHOD1(updateFromTemperatureDependentSchedulerDto, void(const TemperatureDependentSchedulerDTO& schedulerDTO));
+	MOCK_CONST_METHOD0(toTemperatureDependentSchedulerDto, TemperatureDependentSchedulerDto());
+	MOCK_METHOD1(updateFromTemperatureDependentSchedulerDto, void(const TemperatureDependentSchedulerDto& schedulerDto));
 
 	MOCK_CONST_METHOD0(toString, std::string());
 

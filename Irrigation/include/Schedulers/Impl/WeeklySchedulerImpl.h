@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "DTO/WeeklySchedulerDTO.h"
+#include "DTO/WeeklySchedulerDto.h"
 #include "Schedulers/WeeklyScheduler.h"
 
 
@@ -23,8 +23,8 @@ public:
 
 	////////////////////////////////////////////////////////////
 
-	virtual WeeklySchedulerDTO toWeeklySchedulerDto() const override;
-	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDTO& schedulerDTO) override;
+	virtual WeeklySchedulerDto toWeeklySchedulerDto() const override;
+	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDto& schedulerDto) override;
 
 	////////////////////////////////////////////////////////////
 

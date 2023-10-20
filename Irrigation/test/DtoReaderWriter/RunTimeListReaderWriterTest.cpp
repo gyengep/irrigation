@@ -23,8 +23,8 @@ TEST(RunTimeListWriterTest, save) {
 
 TEST(RunTimeListReaderTest, load) {
 	for (const auto& runTimeSample : DtoReaderWriterTestSamples::RunTimeListSampleList()) {
-		const std::list<RunTimeDTO> actualDtoList = XmlReader().loadRunTimeList(runTimeSample.getXml());
-		const std::list<RunTimeDTO> expectedDtoList = runTimeSample.getDtoList();
+		const std::list<RunTimeDto> actualDtoList = XmlReader().loadRunTimeList(runTimeSample.getXml());
+		const std::list<RunTimeDto> expectedDtoList = runTimeSample.getDtoList();
 
 		EXPECT_THAT(actualDtoList, Eq(expectedDtoList));
 	}
