@@ -8,7 +8,7 @@
 
 std::string RestView::patchProgram(IrrigationDocument& irrigationDocument, const IdType& programId, const ProgramDTO& programDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
-	std::shared_ptr<Program> program = irrigationDocument.getProgramContainer().at(programId);
+	ProgramPtr program = irrigationDocument.getProgramContainer().at(programId);
 
 	irrigationDocument.setModified();
 	program->updateFromProgramDto(programDto);
@@ -28,7 +28,7 @@ std::string RestView::patchRunTimeList(IrrigationDocument& irrigationDocument, c
 
 std::string RestView::patchStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId, const StartTimeDTO& startTimeDto) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
-	std::shared_ptr<StartTime> startTime = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().at(startTimeId);
+	StartTimePtr startTime = irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().at(startTimeId);
 
 	irrigationDocument.setModified();
 	startTime->updateFromStartTimeDto(startTimeDto);

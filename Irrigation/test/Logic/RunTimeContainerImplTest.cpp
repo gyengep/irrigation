@@ -78,6 +78,37 @@ TEST_F(RunTimeContainerImplTest, initializerConstructorWithWrongInitializer) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(RunTimeContainerImplFactoryTest, create) {
+	const unsigned expectedSize = 6;
+
+	std::vector<std::shared_ptr<MockRunTime>> mockRunTimes(expectedSize);
+
+	for(size_t i = 0; i < expectedSize; ++i) {
+		mockRunTimes[i] = std::make_shared<StrictMock<MockRunTime>>();
+	}
+
+	auto mockRunTimeFactory = std::make_shared<StrictMock<MockRunTimeFactory>>();
+
+	EXPECT_CALL(*mockRunTimeFactory, create()).
+			Times(expectedSize).
+			WillOnce(Return(mockRunTimes[0])).
+			WillOnce(Return(mockRunTimes[1])).
+			WillOnce(Return(mockRunTimes[2])).
+			WillOnce(Return(mockRunTimes[3])).
+			WillOnce(Return(mockRunTimes[4])).
+			WillOnce(Return(mockRunTimes[5]));
+
+	RunTimeContainerPtr runTimeContainer = RunTimeContainerImplFactory(mockRunTimeFactory).create();
+
+	ASSERT_THAT(runTimeContainer, Not(IsNull()));
+
+	for(size_t i = 0; i < expectedSize; ++i) {
+		EXPECT_THAT(runTimeContainer->at(IdType(i)), mockRunTimes[i]);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void RunTimeContainerImplTest::SetUp() {
 	mockRunTimeFactory = std::make_shared<StrictMock<MockRunTimeFactory>>();
 

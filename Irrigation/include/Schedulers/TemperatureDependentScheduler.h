@@ -49,3 +49,7 @@ public:
 	virtual ~TemperatureDependentSchedulerFactory() = default;
 	virtual TemperatureDependentSchedulerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<TemperatureDependentSchedulerFactory> TemperatureDependentSchedulerFactoryPtr;

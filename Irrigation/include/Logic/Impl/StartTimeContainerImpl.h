@@ -18,13 +18,13 @@ class StartTimeContainerImpl : public StartTimeContainer {
 		}
 	};
 
-	const std::shared_ptr<StartTimeFactory> startTimeFactory;
+	const StartTimeFactoryPtr startTimeFactory;
 	container_type container;
 
 	value_type& createUpdateAndInsert(const IdType& id, const StartTimeDTO& startTimeDto);
 
 public:
-	StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
+	StartTimeContainerImpl(const StartTimeFactoryPtr& startTimeFactory);
 	StartTimeContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~StartTimeContainerImpl() = default;
 
@@ -50,10 +50,10 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class StartTimeContainerImplFactory : public StartTimeContainerFactory {
-	const std::shared_ptr<StartTimeFactory> startTimeFactory;
+	const StartTimeFactoryPtr startTimeFactory;
 
 public:
-	StartTimeContainerImplFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory);
+	StartTimeContainerImplFactory(const StartTimeFactoryPtr& startTimeFactory);
 
 	virtual ~StartTimeContainerImplFactory() = default;
 	virtual StartTimeContainerPtr create() const override;

@@ -45,11 +45,4 @@ OSTREAM_INSERT(ProgramContainer);
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef std::shared_ptr<ProgramContainer> ProgramContainerPtr;
-
-///////////////////////////////////////////////////////////////////////////////
-
-class ProgramContainerFactory {
-public:
-	virtual ~ProgramContainerFactory() = default;
-	virtual ProgramContainerPtr create() const = 0;
-};
+typedef std::shared_ptr<const ProgramContainer> ConstProgramContainerPtr;

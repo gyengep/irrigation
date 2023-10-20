@@ -53,3 +53,7 @@ public:
 	virtual ~StartTimeContainerFactory() = default;
 	virtual StartTimeContainerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<StartTimeContainerFactory> StartTimeContainerFactoryPtr;

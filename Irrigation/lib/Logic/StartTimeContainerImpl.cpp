@@ -5,7 +5,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-StartTimeContainerImplFactory::StartTimeContainerImplFactory(const std::shared_ptr<StartTimeFactory>& startTimeFactory) :
+StartTimeContainerImplFactory::StartTimeContainerImplFactory(const StartTimeFactoryPtr& startTimeFactory) :
 	startTimeFactory(startTimeFactory)
 {
 }
@@ -16,7 +16,7 @@ StartTimeContainerPtr StartTimeContainerImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-StartTimeContainerImpl::StartTimeContainerImpl(const std::shared_ptr<StartTimeFactory>& startTimeFactory) :
+StartTimeContainerImpl::StartTimeContainerImpl(const StartTimeFactoryPtr& startTimeFactory) :
 	startTimeFactory(startTimeFactory)
 {
 }

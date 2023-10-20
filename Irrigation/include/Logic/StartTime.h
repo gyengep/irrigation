@@ -39,3 +39,7 @@ public:
 	virtual ~StartTimeFactory() = default;
 	virtual StartTimePtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<StartTimeFactory> StartTimeFactoryPtr;

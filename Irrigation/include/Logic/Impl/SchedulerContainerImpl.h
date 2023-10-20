@@ -8,17 +8,17 @@
 class SchedulerContainerImpl : public SchedulerContainer {
 	SchedulerContainer::container_type container;
 
-	std::shared_ptr<EveryDayScheduler> everyDayScheduler;
-	std::shared_ptr<HotWeatherScheduler> hotWeatherScheduler;
-	std::shared_ptr<TemperatureDependentScheduler> temperatureDependentScheduler;
-	std::shared_ptr<WeeklyScheduler> weeklyScheduler;
+	EveryDaySchedulerPtr everyDayScheduler;
+	HotWeatherSchedulerPtr hotWeatherScheduler;
+	TemperatureDependentSchedulerPtr temperatureDependentScheduler;
+	WeeklySchedulerPtr weeklyScheduler;
 
 public:
 	SchedulerContainerImpl(
-			const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
-			const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
-			const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
-			const std::shared_ptr<WeeklyScheduler>& weeklyScheduler
+			const EveryDaySchedulerPtr& everyDayScheduler,
+			const HotWeatherSchedulerPtr& hotWeatherScheduler,
+			const TemperatureDependentSchedulerPtr& temperatureDependentScheduler,
+			const WeeklySchedulerPtr& weeklyScheduler
 		);
 	virtual ~SchedulerContainerImpl() = default;
 
@@ -48,17 +48,17 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class SchedulerContainerImplFactory : public SchedulerContainerFactory {
-	std::shared_ptr<EveryDaySchedulerFactory> everyDaySchedulerFactory;
-	std::shared_ptr<HotWeatherSchedulerFactory> hotWeatherSchedulerFactory;
-	std::shared_ptr<TemperatureDependentSchedulerFactory> temperatureDependentSchedulerFactory;
-	std::shared_ptr<WeeklySchedulerFactory> weeklySchedulerFactory;
+	EveryDaySchedulerFactoryPtr everyDaySchedulerFactory;
+	HotWeatherSchedulerFactoryPtr hotWeatherSchedulerFactory;
+	TemperatureDependentSchedulerFactoryPtr temperatureDependentSchedulerFactory;
+	WeeklySchedulerFactoryPtr weeklySchedulerFactory;
 
 public:
 	SchedulerContainerImplFactory(
-			const std::shared_ptr<EveryDaySchedulerFactory>& everyDaySchedulerFactory,
-			const std::shared_ptr<HotWeatherSchedulerFactory>& hotWeatherSchedulerFactory,
-			const std::shared_ptr<TemperatureDependentSchedulerFactory>& temperatureDependentSchedulerFactory,
-			const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory
+			const EveryDaySchedulerFactoryPtr& everyDaySchedulerFactory,
+			const HotWeatherSchedulerFactoryPtr& hotWeatherSchedulerFactory,
+			const TemperatureDependentSchedulerFactoryPtr& temperatureDependentSchedulerFactory,
+			const WeeklySchedulerFactoryPtr& weeklySchedulerFactory
 		);
 	virtual ~SchedulerContainerImplFactory() = default;
 	virtual SchedulerContainerPtr create() const override;

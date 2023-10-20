@@ -37,3 +37,7 @@ public:
 	virtual ~EveryDaySchedulerFactory() = default;
 	virtual EveryDaySchedulerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<EveryDaySchedulerFactory> EveryDaySchedulerFactoryPtr;

@@ -8,10 +8,10 @@
 
 
 SchedulerContainerImplFactory::SchedulerContainerImplFactory(
-		const std::shared_ptr<EveryDaySchedulerFactory>& everyDaySchedulerFactory,
-		const std::shared_ptr<HotWeatherSchedulerFactory>& hotWeatherSchedulerFactory,
-		const std::shared_ptr<TemperatureDependentSchedulerFactory>& temperatureDependentSchedulerFactory,
-		const std::shared_ptr<WeeklySchedulerFactory>& weeklySchedulerFactory
+		const EveryDaySchedulerFactoryPtr& everyDaySchedulerFactory,
+		const HotWeatherSchedulerFactoryPtr& hotWeatherSchedulerFactory,
+		const TemperatureDependentSchedulerFactoryPtr& temperatureDependentSchedulerFactory,
+		const WeeklySchedulerFactoryPtr& weeklySchedulerFactory
 ) :
 	everyDaySchedulerFactory(everyDaySchedulerFactory),
 	hotWeatherSchedulerFactory(hotWeatherSchedulerFactory),
@@ -32,10 +32,10 @@ SchedulerContainerPtr SchedulerContainerImplFactory::create() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 SchedulerContainerImpl::SchedulerContainerImpl(
-	const std::shared_ptr<EveryDayScheduler>& everyDayScheduler,
-	const std::shared_ptr<HotWeatherScheduler>& hotWeatherScheduler,
-	const std::shared_ptr<TemperatureDependentScheduler>& temperatureDependentScheduler,
-	const std::shared_ptr<WeeklyScheduler>& weeklyScheduler
+	const EveryDaySchedulerPtr& everyDayScheduler,
+	const HotWeatherSchedulerPtr& hotWeatherScheduler,
+	const TemperatureDependentSchedulerPtr& temperatureDependentScheduler,
+	const WeeklySchedulerPtr& weeklyScheduler
 ) :
 	everyDayScheduler(everyDayScheduler),
 	hotWeatherScheduler(hotWeatherScheduler),

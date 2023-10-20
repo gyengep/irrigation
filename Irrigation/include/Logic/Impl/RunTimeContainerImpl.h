@@ -10,7 +10,7 @@ class RunTimeContainerImpl : public RunTimeContainer {
 	RunTimeContainer::container_type container;
 
 public:
-	RunTimeContainerImpl(const std::shared_ptr<RunTimeFactory>& runTimeFactory);
+	RunTimeContainerImpl(const RunTimeFactoryPtr& runTimeFactory);
 	RunTimeContainerImpl(std::initializer_list<RunTimePtr> initializer);
 	virtual ~RunTimeContainerImpl() = default;
 
@@ -31,10 +31,10 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 class RunTimeContainerImplFactory : public RunTimeContainerFactory {
-	const std::shared_ptr<RunTimeFactory> runTimeFactory;
+	const RunTimeFactoryPtr runTimeFactory;
 
 public:
-	RunTimeContainerImplFactory(const std::shared_ptr<RunTimeFactory>& runTimeFactory);
+	RunTimeContainerImplFactory(const RunTimeFactoryPtr& runTimeFactory);
 
 	virtual ~RunTimeContainerImplFactory() = default;
 	virtual RunTimeContainerPtr create() const override;

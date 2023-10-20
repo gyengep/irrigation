@@ -18,13 +18,13 @@ class ProgramContainerImpl : public ProgramContainer {
 		}
 	};
 
-	const std::shared_ptr<ProgramFactory> programFactory;
+	const ProgramFactoryPtr programFactory;
 	container_type container;
 
 	value_type& createUpdateAndInsert(const IdType& id, const ProgramDTO& programDto);
 
 public:
-	ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory);
+	ProgramContainerImpl(const ProgramFactoryPtr& programFactory);
 	ProgramContainerImpl(std::initializer_list<value_type> initializer);
 	virtual ~ProgramContainerImpl() = default;
 
@@ -44,16 +44,4 @@ public:
 	virtual value_type& createFromProgramDto(const ProgramDTO& programDto) override;
 
 	virtual std::string toString() const override;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
-class ProgramContainerImplFactory : public ProgramContainerFactory {
-	const std::shared_ptr<ProgramFactory> programFactory;
-
-public:
-	ProgramContainerImplFactory(const std::shared_ptr<ProgramFactory>& programFactory);
-
-	virtual ~ProgramContainerImplFactory() = default;
-	virtual ProgramContainerPtr create() const override;
 };

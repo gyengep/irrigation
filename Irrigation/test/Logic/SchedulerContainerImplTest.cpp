@@ -5,6 +5,50 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(SchedulerContainerImplFactoryTest, create) {
+	auto mockEveryDayScheduler = std::make_shared<StrictMock<MockEveryDayScheduler>>();
+	auto mockHotWeatherScheduler = std::make_shared<StrictMock<MockHotWeatherScheduler>>();
+	auto mockTemperatureDependentScheduler = std::make_shared<StrictMock<MockTemperatureDependentScheduler>>();
+	auto mockWeeklyScheduler = std::make_shared<StrictMock<MockWeeklyScheduler>>();
+
+	auto mockEveryDaySchedulerFactory = std::make_shared<StrictMock<MockEveryDaySchedulerFactory>>();
+	auto mockHotWeatherSchedulerFactory = std::make_shared<StrictMock<MockHotWeatherSchedulerFactory>>();
+	auto mockTemperatureDependentSchedulerFactory = std::make_shared<StrictMock<MockTemperatureDependentSchedulerFactory>>();
+	auto mockWeeklySchedulerFactory = std::make_shared<StrictMock<MockWeeklySchedulerFactory>>();
+
+	EXPECT_CALL(*mockEveryDaySchedulerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockEveryDayScheduler));
+
+	EXPECT_CALL(*mockHotWeatherSchedulerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockHotWeatherScheduler));
+
+	EXPECT_CALL(*mockTemperatureDependentSchedulerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockTemperatureDependentScheduler));
+
+	EXPECT_CALL(*mockWeeklySchedulerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockWeeklyScheduler));
+
+	SchedulerContainerPtr schedulerContainer = SchedulerContainerImplFactory(
+			mockEveryDaySchedulerFactory,
+			mockHotWeatherSchedulerFactory,
+			mockTemperatureDependentSchedulerFactory,
+			mockWeeklySchedulerFactory
+		).create();
+
+	ASSERT_THAT(schedulerContainer, Not(IsNull()));
+
+	EXPECT_THAT(&schedulerContainer->getEveryDayScheduler(), Eq(mockEveryDayScheduler.get()));
+	EXPECT_THAT(&schedulerContainer->getHotWeatherScheduler(), Eq(mockHotWeatherScheduler.get()));
+	EXPECT_THAT(&schedulerContainer->getTemperatureDependentScheduler(), Eq(mockTemperatureDependentScheduler.get()));
+	EXPECT_THAT(&schedulerContainer->getWeeklyScheduler(), Eq(mockWeeklyScheduler.get()));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void SchedulerContainerImplTest::SetUp() {
 	mockEveryDayScheduler = std::make_shared<StrictMock<MockEveryDayScheduler>>();
 	mockHotWeatherScheduler = std::make_shared<StrictMock<MockHotWeatherScheduler>>();

@@ -22,10 +22,3 @@ public:
 
 	MOCK_CONST_METHOD0(toString, std::string());
 };
-
-///////////////////////////////////////////////////////////////////////////////
-
-class MockProgramContainerFactory : public ProgramContainerFactory {
-public:
-	MOCK_CONST_METHOD0(create, ProgramContainerPtr());
-};

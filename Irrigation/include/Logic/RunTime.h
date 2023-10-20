@@ -38,3 +38,7 @@ public:
 	virtual ~RunTimeFactory() = default;
 	virtual RunTimePtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<RunTimeFactory> RunTimeFactoryPtr;

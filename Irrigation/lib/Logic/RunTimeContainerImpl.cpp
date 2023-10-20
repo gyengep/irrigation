@@ -5,7 +5,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeContainerImplFactory::RunTimeContainerImplFactory(const std::shared_ptr<RunTimeFactory>& runTimeFactory) :
+RunTimeContainerImplFactory::RunTimeContainerImplFactory(const RunTimeFactoryPtr& runTimeFactory) :
 	runTimeFactory(runTimeFactory)
 {
 }
@@ -16,7 +16,7 @@ RunTimeContainerPtr RunTimeContainerImplFactory::create() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunTimeContainerImpl::RunTimeContainerImpl(const std::shared_ptr<RunTimeFactory>& runTimeFactory) {
+RunTimeContainerImpl::RunTimeContainerImpl(const RunTimeFactoryPtr& runTimeFactory) {
 	container.reserve(ZoneHandler::getZoneCount());
 	for (size_t i = 0; i < ZoneHandler::getZoneCount(); i++) {
 		container.emplace_back(make_pair(IdType(i), runTimeFactory->create()));

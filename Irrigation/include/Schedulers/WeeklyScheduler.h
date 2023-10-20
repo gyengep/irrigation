@@ -55,3 +55,7 @@ public:
 	virtual ~WeeklySchedulerFactory() = default;
 	virtual WeeklySchedulerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<WeeklySchedulerFactory> WeeklySchedulerFactoryPtr;

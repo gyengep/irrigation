@@ -82,37 +82,82 @@ void ProgramImplFromDtoTest::checkUpdateFromProgramDto(const UpdateType updateTy
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_empty) {
+	program->setEnabled(false);
+	program->setName("1234");
+	program->setAdjustment(820);
+	program->setSchedulerType(SchedulerType::EVERY_DAY);
+
 	checkUpdateFromProgramDto(UpdateType::Nothing);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_enabled) {
+	program->setEnabled(true);
+	program->setName("234");
+	program->setAdjustment(850);
+	program->setSchedulerType(SchedulerType::HOT_WEATHER);
+
 	checkUpdateFromProgramDto(UpdateType::Enabled);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_name) {
+	program->setEnabled(false);
+	program->setName("987");
+	program->setAdjustment(860);
+	program->setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT);
+
 	checkUpdateFromProgramDto(UpdateType::Name);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_adjustament) {
+	program->setEnabled(true);
+	program->setName("456");
+	program->setAdjustment(890);
+	program->setSchedulerType(SchedulerType::WEEKLY);
+
 	checkUpdateFromProgramDto(UpdateType::Adjustment);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerType) {
+	program->setEnabled(false);
+	program->setName("11111");
+	program->setAdjustment(720);
+	program->setSchedulerType(SchedulerType::EVERY_DAY);
+
 	checkUpdateFromProgramDto(UpdateType::SchedulerType);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerContainer) {
+	program->setEnabled(true);
+	program->setName("abcd");
+	program->setAdjustment(770);
+	program->setSchedulerType(SchedulerType::HOT_WEATHER);
+
 	checkUpdateFromProgramDto(UpdateType::SchedulerContainer);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_runTimeContainer) {
+	program->setEnabled(false);
+	program->setName("ppppp");
+	program->setAdjustment(660);
+	program->setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT);
+
 	checkUpdateFromProgramDto(UpdateType::RunTimeContainer);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_startTimeContainer) {
+	program->setEnabled(true);
+	program->setName("98765");
+	program->setAdjustment(316);
+	program->setSchedulerType(SchedulerType::WEEKLY);
+
 	checkUpdateFromProgramDto(UpdateType::StartTimeContainer);
 }
 
 TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_all) {
+	program->setEnabled(false);
+	program->setName("8888888");
+	program->setAdjustment(999);
+	program->setSchedulerType(SchedulerType::EVERY_DAY);
+
 	checkUpdateFromProgramDto(UpdateType::All);
 }

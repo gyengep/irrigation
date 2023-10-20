@@ -56,17 +56,21 @@ void StartTimeImplFromDtoTest::checkUpdateFromStartTimeDto(const UpdateType upda
 }
 
 TEST_F(StartTimeImplFromDtoTest, updateFromStartTimeDto_empty) {
+	startTime->set(15, 25);
 	checkUpdateFromStartTimeDto(UpdateType::Nothing);
 }
 
 TEST_F(StartTimeImplFromDtoTest, updateFromStartTimeDto_hours) {
+	startTime->set(16, 26);
 	checkUpdateFromStartTimeDto(UpdateType::Hours);
 }
 
 TEST_F(StartTimeImplFromDtoTest, updateFromStartTimeDto_minutes) {
+	startTime->set(17, 27);
 	checkUpdateFromStartTimeDto(UpdateType::Minutes);
 }
 
 TEST_F(StartTimeImplFromDtoTest, updateFromStartTimeDto_all) {
+	startTime->set(18, 28);
 	checkUpdateFromStartTimeDto(UpdateType::All);
 }

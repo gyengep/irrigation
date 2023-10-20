@@ -52,6 +52,42 @@ TEST(ProgramImplConstructorTest, parametrizedConstructor) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(ProgramImplFactoryTest, create) {
+	auto mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
+	auto mockRunTimeContainer = std::make_shared<StrictMock<MockRunTimeContainer>>();
+	auto mockStartTimeContainer = std::make_shared<StrictMock<MockStartTimeContainer>>();
+
+	auto mockSchedulerContainerFactory = std::make_shared<StrictMock<MockSchedulerContainerFactory>>();
+	auto mockRunTimeContainerFactory = std::make_shared<StrictMock<MockRunTimeContainerFactory>>();
+	auto mockStartTimeContainerFactory = std::make_shared<StrictMock<MockStartTimeContainerFactory>>();
+
+	EXPECT_CALL(*mockSchedulerContainerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockSchedulerContainer));
+
+	EXPECT_CALL(*mockRunTimeContainerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockRunTimeContainer));
+
+	EXPECT_CALL(*mockStartTimeContainerFactory, create()).
+			Times(1).
+			WillOnce(Return(mockStartTimeContainer));
+
+	ProgramPtr program = ProgramImplFactory(
+			mockSchedulerContainerFactory,
+			mockRunTimeContainerFactory,
+			mockStartTimeContainerFactory
+		).create();
+
+	ASSERT_THAT(program, Not(IsNull()));
+
+	EXPECT_THAT(&program->getSchedulerContainer(), Eq(mockSchedulerContainer.get()));
+	EXPECT_THAT(&program->getRunTimeContainer(), Eq(mockRunTimeContainer.get()));
+	EXPECT_THAT(&program->getStartTimeContainer(), Eq(mockStartTimeContainer.get()));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void ProgramImplTest::SetUp() {
 	mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 	mockRunTimeContainer = std::make_shared<StrictMock<MockRunTimeContainer>>();

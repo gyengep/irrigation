@@ -27,6 +27,12 @@ TEST(StartTimeImplConstructorTest, parametrizedConstructor_invalid) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(StartTimeImplFactoryTest, create) {
+	EXPECT_THAT(StartTimeImplFactory().create(), Not(IsNull()));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void StartTimeImplTest::SetUp() {
 	startTime = std::make_shared<StartTimeImpl>();
 }

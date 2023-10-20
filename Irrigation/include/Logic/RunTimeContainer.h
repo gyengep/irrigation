@@ -55,3 +55,7 @@ public:
 	virtual ~RunTimeContainerFactory() = default;
 	virtual RunTimeContainerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<RunTimeContainerFactory> RunTimeContainerFactoryPtr;

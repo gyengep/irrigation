@@ -20,6 +20,12 @@ TEST(RunTimeImplConstructorTest, parametrizedConstructor) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(RunTimeImplFactoryTest, create) {
+	EXPECT_THAT(RunTimeImplFactory().create(), Not(IsNull()));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void RunTimeImplTest::SetUp() {
 	runTime = std::make_shared<RunTimeImpl>();
 }

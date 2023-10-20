@@ -58,17 +58,21 @@ void RunTimeImplFromDtoTest::checkUpdateFromRunTimeDto(const UpdateType updateTy
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_empty) {
+	runTime->set(std::chrono::minutes(15) + std::chrono::seconds(25));
 	checkUpdateFromRunTimeDto(UpdateType::Nothing);
 }
 
 TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_minutes) {
+	runTime->set(std::chrono::minutes(16) + std::chrono::seconds(26));
 	checkUpdateFromRunTimeDto(UpdateType::Minutes);
 }
 
 TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_seconds) {
+	runTime->set(std::chrono::minutes(17) + std::chrono::seconds(27));
 	checkUpdateFromRunTimeDto(UpdateType::Seconds);
 }
 
 TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_all) {
+	runTime->set(std::chrono::minutes(18) + std::chrono::seconds(28));
 	checkUpdateFromRunTimeDto(UpdateType::All);
 }

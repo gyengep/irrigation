@@ -49,3 +49,7 @@ public:
 	virtual ~HotWeatherSchedulerFactory() = default;
 	virtual HotWeatherSchedulerPtr create() const = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::shared_ptr<HotWeatherSchedulerFactory> HotWeatherSchedulerFactoryPtr;

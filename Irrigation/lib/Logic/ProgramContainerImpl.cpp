@@ -5,18 +5,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ProgramContainerImplFactory::ProgramContainerImplFactory(const std::shared_ptr<ProgramFactory>& programFactory) :
-	programFactory(programFactory)
-{
-}
-
-ProgramContainerPtr ProgramContainerImplFactory::create() const {
-	return std::make_shared<ProgramContainerImpl>(programFactory);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ProgramContainerImpl::ProgramContainerImpl(const std::shared_ptr<ProgramFactory>& programFactory) :
+ProgramContainerImpl::ProgramContainerImpl(const ProgramFactoryPtr& programFactory) :
 	programFactory(programFactory)
 {
 }

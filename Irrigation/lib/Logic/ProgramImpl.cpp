@@ -11,9 +11,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgramImplFactory::ProgramImplFactory(
-	const std::shared_ptr<SchedulerContainerFactory>& schedulerContainerFactory,
-	const std::shared_ptr<RunTimeContainerFactory>& runTimeContainerFactory,
-	const std::shared_ptr<StartTimeContainerFactory>& startTimeContainerFactory
+	const SchedulerContainerFactoryPtr& schedulerContainerFactory,
+	const RunTimeContainerFactoryPtr& runTimeContainerFactory,
+	const StartTimeContainerFactoryPtr& startTimeContainerFactory
 ) :
 	schedulerContainerFactory(schedulerContainerFactory),
 	runTimeContainerFactory(runTimeContainerFactory),
@@ -32,9 +32,9 @@ ProgramPtr ProgramImplFactory::create() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgramImpl::ProgramImpl(
-	const std::shared_ptr<SchedulerContainer>& schedulerContainer,
-	const std::shared_ptr<RunTimeContainer>& runTimeContainer,
-	const std::shared_ptr<StartTimeContainer>& startTimeContainer
+	const SchedulerContainerPtr& schedulerContainer,
+	const RunTimeContainerPtr& runTimeContainer,
+	const StartTimeContainerPtr& startTimeContainer
 ) : ProgramImpl(
 		true, "", 100, SchedulerType::WEEKLY,
 		schedulerContainer,
@@ -46,9 +46,9 @@ ProgramImpl::ProgramImpl(
 
 ProgramImpl::ProgramImpl(
 	bool enabled, const std::string& name, unsigned adjustment, SchedulerType schedulerType,
-	const std::shared_ptr<SchedulerContainer>& schedulerContainer,
-	const std::shared_ptr<RunTimeContainer>& runTimeContainer,
-	const std::shared_ptr<StartTimeContainer>& startTimeContainer
+	const SchedulerContainerPtr& schedulerContainer,
+	const RunTimeContainerPtr& runTimeContainer,
+	const StartTimeContainerPtr& startTimeContainer
 ) :
 	enabled(enabled),
 	name(name),
