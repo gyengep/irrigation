@@ -19,18 +19,18 @@
 class DtoReader {
 public:
 	virtual ~DtoReader() = default;
-	virtual DocumentDto loadDocument(const std::string& text) const = 0;
-	virtual ProgramDto loadProgram(const std::string& text) const = 0;
-	virtual RunTimeDto loadRunTime(const std::string& text) const = 0;
-	virtual StartTimeDto loadStartTime(const std::string& text) const = 0;
-	virtual EveryDaySchedulerDto loadEveryDayScheduler(const std::string& text) const = 0;
-	virtual HotWeatherSchedulerDto loadHotWeatherScheduler(const std::string& text) const = 0;
-	virtual TemperatureDependentSchedulerDto loadTemperatureDependentScheduler(const std::string& text) const = 0;
-	virtual WeeklySchedulerDto loadWeeklyScheduler(const std::string& text) const = 0;
-	virtual std::list<ProgramDto> loadProgramList(const std::string& text) const = 0;
-	virtual std::list<RunTimeDto> loadRunTimeList(const std::string& text) const = 0;
-	virtual std::list<StartTimeDto> loadStartTimeList(const std::string& text) const = 0;
-	virtual SchedulersDto loadSchedulers(const std::string& text) const = 0;
+	virtual DocumentDto loadDocumentDto(const std::string& text) const = 0;
+	virtual ProgramDto loadProgramDto(const std::string& text) const = 0;
+	virtual RunTimeDto loadRunTimeDto(const std::string& text) const = 0;
+	virtual StartTimeDto loadStartTimeDto(const std::string& text) const = 0;
+	virtual EveryDaySchedulerDto loadEveryDaySchedulerDto(const std::string& text) const = 0;
+	virtual HotWeatherSchedulerDto loadHotWeatherSchedulerDto(const std::string& text) const = 0;
+	virtual TemperatureDependentSchedulerDto loadTemperatureDependentSchedulerDto(const std::string& text) const = 0;
+	virtual WeeklySchedulerDto loadWeeklySchedulerDto(const std::string& text) const = 0;
+	virtual ProgramDtoList loadProgramDtoList(const std::string& text) const = 0;
+	virtual RunTimeDtoList loadRunTimeDtoList(const std::string& text) const = 0;
+	virtual StartTimeDtoList loadStartTimeDtoList(const std::string& text) const = 0;
+	virtual SchedulersDto loadSchedulersDto(const std::string& text) const = 0;
 };
 
 
@@ -40,25 +40,25 @@ public:
 
 	virtual std::string getContentType() const = 0;
 
-	virtual std::string save(const DocumentDto& document) = 0;
-	virtual std::string save(const ProgramDto& program) = 0;
-	virtual std::string save(const RunTimeDto& runTime) = 0;
-	virtual std::string save(const StartTimeDto& startTime) = 0;
-	virtual std::string save(const EveryDaySchedulerDto& scheduler) = 0;
-	virtual std::string save(const HotWeatherSchedulerDto& scheduler) = 0;
-	virtual std::string save(const TemperatureDependentSchedulerDto& scheduler) = 0;
-	virtual std::string save(const WeeklySchedulerDto& scheduler) = 0;
-	virtual std::string save(const std::list<ProgramDto>& programs) = 0;
-	virtual std::string save(const std::list<RunTimeDto>& runTimes) = 0;
-	virtual std::string save(const std::list<StartTimeDto>& startTimes) = 0;
-	virtual std::string save(const SchedulersDto& scheduler) = 0;
+	virtual std::string save(const DocumentDto& documentDto) = 0;
+	virtual std::string save(const ProgramDto& programDto) = 0;
+	virtual std::string save(const RunTimeDto& runTimeDto) = 0;
+	virtual std::string save(const StartTimeDto& startTimeDto) = 0;
+	virtual std::string save(const EveryDaySchedulerDto& schedulerDto) = 0;
+	virtual std::string save(const HotWeatherSchedulerDto& schedulerDto) = 0;
+	virtual std::string save(const TemperatureDependentSchedulerDto& schedulerDto) = 0;
+	virtual std::string save(const WeeklySchedulerDto& schedulerDto) = 0;
+	virtual std::string save(const ProgramDtoList& programDtoList) = 0;
+	virtual std::string save(const RunTimeDtoList& runTimeDtoList) = 0;
+	virtual std::string save(const StartTimeDtoList& startTimeDtoList) = 0;
+	virtual std::string save(const SchedulersDto& schedulersDto) = 0;
 
-	virtual std::string save(const CurrentTemperatureDto& currentTemperature, const std::string& styleSheet) = 0;
-	virtual std::string save(const TemperatureHistoryDto& temperatureHistory, const std::string& styleSheet) = 0;
-	virtual std::string save(const TemperatureForecastDto& temperatureForecast, const std::string& styleSheet) = 0;
-	virtual std::string save(const TemperatureHistoryDto& temperatureHistory, const TemperatureForecastDto& temperatureForecast, const std::string& styleSheet) = 0;
+	virtual std::string save(const CurrentTemperatureDto& currentTemperatureDto, const std::string& styleSheet) = 0;
+	virtual std::string save(const TemperatureHistoryDto& temperatureHistoryDto, const std::string& styleSheet) = 0;
+	virtual std::string save(const TemperatureForecastDto& temperatureForecastDto, const std::string& styleSheet) = 0;
+	virtual std::string save(const TemperatureHistoryDto& temperatureHistoryDto, const TemperatureForecastDto& temperatureForecast, const std::string& styleSheet) = 0;
 
-	virtual std::string save(const ProgramDto& program, const std::string& styleSheet) = 0;
-	virtual std::string save(const std::list<ProgramDto>& programs, const std::string& styleSheet) = 0;
-	virtual std::string save(const LogEntryDtoList& logEntries, const std::string& styleSheet) = 0;
+	virtual std::string save(const ProgramDto& programDto, const std::string& styleSheet) = 0;
+	virtual std::string save(const ProgramDtoList& programDtoList, const std::string& styleSheet) = 0;
+	virtual std::string save(const LogEntryDtoList& logEntryDtoList, const std::string& styleSheet) = 0;
 };

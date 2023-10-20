@@ -12,7 +12,7 @@ namespace DtoReaderWriterTestSamples {
 		const std::string xmlWithoutContainers;
 
 	public:
-		ProgramListSample(const std::list<ProgramDto>& dtoList, const std::string& xml, const std::string& xmlWithoutContainers) :
+		ProgramListSample(const ProgramDtoList& dtoList, const std::string& xml, const std::string& xmlWithoutContainers) :
 			ContainerSample<ProgramDto>(dtoList, xml),
 			xmlWithoutContainers(xmlWithoutContainers)
 			{
@@ -26,7 +26,7 @@ namespace DtoReaderWriterTestSamples {
 		ProgramListSampleList() {
 
 			emplace_back(
-				std::list<ProgramDto> {
+				ProgramDtoList {
 				},
 				"<programs/>",
 				"<programs/>"
@@ -34,7 +34,7 @@ namespace DtoReaderWriterTestSamples {
 
 			for (const auto& programSample : ProgramSampleList()) {
 				emplace_back(
-					std::list<ProgramDto> {
+					ProgramDtoList {
 						programSample.getDto()
 					},
 					"<programs>" +
@@ -47,7 +47,7 @@ namespace DtoReaderWriterTestSamples {
 			}
 
 			{
-				std::list<ProgramDto> programDtoList;
+				ProgramDtoList programDtoList;
 				std::string xml, xmlWithoutContainers;
 
 				for (const auto& programSample : ProgramSampleList()) {

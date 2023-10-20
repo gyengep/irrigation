@@ -21,7 +21,7 @@ std::unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& re
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const std::list<StartTimeDto> startTimeDtoList = getStartTimeDtoList(irrigationDocument, programId);
+		const StartTimeDtoList startTimeDtoList = getStartTimeDtoList(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -42,7 +42,7 @@ std::unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& r
 	static const char* logMessage = "Can not create startTime container";
 
 	try {
-		const StartTimeDto startTimeDto = dtoReader->loadStartTime(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const StartTimeDto startTimeDto = dtoReader->loadStartTimeDto(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const IdType programId = getProgramId(pathParameters);
 
 		const auto result = postStartTimeList(irrigationDocument, programId, startTimeDto);
@@ -104,7 +104,7 @@ std::unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& requ
 	try {
 		const IdType programId = getProgramId(pathParameters);
 		const IdType startTimeId = getStartTimeId(pathParameters);
-		const StartTimeDto startTimeDto = dtoReader->loadStartTime(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const StartTimeDto startTimeDto = dtoReader->loadStartTimeDto(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 
 		const std::string text = patchStartTime(irrigationDocument, programId, startTimeId, startTimeDto);
 

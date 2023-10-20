@@ -18,7 +18,7 @@ IrrigationDocumentLoaderImpl::~IrrigationDocumentLoaderImpl() {
 
 bool IrrigationDocumentLoaderImpl::load(IrrigationDocument& document) {
 	const std::string documentDtoAsText = fileReader->read();
-	const DocumentDto documentDto = dtoReader->loadDocument(documentDtoAsText);
+	const DocumentDto documentDto = dtoReader->loadDocumentDto(documentDtoAsText);
 
 	document.updateFromDocumentDto(documentDto);
 	LOGGER.debug("Configuration successfully loaded");

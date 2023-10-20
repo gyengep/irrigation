@@ -42,8 +42,8 @@ namespace Dto2ObjectTestSamples {
 				ProgramDto(
 					true, "program2", 61, to_string(SchedulerType::HOT_WEATHER),
 					SchedulersDto(SchedulerContainerSampleList().at(1).getDto()),
-					std::list<RunTimeDto>(RunTimeContainerSampleList().at(1).getDtoList()),
-					std::list<StartTimeDto>(StartTimeContainerSampleList().at(1).getDtoList())
+					RunTimeDtoList(RunTimeContainerSampleList().at(1).getDtoList()),
+					StartTimeDtoList(StartTimeContainerSampleList().at(1).getDtoList())
 				)
 			);
 
@@ -57,8 +57,8 @@ namespace Dto2ObjectTestSamples {
 				ProgramDto(
 					false, "program3", 159, to_string(SchedulerType::TEMPERATURE_DEPENDENT),
 					SchedulersDto(SchedulerContainerSampleList().at(2).getDto()),
-					std::list<RunTimeDto>(RunTimeContainerSampleList().at(2).getDtoList()),
-					std::list<StartTimeDto>(StartTimeContainerSampleList().at(2).getDtoList())
+					RunTimeDtoList(RunTimeContainerSampleList().at(2).getDtoList()),
+					StartTimeDtoList(StartTimeContainerSampleList().at(2).getDtoList())
 				)
 			);
 
@@ -72,8 +72,8 @@ namespace Dto2ObjectTestSamples {
 				ProgramDto(
 					true, "program4", 238, to_string(SchedulerType::WEEKLY),
 					SchedulersDto(SchedulerContainerSampleList().at(3).getDto()),
-					std::list<RunTimeDto>(RunTimeContainerSampleList().at(3).getDtoList()),
-					std::list<StartTimeDto>(StartTimeContainerSampleList().at(3).getDtoList())
+					RunTimeDtoList(RunTimeContainerSampleList().at(3).getDtoList()),
+					StartTimeDtoList(StartTimeContainerSampleList().at(3).getDtoList())
 				)
 			);
 		}

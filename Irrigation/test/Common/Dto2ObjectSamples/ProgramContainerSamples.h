@@ -21,7 +21,7 @@ namespace Dto2ObjectTestSamples {
 					{ 101, ProgramSampleList().at(1).getObjectPtr() },
 					{ 102, ProgramSampleList().at(2).getObjectPtr() }
 				}),
-				std::list<ProgramDto>({
+				ProgramDtoList({
 					ProgramSampleList().at(0).getDto().setId(100),
 					ProgramSampleList().at(1).getDto().setId(101),
 					ProgramSampleList().at(2).getDto().setId(102)
@@ -32,7 +32,7 @@ namespace Dto2ObjectTestSamples {
 				std::make_shared<ProgramContainerImpl>(std::initializer_list<ProgramContainer::value_type>{
 					{ 10, ProgramSampleList().at(0).getObjectPtr() }
 				}),
-				std::list<ProgramDto>({
+				ProgramDtoList({
 					ProgramSampleList().at(0).getDto().setId(10)
 				})
 			);
@@ -40,7 +40,7 @@ namespace Dto2ObjectTestSamples {
 			emplace_back(
 				std::make_shared<ProgramContainerImpl>(std::initializer_list<ProgramContainer::value_type>{
 				}),
-				std::list<ProgramDto>({
+				ProgramDtoList({
 				})
 			);
 
@@ -51,7 +51,7 @@ namespace Dto2ObjectTestSamples {
 					{ 400, ProgramSampleList().at(0).getObjectPtr() },
 					{ 500, ProgramSampleList().at(1).getObjectPtr() }
 				}),
-				std::list<ProgramDto>({
+				ProgramDtoList({
 					ProgramSampleList().at(3).getDto().setId(200),
 					ProgramSampleList().at(2).getDto().setId(300),
 					ProgramSampleList().at(0).getDto().setId(400),

@@ -39,7 +39,7 @@ IrrigationActionDto XmlIrrigationActionReader::load(const string& text) const {
 	}
 
 	if ((tmpNode = node.child("runtimes")) != nullptr) {
-		result.runTimeDtoList.reset(new list<RunTimeDto>(loadRunTimeList(tmpNode)));
+		result.runTimeDtoList.reset(new RunTimeDtoList(loadRunTimeDtoList(tmpNode)));
 	}
 
 	return result;

@@ -23,21 +23,21 @@ TEST(RunTimeListWriterTest, save) {
 
 TEST(RunTimeListReaderTest, load) {
 	for (const auto& runTimeSample : DtoReaderWriterTestSamples::RunTimeListSampleList()) {
-		const std::list<RunTimeDto> actualDtoList = XmlReader().loadRunTimeList(runTimeSample.getXml());
-		const std::list<RunTimeDto> expectedDtoList = runTimeSample.getDtoList();
+		const RunTimeDtoList actualDtoList = XmlReader().loadRunTimeDtoList(runTimeSample.getXml());
+		const RunTimeDtoList expectedDtoList = runTimeSample.getDtoList();
 
 		EXPECT_THAT(actualDtoList, Eq(expectedDtoList));
 	}
 }
 
 TEST(RunTimeListReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadRunTimeList("<runtimeABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadRunTimeDtoList("<runtimeABC/>"), RequiredTagMissing);
 }
 
 TEST(RunTimeListReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadRunTimeList("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadRunTimeDtoList("jhvjhvjh"), XMLParseException);
 }
 
 TEST(RunTimeListReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadRunTimeList("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadRunTimeDtoList("<abc/><123/>"), XMLParseException);
 }

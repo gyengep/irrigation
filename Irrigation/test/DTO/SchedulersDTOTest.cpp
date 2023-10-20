@@ -23,16 +23,16 @@ TEST(SchedulersDtoTest, defaultConstructor) {
 }
 
 TEST(SchedulersDtoTest, parametrizedConstructor) {
-	const EveryDaySchedulerDto expectedEveryDayScheduler;
-	const HotWeatherSchedulerDto expectedHotWeatherScheduler(120, 35.0f);
-	const TemperatureDependentSchedulerDto expectedTemperatureDependentScheduler(1.1f, 80, 90);
-	const WeeklySchedulerDto expectedWeeklyScheduler(list<bool>({ true, false, true }));
+	const EveryDaySchedulerDto expectedEveryDaySchedulerDto;
+	const HotWeatherSchedulerDto expectedHotWeatherSchedulerDto(120, 35.0f);
+	const TemperatureDependentSchedulerDto expectedTemperatureDependentSchedulerDto(1.1f, 80, 90);
+	const WeeklySchedulerDto expectedWeeklySchedulerDto(list<bool>({ true, false, true }));
 
 	SchedulersDto schedulersDto(
-			std::move(EveryDaySchedulerDto(expectedEveryDayScheduler)),
-			std::move(HotWeatherSchedulerDto(expectedHotWeatherScheduler)),
-			std::move(TemperatureDependentSchedulerDto(expectedTemperatureDependentScheduler)),
-			std::move(WeeklySchedulerDto(expectedWeeklyScheduler))
+			std::move(EveryDaySchedulerDto(expectedEveryDaySchedulerDto)),
+			std::move(HotWeatherSchedulerDto(expectedHotWeatherSchedulerDto)),
+			std::move(TemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto)),
+			std::move(WeeklySchedulerDto(expectedWeeklySchedulerDto))
 		);
 
 	EXPECT_TRUE(schedulersDto.hasEveryDayScheduler());
@@ -40,23 +40,23 @@ TEST(SchedulersDtoTest, parametrizedConstructor) {
 	EXPECT_TRUE(schedulersDto.hasTemperatureDependentScheduler());
 	EXPECT_TRUE(schedulersDto.hasWeeklyScheduler());
 
-	EXPECT_THAT(schedulersDto.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
-	EXPECT_THAT(schedulersDto.getHotWeatherScheduler(), Eq(expectedHotWeatherScheduler));
-	EXPECT_THAT(schedulersDto.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentScheduler));
-	EXPECT_THAT(schedulersDto.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
+	EXPECT_THAT(schedulersDto.getEveryDayScheduler(), Eq(expectedEveryDaySchedulerDto));
+	EXPECT_THAT(schedulersDto.getHotWeatherScheduler(), Eq(expectedHotWeatherSchedulerDto));
+	EXPECT_THAT(schedulersDto.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentSchedulerDto));
+	EXPECT_THAT(schedulersDto.getWeeklyScheduler(), Eq(expectedWeeklySchedulerDto));
 }
 
 TEST(SchedulersDtoTest, copyConstructor) {
-	const EveryDaySchedulerDto expectedEveryDayScheduler;
-	const HotWeatherSchedulerDto expectedHotWeatherScheduler(90, 31.0f);
-	const TemperatureDependentSchedulerDto expectedTemperatureDependentScheduler(2.1f, 180, 190);
-	const WeeklySchedulerDto expectedWeeklyScheduler(list<bool>({ true, false, true }));
+	const EveryDaySchedulerDto expectedEveryDaySchedulerDto;
+	const HotWeatherSchedulerDto expectedHotWeatherSchedulerDto(90, 31.0f);
+	const TemperatureDependentSchedulerDto expectedTemperatureDependentSchedulerDto(2.1f, 180, 190);
+	const WeeklySchedulerDto expectedWeeklySchedulerDto(list<bool>({ true, false, true }));
 
 	const SchedulersDto source(
-			std::move(EveryDaySchedulerDto(expectedEveryDayScheduler)),
-			std::move(HotWeatherSchedulerDto(expectedHotWeatherScheduler)),
-			std::move(TemperatureDependentSchedulerDto(expectedTemperatureDependentScheduler)),
-			std::move(WeeklySchedulerDto(expectedWeeklyScheduler))
+			std::move(EveryDaySchedulerDto(expectedEveryDaySchedulerDto)),
+			std::move(HotWeatherSchedulerDto(expectedHotWeatherSchedulerDto)),
+			std::move(TemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto)),
+			std::move(WeeklySchedulerDto(expectedWeeklySchedulerDto))
 		);
 
 	const SchedulersDto schedulersDto(source);
@@ -66,23 +66,23 @@ TEST(SchedulersDtoTest, copyConstructor) {
 	EXPECT_TRUE(schedulersDto.hasTemperatureDependentScheduler());
 	EXPECT_TRUE(schedulersDto.hasWeeklyScheduler());
 
-	EXPECT_THAT(schedulersDto.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
-	EXPECT_THAT(schedulersDto.getHotWeatherScheduler(), Eq(expectedHotWeatherScheduler));
-	EXPECT_THAT(schedulersDto.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentScheduler));
-	EXPECT_THAT(schedulersDto.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
+	EXPECT_THAT(schedulersDto.getEveryDayScheduler(), Eq(expectedEveryDaySchedulerDto));
+	EXPECT_THAT(schedulersDto.getHotWeatherScheduler(), Eq(expectedHotWeatherSchedulerDto));
+	EXPECT_THAT(schedulersDto.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentSchedulerDto));
+	EXPECT_THAT(schedulersDto.getWeeklyScheduler(), Eq(expectedWeeklySchedulerDto));
 }
 
 TEST(SchedulersDtoTest, moveConstructor) {
-	const EveryDaySchedulerDto expectedEveryDayScheduler;
-	const HotWeatherSchedulerDto expectedHotWeatherScheduler(43, 15.0f);
-	const TemperatureDependentSchedulerDto expectedTemperatureDependentScheduler(1.1f, 63, 64);
-	const WeeklySchedulerDto expectedWeeklyScheduler(list<bool>({ true, false, true }));
+	const EveryDaySchedulerDto expectedEveryDaySchedulerDto;
+	const HotWeatherSchedulerDto expectedHotWeatherSchedulerDto(43, 15.0f);
+	const TemperatureDependentSchedulerDto expectedTemperatureDependentSchedulerDto(1.1f, 63, 64);
+	const WeeklySchedulerDto expectedWeeklySchedulerDto(list<bool>({ true, false, true }));
 
 	SchedulersDto source(
-			std::move(EveryDaySchedulerDto(expectedEveryDayScheduler)),
-			std::move(HotWeatherSchedulerDto(expectedHotWeatherScheduler)),
-			std::move(TemperatureDependentSchedulerDto(expectedTemperatureDependentScheduler)),
-			std::move(WeeklySchedulerDto(expectedWeeklyScheduler))
+			std::move(EveryDaySchedulerDto(expectedEveryDaySchedulerDto)),
+			std::move(HotWeatherSchedulerDto(expectedHotWeatherSchedulerDto)),
+			std::move(TemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto)),
+			std::move(WeeklySchedulerDto(expectedWeeklySchedulerDto))
 		);
 
 	const SchedulersDto schedulersDto(std::move(source));
@@ -92,10 +92,10 @@ TEST(SchedulersDtoTest, moveConstructor) {
 	EXPECT_TRUE(schedulersDto.hasTemperatureDependentScheduler());
 	EXPECT_TRUE(schedulersDto.hasWeeklyScheduler());
 
-	EXPECT_THAT(schedulersDto.getEveryDayScheduler(), Eq(expectedEveryDayScheduler));
-	EXPECT_THAT(schedulersDto.getHotWeatherScheduler(), Eq(expectedHotWeatherScheduler));
-	EXPECT_THAT(schedulersDto.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentScheduler));
-	EXPECT_THAT(schedulersDto.getWeeklyScheduler(), Eq(expectedWeeklyScheduler));
+	EXPECT_THAT(schedulersDto.getEveryDayScheduler(), Eq(expectedEveryDaySchedulerDto));
+	EXPECT_THAT(schedulersDto.getHotWeatherScheduler(), Eq(expectedHotWeatherSchedulerDto));
+	EXPECT_THAT(schedulersDto.getTemperatureDependentScheduler(), Eq(expectedTemperatureDependentSchedulerDto));
+	EXPECT_THAT(schedulersDto.getWeeklyScheduler(), Eq(expectedWeeklySchedulerDto));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

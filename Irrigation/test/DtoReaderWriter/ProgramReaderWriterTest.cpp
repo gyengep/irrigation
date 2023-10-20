@@ -34,7 +34,7 @@ TEST(ProgramWriterTest, saveWithStyleSheet) {
 
 TEST(ProgramReaderTest, load) {
 	for (const auto& programSample : DtoReaderWriterTestSamples::ProgramSampleList()) {
-		const ProgramDto actualDto = XmlReader().loadProgram(programSample.getXml());
+		const ProgramDto actualDto = XmlReader().loadProgramDto(programSample.getXml());
 		const ProgramDto expectedDto = programSample.getDto();
 
 		std::cout << actualDto << std::endl;
@@ -44,13 +44,13 @@ TEST(ProgramReaderTest, load) {
 }
 
 TEST(ProgramReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadProgram("<programABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadProgramDto("<programABC/>"), RequiredTagMissing);
 }
 
 TEST(ProgramReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadProgram("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadProgramDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(ProgramReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadProgram("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadProgramDto("<abc/><123/>"), XMLParseException);
 }

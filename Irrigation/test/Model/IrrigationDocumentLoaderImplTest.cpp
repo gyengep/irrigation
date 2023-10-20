@@ -24,7 +24,7 @@ void IrrigationDocumentLoaderImplTest::TearDown() {
 TEST_F(IrrigationDocumentLoaderImplTest, load) {
 	const std::string documentDtoAsText = "asdfghjkl";
 	const DocumentDto expectedDocumentDto(
-			std::list<ProgramDto> {
+			ProgramDtoList {
 				ProgramDto().setName("111"),
 				ProgramDto().setName("222"),
 				ProgramDto().setName("333"),
@@ -35,7 +35,7 @@ TEST_F(IrrigationDocumentLoaderImplTest, load) {
 			Times(1).
 			WillOnce(Return(documentDtoAsText));
 
-	EXPECT_CALL(*mockDtoReader, loadDocument(documentDtoAsText)).
+	EXPECT_CALL(*mockDtoReader, loadDocumentDto(documentDtoAsText)).
 			Times(1).
 			WillOnce(Return(expectedDocumentDto));
 

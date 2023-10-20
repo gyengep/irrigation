@@ -45,9 +45,9 @@ void IrrigationDocumentImplFromDtoTest::check(const UpdateType updateType) {
 		DocumentDto actualDocumentDto;
 
 		if (UpdateType::ProgramContainer == updateType || UpdateType::All == updateType) {
-			const std::list<ProgramDto> expectedProgramDtoList = sample.getDto().getPrograms();
+			const ProgramDtoList expectedProgramDtoList = sample.getDto().getPrograms();
 
-			actualDocumentDto.setPrograms(std::list<ProgramDto>(expectedProgramDtoList));
+			actualDocumentDto.setPrograms(ProgramDtoList(expectedProgramDtoList));
 			EXPECT_CALL(*mockProgramContainer, updateFromProgramDtoList(expectedProgramDtoList));
 		}
 

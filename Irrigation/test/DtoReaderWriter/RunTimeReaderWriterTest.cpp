@@ -23,7 +23,7 @@ TEST(RunTimeWriterTest, save) {
 
 TEST(RunTimeReaderTest, load) {
 	for (const auto& runTimeSample : DtoReaderWriterTestSamples::RunTimeSampleList()) {
-		const RunTimeDto actualDto = XmlReader().loadRunTime(runTimeSample.getXml());
+		const RunTimeDto actualDto = XmlReader().loadRunTimeDto(runTimeSample.getXml());
 		const RunTimeDto expectedDto = runTimeSample.getDto();
 
 		std::cout << actualDto << std::endl;
@@ -33,13 +33,13 @@ TEST(RunTimeReaderTest, load) {
 }
 
 TEST(RunTimeReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadRunTime("<runtimeABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadRunTimeDto("<runtimeABC/>"), RequiredTagMissing);
 }
 
 TEST(RunTimeReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadRunTime("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadRunTimeDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(RunTimeReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadRunTime("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadRunTimeDto("<abc/><123/>"), XMLParseException);
 }

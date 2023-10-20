@@ -23,7 +23,7 @@ TEST(SchedulersWriterTest, save) {
 
 TEST(SchedulersReaderTest, load) {
 	for (const auto& schedulersSample : DtoReaderWriterTestSamples::SchedulersSampleList()) {
-		const SchedulersDto actualDto = XmlReader().loadSchedulers(schedulersSample.getXml());
+		const SchedulersDto actualDto = XmlReader().loadSchedulersDto(schedulersSample.getXml());
 		const SchedulersDto expectedDto = schedulersSample.getDto();
 
 		std::cout << actualDto << std::endl;
@@ -33,13 +33,13 @@ TEST(SchedulersReaderTest, load) {
 }
 
 TEST(SchedulersReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadSchedulers("<hotweatherABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadSchedulersDto("<hotweatherABC/>"), RequiredTagMissing);
 }
 
 TEST(SchedulersReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadSchedulers("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadSchedulersDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(SchedulersReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadSchedulers("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadSchedulersDto("<abc/><123/>"), XMLParseException);
 }

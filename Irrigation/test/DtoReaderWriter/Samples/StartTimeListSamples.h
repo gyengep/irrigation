@@ -15,14 +15,14 @@ namespace DtoReaderWriterTestSamples {
 		StartTimeListSampleList() {
 
 			emplace_back(
-				std::list<StartTimeDto> {
+				StartTimeDtoList {
 				},
 				"<starttimes/>"
 			);
 
 			for (const auto& startTimeSample : StartTimeSampleList()) {
 				emplace_back(
-					std::list<StartTimeDto> {
+					StartTimeDtoList {
 						startTimeSample.getDto()
 					},
 					"<starttimes>" +
@@ -32,7 +32,7 @@ namespace DtoReaderWriterTestSamples {
 			}
 
 			{
-				std::list<StartTimeDto> startTimeDtoList;
+				StartTimeDtoList startTimeDtoList;
 				std::string xml;
 
 				for (const auto& startTimeSample : StartTimeSampleList()) {

@@ -74,15 +74,15 @@ void StartTimeContainerImpl::sort() {
 	container.sort(comp);
 }
 
-std::list<StartTimeDto> StartTimeContainerImpl::toStartTimeDtoList() const {
-	std::list<StartTimeDto> startTimeDtoList;
+StartTimeDtoList StartTimeContainerImpl::toStartTimeDtoList() const {
+	StartTimeDtoList startTimeDtoList;
 	for (const value_type& value : container) {
 		startTimeDtoList.push_back(value.second->toStartTimeDto().setId(value.first.getValue()));
 	}
 	return startTimeDtoList;
 }
 
-void StartTimeContainerImpl::updateFromStartTimeDtoList(const std::list<StartTimeDto>& startTimeDtoList) {
+void StartTimeContainerImpl::updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) {
 	container.clear();
 
 	for (const StartTimeDto& startTimeDto : startTimeDtoList) {

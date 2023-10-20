@@ -182,7 +182,7 @@ TEST_F(RunTimeContainerImplTest, toDurationList) {
 TEST_F(RunTimeContainerImplTest, toDurationsStatic) {
 	EXPECT_THAT(
 			RunTimeContainer::toDurationList(
-				std::list<RunTimeDto>{
+				RunTimeDtoList{
 					RunTimeDto(0, 0),
 					RunTimeDto(0, 12),
 					RunTimeDto(1, 25),

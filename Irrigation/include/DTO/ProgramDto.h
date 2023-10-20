@@ -15,8 +15,8 @@
 	DTO_MEMBER_COPY(ProgramDto, unsigned, Adjustment);												\
 	DTO_MEMBER_COPY(ProgramDto, std::string, SchedulerType);										\
 	DTO_MEMBER_MOVE(ProgramDto, SchedulersDto, Schedulers);											\
-	DTO_MEMBER_MOVE(ProgramDto, std::list<RunTimeDto>, RunTimes);									\
-	DTO_MEMBER_MOVE(ProgramDto, std::list<StartTimeDto>, StartTimes)
+	DTO_MEMBER_MOVE(ProgramDto, RunTimeDtoList, RunTimes);									\
+	DTO_MEMBER_MOVE(ProgramDto, StartTimeDtoList, StartTimes)
 
 
 CREATE_DTO_CLASS(ProgramDto)
@@ -28,8 +28,8 @@ CREATE_DTO_CLASS(ProgramDto)
 			unsigned Adjustment,
 			const std::string& SchedulerType,
 			SchedulersDto&& Schedulers,
-			std::list<RunTimeDto>&& RunTimes,
-			std::list<StartTimeDto>&& StartTimes)
+			RunTimeDtoList&& RunTimes,
+			StartTimeDtoList&& StartTimes)
 	{
 		PROGRAM_DTO_MEMBERS;
 	}
@@ -83,3 +83,5 @@ IMPLEMENT_OSS_OPERATOR(ProgramDto, PROGRAM_DTO_MEMBERS);
 #undef DTO_MEMBER_INIT
 #undef DTO_MEMBER_COPY
 #undef DTO_MEMBER_MOVE
+
+typedef std::list<ProgramDto> ProgramDtoList;

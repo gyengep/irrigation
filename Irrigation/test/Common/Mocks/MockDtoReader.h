@@ -5,16 +5,16 @@
 
 class MockDtoReader : public DtoReader {
 public:
-	MOCK_CONST_METHOD1(loadDocument, DocumentDto(const std::string&));
-	MOCK_CONST_METHOD1(loadProgram, ProgramDto(const std::string&));
-	MOCK_CONST_METHOD1(loadRunTime, RunTimeDto(const std::string&));
-	MOCK_CONST_METHOD1(loadStartTime, StartTimeDto(const std::string&));
-	MOCK_CONST_METHOD1(loadSchedulers, SchedulersDto(const std::string& text));
-	MOCK_CONST_METHOD1(loadEveryDayScheduler, EveryDaySchedulerDto(const std::string&));
-	MOCK_CONST_METHOD1(loadHotWeatherScheduler, HotWeatherSchedulerDto(const std::string&));
-	MOCK_CONST_METHOD1(loadTemperatureDependentScheduler, TemperatureDependentSchedulerDto(const std::string&));
-	MOCK_CONST_METHOD1(loadWeeklyScheduler, WeeklySchedulerDto(const std::string&));
-	MOCK_CONST_METHOD1(loadProgramList, std::list<ProgramDto>(const std::string& text));
-	MOCK_CONST_METHOD1(loadRunTimeList, std::list<RunTimeDto>(const std::string& text));
-	MOCK_CONST_METHOD1(loadStartTimeList, std::list<StartTimeDto>(const std::string& text));
+	MOCK_CONST_METHOD1(loadDocumentDto, DocumentDto(const std::string&));
+	MOCK_CONST_METHOD1(loadProgramDto, ProgramDto(const std::string&));
+	MOCK_CONST_METHOD1(loadRunTimeDto, RunTimeDto(const std::string&));
+	MOCK_CONST_METHOD1(loadStartTimeDto, StartTimeDto(const std::string&));
+	MOCK_CONST_METHOD1(loadSchedulersDto, SchedulersDto(const std::string& text));
+	MOCK_CONST_METHOD1(loadEveryDaySchedulerDto, EveryDaySchedulerDto(const std::string&));
+	MOCK_CONST_METHOD1(loadHotWeatherSchedulerDto, HotWeatherSchedulerDto(const std::string&));
+	MOCK_CONST_METHOD1(loadTemperatureDependentSchedulerDto, TemperatureDependentSchedulerDto(const std::string&));
+	MOCK_CONST_METHOD1(loadWeeklySchedulerDto, WeeklySchedulerDto(const std::string&));
+	MOCK_CONST_METHOD1(loadProgramDtoList, ProgramDtoList(const std::string& text));
+	MOCK_CONST_METHOD1(loadRunTimeDtoList, RunTimeDtoList(const std::string& text));
+	MOCK_CONST_METHOD1(loadStartTimeDtoList, StartTimeDtoList(const std::string& text));
 };

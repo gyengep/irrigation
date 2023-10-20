@@ -31,13 +31,13 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;
 	virtual mapped_type at(const key_type& key) = 0;
 
-	virtual std::list<RunTimeDto> toRunTimeDtoList() const = 0;
-	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDto>& runTimeDtoList) = 0;
+	virtual RunTimeDtoList toRunTimeDtoList() const = 0;
+	virtual void updateFromRunTimeDtoList(const RunTimeDtoList& runTimeDtoList) = 0;
 
 	virtual std::string toString() const = 0;
 	virtual DurationList toDurationList() const = 0;
 
-	static DurationList toDurationList(const std::list<RunTimeDto>& runTimeDtoList);
+	static DurationList toDurationList(const RunTimeDtoList& runTimeDtoList);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

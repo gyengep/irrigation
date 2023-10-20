@@ -12,7 +12,7 @@ IrrigationDocumentLoaderMyDefaults::~IrrigationDocumentLoaderMyDefaults() {
 bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 
 	const DocumentDto documentDto(
-		std::list<ProgramDto> {
+		ProgramDtoList {
 			ProgramDto(true, "Fűlocsolás", 100, "temperature-dependent",
 					SchedulersDto(
 							EveryDaySchedulerDto(),
@@ -20,7 +20,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							TemperatureDependentSchedulerDto(0.75f, 50, 0),
 							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDto>({
+					RunTimeDtoList({
 							RunTimeDto(26, 0),
 							RunTimeDto(38, 0),
 							RunTimeDto(32, 0),
@@ -28,7 +28,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDto>({
+					StartTimeDtoList({
 							StartTimeDto(4, 0)
 						})
 				),
@@ -39,7 +39,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							TemperatureDependentSchedulerDto(1.0f, 100, 0),
 							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDto>({
+					RunTimeDtoList({
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
@@ -47,7 +47,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDto>({
+					StartTimeDtoList({
 							StartTimeDto(6, 0)
 						})
 				),
@@ -58,7 +58,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							TemperatureDependentSchedulerDto(),
 							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDto>({
+					RunTimeDtoList({
 							RunTimeDto(2, 30),
 							RunTimeDto(3, 30),
 							RunTimeDto(3, 0),
@@ -66,7 +66,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDto>({
+					StartTimeDtoList({
 							StartTimeDto(12, 0),
 							StartTimeDto(13, 0),
 							StartTimeDto(14, 0),
@@ -82,7 +82,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							TemperatureDependentSchedulerDto(1.0f, 75, 75),
 							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDto>({
+					RunTimeDtoList({
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
@@ -90,7 +90,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							RunTimeDto(1, 0),
 							RunTimeDto(0, 0),
 						}),
-					std::list<StartTimeDto>({
+					StartTimeDtoList({
 							StartTimeDto(7, 0),
 							StartTimeDto(20, 0)
 						})
@@ -102,7 +102,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							TemperatureDependentSchedulerDto(1.0f, 75, 75),
 							WeeklySchedulerDto()
 						),
-					std::list<RunTimeDto>({
+					RunTimeDtoList({
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
 							RunTimeDto(0, 0),
@@ -110,7 +110,7 @@ bool IrrigationDocumentLoaderMyDefaults::load(IrrigationDocument& document) {
 							RunTimeDto(0, 0),
 							RunTimeDto(16, 0),
 						}),
-					std::list<StartTimeDto>({
+					StartTimeDtoList({
 							StartTimeDto(7, 10),
 							StartTimeDto(20, 10)
 						})

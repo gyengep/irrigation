@@ -39,8 +39,8 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;					// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) override;								// throw NoSuchElementException
 
-	virtual std::list<ProgramDto> toProgramDtoList() const override;
-	virtual void updateFromProgramDtoList(const std::list<ProgramDto>& programDtoList) override;
+	virtual ProgramDtoList toProgramDtoList() const override;
+	virtual void updateFromProgramDtoList(const ProgramDtoList& programDtoList) override;
 	virtual value_type& createFromProgramDto(const ProgramDto& programDto) override;
 
 	virtual std::string toString() const override;

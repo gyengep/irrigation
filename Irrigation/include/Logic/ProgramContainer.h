@@ -31,8 +31,8 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;	// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) = 0;				// throw NoSuchElementException
 
-	virtual std::list<ProgramDto> toProgramDtoList() const = 0;
-	virtual void updateFromProgramDtoList(const std::list<ProgramDto>& programDtoList) = 0;
+	virtual ProgramDtoList toProgramDtoList() const = 0;
+	virtual void updateFromProgramDtoList(const ProgramDtoList& programDtoList) = 0;
 	virtual value_type& createFromProgramDto(const ProgramDto& programDto) = 0;
 
 	virtual std::string toString() const = 0;

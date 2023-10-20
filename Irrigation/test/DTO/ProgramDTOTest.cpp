@@ -41,8 +41,8 @@ TEST(ProgramDtoTest, parametrizedConstructor) {
 			TemperatureDependentSchedulerDto(1.1f, 80, 90),
 			WeeklySchedulerDto(list<bool>({ true, false, true }))
 		);
-	const list<RunTimeDto> expectedRunTimes({ RunTimeDto(10, 0), RunTimeDto(15, 0), RunTimeDto(20, 0) });
-	const list<StartTimeDto> expectedStartTimes({ StartTimeDto(5, 0), StartTimeDto(6, 0) });
+	const RunTimeDtoList expectedRunTimes({ RunTimeDto(10, 0), RunTimeDto(15, 0), RunTimeDto(20, 0) });
+	const StartTimeDtoList expectedStartTimes({ StartTimeDto(5, 0), StartTimeDto(6, 0) });
 
 	ProgramDto programDto(
 			expectedEnabled,
@@ -50,8 +50,8 @@ TEST(ProgramDtoTest, parametrizedConstructor) {
 			expectedAdjustment,
 			expectedSchedulerType,
 			SchedulersDto(expectedSchedulers),
-			list<RunTimeDto>(expectedRunTimes),
-			list<StartTimeDto>(expectedStartTimes));
+			RunTimeDtoList(expectedRunTimes),
+			StartTimeDtoList(expectedStartTimes));
 
 	EXPECT_FALSE(programDto.hasId());
 	EXPECT_TRUE(programDto.hasEnabled());
@@ -82,8 +82,8 @@ TEST(ProgramDtoTest, copyConstructor) {
 			TemperatureDependentSchedulerDto(2.1f, 180, 190),
 			WeeklySchedulerDto(list<bool>({ true, false, true }))
 		);
-	const list<RunTimeDto> expectedRunTimes({ RunTimeDto(0, 90), RunTimeDto(5, 0) });
-	const list<StartTimeDto> expectedStartTimes({ StartTimeDto(1, 30), StartTimeDto(4, 0), StartTimeDto(6, 0) });
+	const RunTimeDtoList expectedRunTimes({ RunTimeDto(0, 90), RunTimeDto(5, 0) });
+	const StartTimeDtoList expectedStartTimes({ StartTimeDto(1, 30), StartTimeDto(4, 0), StartTimeDto(6, 0) });
 
 	const ProgramDto source(
 			expectedEnabled,
@@ -91,8 +91,8 @@ TEST(ProgramDtoTest, copyConstructor) {
 			expectedAdjustment,
 			expectedSchedulerType,
 			SchedulersDto(expectedSchedulers),
-			list<RunTimeDto>(expectedRunTimes),
-			list<StartTimeDto>(expectedStartTimes));
+			RunTimeDtoList(expectedRunTimes),
+			StartTimeDtoList(expectedStartTimes));
 
 	const ProgramDto programDto(source);
 
@@ -125,8 +125,8 @@ TEST(ProgramDtoTest, moveConstructor) {
 			TemperatureDependentSchedulerDto(1.1f, 63, 64),
 			WeeklySchedulerDto(list<bool>({ true, false, true }))
 		);
-	const list<RunTimeDto> expectedRunTimes({ RunTimeDto(0, 90), RunTimeDto(5, 0) });
-	const list<StartTimeDto> expectedStartTimes({ StartTimeDto(1, 30), StartTimeDto(4, 0), StartTimeDto(6, 0) });
+	const RunTimeDtoList expectedRunTimes({ RunTimeDto(0, 90), RunTimeDto(5, 0) });
+	const StartTimeDtoList expectedStartTimes({ StartTimeDto(1, 30), StartTimeDto(4, 0), StartTimeDto(6, 0) });
 
 	ProgramDto source(
 			expectedEnabled,
@@ -134,8 +134,8 @@ TEST(ProgramDtoTest, moveConstructor) {
 			expectedAdjustment,
 			expectedSchedulerType,
 			SchedulersDto(expectedSchedulers),
-			list<RunTimeDto>(expectedRunTimes),
-			list<StartTimeDto>(expectedStartTimes));
+			RunTimeDtoList(expectedRunTimes),
+			StartTimeDtoList(expectedStartTimes));
 
 	const ProgramDto programDto(move(source));
 
@@ -165,8 +165,8 @@ CHECK_DTO_FUNCTIONS(ProgramDto, string, Name, "123456");
 CHECK_DTO_FUNCTIONS(ProgramDto, unsigned, Adjustment, 123);
 CHECK_DTO_FUNCTIONS(ProgramDto, string, SchedulerType, "qwertzuio");
 CHECK_DTO_FUNCTIONS(ProgramDto, SchedulersDto, Schedulers, SchedulersDto());
-CHECK_DTO_FUNCTIONS(ProgramDto, std::list<RunTimeDto>, RunTimes, list<RunTimeDto>({ RunTimeDto(11, 10), RunTimeDto(11, 55), RunTimeDto(12, 0) }));
-CHECK_DTO_FUNCTIONS(ProgramDto, std::list<StartTimeDto>, StartTimes, list<StartTimeDto>({ StartTimeDto(21, 20), StartTimeDto(22, 40), StartTimeDto(1, 23) }));
+CHECK_DTO_FUNCTIONS(ProgramDto, RunTimeDtoList, RunTimes, RunTimeDtoList({ RunTimeDto(11, 10), RunTimeDto(11, 55), RunTimeDto(12, 0) }));
+CHECK_DTO_FUNCTIONS(ProgramDto, StartTimeDtoList, StartTimes, StartTimeDtoList({ StartTimeDto(21, 20), StartTimeDto(22, 40), StartTimeDto(1, 23) }));
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -198,12 +198,12 @@ TEST(ProgramDtoTest, equalsOperator) {
 				)
 
 		);
-	CHECK_DTO_EQUALS_MOVE(list<RunTimeDto>, RunTimes,
-			list<RunTimeDto>({ RunTimeDto(10, 11), RunTimeDto(20, 21) }),
-			list<RunTimeDto>({ RunTimeDto(12, 13), RunTimeDto(22, 23), RunTimeDto(32, 33) })
+	CHECK_DTO_EQUALS_MOVE(RunTimeDtoList, RunTimes,
+			RunTimeDtoList({ RunTimeDto(10, 11), RunTimeDto(20, 21) }),
+			RunTimeDtoList({ RunTimeDto(12, 13), RunTimeDto(22, 23), RunTimeDto(32, 33) })
 		);
-	CHECK_DTO_EQUALS_MOVE(list<StartTimeDto>, StartTimes,
-			list<StartTimeDto>({ StartTimeDto(17, 23), StartTimeDto(4, 26), StartTimeDto(5, 12) }),
-			list<StartTimeDto>({ StartTimeDto(16, 17), StartTimeDto(18, 19), StartTimeDto(20, 21) })
+	CHECK_DTO_EQUALS_MOVE(StartTimeDtoList, StartTimes,
+			StartTimeDtoList({ StartTimeDto(17, 23), StartTimeDto(4, 26), StartTimeDto(5, 12) }),
+			StartTimeDtoList({ StartTimeDto(16, 17), StartTimeDto(18, 19), StartTimeDto(20, 21) })
 		);
 }

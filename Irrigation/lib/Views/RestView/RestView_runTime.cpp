@@ -15,7 +15,7 @@ std::unique_ptr<HttpResponse> RestView::onGetRunTimeList(const HttpRequest& requ
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const std::list<RunTimeDto> runTimeDtoList = getRunTimeDtoList(irrigationDocument, programId);
+		const RunTimeDtoList runTimeDtoList = getRunTimeDtoList(irrigationDocument, programId);
 
 		return HttpResponse::Builder().
 				setStatus(200, "OK").
@@ -37,7 +37,7 @@ std::unique_ptr<HttpResponse> RestView::onPatchRunTimeList(const HttpRequest& re
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const std::list<RunTimeDto> runTimeDtoList = dtoReader->loadRunTimeList(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const RunTimeDtoList runTimeDtoList = dtoReader->loadRunTimeDtoList(std::string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const std::string logText = patchRunTimeList(irrigationDocument, programId, runTimeDtoList);
 
 		LOGGER.debug("Program[%s].RunTimes are modified: %s",

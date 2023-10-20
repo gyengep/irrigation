@@ -15,14 +15,14 @@ namespace DtoReaderWriterTestSamples {
 		RunTimeListSampleList() {
 
 			emplace_back(
-				std::list<RunTimeDto> {
+				RunTimeDtoList {
 				},
 				"<runtimes/>"
 			);
 
 			for (const auto& runTimeSample : RunTimeSampleList()) {
 				emplace_back(
-					std::list<RunTimeDto> {
+					RunTimeDtoList {
 						runTimeSample.getDto()
 					},
 					"<runtimes>" +
@@ -32,7 +32,7 @@ namespace DtoReaderWriterTestSamples {
 			}
 
 			{
-				std::list<RunTimeDto> runTimeDtoList;
+				RunTimeDtoList runTimeDtoList;
 				std::string xml;
 
 				for (const auto& runTimeSample : RunTimeSampleList()) {

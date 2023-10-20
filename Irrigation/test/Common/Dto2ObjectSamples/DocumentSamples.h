@@ -28,7 +28,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(0).getDtoList()))
+				DocumentDto(ProgramDtoList(ProgramContainerSampleList().at(0).getDtoList()))
 			);
 
 			emplace_back(
@@ -39,7 +39,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(1).getDtoList()))
+				DocumentDto(ProgramDtoList(ProgramContainerSampleList().at(1).getDtoList()))
 			);
 
 			emplace_back(
@@ -50,7 +50,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(2).getDtoList()))
+				DocumentDto(ProgramDtoList(ProgramContainerSampleList().at(2).getDtoList()))
 			);
 
 			emplace_back(
@@ -61,7 +61,7 @@ namespace Dto2ObjectTestSamples {
 					nullptr,
 					nullptr
 				),
-				DocumentDto(std::list<ProgramDto>(ProgramContainerSampleList().at(3).getDtoList()))
+				DocumentDto(ProgramDtoList(ProgramContainerSampleList().at(3).getDtoList()))
 			);
 		}
 	};

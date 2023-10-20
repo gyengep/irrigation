@@ -21,8 +21,8 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;
 	virtual mapped_type at(const key_type& key) override;
 
-	virtual std::list<RunTimeDto> toRunTimeDtoList() const override;
-	virtual void updateFromRunTimeDtoList(const std::list<RunTimeDto>& runTimeDtoList) override;
+	virtual RunTimeDtoList toRunTimeDtoList() const override;
+	virtual void updateFromRunTimeDtoList(const RunTimeDtoList& runTimeDtoList) override;
 
 	virtual std::string toString() const override;
 	virtual DurationList toDurationList() const override;

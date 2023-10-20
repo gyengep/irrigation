@@ -55,15 +55,15 @@ ProgramContainerImpl::value_type& ProgramContainerImpl::insert(const key_type& k
 	return container.back();
 }
 
-std::list<ProgramDto> ProgramContainerImpl::toProgramDtoList() const {
-	std::list<ProgramDto> programDtos;
+ProgramDtoList ProgramContainerImpl::toProgramDtoList() const {
+	ProgramDtoList programDtoList;
 	for (const value_type& value : container) {
-		programDtos.push_back(value.second->toProgramDto().setId(value.first.getValue()));
+		programDtoList.push_back(value.second->toProgramDto().setId(value.first.getValue()));
 	}
-	return programDtos;
+	return programDtoList;
 }
 
-void ProgramContainerImpl::updateFromProgramDtoList(const std::list<ProgramDto>& programDtoList) {
+void ProgramContainerImpl::updateFromProgramDtoList(const ProgramDtoList& programDtoList) {
 	container.clear();
 
 	for (const ProgramDto& programDto : programDtoList) {

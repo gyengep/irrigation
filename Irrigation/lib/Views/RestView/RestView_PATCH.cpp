@@ -16,14 +16,14 @@ std::string RestView::patchProgram(IrrigationDocument& irrigationDocument, const
 	return program->toString();
 }
 
-std::string RestView::patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const std::list<RunTimeDto>& runTimeDtoList) {
+std::string RestView::patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const RunTimeDtoList& runTimeDtoList) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
-	RunTimeContainer& runTimes = irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer();
+	RunTimeContainer& runTimeContainer = irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer();
 
 	irrigationDocument.setModified();
-	runTimes.updateFromRunTimeDtoList(runTimeDtoList);
+	runTimeContainer.updateFromRunTimeDtoList(runTimeDtoList);
 
-	return runTimes.toString();
+	return runTimeContainer.toString();
 }
 
 std::string RestView::patchStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId, const StartTimeDto& startTimeDto) {

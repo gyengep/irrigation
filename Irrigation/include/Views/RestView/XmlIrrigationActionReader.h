@@ -10,7 +10,7 @@ struct IrrigationActionDto {
 	std::unique_ptr<std::string> action;
 	std::unique_ptr<unsigned> adjustment;
 	std::unique_ptr<IdType> programId;
-	std::unique_ptr<std::list<RunTimeDto>> runTimeDtoList;
+	std::unique_ptr<RunTimeDtoList> runTimeDtoList;
 };
 
 class XmlIrrigationActionReader: public XmlReader {

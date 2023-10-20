@@ -79,9 +79,9 @@ class RestView : public View {
 	static std::string getProgramUrl(const IdType& programId);
 	static std::string getStartTimeUrl(const IdType& programId, const IdType& startTimeId);
 
-	static std::list<ProgramDto> getProgramDtoList(IrrigationDocument& irrigationDocument);
-	static std::list<RunTimeDto> getRunTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId);
-	static std::list<StartTimeDto> getStartTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static ProgramDtoList getProgramDtoList(IrrigationDocument& irrigationDocument);
+	static RunTimeDtoList getRunTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId);
+	static StartTimeDtoList getStartTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId);
 
 	static ProgramDto getProgramDto(IrrigationDocument& irrigationDocument, const IdType& programId);
 	static StartTimeDto getStartTimeDto(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId);
@@ -95,7 +95,7 @@ class RestView : public View {
 	static std::string patchHotWeatherScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const HotWeatherSchedulerDto& hotWeatherSchedulerDto);
 	static std::string patchTemperatureDependentScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const TemperatureDependentSchedulerDto& temperatureDependentSchedulerDto);
 	static std::string patchWeeklyScheduler(IrrigationDocument& irrigationDocument, const IdType& programId, const WeeklySchedulerDto& weeklySchedulerDto);
-	static std::string patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const std::list<RunTimeDto>& runTimeDtoList);
+	static std::string patchRunTimeList(IrrigationDocument& irrigationDocument, const IdType& programId, const RunTimeDtoList& runTimeDtoList);
 
 	static void deleteProgram(IrrigationDocument& irrigationDocument, const IdType& programId);
 	static void deleteStartTime(IrrigationDocument& irrigationDocument, const IdType& programId, const IdType& startTimeId);

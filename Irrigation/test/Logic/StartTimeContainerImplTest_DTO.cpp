@@ -12,7 +12,7 @@ TEST(StartTimeContainerImplToDtoTest, toStartTimeContainerDtoList) {
 
 	for (const auto& sample : sampleList) {
 		const StartTimeContainerImpl& actual = sample.getContainer();
-		const std::list<StartTimeDto>& expected = sample.getDtoList();
+		const StartTimeDtoList& expected = sample.getDtoList();
 
 		EXPECT_THAT(actual.toStartTimeDtoList(), ContainerEq(expected));
 	}

@@ -43,183 +43,183 @@ std::unique_ptr<pugi::xml_document> XmlWriter::createXmlDocument(const std::stri
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void XmlWriter::saveDocument(xml_node* parent, const DocumentDto& document) {
+void XmlWriter::saveDocumentDto(xml_node* parent, const DocumentDto& documentDto) {
 	xml_node node = parent->append_child("irrigation");
 
-	if (document.hasPrograms()) {
-		saveProgramList(&node, document.getPrograms(), true);
+	if (documentDto.hasPrograms()) {
+		saveProgramDtoList(&node, documentDto.getPrograms(), true);
 	}
 }
 
-void XmlWriter::saveProgramList(pugi::xml_node* parent, const list<ProgramDto>& programs, bool includeContainers) {
+void XmlWriter::saveProgramDtoList(pugi::xml_node* parent, const ProgramDtoList& programDtoList, bool includeContainers) {
 	xml_node programListNode = parent->append_child("programs");
 
-	for (auto& program : programs) {
-		saveProgram(&programListNode, program, includeContainers);
+	for (auto& programDto : programDtoList) {
+		saveProgramDto(&programListNode, programDto, includeContainers);
 	}
 }
 
-void XmlWriter::saveProgram(xml_node* parent, const ProgramDto& program, bool includeContainers) {
+void XmlWriter::saveProgramDto(xml_node* parent, const ProgramDto& programDto, bool includeContainers) {
 	xml_node node = parent->append_child("program");
 
-	if (program.hasId()) {
-		node.append_attribute("id").set_value(program.getId());
+	if (programDto.hasId()) {
+		node.append_attribute("id").set_value(programDto.getId());
 	}
 
-	if (program.hasName()) {
-		node.append_child("name").text().set(program.getName().c_str());
+	if (programDto.hasName()) {
+		node.append_child("name").text().set(programDto.getName().c_str());
 	}
 
-	if (program.hasEnabled()) {
-		node.append_child("enabled").text().set(program.getEnabled());
+	if (programDto.hasEnabled()) {
+		node.append_child("enabled").text().set(programDto.getEnabled());
 	}
 
-	if (program.hasAdjustment()) {
-		node.append_child("adjustment").text().set(program.getAdjustment());
+	if (programDto.hasAdjustment()) {
+		node.append_child("adjustment").text().set(programDto.getAdjustment());
 	}
 
-	if (program.hasSchedulerType()) {
-		node.append_child("schedulertype").text().set(program.getSchedulerType().c_str());
+	if (programDto.hasSchedulerType()) {
+		node.append_child("schedulertype").text().set(programDto.getSchedulerType().c_str());
 	}
 
 	if (includeContainers) {
-		if (program.hasSchedulers()) {
-			saveSchedulers(&node, program.getSchedulers());
+		if (programDto.hasSchedulers()) {
+			saveSchedulersDto(&node, programDto.getSchedulers());
 		}
 
-		if (program.hasRunTimes()) {
-			saveRunTimeList(&node, program.getRunTimes());
+		if (programDto.hasRunTimes()) {
+			saveRunTimeDtoList(&node, programDto.getRunTimes());
 		}
 
-		if (program.hasStartTimes()) {
-			saveStartTimeList(&node, program.getStartTimes());
+		if (programDto.hasStartTimes()) {
+			saveStartTimeDtoList(&node, programDto.getStartTimes());
 		}
 	}
 }
 
-void XmlWriter::saveRunTimeList(pugi::xml_node* parent, const list<RunTimeDto>& runTimes) {
+void XmlWriter::saveRunTimeDtoList(pugi::xml_node* parent, const RunTimeDtoList& runTimeDtoList) {
 	xml_node runTimeListNode = parent->append_child("runtimes");
 
-	for (auto& runTime : runTimes) {
-		saveRunTime(&runTimeListNode, runTime);
+	for (auto& runTimeDto : runTimeDtoList) {
+		saveRunTimeDto(&runTimeListNode, runTimeDto);
 	}
 }
 
-void XmlWriter::saveRunTime(xml_node* parent, const RunTimeDto& runTime) {
+void XmlWriter::saveRunTimeDto(xml_node* parent, const RunTimeDto& runTimeDto) {
 	xml_node node = parent->append_child("runtime");
 
-	if (runTime.hasMinutes()) {
-		node.append_child("minute").text().set(runTime.getMinutes());
+	if (runTimeDto.hasMinutes()) {
+		node.append_child("minute").text().set(runTimeDto.getMinutes());
 	}
 
-	if (runTime.hasSeconds()) {
-		node.append_child("second").text().set(runTime.getSeconds());
+	if (runTimeDto.hasSeconds()) {
+		node.append_child("second").text().set(runTimeDto.getSeconds());
 	}
 
-	if (runTime.hasId()) {
-		node.append_attribute("id").set_value(runTime.getId());
+	if (runTimeDto.hasId()) {
+		node.append_attribute("id").set_value(runTimeDto.getId());
 	}
 }
 
-void XmlWriter::saveStartTimeList(pugi::xml_node* parent, const list<StartTimeDto>& startTimes) {
+void XmlWriter::saveStartTimeDtoList(pugi::xml_node* parent, const StartTimeDtoList& startTimeDtoList) {
 	xml_node startTimeListNode = parent->append_child("starttimes");
 
-	for (auto& startTime : startTimes) {
-		saveStartTime(&startTimeListNode, startTime);
+	for (auto& startTimeDto : startTimeDtoList) {
+		saveStartTimeDto(&startTimeListNode, startTimeDto);
 	}
 }
 
-void XmlWriter::saveStartTime(xml_node* parent, const StartTimeDto& startTime) {
+void XmlWriter::saveStartTimeDto(xml_node* parent, const StartTimeDto& startTimeDto) {
 	xml_node node = parent->append_child("starttime");
 
-	if (startTime.hasHours()) {
-		node.append_child("hour").text().set(startTime.getHours());
+	if (startTimeDto.hasHours()) {
+		node.append_child("hour").text().set(startTimeDto.getHours());
 	}
 
-	if (startTime.hasMinutes()) {
-		node.append_child("minute").text().set(startTime.getMinutes());
+	if (startTimeDto.hasMinutes()) {
+		node.append_child("minute").text().set(startTimeDto.getMinutes());
 	}
 
-	if (startTime.hasId()) {
-		node.append_attribute("id").set_value(startTime.getId());
+	if (startTimeDto.hasId()) {
+		node.append_attribute("id").set_value(startTimeDto.getId());
 	}
 }
 
-void XmlWriter::saveSchedulers(xml_node* parent, const SchedulersDto& schedulers) {
+void XmlWriter::saveSchedulersDto(xml_node* parent, const SchedulersDto& schedulersDto) {
 	xml_node schedulersListNode = parent->append_child("schedulers");
 
-	if (schedulers.hasEveryDayScheduler()) {
-		const EveryDaySchedulerDto& everyDayScheduler = schedulers.getEveryDayScheduler();
-		saveEveryDayScheduler(&schedulersListNode, everyDayScheduler);
+	if (schedulersDto.hasEveryDayScheduler()) {
+		const EveryDaySchedulerDto& everyDaySchedulerDto = schedulersDto.getEveryDayScheduler();
+		saveEveryDaySchedulerDto(&schedulersListNode, everyDaySchedulerDto);
 	}
 
-	if (schedulers.hasHotWeatherScheduler()) {
-		const HotWeatherSchedulerDto& hotWeatherScheduler = schedulers.getHotWeatherScheduler();
-		saveHotWeatherScheduler(&schedulersListNode, hotWeatherScheduler);
+	if (schedulersDto.hasHotWeatherScheduler()) {
+		const HotWeatherSchedulerDto& hotWeatherSchedulerDto = schedulersDto.getHotWeatherScheduler();
+		saveHotWeatherSchedulerDto(&schedulersListNode, hotWeatherSchedulerDto);
 	}
 
-	if (schedulers.hasTemperatureDependentScheduler()) {
-		const TemperatureDependentSchedulerDto& temperatureDependentScheduler = schedulers.getTemperatureDependentScheduler();
-		saveTemperatureDependentScheduler(&schedulersListNode, temperatureDependentScheduler);
+	if (schedulersDto.hasTemperatureDependentScheduler()) {
+		const TemperatureDependentSchedulerDto& temperatureDependentSchedulerDto = schedulersDto.getTemperatureDependentScheduler();
+		saveTemperatureDependentSchedulerDto(&schedulersListNode, temperatureDependentSchedulerDto);
 	}
 
-	if (schedulers.hasWeeklyScheduler()) {
-		const WeeklySchedulerDto& weeklyScheduler = schedulers.getWeeklyScheduler();
-		saveWeeklyScheduler(&schedulersListNode, weeklyScheduler);
+	if (schedulersDto.hasWeeklyScheduler()) {
+		const WeeklySchedulerDto& weeklySchedulerDto = schedulersDto.getWeeklyScheduler();
+		saveWeeklySchedulerDto(&schedulersListNode, weeklySchedulerDto);
 	}
 }
 
-void XmlWriter::saveEveryDayScheduler(xml_node* parent, const EveryDaySchedulerDto& scheduler) {
+void XmlWriter::saveEveryDaySchedulerDto(xml_node* parent, const EveryDaySchedulerDto& schedulerDto) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("every-day");
 }
 
-void XmlWriter::saveHotWeatherScheduler(xml_node* parent, const HotWeatherSchedulerDto& scheduler) {
+void XmlWriter::saveHotWeatherSchedulerDto(xml_node* parent, const HotWeatherSchedulerDto& schedulerDto) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("hot-weather");
 
-	if (scheduler.hasPeriodInSeconds()) {
-		node.append_child("period").text().set(scheduler.getPeriodInSeconds());
+	if (schedulerDto.hasPeriodInSeconds()) {
+		node.append_child("period").text().set(schedulerDto.getPeriodInSeconds());
 	}
 
-	if (scheduler.hasMinTemperature()) {
-		node.append_child("temperature").text().set(scheduler.getMinTemperature());
+	if (schedulerDto.hasMinTemperature()) {
+		node.append_child("temperature").text().set(schedulerDto.getMinTemperature());
 	}
 }
 
-void XmlWriter::saveTemperatureDependentScheduler(xml_node* parent, const TemperatureDependentSchedulerDto& scheduler) {
+void XmlWriter::saveTemperatureDependentSchedulerDto(xml_node* parent, const TemperatureDependentSchedulerDto& schedulerDto) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("temperature-dependent");
 
-	if (scheduler.hasRemainingCorrection()) {
+	if (schedulerDto.hasRemainingCorrection()) {
 		std::stringstream ss;
-		ss << std::fixed << std::setprecision(2) << scheduler.getRemainingCorrection();
+		ss << std::fixed << std::setprecision(2) << schedulerDto.getRemainingCorrection();
 		node.append_child("remaining-correction").text().set(ss.str().c_str());
 	}
 
-	if (scheduler.hasMinAdjustment()) {
-		node.append_child("min-adjustment").text().set(scheduler.getMinAdjustment());
+	if (schedulerDto.hasMinAdjustment()) {
+		node.append_child("min-adjustment").text().set(schedulerDto.getMinAdjustment());
 	}
 
-	if (scheduler.hasMaxAdjustment()) {
-		node.append_child("max-adjustment").text().set(scheduler.getMaxAdjustment());
+	if (schedulerDto.hasMaxAdjustment()) {
+		node.append_child("max-adjustment").text().set(schedulerDto.getMaxAdjustment());
 	}
 }
 
-void XmlWriter::saveWeeklyScheduler(xml_node* parent, const WeeklySchedulerDto& scheduler) {
+void XmlWriter::saveWeeklySchedulerDto(xml_node* parent, const WeeklySchedulerDto& schedulerDto) {
 	xml_node node = parent->append_child("scheduler");
 	node.append_attribute("type").set_value("weekly");
 
-	if (scheduler.hasValues()) {
+	if (schedulerDto.hasValues()) {
 		xml_node daysNode = node.append_child("days");
-		const list<bool>& values = scheduler.getValues();
+		const list<bool>& values = schedulerDto.getValues();
 		for (auto value : values) {
 			daysNode.append_child("day").text().set(value);
 		}
 	}
 }
 
-void XmlWriter::saveCurrentTemperature(pugi::xml_node* parent, const CurrentTemperatureDto& currentTemperature) {
+void XmlWriter::saveCurrentTemperatureDto(pugi::xml_node* parent, const CurrentTemperatureDto& currentTemperature) {
 	xml_node node = parent->append_child("temperature");
 
 	node.append_child("value").text().set(static_cast<int>(currentTemperature.getValue()));
@@ -227,7 +227,7 @@ void XmlWriter::saveCurrentTemperature(pugi::xml_node* parent, const CurrentTemp
 	node.append_child("unit").text().set(currentTemperature.getUnit().c_str());
 }
 
-void XmlWriter::saveTemperatureForecast(pugi::xml_node* parent, const TemperatureForecastDto& temperatureForecast) {
+void XmlWriter::saveTemperatureForecastDto(pugi::xml_node* parent, const TemperatureForecastDto& temperatureForecast) {
 	xml_node node = parent->append_child("forecast");
 
 	node.append_child("value-min").text().set(static_cast<int>(temperatureForecast.getMinValue()));
@@ -236,7 +236,7 @@ void XmlWriter::saveTemperatureForecast(pugi::xml_node* parent, const Temperatur
 	node.append_child("datetime-to").text().set(temperatureForecast.getDateTimeTo().c_str());
 }
 
-void XmlWriter::saveTemperatureHistory(pugi::xml_node* parent, const TemperatureHistoryDto& temperatureHistory) {
+void XmlWriter::saveTemperatureHistoryDto(pugi::xml_node* parent, const TemperatureHistoryDto& temperatureHistory) {
 	xml_node node = parent->append_child("historical");
 
 	node.append_child("value-min").text().set(static_cast<int>(temperatureHistory.getMinValue()));
@@ -248,93 +248,93 @@ void XmlWriter::saveTemperatureHistory(pugi::xml_node* parent, const Temperature
 
 ///////////////////////////////////////////////////////////////////////////////
 
-string XmlWriter::save(const DocumentDto& document) {
+string XmlWriter::save(const DocumentDto& documentDto) {
 	auto doc = createXmlDocument();
-	saveDocument(doc.get(), document);
+	saveDocumentDto(doc.get(), documentDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const ProgramDto& program) {
+string XmlWriter::save(const ProgramDto& programDto) {
 	auto doc = createXmlDocument();
-	saveProgram(doc.get(), program, true);
+	saveProgramDto(doc.get(), programDto, true);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const ProgramDto& program, const std::string& styleSheet) {
+string XmlWriter::save(const ProgramDto& programDto, const std::string& styleSheet) {
 	auto doc = createXmlDocument(styleSheet);
-	saveProgram(doc.get(), program, true);
+	saveProgramDto(doc.get(), programDto, true);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<ProgramDto>& programs) {
+string XmlWriter::save(const ProgramDtoList& programDtoList) {
 	auto doc = createXmlDocument();
-	saveProgramList(doc.get(), programs, true);
+	saveProgramDtoList(doc.get(), programDtoList, true);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<ProgramDto>& programs, const std::string& styleSheet) {
+string XmlWriter::save(const ProgramDtoList& programDtoList, const std::string& styleSheet) {
 	auto doc = createXmlDocument(styleSheet);
-	saveProgramList(doc.get(), programs, false);
+	saveProgramDtoList(doc.get(), programDtoList, false);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const RunTimeDto& runTime) {
+string XmlWriter::save(const RunTimeDto& runTimeDto) {
 	auto doc = createXmlDocument();
-	saveRunTime(doc.get(), runTime);
+	saveRunTimeDto(doc.get(), runTimeDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<RunTimeDto>& runTimes) {
+string XmlWriter::save(const RunTimeDtoList& runTimeDtoList) {
 	auto doc = createXmlDocument();
-	saveRunTimeList(doc.get(), runTimes);
+	saveRunTimeDtoList(doc.get(), runTimeDtoList);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const StartTimeDto& startTime) {
+string XmlWriter::save(const StartTimeDto& startTimeDto) {
 	auto doc = createXmlDocument();
-	saveStartTime(doc.get(), startTime);
+	saveStartTimeDto(doc.get(), startTimeDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const list<StartTimeDto>& startTimes) {
+string XmlWriter::save(const StartTimeDtoList& startTimeDtoList) {
 	auto doc = createXmlDocument();
-	saveStartTimeList(doc.get(), startTimes);
+	saveStartTimeDtoList(doc.get(), startTimeDtoList);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const SchedulersDto& schedulers) {
+string XmlWriter::save(const SchedulersDto& schedulersDto) {
 	auto doc = createXmlDocument();
-	saveSchedulers(doc.get(), schedulers);
+	saveSchedulersDto(doc.get(), schedulersDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const EveryDaySchedulerDto& scheduler) {
+string XmlWriter::save(const EveryDaySchedulerDto& schedulerDto) {
 	auto doc = createXmlDocument();
-	saveEveryDayScheduler(doc.get(), scheduler);
+	saveEveryDaySchedulerDto(doc.get(), schedulerDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const HotWeatherSchedulerDto& scheduler) {
+string XmlWriter::save(const HotWeatherSchedulerDto& schedulerDto) {
 	auto doc = createXmlDocument();
-	saveHotWeatherScheduler(doc.get(), scheduler);
+	saveHotWeatherSchedulerDto(doc.get(), schedulerDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const TemperatureDependentSchedulerDto& scheduler) {
+string XmlWriter::save(const TemperatureDependentSchedulerDto& schedulerDto) {
 	auto doc = createXmlDocument();
-	saveTemperatureDependentScheduler(doc.get(), scheduler);
+	saveTemperatureDependentSchedulerDto(doc.get(), schedulerDto);
 	return toString(doc.get(), humanReadable);
 }
 
-string XmlWriter::save(const WeeklySchedulerDto& scheduler) {
+string XmlWriter::save(const WeeklySchedulerDto& schedulerDto) {
 	auto doc = createXmlDocument();
-	saveWeeklyScheduler(doc.get(), scheduler);
+	saveWeeklySchedulerDto(doc.get(), schedulerDto);
 	return toString(doc.get(), humanReadable);
 }
 
 std::string XmlWriter::save(const CurrentTemperatureDto& currentTemperature, const std::string& styleSheet) {
 	auto doc = createXmlDocument(styleSheet);
-	saveCurrentTemperature(doc.get(), currentTemperature);
+	saveCurrentTemperatureDto(doc.get(), currentTemperature);
 	return toString(doc.get(), humanReadable);
 }
 
@@ -344,32 +344,32 @@ std::string XmlWriter::save(const TemperatureHistoryDto& temperatureHistory, con
 	xml_node temperatureNode = doc->append_child("temperature");
 	temperatureNode.append_child("unit").text().set(temperatureHistory.getUnit().c_str());
 
-	saveTemperatureHistory(&temperatureNode, temperatureHistory);
+	saveTemperatureHistoryDto(&temperatureNode, temperatureHistory);
 	return toString(doc.get(), humanReadable);
 }
 
-std::string XmlWriter::save(const TemperatureForecastDto& temperatureForecast, const std::string& styleSheet) {
+std::string XmlWriter::save(const TemperatureForecastDto& temperatureForecastDto, const std::string& styleSheet) {
 	auto doc = createXmlDocument(styleSheet);
 
 	xml_node temperatureNode = doc->append_child("temperature");
-	temperatureNode.append_child("unit").text().set(temperatureForecast.getUnit().c_str());
+	temperatureNode.append_child("unit").text().set(temperatureForecastDto.getUnit().c_str());
 
-	saveTemperatureForecast(&temperatureNode, temperatureForecast);
+	saveTemperatureForecastDto(&temperatureNode, temperatureForecastDto);
 	return toString(doc.get(), humanReadable);
 }
 
-std::string XmlWriter::save(const TemperatureHistoryDto& temperatureHistory, const TemperatureForecastDto& temperatureForecast, const std::string& styleSheet) {
-	if (temperatureHistory.getUnit() != temperatureForecast.getUnit()) {
+std::string XmlWriter::save(const TemperatureHistoryDto& temperatureHistoryDto, const TemperatureForecastDto& temperatureForecastDto, const std::string& styleSheet) {
+	if (temperatureHistoryDto.getUnit() != temperatureForecastDto.getUnit()) {
 		throw std::logic_error("temperatureHistory.unit() != temperatureForecast.unit()");
 	}
 
 	auto doc = createXmlDocument(styleSheet);
 
 	xml_node temperatureNode = doc->append_child("temperature");
-	temperatureNode.append_child("unit").text().set(temperatureForecast.getUnit().c_str());
+	temperatureNode.append_child("unit").text().set(temperatureForecastDto.getUnit().c_str());
 
-	saveTemperatureHistory(&temperatureNode, temperatureHistory);
-	saveTemperatureForecast(&temperatureNode, temperatureForecast);
+	saveTemperatureHistoryDto(&temperatureNode, temperatureHistoryDto);
+	saveTemperatureForecastDto(&temperatureNode, temperatureForecastDto);
 	return toString(doc.get(), humanReadable);
 }
 

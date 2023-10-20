@@ -59,16 +59,16 @@ void ProgramImplFromDtoTest::checkUpdateFromProgramDto(const UpdateType updateTy
 		}
 
 		if (UpdateType::RunTimeContainer == updateType || UpdateType::All == updateType) {
-			const std::list<RunTimeDto> expectedRunTimeDtoList = sample.getDto().getRunTimes();
+			const RunTimeDtoList expectedRunTimeDtoList = sample.getDto().getRunTimes();
 
-			actualProgramDto.setRunTimes(std::list<RunTimeDto>(expectedRunTimeDtoList));
+			actualProgramDto.setRunTimes(RunTimeDtoList(expectedRunTimeDtoList));
 			EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList));
 		}
 
 		if (UpdateType::StartTimeContainer == updateType || UpdateType::All == updateType) {
-			const std::list<StartTimeDto> expectedStartTimeDtoList = sample.getDto().getStartTimes();
+			const StartTimeDtoList expectedStartTimeDtoList = sample.getDto().getStartTimes();
 
-			actualProgramDto.setStartTimes(std::list<StartTimeDto>(expectedStartTimeDtoList));
+			actualProgramDto.setStartTimes(StartTimeDtoList(expectedStartTimeDtoList));
 			EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(expectedStartTimeDtoList));
 		}
 

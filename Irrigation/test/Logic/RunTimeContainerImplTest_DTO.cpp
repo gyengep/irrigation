@@ -13,7 +13,7 @@ TEST(RunTimeContainerImplToDtoTest, toRunTimeContainerDtoList) {
 
 	for (const auto& sample : sampleList) {
 		const RunTimeContainerImpl& actual = sample.getContainer();
-		const std::list<RunTimeDto>& expected = sample.getDtoList();
+		const RunTimeDtoList& expected = sample.getDtoList();
 
 		EXPECT_THAT(actual.toRunTimeDtoList(), ContainerEq(expected));
 	}
@@ -25,7 +25,7 @@ TEST_F(RunTimeContainerImplFromDtoTest, updateFromRunTimeDtoList) {
 	const auto sampleList = Dto2ObjectTestSamples::RunTimeContainerSampleList();
 
 	for (const auto& sample : sampleList) {
-		const std::list<RunTimeDto>& actualRunTimeDtoList = sample.getDtoList();
+		const RunTimeDtoList& actualRunTimeDtoList = sample.getDtoList();
 
 		const size_t expectedSize = actualRunTimeDtoList.size();
 
@@ -47,10 +47,10 @@ TEST_F(RunTimeContainerImplFromDtoTest, updateFromRunTimeDtoList_validSize) {
 		EXPECT_CALL(*mockRunTimeFactory->mockRunTimes[i], updateFromRunTimeDto(_));
 	}
 
-	EXPECT_NO_THROW(runTimeContainer->updateFromRunTimeDtoList(std::list<RunTimeDto>(6)));
+	EXPECT_NO_THROW(runTimeContainer->updateFromRunTimeDtoList(RunTimeDtoList(6)));
 }
 
 TEST_F(RunTimeContainerImplFromDtoTest, updateFromRunTimeDtoList_invalidSize) {
-	EXPECT_THROW(runTimeContainer->updateFromRunTimeDtoList(std::list<RunTimeDto>(5)), IllegalArgumentException);
-	EXPECT_THROW(runTimeContainer->updateFromRunTimeDtoList(std::list<RunTimeDto>(7)), IllegalArgumentException);
+	EXPECT_THROW(runTimeContainer->updateFromRunTimeDtoList(RunTimeDtoList(5)), IllegalArgumentException);
+	EXPECT_THROW(runTimeContainer->updateFromRunTimeDtoList(RunTimeDtoList(7)), IllegalArgumentException);
 }

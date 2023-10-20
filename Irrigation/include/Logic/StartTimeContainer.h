@@ -31,8 +31,8 @@ public:
 	virtual const_mapped_type at(const key_type& key) const = 0;						// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) = 0;									// throw NoSuchElementException
 
-	virtual std::list<StartTimeDto> toStartTimeDtoList() const = 0;
-	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDto>& startTimeDtoList) = 0;
+	virtual StartTimeDtoList toStartTimeDtoList() const = 0;
+	virtual void updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) = 0;
 	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) = 0;
 
 	virtual std::string toString() const = 0;

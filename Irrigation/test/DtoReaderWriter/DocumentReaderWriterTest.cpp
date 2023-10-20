@@ -23,7 +23,7 @@ TEST(DocumentWriterTest, save) {
 
 TEST(DocumentReaderTest, load) {
 	for (const auto& documentSample : DtoReaderWriterTestSamples::DocumentSampleList()) {
-		const DocumentDto actualDto = XmlReader().loadDocument(documentSample.getXml());
+		const DocumentDto actualDto = XmlReader().loadDocumentDto(documentSample.getXml());
 		const DocumentDto expectedDto = documentSample.getDto();
 
 		std::cout << actualDto << std::endl;
@@ -33,13 +33,13 @@ TEST(DocumentReaderTest, load) {
 }
 
 TEST(DocumentReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadDocument("<irrigABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadDocumentDto("<irrigABC/>"), RequiredTagMissing);
 }
 
 TEST(DocumentReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadDocument("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadDocumentDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(DocumentReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadDocument("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadDocumentDto("<abc/><123/>"), XMLParseException);
 }

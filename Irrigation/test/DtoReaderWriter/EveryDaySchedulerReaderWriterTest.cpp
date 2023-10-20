@@ -22,7 +22,7 @@ TEST(EveryDaySchedulerWriterTest, save) {
 
 TEST(EveryDaySchedulerReaderTest, load) {
 	const DtoReaderWriterTestSamples::EveryDaySchedulerSample everyDaySchedulerSample;
-	const EveryDaySchedulerDto actualDto = XmlReader().loadEveryDayScheduler(everyDaySchedulerSample.getXml());
+	const EveryDaySchedulerDto actualDto = XmlReader().loadEveryDaySchedulerDto(everyDaySchedulerSample.getXml());
 	const EveryDaySchedulerDto expectedDto = everyDaySchedulerSample.getDto();
 
 	std::cout << actualDto << std::endl;
@@ -31,17 +31,17 @@ TEST(EveryDaySchedulerReaderTest, load) {
 }
 
 TEST(EveryDaySchedulerReaderTest, loadInvalidType) {
-	EXPECT_THROW(XmlReader().loadEveryDayScheduler("<scheduler type=\"ABC\"/>"), std::invalid_argument);
+	EXPECT_THROW(XmlReader().loadEveryDaySchedulerDto("<scheduler type=\"ABC\"/>"), std::invalid_argument);
 }
 
 TEST(EveryDaySchedulerReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadEveryDayScheduler("<hotweatherABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadEveryDaySchedulerDto("<hotweatherABC/>"), RequiredTagMissing);
 }
 
 TEST(EveryDaySchedulerReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadEveryDayScheduler("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadEveryDaySchedulerDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(EveryDaySchedulerReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadEveryDayScheduler("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadEveryDaySchedulerDto("<abc/><123/>"), XMLParseException);
 }

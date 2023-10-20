@@ -6,17 +6,17 @@
 #include <mutex>
 
 
-std::list<ProgramDto> RestView::getProgramDtoList(IrrigationDocument& irrigationDocument) {
+ProgramDtoList RestView::getProgramDtoList(IrrigationDocument& irrigationDocument) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().toProgramDtoList();
 }
 
-std::list<RunTimeDto> RestView::getRunTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId) {
+RunTimeDtoList RestView::getRunTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getRunTimeContainer().toRunTimeDtoList();
 }
 
-std::list<StartTimeDto> RestView::getStartTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId) {
+StartTimeDtoList RestView::getStartTimeDtoList(IrrigationDocument& irrigationDocument, const IdType& programId) {
 	std::unique_lock<IrrigationDocument> lock(irrigationDocument);
 	return irrigationDocument.getProgramContainer().at(programId)->getStartTimeContainer().toStartTimeDtoList();
 }

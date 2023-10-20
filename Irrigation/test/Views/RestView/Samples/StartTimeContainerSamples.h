@@ -15,13 +15,13 @@ namespace RestViewTestSamples {
 		StartTimeContainerSampleList() {
 
 			emplace_back(
-				std::list<StartTimeDto>({
+				StartTimeDtoList({
 				}),
 				"<starttimes />"
 			);
 
 			emplace_back(
-				std::list<StartTimeDto>({
+				StartTimeDtoList({
 					StartTimeSampleList().at(0).getDto().setId(10)
 				}),
 				"<starttimes>" +
@@ -30,7 +30,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<StartTimeDto>({
+				StartTimeDtoList({
 					StartTimeSampleList().at(0).getDto().setId(100),
 					StartTimeSampleList().at(1).getDto().setId(101),
 					StartTimeSampleList().at(2).getDto().setId(102)
@@ -43,7 +43,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<StartTimeDto>({
+				StartTimeDtoList({
 					StartTimeSampleList().at(3).getDto().setId(200),
 					StartTimeSampleList().at(2).getDto().setId(300),
 					StartTimeSampleList().at(0).getDto().setId(400),

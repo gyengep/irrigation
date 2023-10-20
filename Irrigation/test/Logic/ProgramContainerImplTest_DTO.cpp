@@ -12,7 +12,7 @@ TEST(ProgramContainerImplToDtoTest, toProgramContainerDtoList) {
 
 	for (const auto& sample : sampleList) {
 		const ProgramContainerImpl& actual = sample.getContainer();
-		const std::list<ProgramDto>& expected = sample.getDtoList();
+		const ProgramDtoList& expected = sample.getDtoList();
 
 		EXPECT_THAT(actual.toProgramDtoList(), ContainerEq(expected));
 	}

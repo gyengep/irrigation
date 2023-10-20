@@ -23,7 +23,7 @@ TEST(StartTimeWriterTest, save) {
 
 TEST(StartTimeReaderTest, load) {
 	for (const auto& startTimeSample : DtoReaderWriterTestSamples::StartTimeSampleList()) {
-		const StartTimeDto actualDto = XmlReader().loadStartTime(startTimeSample.getXml());
+		const StartTimeDto actualDto = XmlReader().loadStartTimeDto(startTimeSample.getXml());
 		const StartTimeDto expectedDto = startTimeSample.getDto();
 
 		std::cout << actualDto << std::endl;
@@ -33,13 +33,13 @@ TEST(StartTimeReaderTest, load) {
 }
 
 TEST(StartTimeReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadStartTime("<starttimeABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadStartTimeDto("<starttimeABC/>"), RequiredTagMissing);
 }
 
 TEST(StartTimeReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadStartTime("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadStartTimeDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(StartTimeReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadStartTime("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadStartTimeDto("<abc/><123/>"), XMLParseException);
 }

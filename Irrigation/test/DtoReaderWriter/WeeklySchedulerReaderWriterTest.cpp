@@ -23,7 +23,7 @@ TEST(WeeklySchedulerWriterTest, save) {
 
 TEST(WeeklySchedulerReaderTest, load) {
 	for (const auto& weeklySchedulerSample : DtoReaderWriterTestSamples::WeeklySchedulerSampleList()) {
-		const WeeklySchedulerDto actualDto = XmlReader().loadWeeklyScheduler(weeklySchedulerSample.getXml());
+		const WeeklySchedulerDto actualDto = XmlReader().loadWeeklySchedulerDto(weeklySchedulerSample.getXml());
 		const WeeklySchedulerDto expectedDto = weeklySchedulerSample.getDto();
 
 		std::cout << actualDto << std::endl;
@@ -33,17 +33,17 @@ TEST(WeeklySchedulerReaderTest, load) {
 }
 
 TEST(WeeklySchedulerReaderTest, loadInvalidType) {
-	EXPECT_THROW(XmlReader().loadWeeklyScheduler("<scheduler type=\"ABC\"/>"), std::invalid_argument);
+	EXPECT_THROW(XmlReader().loadWeeklySchedulerDto("<scheduler type=\"ABC\"/>"), std::invalid_argument);
 }
 
 TEST(WeeklySchedulerReaderTest, loadInvalid) {
-	EXPECT_THROW(XmlReader().loadWeeklyScheduler("<hotweatherABC/>"), RequiredTagMissing);
+	EXPECT_THROW(XmlReader().loadWeeklySchedulerDto("<hotweatherABC/>"), RequiredTagMissing);
 }
 
 TEST(WeeklySchedulerReaderTest, loadNoneXml) {
-	EXPECT_THROW(XmlReader().loadWeeklyScheduler("jhvjhvjh"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadWeeklySchedulerDto("jhvjhvjh"), XMLParseException);
 }
 
 TEST(WeeklySchedulerReaderTest, loadInvalidXml) {
-	EXPECT_THROW(XmlReader().loadWeeklyScheduler("<abc/><123/>"), XMLParseException);
+	EXPECT_THROW(XmlReader().loadWeeklySchedulerDto("<abc/><123/>"), XMLParseException);
 }

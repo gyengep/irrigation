@@ -40,8 +40,8 @@ public:
 	virtual const_mapped_type at(const key_type& key) const override;						// throw NoSuchElementException
 	virtual mapped_type at(const key_type& key) override;									// throw NoSuchElementException
 
-	virtual std::list<StartTimeDto> toStartTimeDtoList() const override;
-	virtual void updateFromStartTimeDtoList(const std::list<StartTimeDto>& startTimeDtoList) override;
+	virtual StartTimeDtoList toStartTimeDtoList() const override;
+	virtual void updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) override;
 	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) override;
 
 	virtual std::string toString() const override;

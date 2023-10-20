@@ -26,7 +26,7 @@ void IrrigationDocumentSaverImplTest::TearDown() {
 TEST_F(IrrigationDocumentSaverImplTest, save) {
 
 	const DocumentDto documentDto(
-			std::list<ProgramDto> {
+			ProgramDtoList {
 				ProgramDto().setName("111"),
 				ProgramDto().setName("222"),
 				ProgramDto().setName("333"),

@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include "DtoMacros.h"
 
 
@@ -68,3 +69,5 @@ IMPLEMENT_OSS_OPERATOR(StartTimeDto, STARTTIME_DTO_MEMBERS);
 #undef DTO_MEMBER_INIT
 #undef DTO_MEMBER_COPY
 #undef DTO_MEMBER_MOVE
+
+typedef std::list<StartTimeDto> StartTimeDtoList;

@@ -5,7 +5,7 @@
 
 
 #define DOCUMENT_DTO_MEMBERS											\
-	DTO_MEMBER_MOVE(DocumentDto, std::list<ProgramDto>, Programs)
+	DTO_MEMBER_MOVE(DocumentDto, ProgramDtoList, Programs)
 
 
 CREATE_DTO_CLASS(DocumentDto)
@@ -14,7 +14,7 @@ CREATE_DTO_CLASS(DocumentDto)
 	#define DTO_MEMBER_COPY(CLASS, TYPE, NAME)			DTO_INIT_VALUE_COPY(CLASS, TYPE, NAME)
 	#define DTO_MEMBER_MOVE(CLASS, TYPE, NAME)			DTO_INIT_VALUE_MOVE(CLASS, TYPE, NAME)
 
-	DocumentDto(std::list<ProgramDto>&& Programs) {
+	DocumentDto(ProgramDtoList&& Programs) {
 		DOCUMENT_DTO_MEMBERS;
 	}
 

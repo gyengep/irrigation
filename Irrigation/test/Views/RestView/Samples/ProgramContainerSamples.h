@@ -12,8 +12,8 @@ namespace RestViewTestSamples {
 		const std::string xmlWithoutContainers;
 
 	public:
-		ProgramContainerSample(const std::list<ProgramDto>& dtoList, const std::string& xml, const std::string& xmlWithoutContainers) :
-			SampleList<ProgramDto>(dtoList, xml),
+		ProgramContainerSample(const ProgramDtoList& programDtoList, const std::string& xml, const std::string& xmlWithoutContainers) :
+			SampleList<ProgramDto>(programDtoList, xml),
 			xmlWithoutContainers(xmlWithoutContainers)
 		{
 		}
@@ -28,14 +28,14 @@ namespace RestViewTestSamples {
 		ProgramContainerSampleList() {
 
 			emplace_back(
-				std::list<ProgramDto>({
+				ProgramDtoList({
 				}),
 				"<programs />",
 				"<programs />"
 			);
 
 			emplace_back(
-				std::list<ProgramDto>({
+				ProgramDtoList({
 					ProgramSampleList().at(0).getDto().setId(10)
 				}),
 				"<programs>" +
@@ -47,7 +47,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<ProgramDto>({
+				ProgramDtoList({
 					ProgramSampleList().at(0).getDto().setId(100),
 					ProgramSampleList().at(1).getDto().setId(101),
 					ProgramSampleList().at(2).getDto().setId(102)
@@ -65,7 +65,7 @@ namespace RestViewTestSamples {
 			);
 
 			emplace_back(
-				std::list<ProgramDto>({
+				ProgramDtoList({
 					ProgramSampleList().at(3).getDto().setId(200),
 					ProgramSampleList().at(2).getDto().setId(300),
 					ProgramSampleList().at(0).getDto().setId(400),

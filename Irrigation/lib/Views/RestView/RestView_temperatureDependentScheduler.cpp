@@ -38,7 +38,7 @@ unique_ptr<HttpResponse> RestView::onPatchTemperatureDependentScheduler(const Ht
 
 	try {
 		const IdType programId = getProgramId(pathParameters);
-		const TemperatureDependentSchedulerDto temperatureDependentSchedulerDto = dtoReader->loadTemperatureDependentScheduler(string(request.getUploadData()->data(), request.getUploadData()->size()));
+		const TemperatureDependentSchedulerDto temperatureDependentSchedulerDto = dtoReader->loadTemperatureDependentSchedulerDto(string(request.getUploadData()->data(), request.getUploadData()->size()));
 		const std::string text = patchTemperatureDependentScheduler(irrigationDocument, programId, temperatureDependentSchedulerDto);
 
 		LOGGER.debug("Program[%s].TemperatureDependentScheduler is modified: %s",
