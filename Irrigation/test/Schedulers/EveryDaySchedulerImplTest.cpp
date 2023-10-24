@@ -1,4 +1,5 @@
-#include "Schedulers/Impl/EveryDaySchedulerImpl.h"
+#include "schedulers/Impl/EveryDaySchedulerImpl.h"
+#include "Dto2ObjectSamples/EveryDaySchedulerSamples.h"
 #include <gmock/gmock.h>
 
 using namespace testing;
@@ -55,4 +56,20 @@ TEST(EveryDaySchedulerImplTest, isDayScheduled) {
 	EXPECT_THAT(scheduler.process(LocalDateTime(2016, 11, 18)), Pointee(Scheduler::Result(true)));
 	EXPECT_THAT(scheduler.process(LocalDateTime(2016, 11, 19)), Pointee(Scheduler::Result(true)));
 	EXPECT_THAT(scheduler.process(LocalDateTime(2016, 11, 20)), Pointee(Scheduler::Result(true)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(EveryDaySchedulerImplToDtoTest, toEveryDaySchedulerDto) {
+	const Dto2ObjectTestSamples::EveryDaySchedulerSample sample;
+	const EveryDaySchedulerImpl& actual = sample.getObject();
+	const EveryDaySchedulerDto& expected = sample.getDto();
+
+	EXPECT_THAT(actual.toEveryDaySchedulerDto(), Eq(expected));
+}
+
+TEST(EveryDaySchedulerImplFromDtoTest, updateFromEveryDaySchedulerDto) {
+	EveryDaySchedulerImpl actualEveryDayScheduler;
+	const EveryDaySchedulerDto actualEveryDaySchedulerDto = Dto2ObjectTestSamples::EveryDaySchedulerSample().getDto();
+	actualEveryDayScheduler.updateFromEveryDaySchedulerDto(actualEveryDaySchedulerDto);
 }

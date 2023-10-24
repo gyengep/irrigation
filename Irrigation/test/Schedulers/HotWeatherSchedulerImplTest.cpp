@@ -1,27 +1,36 @@
-#include "Schedulers/Impl/HotWeatherSchedulerImpl.h"
-#include "Mocks/MockTemperatureHistory.h"
-#include <gmock/gmock.h>
+#include "HotWeatherSchedulerImplTest.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(HotWeatherSchedulerImplTest, defaultConstructor) {
+TEST(HotWeatherSchedulerImplConstructorTest, defaultConstructor) {
 	HotWeatherSchedulerImpl scheduler(
-		std::make_shared<MockTemperatureHistory>()
+		std::make_shared<StrictMock<MockTemperatureHistory>>()
 	);
 
 	EXPECT_THAT(scheduler.getMinTemperature(), Eq(35));
-	EXPECT_THAT(scheduler.getPeriod(), Eq(2 * 60 * 60));
+	EXPECT_THAT(scheduler.getPeriod(), Eq(std::chrono::hours(2)));
 }
 
-TEST(HotWeatherSchedulerImplTest, parametrizedConstructor) {
+TEST(HotWeatherSchedulerImplConstructorTest, parametrizedConstructor) {
 	HotWeatherSchedulerImpl scheduler(
-		std::make_shared<MockTemperatureHistory>(),
+		std::make_shared<StrictMock<MockTemperatureHistory>>(),
 		std::chrono::minutes(3),
 		15
 	);
 
-	EXPECT_THAT(scheduler.getPeriod(), Eq(180));
+	EXPECT_THAT(scheduler.getPeriod(), Eq(std::chrono::minutes(3)));
 	EXPECT_THAT(scheduler.getMinTemperature(), Eq(15));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void HotWeatherSchedulerImplTest::SetUp() {
+	mockTemperatureHistory = std::make_shared<StrictMock<MockTemperatureHistory>>();
+	hotWeatherScheduler = std::make_shared<HotWeatherSchedulerImpl>(mockTemperatureHistory);
+}
+
+void HotWeatherSchedulerImplTest::TearDown() {
+
 }

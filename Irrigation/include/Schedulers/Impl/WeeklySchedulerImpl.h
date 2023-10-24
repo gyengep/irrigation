@@ -16,8 +16,8 @@ public:
 	WeeklySchedulerImpl(std::initializer_list<bool> initializer);
 	virtual ~WeeklySchedulerImpl();
 
-	virtual void enableDay(size_t day, bool enable) override;
-	virtual bool isDayEnabled(size_t day) const override;
+	virtual void enableDay(size_t day, bool enable) override;	// throws IndexOutOfBoundsException
+	virtual bool isDayEnabled(size_t day) const override;		// throws IndexOutOfBoundsException
 
 	virtual std::unique_ptr<Scheduler::Result> process(const LocalDateTime& localDateTime) override;
 

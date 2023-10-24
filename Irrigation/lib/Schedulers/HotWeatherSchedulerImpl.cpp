@@ -46,8 +46,8 @@ float HotWeatherSchedulerImpl::getMinTemperature() const {
 	return minTemperature;
 }
 
-unsigned HotWeatherSchedulerImpl::getPeriod() const {
-	return period.count();
+const std::chrono::seconds& HotWeatherSchedulerImpl::getPeriod() const {
+	return period;
 }
 
 std::unique_ptr<Scheduler::Result> HotWeatherSchedulerImpl::process(const LocalDateTime& localDateTime) {
@@ -90,7 +90,7 @@ void HotWeatherSchedulerImpl::loadFrom(const nlohmann::json& values) {
 }
 
 HotWeatherSchedulerDto HotWeatherSchedulerImpl::toHotWeatherSchedulerDto() const {
-	return HotWeatherSchedulerDto(getPeriod(), minTemperature);
+	return HotWeatherSchedulerDto(std::chrono::duration_cast<std::chrono::seconds>(getPeriod()).count(), minTemperature);
 }
 
 void HotWeatherSchedulerImpl::updateFromHotWeatherSchedulerDto(const HotWeatherSchedulerDto& schedulerDto) {

@@ -1,69 +1,60 @@
-#include "HotWeatherSchedulerImplProcessTest.h"
+#include "HotWeatherSchedulerImplTest.h"
 
 using namespace testing;
-
-
-void HotWeatherSchedulerImplProcessTest::SetUp() {
-	mockTemperatureHistory = std::make_shared<MockTemperatureHistory>();
-	scheduler = std::make_shared<HotWeatherSchedulerImpl>(mockTemperatureHistory);
-}
-
-void HotWeatherSchedulerImplProcessTest::TearDown() {
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(HotWeatherSchedulerImplProcessTest, process) {
-	scheduler->setMinTemperature(25);
-	scheduler->setPeriod(std::chrono::hours(2));
+	hotWeatherScheduler->setMinTemperature(25);
+	hotWeatherScheduler->setPeriod(std::chrono::hours(2));
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 25)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, processHighTemp) {
-	scheduler->setMinTemperature(25);
-	scheduler->setPeriod(std::chrono::hours(2));
+	hotWeatherScheduler->setMinTemperature(25);
+	hotWeatherScheduler->setPeriod(std::chrono::hours(2));
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, processLowTemp) {
-	scheduler->setMinTemperature(25);
-	scheduler->setPeriod(std::chrono::hours(2));
+	hotWeatherScheduler->setMinTemperature(25);
+	hotWeatherScheduler->setPeriod(std::chrono::hours(2));
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 24)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(false)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(false)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, period1Hours) {
-	scheduler->setPeriod(std::chrono::hours(1));
+	hotWeatherScheduler->setPeriod(std::chrono::hours(1));
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 13, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
 
-	scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0));
+	hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, period3Hours) {
-	scheduler->setPeriod(std::chrono::hours(3));
+	hotWeatherScheduler->setPeriod(std::chrono::hours(3));
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 11, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
 
-	scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0));
+	hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, lastRun1Hour) {
-	scheduler->setPeriod(std::chrono::hours(1));
-	scheduler->setMinTemperature(25);
+	hotWeatherScheduler->setPeriod(std::chrono::hours(1));
+	hotWeatherScheduler->setMinTemperature(25);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 13, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
@@ -72,14 +63,14 @@ TEST_F(HotWeatherSchedulerImplProcessTest, lastRun1Hour) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 15, 0, 0), LocalDateTime(2019, 8, 7, 16, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 28)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 15, 0, 0)), Pointee(Scheduler::Result(true)));
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 16, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 15, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 16, 0, 0)), Pointee(Scheduler::Result(true)));
 }
 
 TEST_F(HotWeatherSchedulerImplProcessTest, lastRun2Hour) {
-	scheduler->setPeriod(std::chrono::hours(2));
-	scheduler->setMinTemperature(25);
+	hotWeatherScheduler->setPeriod(std::chrono::hours(2));
+	hotWeatherScheduler->setMinTemperature(25);
 
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 12, 0, 0), LocalDateTime(2019, 8, 7, 14, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 26)));
@@ -88,8 +79,8 @@ TEST_F(HotWeatherSchedulerImplProcessTest, lastRun2Hour) {
 	EXPECT_CALL(*mockTemperatureHistory, getTemperatureHistory(LocalDateTime(2019, 8, 7, 14, 0, 0), LocalDateTime(2019, 8, 7, 16, 0, 0))).
 		WillOnce(Return(TemperatureHistory::Values(20, 30, 28)));
 
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 15, 0, 0)), Pointee(Scheduler::Result(false)));
-	EXPECT_THAT(scheduler->process(LocalDateTime(2019, 8, 7, 16, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 14, 0, 0)), Pointee(Scheduler::Result(true)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 15, 0, 0)), Pointee(Scheduler::Result(false)));
+	EXPECT_THAT(hotWeatherScheduler->process(LocalDateTime(2019, 8, 7, 16, 0, 0)), Pointee(Scheduler::Result(true)));
 }
 

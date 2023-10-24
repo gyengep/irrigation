@@ -1,110 +1,110 @@
-#include "Schedulers/Impl/WeeklySchedulerImpl.h"
+#include "WeeklySchedulerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include <gmock/gmock.h>
-#include <list>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void checkDay(int year, int month, int day, Scheduler& scheduler, bool expectedResult) {
+TEST(WeeklySchedulerImplConstructorTest, defaultConstructor) {
+	WeeklySchedulerImpl weeklyScheduler;
+
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
+}
+
+TEST(WeeklySchedulerImplConstructorTest, initializerConstructor) {
+	WeeklySchedulerImpl weeklyScheduler({true, false, true, true, false, false, false});
+
+	EXPECT_TRUE(weeklyScheduler.isDayEnabled(0));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(1));
+	EXPECT_TRUE(weeklyScheduler.isDayEnabled(2));
+	EXPECT_TRUE(weeklyScheduler.isDayEnabled(3));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(4));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(5));
+	EXPECT_FALSE(weeklyScheduler.isDayEnabled(6));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void WeeklySchedulerImplTest::SetUp() {
+	weeklyScheduler = std::make_shared<WeeklySchedulerImpl>();
+}
+
+void WeeklySchedulerImplTest::TearDown() {
+
+}
+
+void WeeklySchedulerImplTest::checkDay(int year, int month, int day, bool expectedResult) {
 	for (int hour = 0; hour < 24; hour++) {
 		for (int min = 0; min < 60; min++) {
 			for (int sec = 0; sec < 60; sec++) {
 				const LocalDateTime localDateTime(year, month, day, hour, min, sec);
-				ASSERT_THAT(scheduler.process(localDateTime), Pointee(Scheduler::Result(expectedResult)));
+				ASSERT_THAT(weeklyScheduler->process(localDateTime), Pointee(Scheduler::Result(expectedResult)));
 			}
 		}
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
+TEST_F(WeeklySchedulerImplTest, enableDay) {
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::WEDNESDAY, true);
 
-TEST(WeeklySchedulerImplTest, defaultConstructor) {
-	WeeklySchedulerImpl scheduler;
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::MONDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::TUESDAY));
+	EXPECT_TRUE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::THURSDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::FRIDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::SATURDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::SUNDAY));
 
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::FRIDAY, true);
+
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::MONDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::TUESDAY));
+	EXPECT_TRUE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::THURSDAY));
+	EXPECT_TRUE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::FRIDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::SATURDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::SUNDAY));
+
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::WEDNESDAY, false);
+
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::MONDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::TUESDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::THURSDAY));
+	EXPECT_TRUE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::FRIDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::SATURDAY));
+	EXPECT_FALSE(weeklyScheduler->isDayEnabled(WeeklySchedulerImpl::SUNDAY));
 }
 
-TEST(WeeklySchedulerImplTest, initializerConstructor) {
-	WeeklySchedulerImpl scheduler({true, false, true, true, false, false, false});
-
-	EXPECT_TRUE(scheduler.isDayEnabled(0));
-	EXPECT_FALSE(scheduler.isDayEnabled(1));
-	EXPECT_TRUE(scheduler.isDayEnabled(2));
-	EXPECT_TRUE(scheduler.isDayEnabled(3));
-	EXPECT_FALSE(scheduler.isDayEnabled(4));
-	EXPECT_FALSE(scheduler.isDayEnabled(5));
-	EXPECT_FALSE(scheduler.isDayEnabled(6));
+TEST_F(WeeklySchedulerImplTest, enableDayInvalid) {
+	EXPECT_THROW(weeklyScheduler->enableDay(7, true), IndexOutOfBoundsException);
 }
 
-TEST(WeeklySchedulerImplTest, enableDay) {
-	WeeklySchedulerImpl scheduler;
-
-	scheduler.enableDay(WeeklySchedulerImpl::WEDNESDAY, true);
-
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
-
-	scheduler.enableDay(WeeklySchedulerImpl::FRIDAY, true);
-
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
-
-	scheduler.enableDay(WeeklySchedulerImpl::WEDNESDAY, false);
-
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::MONDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::TUESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::WEDNESDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::THURSDAY));
-	EXPECT_TRUE(scheduler.isDayEnabled(WeeklySchedulerImpl::FRIDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SATURDAY));
-	EXPECT_FALSE(scheduler.isDayEnabled(WeeklySchedulerImpl::SUNDAY));
+TEST_F(WeeklySchedulerImplTest, isDayEnabledInvalid) {
+	EXPECT_THROW(weeklyScheduler->isDayEnabled(7), IndexOutOfBoundsException);
 }
 
-TEST(WeeklySchedulerImplTest, enableDayInvalid) {
-	WeeklySchedulerImpl scheduler;
-	EXPECT_THROW(scheduler.enableDay(7, true), IndexOutOfBoundsException);
-}
-
-TEST(WeeklySchedulerImplTest, isDayEnabledInvalid) {
-	WeeklySchedulerImpl scheduler;
-	EXPECT_THROW(scheduler.isDayEnabled(7), IndexOutOfBoundsException);
-}
-
-TEST(WeeklySchedulerImplTest, isDayScheduled) {
-	WeeklySchedulerImpl scheduler;
-
-	scheduler.enableDay(WeeklySchedulerImpl::WEDNESDAY, true);
+TEST_F(WeeklySchedulerImplTest, isDayScheduled) {
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::WEDNESDAY, true);
 
 	const int year = 2018;
 	const int month = 11;
 
 	for (int day = 19; day < 26; day++) {
-		checkDay(year, month, day, scheduler, 21 == day);
+		checkDay(year, month, day, 21 == day);
 	}
 
-	scheduler.enableDay(WeeklySchedulerImpl::WEDNESDAY, false);
-	scheduler.enableDay(WeeklySchedulerImpl::THURSDAY, true);
-	scheduler.enableDay(WeeklySchedulerImpl::SUNDAY, true);
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::WEDNESDAY, false);
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::THURSDAY, true);
+	weeklyScheduler->enableDay(WeeklySchedulerImpl::SUNDAY, true);
 
 	for (int day = 19; day < 26; day++) {
-		checkDay(year, month, day, scheduler, 22 == day || 25 == day);
+		checkDay(year, month, day, 22 == day || 25 == day);
 	}
 }

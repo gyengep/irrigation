@@ -27,7 +27,7 @@ public:
 	virtual ~HotWeatherSchedulerImpl();
 
 	float getMinTemperature() const;
-	unsigned getPeriod() const;
+	const std::chrono::seconds& getPeriod() const;
 
 	virtual void setMinTemperature(float minTemperature) override;
 	virtual void setPeriod(const std::chrono::seconds& period) override;

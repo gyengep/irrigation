@@ -26,8 +26,8 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	virtual void enableDay(size_t day, bool enable) = 0;
-	virtual bool isDayEnabled(size_t day) const = 0;
+	virtual void enableDay(size_t day, bool enable) = 0;	// throws IndexOutOfBoundsException
+	virtual bool isDayEnabled(size_t day) const = 0;		// throws IndexOutOfBoundsException
 
 	///////////////////////////////////////////////////////////////////////////
 
