@@ -31,6 +31,13 @@ TEST(WeeklySchedulerImplConstructorTest, initializerConstructor) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(WeeklySchedulerImplFactoryTest, create) {
+	EXPECT_THAT(WeeklySchedulerImplFactory().create(), Not(IsNull()));
+	EXPECT_TRUE(WeeklySchedulerImplFactory().create() != WeeklySchedulerImplFactory().create());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void WeeklySchedulerImplTest::SetUp() {
 	weeklyScheduler = std::make_shared<WeeklySchedulerImpl>();
 }

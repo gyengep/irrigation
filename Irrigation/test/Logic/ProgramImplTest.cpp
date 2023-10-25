@@ -53,6 +53,30 @@ TEST(ProgramImplConstructorTest, parametrizedConstructor) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ProgramImplFactoryTest, create) {
+	auto mockSchedulerContainerFactory = std::make_shared<NiceMock<MockSchedulerContainerFactory>>();
+	auto mockRunTimeContainerFactory = std::make_shared<NiceMock<MockRunTimeContainerFactory>>();
+	auto mockStartTimeContainerFactory = std::make_shared<NiceMock<MockStartTimeContainerFactory>>();
+
+	EXPECT_CALL(*mockSchedulerContainerFactory, create()).
+			Times(3);
+
+	EXPECT_CALL(*mockRunTimeContainerFactory, create()).
+			Times(3);
+
+	EXPECT_CALL(*mockStartTimeContainerFactory, create()).
+			Times(3);
+
+	ProgramImplFactory programImplFactory(
+			mockSchedulerContainerFactory,
+			mockRunTimeContainerFactory,
+			mockStartTimeContainerFactory
+		);
+
+	EXPECT_THAT(programImplFactory.create(), Not(IsNull()));
+	EXPECT_TRUE(programImplFactory.create() != programImplFactory.create());
+}
+
+TEST(ProgramImplFactoryTest, createAndValues) {
 	auto mockSchedulerContainer = std::make_shared<StrictMock<MockSchedulerContainer>>();
 	auto mockRunTimeContainer = std::make_shared<StrictMock<MockRunTimeContainer>>();
 	auto mockStartTimeContainer = std::make_shared<StrictMock<MockStartTimeContainer>>();
@@ -73,11 +97,13 @@ TEST(ProgramImplFactoryTest, create) {
 			Times(1).
 			WillOnce(Return(mockStartTimeContainer));
 
-	ProgramPtr program = ProgramImplFactory(
+	ProgramImplFactory programImplFactory(
 			mockSchedulerContainerFactory,
 			mockRunTimeContainerFactory,
 			mockStartTimeContainerFactory
-		).create();
+		);
+
+	ProgramPtr program = programImplFactory.create();
 
 	ASSERT_THAT(program, Not(IsNull()));
 

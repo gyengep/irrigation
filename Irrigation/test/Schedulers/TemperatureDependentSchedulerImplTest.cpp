@@ -32,6 +32,20 @@ TEST(TemperatureDependentSchedulerImplConstructorTest, initializerConstructor) {
 	EXPECT_THAT(temperatureDependentScheduler.getMaxAdjustment(), Eq(expectedMaxAdjustment));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(TemperatureDependentSchedulerImplFactoryTest, create) {
+	auto mockTemperatureForecast = std::make_shared<NiceMock<MockTemperatureForecast>>();
+	auto mockTemperatureHistory = std::make_shared<NiceMock<MockTemperatureHistory>>();
+
+	TemperatureDependentSchedulerImplFactory temperatureDependentSchedulerImplFactory(
+			mockTemperatureForecast,
+			mockTemperatureHistory
+		);
+
+	EXPECT_THAT(temperatureDependentSchedulerImplFactory.create(), Not(IsNull()));
+	EXPECT_TRUE(temperatureDependentSchedulerImplFactory.create() != temperatureDependentSchedulerImplFactory.create());
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

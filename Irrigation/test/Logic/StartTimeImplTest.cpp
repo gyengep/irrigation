@@ -29,6 +29,7 @@ TEST(StartTimeImplConstructorTest, parametrizedConstructor_invalid) {
 
 TEST(StartTimeImplFactoryTest, create) {
 	EXPECT_THAT(StartTimeImplFactory().create(), Not(IsNull()));
+	EXPECT_TRUE(StartTimeImplFactory().create() != StartTimeImplFactory().create());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

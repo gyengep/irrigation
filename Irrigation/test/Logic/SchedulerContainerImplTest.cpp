@@ -6,6 +6,35 @@ using namespace testing;
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(SchedulerContainerImplFactoryTest, create) {
+	auto mockEveryDaySchedulerFactory = std::make_shared<NiceMock<MockEveryDaySchedulerFactory>>();
+	auto mockHotWeatherSchedulerFactory = std::make_shared<NiceMock<MockHotWeatherSchedulerFactory>>();
+	auto mockTemperatureDependentSchedulerFactory = std::make_shared<NiceMock<MockTemperatureDependentSchedulerFactory>>();
+	auto mockWeeklySchedulerFactory = std::make_shared<NiceMock<MockWeeklySchedulerFactory>>();
+
+	EXPECT_CALL(*mockEveryDaySchedulerFactory, create()).
+			Times(3);
+
+	EXPECT_CALL(*mockHotWeatherSchedulerFactory, create()).
+			Times(3);
+
+	EXPECT_CALL(*mockTemperatureDependentSchedulerFactory, create()).
+			Times(3);
+
+	EXPECT_CALL(*mockWeeklySchedulerFactory, create()).
+			Times(3);
+
+	SchedulerContainerImplFactory schedulerContainerImplFactory(
+			mockEveryDaySchedulerFactory,
+			mockHotWeatherSchedulerFactory,
+			mockTemperatureDependentSchedulerFactory,
+			mockWeeklySchedulerFactory
+		);
+
+	EXPECT_THAT(schedulerContainerImplFactory.create(), Not(IsNull()));
+	EXPECT_TRUE(schedulerContainerImplFactory.create() != schedulerContainerImplFactory.create());
+}
+
+TEST(SchedulerContainerImplFactoryTest, createAndValues) {
 	auto mockEveryDayScheduler = std::make_shared<StrictMock<MockEveryDayScheduler>>();
 	auto mockHotWeatherScheduler = std::make_shared<StrictMock<MockHotWeatherScheduler>>();
 	auto mockTemperatureDependentScheduler = std::make_shared<StrictMock<MockTemperatureDependentScheduler>>();
@@ -32,12 +61,14 @@ TEST(SchedulerContainerImplFactoryTest, create) {
 			Times(1).
 			WillOnce(Return(mockWeeklyScheduler));
 
-	SchedulerContainerPtr schedulerContainer = SchedulerContainerImplFactory(
+	SchedulerContainerImplFactory schedulerContainerImplFactory(
 			mockEveryDaySchedulerFactory,
 			mockHotWeatherSchedulerFactory,
 			mockTemperatureDependentSchedulerFactory,
 			mockWeeklySchedulerFactory
-		).create();
+		);
+
+	SchedulerContainerPtr schedulerContainer = schedulerContainerImplFactory.create();
 
 	ASSERT_THAT(schedulerContainer, Not(IsNull()));
 

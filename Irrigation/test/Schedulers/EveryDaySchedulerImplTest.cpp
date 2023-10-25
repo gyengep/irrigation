@@ -6,6 +6,13 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TEST(EveryDaySchedulerImplFactoryTest, create) {
+	EXPECT_THAT(EveryDaySchedulerImplFactory().create(), Not(IsNull()));
+	EXPECT_TRUE(EveryDaySchedulerImplFactory().create() != EveryDaySchedulerImplFactory().create());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(EveryDaySchedulerImplTest, isDayScheduled) {
 	EveryDaySchedulerImpl scheduler;
 

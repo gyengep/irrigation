@@ -81,6 +81,20 @@ TEST_F(RunTimeContainerImplTest, initializerConstructorWithWrongInitializer) {
 TEST(RunTimeContainerImplFactoryTest, create) {
 	const unsigned expectedSize = 6;
 
+	auto mockRunTimeFactory = std::make_shared<NiceMock<MockRunTimeFactory>>();
+
+	EXPECT_CALL(*mockRunTimeFactory, create()).
+			Times(expectedSize * 3);
+
+	RunTimeContainerImplFactory runTimeContainerImplFactory(mockRunTimeFactory);
+
+	EXPECT_THAT(runTimeContainerImplFactory.create(), Not(IsNull()));
+	EXPECT_TRUE(runTimeContainerImplFactory.create() != runTimeContainerImplFactory.create());
+}
+
+TEST(RunTimeContainerImplFactoryTest, createAndValues) {
+	const unsigned expectedSize = 6;
+
 	std::vector<std::shared_ptr<MockRunTime>> mockRunTimes(expectedSize);
 
 	for(size_t i = 0; i < expectedSize; ++i) {

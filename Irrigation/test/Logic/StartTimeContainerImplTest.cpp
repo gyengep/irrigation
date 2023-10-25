@@ -37,9 +37,10 @@ TEST(StartTimeContainerImplConstructorTest, initializerConstructor) {
 TEST(StartTimeContainerImplFactoryTest, create) {
 	auto mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>();
 
-	StartTimeContainerPtr startTimeContainer = StartTimeContainerImplFactory(mockStartTimeFactory).create();
+	StartTimeContainerImplFactory startTimeContainerImplFactory(mockStartTimeFactory);
 
-	ASSERT_THAT(startTimeContainer, Not(IsNull()));
+	EXPECT_THAT(startTimeContainerImplFactory.create(), Not(IsNull()));
+	EXPECT_TRUE(startTimeContainerImplFactory.create() != startTimeContainerImplFactory.create());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

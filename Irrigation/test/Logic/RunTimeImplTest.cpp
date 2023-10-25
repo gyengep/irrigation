@@ -22,6 +22,7 @@ TEST(RunTimeImplConstructorTest, parametrizedConstructor) {
 
 TEST(RunTimeImplFactoryTest, create) {
 	EXPECT_THAT(RunTimeImplFactory().create(), Not(IsNull()));
+	EXPECT_TRUE(RunTimeImplFactory().create() != RunTimeImplFactory().create());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
