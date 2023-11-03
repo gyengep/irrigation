@@ -15,15 +15,15 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class RunTimeImplFromDtoTest : public RunTimeImplTest {
+class RunTimeImplDtoTest : public RunTimeImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		Minutes,
-		Seconds,
-		All
-	};
+	static const unsigned originalMinutes = 2;
+	static const unsigned originalSeconds = 15;
 
-    void checkUpdateFromRunTimeDto(const UpdateType updateType);
+	static const unsigned newMinutes = 3;
+	static const unsigned newSeconds = 28;
+
+    virtual void SetUp();
+    virtual void TearDown();
 };

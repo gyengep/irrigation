@@ -17,14 +17,12 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class WeeklySchedulerImplFromDtoTest : public WeeklySchedulerImplTest {
+class WeeklySchedulerImplDtoTest : public WeeklySchedulerImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		Days,
-		All
-	};
+	static const std::list<bool> originalEnabled;
+	static const std::list<bool> newEnabled;
 
-   	void checkUpdateFromWeeklySchedulerDto(const UpdateType updateType);
+    virtual void SetUp();
+    virtual void TearDown();
 };

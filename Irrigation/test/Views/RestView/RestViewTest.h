@@ -56,4 +56,5 @@ protected:
     static void checkResponse_405_Method_Not_Allowed(const AAA::Response& response);
     static void checkResponse_406_Not_Acceptable(const AAA::Response& response);
     static void checkResponse_415_Unsupported_Media_Type(const AAA::Response& response);
+    static void checkResponse_422_Unprocessable_Content(const AAA::Response& response);
 };

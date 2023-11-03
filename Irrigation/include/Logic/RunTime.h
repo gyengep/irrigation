@@ -14,7 +14,7 @@ public:
 	virtual void set(const std::chrono::seconds& time) = 0;	// throws ValueOutOfBoundsException
 
 	virtual RunTimeDto toRunTimeDto() const = 0;
-	virtual void updateFromRunTimeDto(const RunTimeDto& runTimeDto) = 0;
+	virtual void updateFromRunTimeDto(const RunTimeDto& runTimeDto) = 0; // throws ValueOutOfBoundsException
 
 	virtual std::string toString() const = 0;
 	virtual std::chrono::seconds toDuration() const = 0;

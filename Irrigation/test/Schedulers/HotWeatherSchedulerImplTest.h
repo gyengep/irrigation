@@ -21,19 +21,25 @@ protected:
 
 class HotWeatherSchedulerImplProcessTest : public HotWeatherSchedulerImplTest {
 protected:
+
+	static const unsigned originalHours = 15;
+	static const unsigned originalMinutes = 25;
+
+	static const unsigned newHours = 16;
+	static const unsigned newMinutes = 46;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class HotWeatherSchedulerImplFromDtoTest : public HotWeatherSchedulerImplTest {
+class HotWeatherSchedulerImplDtoTest : public HotWeatherSchedulerImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		Period,
-		MinTemperature,
-		All
-	};
+	static const float originalMinTemperature;
+	static const unsigned originalPeriodInSeconds = 25;
 
-   	void checkUpdateFromHotWeatherSchedulerDto(const UpdateType updateType);
+	static const float newMinTemperature;
+	static const unsigned newPeriodInSeconds = 36;
+
+    virtual void SetUp();
+    virtual void TearDown();
 };

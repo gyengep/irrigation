@@ -42,7 +42,7 @@ public:
 	virtual WeeklyScheduler& getWeeklyScheduler() = 0;
 
 	virtual SchedulersDto toSchedulersDto() const = 0;
-	virtual void updateFromSchedulersDto(const SchedulersDto& schedulersDto) = 0;
+	virtual void updateFromSchedulersDto(const SchedulersDto& schedulersDto) = 0; // throws IllegalArgumentException
 
 	virtual std::string toString() const = 0;
 };

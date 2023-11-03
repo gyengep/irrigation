@@ -17,7 +17,7 @@ public:
 	virtual unsigned getMinutes() const = 0;
 
 	virtual StartTimeDto toStartTimeDto() const = 0;
-	virtual void updateFromStartTimeDto(const StartTimeDto& startTimeDto) = 0;
+	virtual void updateFromStartTimeDto(const StartTimeDto& startTimeDto) = 0; // throws ValueOutOfBoundsException
 
 	virtual std::string toString() const = 0;
 	virtual std::string toShortString() const = 0;

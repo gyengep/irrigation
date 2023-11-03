@@ -1,6 +1,6 @@
 #include "ProgramContainerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Dto2ObjectSamples/ProgramSamples.h"
+#include "DtoSamples/ProgramDtoSamples.h"
 #include <vector>
 
 using namespace testing;
@@ -36,6 +36,8 @@ TEST(ProgramContainerImplConstructorTest, initializerConstructor) {
 
 void ProgramContainerImplTest::SetUp() {
 	mockProgramFactory = std::make_shared<StrictMock<MockProgramFactory>>(),
+	ON_CALL(*mockProgramFactory, create()).
+		WillByDefault(Invoke(mockProgramFactory.get(), &MockProgramFactory::createMockProgram));
 
 	programContainer = std::make_shared<ProgramContainerImpl>(
 			mockProgramFactory
@@ -164,28 +166,33 @@ TEST_F(ProgramContainerImplTest, at_notExisting) {
 }
 
 TEST_F(ProgramContainerImplTest, create) {
-	const auto programSampleList = Dto2ObjectTestSamples::ProgramSampleList();
+
+	const ProgramDto sample1(DtoSamples::programDtoSample1);
+	const ProgramDto sample2(DtoSamples::programDtoSample2);
+
+	auto mockProgram1 = std::make_shared<StrictMock<MockProgram>>();
+	auto mockProgram2 = std::make_shared<StrictMock<MockProgram>>();
 
 	ASSERT_THAT(*programContainer, SizeIs(0));
 	EXPECT_CALL(*mockProgramFactory, create()).
-			Times(programSampleList.size()).
-			WillRepeatedly(Invoke(mockProgramFactory.get(), &MockProgramFactory::createMockProgram));
+			Times(2).
+			WillOnce(Return(mockProgram1)).
+			WillOnce(Return(mockProgram2));
 
-	for (const auto& programSample : programSampleList) {
-		const ProgramDto expectedProgramDto = programSample.getDto();
+	EXPECT_CALL(*mockProgram1, updateFromProgramDto(sample1)).
+			Times(1);
 
-		mockProgramFactory->mockPrograms.push_back(std::make_shared<StrictMock<MockProgram>>());
+	programContainer->createFromProgramDto(sample1);
 
-		EXPECT_CALL(*mockProgramFactory->mockPrograms.back(), updateFromProgramDto(expectedProgramDto)).
-				Times(1);
+	ASSERT_THAT(*programContainer, SizeIs(1));
+	EXPECT_THAT(std::next(programContainer->begin(), 0)->second, Eq(mockProgram1));
 
-		programContainer->createFromProgramDto(expectedProgramDto);
-	}
+	EXPECT_CALL(*mockProgram2, updateFromProgramDto(sample2)).
+			Times(1);
 
-	ASSERT_THAT(*programContainer, SizeIs(programSampleList.size()));
-	ASSERT_THAT(*programContainer, SizeIs(mockProgramFactory->mockPrograms.size()));
+	programContainer->createFromProgramDto(sample2);
 
-	for (unsigned i = 0; i < programContainer->size(); ++i) {
-		EXPECT_THAT(std::next(programContainer->begin(), i)->second, Eq(mockProgramFactory->mockPrograms[i]));
-	}
+	ASSERT_THAT(*programContainer, SizeIs(2));
+	EXPECT_THAT(std::next(programContainer->begin(), 0)->second, Eq(mockProgram1));
+	EXPECT_THAT(std::next(programContainer->begin(), 1)->second, Eq(mockProgram2));
 }

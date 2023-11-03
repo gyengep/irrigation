@@ -36,7 +36,7 @@ public:
 	virtual StartTimeContainer& getStartTimeContainer() = 0;
 
 	virtual ProgramDto toProgramDto() const = 0;
-	virtual void updateFromProgramDto(const ProgramDto& programDto) = 0;
+	virtual void updateFromProgramDto(const ProgramDto& programDto) = 0; // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual std::string toString() const = 0;
 

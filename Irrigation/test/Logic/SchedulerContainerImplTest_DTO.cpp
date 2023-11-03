@@ -1,94 +1,100 @@
 #include "SchedulerContainerImplTest.h"
-#include "Dto2ObjectSamples/SchedulerContainerSamples.h"
 
 using namespace testing;
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(SchedulerContainerImplToDtoTest, toSchedulerContainerDto) {
-	const Dto2ObjectTestSamples::SchedulerContainerSampleList sampleList;
-
-	ASSERT_THAT(sampleList, SizeIs(4));
-
-	for (const auto& sample : sampleList) {
-		const SchedulerContainerImpl& actual = sample.getObject();
-		const SchedulersDto& expected = sample.getDto();
-
-		EXPECT_THAT(actual.toSchedulersDto(), Eq(expected));
-	}
-}
+const EveryDaySchedulerDto SchedulerContainerImplDtoTest::everyDaySchedulerDtoSample;
+const HotWeatherSchedulerDto SchedulerContainerImplDtoTest::hotWeatherSchedulerDtoSample(97, 18.3f);
+const TemperatureDependentSchedulerDto SchedulerContainerImplDtoTest::temperatureDependentSchedulerDtoSample(3.45f, 116, 117);
+const WeeklySchedulerDto SchedulerContainerImplDtoTest::weeklySchedulerDtoSample(std::list<bool>{true, false, true, true, false, false, false});
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void SchedulerContainerImplFromDtoTest::checkUpdateFromSchedulersDto(const UpdateType updateType) {
+void SchedulerContainerImplDtoTest::SetUp() {
+	SchedulerContainerImplTest::SetUp();
 
-	std::shared_ptr<MockEveryDayScheduler> mockEveryDayScheduler = std::make_shared<StrictMock<MockEveryDayScheduler>>();
-	std::shared_ptr<MockHotWeatherScheduler> mockHotWeatherScheduler = std::make_shared<StrictMock<MockHotWeatherScheduler>>();
-	std::shared_ptr<MockTemperatureDependentScheduler> mockTemperatureDependentScheduler = std::make_shared<StrictMock<MockTemperatureDependentScheduler>>();
-	std::shared_ptr<MockWeeklyScheduler> mockWeeklyScheduler = std::make_shared<StrictMock<MockWeeklyScheduler>>();
-
-	SchedulerContainerImpl actualSchedulerContainer(
-		mockEveryDayScheduler,
-		mockHotWeatherScheduler,
-		mockTemperatureDependentScheduler,
-		mockWeeklyScheduler
-	);
-
-	for (const auto& sample : Dto2ObjectTestSamples::SchedulerContainerSampleList()) {
-		SchedulersDto actualSchedulersDto;
-
-		if (UpdateType::EveryDayScheduler == updateType || UpdateType::All == updateType) {
-			const EveryDaySchedulerDto expectedEveryDaySchedulerDto = sample.getDto().getEveryDayScheduler();
-
-			actualSchedulersDto.setEveryDayScheduler(EveryDaySchedulerDto(expectedEveryDaySchedulerDto));
-			EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(expectedEveryDaySchedulerDto));
-		}
-
-		if (UpdateType::HotWeatherScheduler == updateType || UpdateType::All == updateType) {
-			const HotWeatherSchedulerDto expectedHotWeatherSchedulerDto = sample.getDto().getHotWeatherScheduler();
-
-			actualSchedulersDto.setHotWeatherScheduler(HotWeatherSchedulerDto(expectedHotWeatherSchedulerDto));
-			EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(expectedHotWeatherSchedulerDto));
-		}
-
-		if (UpdateType::TemperatureDependentScheduler == updateType || UpdateType::All == updateType) {
-			const TemperatureDependentSchedulerDto expectedTemperatureDependentSchedulerDto = sample.getDto().getTemperatureDependentScheduler();
-
-			actualSchedulersDto.setTemperatureDependentScheduler(TemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto));
-			EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(expectedTemperatureDependentSchedulerDto));
-		}
-
-		if (UpdateType::WeeklyScheduler == updateType || UpdateType::All == updateType) {
-			const WeeklySchedulerDto expectedWeeklySchedulerDto = sample.getDto().getWeeklyScheduler();
-
-			actualSchedulersDto.setWeeklyScheduler(WeeklySchedulerDto(expectedWeeklySchedulerDto));
-			EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(expectedWeeklySchedulerDto));
-		}
-
-		actualSchedulerContainer.updateFromSchedulersDto(actualSchedulersDto);
-	}
+	ON_CALL(*mockEveryDayScheduler, toEveryDaySchedulerDto()).WillByDefault(Return(everyDaySchedulerDtoSample));
+	ON_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).WillByDefault(Return(hotWeatherSchedulerDtoSample));
+	ON_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).WillByDefault(Return(temperatureDependentSchedulerDtoSample));
+	ON_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).WillByDefault(Return(weeklySchedulerDtoSample));
 }
 
-TEST_F(SchedulerContainerImplFromDtoTest, updateFromSchedulersDto_empty) {
-	checkUpdateFromSchedulersDto(UpdateType::Nothing);
+void SchedulerContainerImplDtoTest::TearDown() {
 }
 
-TEST_F(SchedulerContainerImplFromDtoTest, updateFromSchedulersDto_partial_everyDayScheduler) {
-	checkUpdateFromSchedulersDto(UpdateType::EveryDayScheduler);
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(SchedulerContainerImplDtoTest, toSchedulerContainerDto) {
+	const SchedulersDto expectedSchedulersDto(
+			std::move(EveryDaySchedulerDto(everyDaySchedulerDtoSample)),
+			std::move(HotWeatherSchedulerDto(hotWeatherSchedulerDtoSample)),
+			std::move(TemperatureDependentSchedulerDto(temperatureDependentSchedulerDtoSample)),
+			std::move(WeeklySchedulerDto(weeklySchedulerDtoSample))
+		);
+
+	EXPECT_CALL(*mockEveryDayScheduler, toEveryDaySchedulerDto()).Times(1);
+	EXPECT_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).Times(1);
+	EXPECT_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).Times(1);
+	EXPECT_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).Times(1);
+
+	EXPECT_THAT(schedulerContainer->toSchedulersDto(), Eq(expectedSchedulersDto));
 }
 
-TEST_F(SchedulerContainerImplFromDtoTest, updateFromSchedulersDto_partial_hotWeatherScheduler) {
-	checkUpdateFromSchedulersDto(UpdateType::HotWeatherScheduler);
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(SchedulerContainerImplDtoTest, updateFromSchedulersDto_empty) {
+	SchedulersDto schedulersDto;
+
+	schedulerContainer->updateFromSchedulersDto(schedulersDto);
 }
 
-TEST_F(SchedulerContainerImplFromDtoTest, updateFromSchedulersDto_partial_temperatureDependentScheduler) {
-	checkUpdateFromSchedulersDto(UpdateType::TemperatureDependentScheduler);
+TEST_F(SchedulerContainerImplDtoTest, updateFromSchedulersDto_everyDayScheduler) {
+	SchedulersDto schedulersDto;
+	schedulersDto.setEveryDayScheduler(EveryDaySchedulerDto(everyDaySchedulerDtoSample));
+
+	EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(everyDaySchedulerDtoSample)).Times(1);
+
+	schedulerContainer->updateFromSchedulersDto(schedulersDto);
 }
 
-TEST_F(SchedulerContainerImplFromDtoTest, updateFromSchedulersDto_partial_weeklyScheduler) {
-	checkUpdateFromSchedulersDto(UpdateType::WeeklyScheduler);
+TEST_F(SchedulerContainerImplDtoTest, updateFromSchedulersDto_hotWeatherScheduler) {
+	SchedulersDto schedulersDto;
+	schedulersDto.setHotWeatherScheduler(HotWeatherSchedulerDto(hotWeatherSchedulerDtoSample));
+
+	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDtoSample)).Times(1);
+
+	schedulerContainer->updateFromSchedulersDto(schedulersDto);
 }
 
-TEST_F(SchedulerContainerImplFromDtoTest, updateFromSchedulersDto_all) {
-	checkUpdateFromSchedulersDto(UpdateType::All);
+TEST_F(SchedulerContainerImplDtoTest, updateFromSchedulersDto_temperatureDependentScheduler) {
+	SchedulersDto schedulersDto;
+	schedulersDto.setTemperatureDependentScheduler(TemperatureDependentSchedulerDto(temperatureDependentSchedulerDtoSample));
+
+	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDtoSample)).Times(1);
+
+	schedulerContainer->updateFromSchedulersDto(schedulersDto);
+}
+
+TEST_F(SchedulerContainerImplDtoTest, updateFromSchedulersDto_weeklyScheduler) {
+	SchedulersDto schedulersDto;
+	schedulersDto.setWeeklyScheduler(WeeklySchedulerDto(weeklySchedulerDtoSample));
+
+	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(weeklySchedulerDtoSample)).Times(1);
+
+	schedulerContainer->updateFromSchedulersDto(schedulersDto);
+}
+
+TEST_F(SchedulerContainerImplDtoTest, updateFromSchedulersDto_all) {
+	const SchedulersDto schedulersDto(
+			std::move(EveryDaySchedulerDto(everyDaySchedulerDtoSample)),
+			std::move(HotWeatherSchedulerDto(hotWeatherSchedulerDtoSample)),
+			std::move(TemperatureDependentSchedulerDto(temperatureDependentSchedulerDtoSample)),
+			std::move(WeeklySchedulerDto(weeklySchedulerDtoSample))
+		);
+
+	EXPECT_CALL(*mockEveryDayScheduler, updateFromEveryDaySchedulerDto(everyDaySchedulerDtoSample)).Times(1);
+	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDtoSample)).Times(1);
+	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDtoSample)).Times(1);
+	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(weeklySchedulerDtoSample)).Times(1);
+
+	schedulerContainer->updateFromSchedulersDto(schedulersDto);
 }

@@ -1,103 +1,81 @@
 #include "WeeklySchedulerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Dto2ObjectSamples/WeeklySchedulerSamples.h"
 #include <list>
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(WeeklySchedulerImplToDtoTest, toWeeklySchedulerDto) {
-	const Dto2ObjectTestSamples::WeeklySchedulerSampleList sampleList;
+const std::list<bool> WeeklySchedulerImplDtoTest::originalEnabled { true, false, true, true, false, false, false };
+const std::list<bool> WeeklySchedulerImplDtoTest::newEnabled { false, true, true, false, false, false, true };
 
-	ASSERT_THAT(sampleList, SizeIs(4));
+///////////////////////////////////////////////////////////////////////////////
 
-	for (const auto& sample : sampleList) {
-		const WeeklySchedulerImpl& actual = sample.getObject();
-		const WeeklySchedulerDto& expected = sample.getDto();
+void WeeklySchedulerImplDtoTest::SetUp() {
+	WeeklySchedulerImplTest::SetUp();
 
-		EXPECT_THAT(actual.toWeeklySchedulerDto(), Eq(expected));
+	if (7 != originalEnabled.size()) {
+		throw std::logic_error("7 != originalEnabled.size()");
 	}
+
+	if (7 != newEnabled.size()) {
+		throw std::logic_error("7 != newEnabled.size()");
+	}
+
+	for (size_t i = 0; i < 7; ++i) {
+		weeklyScheduler->enableDay(i, *std::next(originalEnabled.begin(), i));
+	}
+}
+
+void WeeklySchedulerImplDtoTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void WeeklySchedulerImplFromDtoTest::checkUpdateFromWeeklySchedulerDto(const UpdateType updateType) {
-	const auto sampleList = Dto2ObjectTestSamples::WeeklySchedulerSampleList();
+TEST_F(WeeklySchedulerImplDtoTest, toWeeklySchedulerDto) {
+	const WeeklySchedulerDto expectedWeeklySchedulerDto(
+			std::move(std::list<bool>(originalEnabled))
+		);
 
-	for (const auto& sample : sampleList) {
-		WeeklySchedulerDto actualWeeklySchedulerDto;
-
-		std::list<bool> expected {
-			weeklyScheduler->isDayEnabled(0),
-			weeklyScheduler->isDayEnabled(1),
-			weeklyScheduler->isDayEnabled(2),
-			weeklyScheduler->isDayEnabled(3),
-			weeklyScheduler->isDayEnabled(4),
-			weeklyScheduler->isDayEnabled(5),
-			weeklyScheduler->isDayEnabled(6)
-		};
-
-		ASSERT_THAT(expected.size(), Eq(WeeklySchedulerImpl::count));
-
-		if (UpdateType::Days == updateType || UpdateType::All == updateType) {
-			expected = sample.getDto().getValues();
-			actualWeeklySchedulerDto.setValues(std::list<bool>(expected));
-		}
-
-		weeklyScheduler->updateFromWeeklySchedulerDto(actualWeeklySchedulerDto);
-
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(0), Eq(*std::next(expected.begin(), 0)));
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(1), Eq(*std::next(expected.begin(), 1)));
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(2), Eq(*std::next(expected.begin(), 2)));
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(3), Eq(*std::next(expected.begin(), 3)));
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(4), Eq(*std::next(expected.begin(), 4)));
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(5), Eq(*std::next(expected.begin(), 5)));
-		EXPECT_THAT(weeklyScheduler->isDayEnabled(6), Eq(*std::next(expected.begin(), 6)));
-	}
+	EXPECT_THAT(weeklyScheduler->toWeeklySchedulerDto(), Eq(expectedWeeklySchedulerDto));
 }
 
-TEST_F(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_empty) {
-	weeklyScheduler->enableDay(0, true);
-	weeklyScheduler->enableDay(1, false);
-	weeklyScheduler->enableDay(2, false);
-	weeklyScheduler->enableDay(3, false);
-	weeklyScheduler->enableDay(4, false);
-	weeklyScheduler->enableDay(5, false);
-	weeklyScheduler->enableDay(6, true);
+///////////////////////////////////////////////////////////////////////////////
 
-	checkUpdateFromWeeklySchedulerDto(UpdateType::Nothing);
+TEST_F(WeeklySchedulerImplDtoTest, updateFromWeeklySchedulerDto_empty) {
+	WeeklySchedulerDto weeklySchedulerDto;
+
+	weeklyScheduler->updateFromWeeklySchedulerDto(weeklySchedulerDto);
+
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(0), *std::next(originalEnabled.begin(), 0));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(1), *std::next(originalEnabled.begin(), 1));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(2), *std::next(originalEnabled.begin(), 2));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(3), *std::next(originalEnabled.begin(), 3));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(4), *std::next(originalEnabled.begin(), 4));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(5), *std::next(originalEnabled.begin(), 5));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(6), *std::next(originalEnabled.begin(), 6));
 }
 
-TEST_F(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_partial_days) {
-	weeklyScheduler->enableDay(0, false);
-	weeklyScheduler->enableDay(1, true);
-	weeklyScheduler->enableDay(2, true);
-	weeklyScheduler->enableDay(3, true);
-	weeklyScheduler->enableDay(4, true);
-	weeklyScheduler->enableDay(5, true);
-	weeklyScheduler->enableDay(6, false);
+TEST_F(WeeklySchedulerImplDtoTest, updateFromWeeklySchedulerDto_all) {
+	const WeeklySchedulerDto weeklySchedulerDto(
+			std::move(std::list<bool>(newEnabled))
+		);
 
-	checkUpdateFromWeeklySchedulerDto(UpdateType::Days);
+	weeklyScheduler->updateFromWeeklySchedulerDto(weeklySchedulerDto);
+
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(0), *std::next(newEnabled.begin(), 0));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(1), *std::next(newEnabled.begin(), 1));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(2), *std::next(newEnabled.begin(), 2));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(3), *std::next(newEnabled.begin(), 3));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(4), *std::next(newEnabled.begin(), 4));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(5), *std::next(newEnabled.begin(), 5));
+	EXPECT_THAT(weeklyScheduler->isDayEnabled(6), *std::next(newEnabled.begin(), 6));
 }
 
-TEST_F(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_all) {
-	weeklyScheduler->enableDay(0, false);
-	weeklyScheduler->enableDay(1, false);
-	weeklyScheduler->enableDay(2, true);
-	weeklyScheduler->enableDay(3, true);
-	weeklyScheduler->enableDay(4, true);
-	weeklyScheduler->enableDay(5, false);
-	weeklyScheduler->enableDay(6, false);
+///////////////////////////////////////////////////////////////////////////////
 
-	checkUpdateFromWeeklySchedulerDto(UpdateType::All);
-}
-
-TEST_F(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_validSize) {
+TEST_F(WeeklySchedulerImplDtoTest, updateFromWeeklySchedulerDto_IllegalArgumentException) {
 	EXPECT_NO_THROW(weeklyScheduler->updateFromWeeklySchedulerDto(std::list<bool>(7)));
-}
-
-TEST_F(WeeklySchedulerImplFromDtoTest, updateFromWeeklySchedulerDto_invalidSize) {
 	EXPECT_THROW(weeklyScheduler->updateFromWeeklySchedulerDto(WeeklySchedulerDto(std::list<bool>(6))), IllegalArgumentException);
 	EXPECT_THROW(weeklyScheduler->updateFromWeeklySchedulerDto(WeeklySchedulerDto(std::list<bool>(8))), IllegalArgumentException);
 }

@@ -24,7 +24,7 @@ public:
 	////////////////////////////////////////////////////////////
 
 	virtual WeeklySchedulerDto toWeeklySchedulerDto() const override;
-	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDto& schedulerDto) override;
+	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDto& schedulerDto) override; // throws IllegalArgumentException
 
 	////////////////////////////////////////////////////////////
 

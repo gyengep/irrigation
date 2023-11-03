@@ -28,11 +28,11 @@ public:
 	virtual const_iterator end() const = 0;
 	virtual size_t size() const = 0;
 
-	virtual const_mapped_type at(const key_type& key) const = 0;
-	virtual mapped_type at(const key_type& key) = 0;
+	virtual const_mapped_type at(const key_type& key) const = 0; // throws NoSuchElementException
+	virtual mapped_type at(const key_type& key) = 0;             // throws NoSuchElementException
 
 	virtual RunTimeDtoList toRunTimeDtoList() const = 0;
-	virtual void updateFromRunTimeDtoList(const RunTimeDtoList& runTimeDtoList) = 0;
+	virtual void updateFromRunTimeDtoList(const RunTimeDtoList& runTimeDtoList) = 0;  // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual std::string toString() const = 0;
 	virtual DurationList toDurationList() const = 0;

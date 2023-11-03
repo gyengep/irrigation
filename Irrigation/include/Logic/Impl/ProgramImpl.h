@@ -57,7 +57,7 @@ public:
 	virtual StartTimeContainer& getStartTimeContainer() 				{ return *startTimeContainer; }
 
 	virtual ProgramDto toProgramDto() const override;
-	virtual void updateFromProgramDto(const ProgramDto& programDto) override;
+	virtual void updateFromProgramDto(const ProgramDto& programDto) override; // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual std::string toString() const override;
 

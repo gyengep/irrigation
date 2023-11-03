@@ -140,6 +140,10 @@ void RestViewTest::checkResponse_415_Unsupported_Media_Type(const AAA::Response&
 	checkResponseIsError(415, response);
 }
 
+void RestViewTest::checkResponse_422_Unprocessable_Content(const AAA::Response& response) {
+	checkResponseIsError(422, response);
+}
+
 void RestViewTest::checkResponseIsError(long responseCode, const AAA::Response& response) {
 	EXPECT_THAT(response.getResponseCode(), Eq(responseCode));
 	EXPECT_THAT(response.getBody(), Not(IsEmpty()));

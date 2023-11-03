@@ -32,7 +32,7 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 
 	virtual WeeklySchedulerDto toWeeklySchedulerDto() const = 0;
-	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDto& schedulerDto) = 0;
+	virtual void updateFromWeeklySchedulerDto(const WeeklySchedulerDto& schedulerDto) = 0; // throws IllegalArgumentException
 
 	///////////////////////////////////////////////////////////////////////////
 

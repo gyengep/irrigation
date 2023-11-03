@@ -1,163 +1,189 @@
 #include "ProgramImplTest.h"
-#include "Dto2ObjectSamples/ProgramSamples.h"
+#include "Exceptions/Exceptions.h"
+#include "DtoSamples/SchedulersDtoSamples.h"
+#include "DtoSamples/RunTimeDtoListSamples.h"
+#include "DtoSamples/StartTimeDtoListSamples.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(ProgramImplToDtoTest, toProgramDto) {
-	const Dto2ObjectTestSamples::ProgramSampleList sampleList;
+const std::string ProgramImplDtoTest::originalName("program123456");
+const std::string ProgramImplDtoTest::newName("98764_testProgram");
 
-	ASSERT_THAT(sampleList, SizeIs(4));
+const SchedulersDto ProgramImplDtoTest::schedulersDtoSample(DtoSamples::schedulersDtoSample1);
+const RunTimeDtoList ProgramImplDtoTest::runTimeDtoListSample(DtoSamples::runTimeDtoListSample1);
+const StartTimeDtoList ProgramImplDtoTest::startTimeDtoListSample(DtoSamples::startTimeDtoListSample1);
 
-	for (const auto& sample : sampleList) {
-		const ProgramImpl& actual = sample.getObject();
-		const ProgramDto& expected = sample.getDto();
+///////////////////////////////////////////////////////////////////////////////
 
-		EXPECT_THAT(actual.toProgramDto(), Eq(expected));
-	}
+void ProgramImplDtoTest::SetUp() {
+	ProgramImplTest::SetUp();
+
+	program->setName(originalName);
+	program->setAdjustment(originalAdjustment);
+	program->setEnabled(originalEnabled);
+	program->setSchedulerType(originalSchedulerType);
+
+	ON_CALL(*mockSchedulerContainer, toSchedulersDto()).WillByDefault(Return(schedulersDtoSample));
+	ON_CALL(*mockRunTimeContainer, toRunTimeDtoList()).WillByDefault(Return(runTimeDtoListSample));
+	ON_CALL(*mockStartTimeContainer, toStartTimeDtoList()).WillByDefault(Return(startTimeDtoListSample));
+}
+
+void ProgramImplDtoTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgramImplFromDtoTest::checkUpdateFromProgramDto(const UpdateType updateType) {
-	const auto sampleList = Dto2ObjectTestSamples::ProgramSampleList();
+TEST_F(ProgramImplDtoTest, toProgramDto) {
+	const ProgramDto expectedProgramDto(
+			originalEnabled,
+			originalName,
+			originalAdjustment,
+			to_string(originalSchedulerType),
+			SchedulersDto(schedulersDtoSample),
+			RunTimeDtoList(runTimeDtoListSample),
+			StartTimeDtoList(startTimeDtoListSample)
+		);
 
-	bool expectedEnabled = program->isEnabled();
-	std::string expectedName = program->getName();
-	unsigned expectedAdjustment = program->getAdjustment();
-	std::string expectedSchedulerType = to_string(program->getSchedulerType());
+	EXPECT_CALL(*mockSchedulerContainer, toSchedulersDto()).Times(1);
+	EXPECT_CALL(*mockRunTimeContainer, toRunTimeDtoList()).Times(1);
+	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1);
 
-	for (const auto& sample : sampleList) {
-		ProgramDto actualProgramDto;
-
-		if (UpdateType::Enabled == updateType || UpdateType::All == updateType) {
-			expectedEnabled = sample.getDto().getEnabled();
-			actualProgramDto.setEnabled(expectedEnabled);
-		}
-
-		if (UpdateType::Name == updateType || UpdateType::All == updateType) {
-			expectedName = sample.getDto().getName();
-			actualProgramDto.setName(expectedName);
-		}
-
-		if (UpdateType::Adjustment == updateType || UpdateType::All == updateType) {
-			expectedAdjustment = sample.getDto().getAdjustment();
-			actualProgramDto.setAdjustment(expectedAdjustment);
-		}
-
-		if (UpdateType::SchedulerType == updateType || UpdateType::All == updateType) {
-			expectedSchedulerType = sample.getDto().getSchedulerType();
-			actualProgramDto.setSchedulerType(expectedSchedulerType);
-		}
-
-		if (UpdateType::SchedulerContainer == updateType || UpdateType::All == updateType) {
-			const SchedulersDto expectedSchedulersDto = sample.getDto().getSchedulers();
-
-			actualProgramDto.setSchedulers(SchedulersDto(expectedSchedulersDto));
-			EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(expectedSchedulersDto));
-		}
-
-		if (UpdateType::RunTimeContainer == updateType || UpdateType::All == updateType) {
-			const RunTimeDtoList expectedRunTimeDtoList = sample.getDto().getRunTimes();
-
-			actualProgramDto.setRunTimes(RunTimeDtoList(expectedRunTimeDtoList));
-			EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(expectedRunTimeDtoList));
-		}
-
-		if (UpdateType::StartTimeContainer == updateType || UpdateType::All == updateType) {
-			const StartTimeDtoList expectedStartTimeDtoList = sample.getDto().getStartTimes();
-
-			actualProgramDto.setStartTimes(StartTimeDtoList(expectedStartTimeDtoList));
-			EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(expectedStartTimeDtoList));
-		}
-
-		program->updateFromProgramDto(actualProgramDto);
-
-		EXPECT_THAT(program->isEnabled(), Eq(expectedEnabled));
-		EXPECT_THAT(program->getName(), Eq(expectedName));
-		EXPECT_THAT(program->getAdjustment(), Eq(expectedAdjustment));
-		EXPECT_THAT(to_string(program->getSchedulerType()), Eq(expectedSchedulerType));
-	}
+	EXPECT_THAT(program->toProgramDto(), Eq(expectedProgramDto));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_empty) {
-	program->setEnabled(false);
-	program->setName("1234");
-	program->setAdjustment(820);
-	program->setSchedulerType(SchedulerType::EVERY_DAY);
+///////////////////////////////////////////////////////////////////////////////
 
-	checkUpdateFromProgramDto(UpdateType::Nothing);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_empty) {
+	ProgramDto programDto;
+
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_enabled) {
-	program->setEnabled(true);
-	program->setName("234");
-	program->setAdjustment(850);
-	program->setSchedulerType(SchedulerType::HOT_WEATHER);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_enabled) {
+	ProgramDto programDto;
+	programDto.setEnabled(newEnabled);
 
-	checkUpdateFromProgramDto(UpdateType::Enabled);
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(newEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_name) {
-	program->setEnabled(false);
-	program->setName("987");
-	program->setAdjustment(860);
-	program->setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_name) {
+	ProgramDto programDto;
+	programDto.setName(newName);
 
-	checkUpdateFromProgramDto(UpdateType::Name);
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(newName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_adjustament) {
-	program->setEnabled(true);
-	program->setName("456");
-	program->setAdjustment(890);
-	program->setSchedulerType(SchedulerType::WEEKLY);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_adjustament) {
+	ProgramDto programDto;
+	programDto.setAdjustment(newAdjustment);
 
-	checkUpdateFromProgramDto(UpdateType::Adjustment);
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(newAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerType) {
-	program->setEnabled(false);
-	program->setName("11111");
-	program->setAdjustment(720);
-	program->setSchedulerType(SchedulerType::EVERY_DAY);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_schedulerType) {
+	ProgramDto programDto;
+	programDto.setSchedulerType(to_string(newSchedulerType));
 
-	checkUpdateFromProgramDto(UpdateType::SchedulerType);
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(newSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_schedulerContainer) {
-	program->setEnabled(true);
-	program->setName("abcd");
-	program->setAdjustment(770);
-	program->setSchedulerType(SchedulerType::HOT_WEATHER);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_schedulerContainer) {
+	ProgramDto programDto;
+	programDto.setSchedulers(SchedulersDto(schedulersDtoSample));
 
-	checkUpdateFromProgramDto(UpdateType::SchedulerContainer);
+	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(schedulersDtoSample));
+
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_runTimeContainer) {
-	program->setEnabled(false);
-	program->setName("ppppp");
-	program->setAdjustment(660);
-	program->setSchedulerType(SchedulerType::TEMPERATURE_DEPENDENT);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_runTimeContainer) {
+	ProgramDto programDto;
+	programDto.setRunTimes(RunTimeDtoList(runTimeDtoListSample));
 
-	checkUpdateFromProgramDto(UpdateType::RunTimeContainer);
+	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(runTimeDtoListSample));
+
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_partial_startTimeContainer) {
-	program->setEnabled(true);
-	program->setName("98765");
-	program->setAdjustment(316);
-	program->setSchedulerType(SchedulerType::WEEKLY);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_partial_startTimeContainer) {
+	ProgramDto programDto;
+	programDto.setStartTimes(StartTimeDtoList(startTimeDtoListSample));
 
-	checkUpdateFromProgramDto(UpdateType::StartTimeContainer);
+	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(startTimeDtoListSample));
+
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(originalEnabled));
+	EXPECT_THAT(program->getName(), Eq(originalName));
+	EXPECT_THAT(program->getAdjustment(), Eq(originalAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(originalSchedulerType));
 }
 
-TEST_F(ProgramImplFromDtoTest, updateFromProgramDto_all) {
-	program->setEnabled(false);
-	program->setName("8888888");
-	program->setAdjustment(999);
-	program->setSchedulerType(SchedulerType::EVERY_DAY);
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_all) {
+	const ProgramDto programDto(
+			newEnabled,
+			newName,
+			newAdjustment,
+			to_string(newSchedulerType),
+			SchedulersDto(schedulersDtoSample),
+			RunTimeDtoList(runTimeDtoListSample),
+			StartTimeDtoList(startTimeDtoListSample)
+		);
 
-	checkUpdateFromProgramDto(UpdateType::All);
+	EXPECT_CALL(*mockSchedulerContainer, updateFromSchedulersDto(schedulersDtoSample));
+	EXPECT_CALL(*mockRunTimeContainer, updateFromRunTimeDtoList(runTimeDtoListSample));
+	EXPECT_CALL(*mockStartTimeContainer, updateFromStartTimeDtoList(startTimeDtoListSample));
+
+	program->updateFromProgramDto(programDto);
+
+	EXPECT_THAT(program->isEnabled(), Eq(newEnabled));
+	EXPECT_THAT(program->getName(), Eq(newName));
+	EXPECT_THAT(program->getAdjustment(), Eq(newAdjustment));
+	EXPECT_THAT(program->getSchedulerType(), Eq(newSchedulerType));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(ProgramImplDtoTest, updateFromProgramDto_IllegalArgumentException) {
+	ProgramDto programDto;
+	programDto.setSchedulerType("notExistinSchedulerType");
+
+	EXPECT_THROW(program->updateFromProgramDto(programDto), IllegalArgumentException);
 }

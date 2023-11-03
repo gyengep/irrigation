@@ -30,7 +30,7 @@ public:
 	virtual void stop() = 0;
 
 	virtual DocumentDto toDocumentDto() const = 0;
-	virtual void updateFromDocumentDto(const DocumentDto& documentDto) = 0;
+	virtual void updateFromDocumentDto(const DocumentDto& documentDto) = 0; // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual void saveState() const = 0;
 	virtual void loadState() = 0;

@@ -24,17 +24,14 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SchedulerContainerImplFromDtoTest : public SchedulerContainerImplTest {
+class SchedulerContainerImplDtoTest : public SchedulerContainerImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		EveryDayScheduler,
-		HotWeatherScheduler,
-		TemperatureDependentScheduler,
-		WeeklyScheduler,
-		All
-	};
+	static const EveryDaySchedulerDto everyDaySchedulerDtoSample;
+	static const HotWeatherSchedulerDto hotWeatherSchedulerDtoSample;
+	static const TemperatureDependentSchedulerDto temperatureDependentSchedulerDtoSample;
+	static const WeeklySchedulerDto weeklySchedulerDtoSample;
 
-    void checkUpdateFromSchedulersDto(const UpdateType updateType);
+    virtual void SetUp();
+    virtual void TearDown();
 };

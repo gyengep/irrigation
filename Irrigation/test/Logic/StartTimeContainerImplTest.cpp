@@ -1,6 +1,6 @@
 #include "StartTimeContainerImplTest.h"
 #include "Exceptions/Exceptions.h"
-#include "Dto2ObjectSamples/StartTimeSamples.h"
+#include "Logic/Impl/StartTimeImpl.h"
 #include <vector>
 
 using namespace testing;
@@ -47,6 +47,8 @@ TEST(StartTimeContainerImplFactoryTest, create) {
 
 void StartTimeContainerImplTest::SetUp() {
 	mockStartTimeFactory = std::make_shared<StrictMock<MockStartTimeFactory>>();
+	ON_CALL(*mockStartTimeFactory, create()).
+		WillByDefault(Invoke(mockStartTimeFactory.get(), &MockStartTimeFactory::createMockStartTime));
 
 	startTimeContainer = std::make_shared<StartTimeContainerImpl>(
 			mockStartTimeFactory
@@ -201,28 +203,32 @@ TEST_F(StartTimeContainerImplTest, sort) {
 }
 
 TEST_F(StartTimeContainerImplTest, create) {
-	const auto startTimeSampleList = Dto2ObjectTestSamples::StartTimeSampleList();
+	const StartTimeDto sample1(7, 15);
+	const StartTimeDto sample2(8, 30);
+
+	auto mockStartTime1 = std::make_shared<StrictMock<MockStartTime>>();
+	auto mockStartTime2 = std::make_shared<StrictMock<MockStartTime>>();
 
 	ASSERT_THAT(*startTimeContainer, SizeIs(0));
 	EXPECT_CALL(*mockStartTimeFactory, create()).
-			Times(startTimeSampleList.size()).
-			WillRepeatedly(Invoke(mockStartTimeFactory.get(), &MockStartTimeFactory::createMockStartTime));
+			Times(2).
+			WillOnce(Return(mockStartTime1)).
+			WillOnce(Return(mockStartTime2));
 
-	for (const auto& startTimeSample : startTimeSampleList) {
-		const StartTimeDto expectedStartTimeDto = startTimeSample.getDto();
+	EXPECT_CALL(*mockStartTime1, updateFromStartTimeDto(sample1)).
+			Times(1);
 
-		mockStartTimeFactory->mockStartTimes.push_back(std::make_shared<StrictMock<MockStartTime>>());
+	startTimeContainer->createFromStartTimeDto(sample1);
 
-		EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(expectedStartTimeDto)).
-				Times(1);
+	ASSERT_THAT(*startTimeContainer, SizeIs(1));
+	EXPECT_THAT(std::next(startTimeContainer->begin(), 0)->second, Eq(mockStartTime1));
 
-		startTimeContainer->createFromStartTimeDto(expectedStartTimeDto);
-	}
+	EXPECT_CALL(*mockStartTime2, updateFromStartTimeDto(sample2)).
+			Times(1);
 
-	ASSERT_THAT(*startTimeContainer, SizeIs(startTimeSampleList.size()));
-	ASSERT_THAT(*startTimeContainer, SizeIs(mockStartTimeFactory->mockStartTimes.size()));
+	startTimeContainer->createFromStartTimeDto(sample2);
 
-	for (unsigned i = 0; i < startTimeContainer->size(); ++i) {
-		EXPECT_THAT(std::next(startTimeContainer->begin(), i)->second, Eq(mockStartTimeFactory->mockStartTimes[i]));
-	}
+	ASSERT_THAT(*startTimeContainer, SizeIs(2));
+	EXPECT_THAT(std::next(startTimeContainer->begin(), 0)->second, Eq(mockStartTime1));
+	EXPECT_THAT(std::next(startTimeContainer->begin(), 1)->second, Eq(mockStartTime2));
 }

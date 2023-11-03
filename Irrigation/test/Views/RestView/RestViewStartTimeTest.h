@@ -6,16 +6,19 @@
 #include "Mocks/MockProgram.h"
 #include "Mocks/MockStartTimeContainer.h"
 #include "Mocks/MockStartTime.h"
-#include "Samples/StartTimeSamples.h"
+#include "DTO/StartTimeDto.h"
+#include "Samples/SampleBase.h"
 #include "RestViewTest.h"
 
 
 class RestViewStartTimeTest : public RestViewTest {
 public:
 
+	typedef RestViewTestSamples::Sample<StartTimeDto> StartTimeSample;
+
 	static const IdType programId;
 	static const IdType startTimeId;
-	static const RestViewTestSamples::StartTimeSample sample;
+	static const StartTimeSample sample;
 
 	std::shared_ptr<MockProgramContainer> mockProgramContainer;
 	std::shared_ptr<MockProgram> mockProgram;

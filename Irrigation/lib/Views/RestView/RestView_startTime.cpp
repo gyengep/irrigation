@@ -124,6 +124,9 @@ std::unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& requ
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
 		throw RestNotFound(restService->getErrorWriter(), e.what());
+	} catch (const ValueOutOfBoundsException& e) {
+		LOGGER.warning(logMessage, e);
+		throw RestUnprocessableContent(restService->getErrorWriter(), e.what());
 	} catch (const ParserException& e) {
 		LOGGER.warning(logMessage, e);
 		throw RestBadRequest(restService->getErrorWriter(), e.what());

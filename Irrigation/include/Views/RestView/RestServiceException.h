@@ -61,6 +61,14 @@ public:
 	}
 };
 
+class RestUnprocessableContent : public RestServiceException {
+public:
+	RestUnprocessableContent(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		RestServiceException(errorWriter, 422, "Unprocessable Content", message)
+	{
+	}
+};
+
 class RestInternalServerError : public RestServiceException {
 public:
 	RestInternalServerError(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :

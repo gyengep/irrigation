@@ -32,8 +32,8 @@ public:
 	virtual mapped_type at(const key_type& key) = 0;									// throw NoSuchElementException
 
 	virtual StartTimeDtoList toStartTimeDtoList() const = 0;
-	virtual void updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) = 0;
-	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) = 0;
+	virtual void updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) = 0; // throws ValueOutOfBoundsException
+	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) = 0;      // throws ValueOutOfBoundsException
 
 	virtual std::string toString() const = 0;
 };

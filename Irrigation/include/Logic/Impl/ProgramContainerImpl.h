@@ -40,8 +40,8 @@ public:
 	virtual mapped_type at(const key_type& key) override;								// throw NoSuchElementException
 
 	virtual ProgramDtoList toProgramDtoList() const override;
-	virtual void updateFromProgramDtoList(const ProgramDtoList& programDtoList) override;
-	virtual value_type& createFromProgramDto(const ProgramDto& programDto) override;
+	virtual void updateFromProgramDtoList(const ProgramDtoList& programDtoList) override; // throws IllegalArgumentException, ValueOutOfBoundsException
+	virtual value_type& createFromProgramDto(const ProgramDto& programDto) override;      // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual std::string toString() const override;
 };

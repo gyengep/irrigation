@@ -49,7 +49,7 @@ public:
 	virtual void stop() override;
 
 	virtual DocumentDto toDocumentDto() const override;
-	virtual void updateFromDocumentDto(const DocumentDto& documentDto) override;
+	virtual void updateFromDocumentDto(const DocumentDto& documentDto) override; // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual void saveState() const override;
 	virtual void loadState() override;

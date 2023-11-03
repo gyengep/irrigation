@@ -24,3 +24,14 @@ protected:
 public:
     void waitAndUnlock(IrrigationDocumentImpl* irrigationDocument, unsigned waitMs);
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+class IrrigationDocumentImplDtoTest : public IrrigationDocumentImplTest {
+protected:
+
+	static const ProgramDtoList sample;
+
+    virtual void SetUp();
+    virtual void TearDown();
+};

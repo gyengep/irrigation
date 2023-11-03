@@ -17,8 +17,16 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class ProgramContainerImplFromDtoTest : public ProgramContainerImplTest {
+class ProgramContainerImplDtoTest : public ProgramContainerImplTest {
 protected:
+	static const ProgramDtoList sampleList_ZeroItem;
+	static const ProgramDtoList sampleList_OneItem;
+	static const ProgramDtoList sampleList_MoreItem;
 
-    void checkUpdateFromProgramDtoList();
+	void checkToProgramDtoList(const ProgramDtoList& sampleList);
+	void checkFromProgramDtoList(const ProgramDtoList& sampleList);
+
+	void checkFromProgramDtoList_zeroItem();
+	void checkFromProgramDtoList_oneItem();
+	void checkFromProgramDtoList_moreItem();
 };

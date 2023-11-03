@@ -18,11 +18,11 @@ public:
 	const_iterator end() const 			{ return container.end(); }
 	size_t size() const 				{ return container.size(); }
 
-	virtual const_mapped_type at(const key_type& key) const override;
-	virtual mapped_type at(const key_type& key) override;
+	virtual const_mapped_type at(const key_type& key) const override; // throws NoSuchElementException
+	virtual mapped_type at(const key_type& key) override;             // throws NoSuchElementException
 
 	virtual RunTimeDtoList toRunTimeDtoList() const override;
-	virtual void updateFromRunTimeDtoList(const RunTimeDtoList& runTimeDtoList) override;
+	virtual void updateFromRunTimeDtoList(const RunTimeDtoList& runTimeDtoList) override; // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual std::string toString() const override;
 	virtual DurationList toDurationList() const override;

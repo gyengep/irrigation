@@ -1,70 +1,57 @@
-#include "IrrigationDocumentImplDtoTest.h"
-#include "Dto2ObjectSamples/DocumentSamples.h"
+#include "IrrigationDocumentImplTest.h"
 #include "Mocks/MockIrrigationDocumentLoader.h"
 #include "Mocks/MockIrrigationDocumentSaver.h"
 #include "Mocks/MockWateringController.h"
+#include "DtoSamples/ProgramDtoSamples.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(IrrigationDocumentImplToDtoTest, toDocumentDto) {
-	const Dto2ObjectTestSamples::DocumentSampleList sampleList;
-
-	ASSERT_THAT(sampleList, SizeIs(4));
-
-	for (const auto& sample : sampleList) {
-		const IrrigationDocumentImpl& actual = sample.getObject();
-		const DocumentDto& expected = sample.getDto();
-
-		EXPECT_THAT(actual.toDocumentDto(), Eq(expected));
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void IrrigationDocumentImplFromDtoTest::SetUp() {
-	mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
-
-	irrigationDocument = std::make_shared<IrrigationDocumentImpl>(
-			std::make_shared<StrictMock<MockIrrigationDocumentLoader>>(),
-			std::make_shared<StrictMock<MockIrrigationDocumentSaver>>(),
-			mockProgramContainer,
-			std::make_shared<StrictMock<MockWateringController>>(),
-			nullptr
-		);
-}
-
-void IrrigationDocumentImplFromDtoTest::TearDown() {
-}
-
-void IrrigationDocumentImplFromDtoTest::check(const UpdateType updateType) {
-	const auto sampleList = Dto2ObjectTestSamples::DocumentSampleList();
-
-	for (const auto& sample : sampleList) {
-		DocumentDto actualDocumentDto;
-
-		if (UpdateType::ProgramContainer == updateType || UpdateType::All == updateType) {
-			const ProgramDtoList expectedProgramDtoList = sample.getDto().getPrograms();
-
-			actualDocumentDto.setPrograms(ProgramDtoList(expectedProgramDtoList));
-			EXPECT_CALL(*mockProgramContainer, updateFromProgramDtoList(expectedProgramDtoList));
+const ProgramDtoList IrrigationDocumentImplDtoTest::sample(
+		std::list<ProgramDto>{
+			ProgramDto(DtoSamples::programDtoSample1).setId(48),
+			ProgramDto(DtoSamples::programDtoSample2).setId(49),
+			ProgramDto(DtoSamples::programDtoSample3).setId(50)
 		}
+	);
 
-		irrigationDocument->updateFromDocumentDto(actualDocumentDto);
-	}
+///////////////////////////////////////////////////////////////////////////////
+
+void IrrigationDocumentImplDtoTest::SetUp() {
+	IrrigationDocumentImplTest::SetUp();
+
+	ON_CALL(*mockProgramContainer, toProgramDtoList()).WillByDefault(Return(sample));
+}
+
+void IrrigationDocumentImplDtoTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(IrrigationDocumentImplFromDtoTest, updateFromDocumentDto_empty) {
-	check(UpdateType::Nothing);
+TEST_F(IrrigationDocumentImplDtoTest, toIrrigationDocumentDto) {
+	const DocumentDto expectedDocumentDto(
+			std::move(ProgramDtoList(sample))
+		);
+
+	EXPECT_CALL(*mockProgramContainer, toProgramDtoList()).Times(1);
+	EXPECT_THAT(irrigationDocument->toDocumentDto(), Eq(expectedDocumentDto));
 }
 
-TEST_F(IrrigationDocumentImplFromDtoTest, updateFromDocumentDto_partial_programContainer) {
-	check(UpdateType::ProgramContainer);
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(IrrigationDocumentImplDtoTest, updateFromDocumentDto_empty) {
+	DocumentDto documentDto;
+
+	irrigationDocument->updateFromDocumentDto(documentDto);
 }
 
-TEST_F(IrrigationDocumentImplFromDtoTest, updateFromDocumentDto_all) {
-	check(UpdateType::All);
+TEST_F(IrrigationDocumentImplDtoTest, updateFromDocumentDto_all) {
+	const DocumentDto documentDto(
+			std::move(ProgramDtoList(sample))
+		);
+
+	EXPECT_CALL(*mockProgramContainer, updateFromProgramDtoList(sample));
+
+	irrigationDocument->updateFromDocumentDto(documentDto);
 }

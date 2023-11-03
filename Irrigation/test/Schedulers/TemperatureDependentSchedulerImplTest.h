@@ -27,16 +27,17 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class TemperatureDependentSchedulerImplFromDtoTest : public TemperatureDependentSchedulerImplTest {
+class TemperatureDependentSchedulerImplDtoTest : public TemperatureDependentSchedulerImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		RemainingCorrection,
-		MinAdjustment,
-		MaxAdjustment,
-		All
-	};
+	static const float originalRemainingCorrection;
+	static const int originalMinAdjustment = 123;
+	static const int originalMaxAdjustment = 999;
 
-   	void checkUpdateFromTemperatureDependentSchedulerDto(const UpdateType updateType);
+	static const float newRemainingCorrection;
+	static const int newMinAdjustment = 654;
+	static const int newMaxAdjustment = 777;
+
+	virtual void SetUp();
+    virtual void TearDown();
 };

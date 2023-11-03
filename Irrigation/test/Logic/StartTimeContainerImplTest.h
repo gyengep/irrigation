@@ -17,8 +17,17 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class StartTimeContainerImplFromDtoTest : public StartTimeContainerImplTest {
+class StartTimeContainerImplDtoTest : public StartTimeContainerImplTest {
 protected:
 
-    void checkUpdateFromStartTimeDtoList();
+	static const StartTimeDtoList sampleList_ZeroItem;
+	static const StartTimeDtoList sampleList_OneItem;
+	static const StartTimeDtoList sampleList_MoreItem;
+
+	void checkToStartTimeDtoList(const StartTimeDtoList& sampleList);
+	void checkFromStartTimeDtoList(const StartTimeDtoList& sampleList);
+
+	void checkFromStartTimeDtoList_zeroItem();
+	void checkFromStartTimeDtoList_oneItem();
+	void checkFromStartTimeDtoList_moreItem();
 };

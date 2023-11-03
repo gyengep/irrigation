@@ -1,77 +1,146 @@
 #include "StartTimeContainerImplTest.h"
-#include "Dto2ObjectSamples/StartTimeContainerSamples.h"
+#include "Exceptions/Exceptions.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(StartTimeContainerImplToDtoTest, toStartTimeContainerDtoList) {
-	const Dto2ObjectTestSamples::StartTimeContainerSampleList sampleList;
+const StartTimeDtoList StartTimeContainerImplDtoTest::sampleList_ZeroItem;
 
-	ASSERT_THAT(sampleList, SizeIs(4));
+const StartTimeDtoList StartTimeContainerImplDtoTest::sampleList_OneItem(
+		std::list<StartTimeDto>{
+			StartTimeDto(13, 23).setId(48)
+		}
+	);
 
+const StartTimeDtoList StartTimeContainerImplDtoTest::sampleList_MoreItem(
+		std::list<StartTimeDto>{
+			StartTimeDto(15, 25).setId(67),
+			StartTimeDto(16, 26).setId(71)
+		}
+	);
+
+///////////////////////////////////////////////////////////////////////////////
+
+void StartTimeContainerImplDtoTest::checkToStartTimeDtoList(const StartTimeDtoList& sampleList) {
 	for (const auto& sample : sampleList) {
-		const StartTimeContainerImpl& actual = sample.getContainer();
-		const StartTimeDtoList& expected = sample.getDtoList();
+		auto mockStartTime = std::make_shared<StrictMock<MockStartTime>>();
 
-		EXPECT_THAT(actual.toStartTimeDtoList(), ContainerEq(expected));
+		EXPECT_CALL(*mockStartTime, toStartTimeDto()).
+				Times(1).
+				WillOnce(Return(sample));
+
+		startTimeContainer->insert(IdType(sample.getId()), mockStartTime);
 	}
+
+	EXPECT_THAT(startTimeContainer->toStartTimeDtoList(), ContainerEq(sampleList));
+}
+
+TEST_F(StartTimeContainerImplDtoTest, toStartTimeContainerDtoList_zero) {
+	checkToStartTimeDtoList(sampleList_ZeroItem);
+}
+
+TEST_F(StartTimeContainerImplDtoTest, toStartTimeContainerDtoList_one) {
+	checkToStartTimeDtoList(sampleList_OneItem);
+}
+
+TEST_F(StartTimeContainerImplDtoTest, toStartTimeContainerDtoList_more) {
+	checkToStartTimeDtoList(sampleList_MoreItem);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void StartTimeContainerImplFromDtoTest::checkUpdateFromStartTimeDtoList() {
-	const auto sampleList = Dto2ObjectTestSamples::StartTimeContainerSampleList();
-
-	unsigned totalCount = 0;
-	for (const auto& sample : sampleList) {
-		totalCount += sample.getDtoList().size();
-	}
+void StartTimeContainerImplDtoTest::checkFromStartTimeDtoList(const StartTimeDtoList& sampleList) {
 
 	EXPECT_CALL(*mockStartTimeFactory, create()).
-			Times(totalCount).
-			WillRepeatedly(Invoke(mockStartTimeFactory.get(), &MockStartTimeFactory::createMockStartTime));
+			Times(sampleList.size());
 
 	for (const auto& sample : sampleList) {
-		const size_t expectedSize = sample.getDtoList().size();
+		auto mockStartTime = std::make_shared<StrictMock<MockStartTime>>();
 
-		for (const StartTimeDto& startTimeDto : sample.getDtoList()) {
-			mockStartTimeFactory->mockStartTimes.push_back(std::make_shared<StrictMock<MockStartTime>>());
-			EXPECT_CALL(*mockStartTimeFactory->mockStartTimes.back(), updateFromStartTimeDto(startTimeDto)).
-					Times(1);
-		}
+		EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(sample)).
+				Times(1);
 
-		startTimeContainer->updateFromStartTimeDtoList(sample.getDtoList());
+		mockStartTimeFactory->mockStartTimes.push_back(mockStartTime);
+	}
 
-		EXPECT_THAT(*startTimeContainer, SizeIs(expectedSize));
+	startTimeContainer->updateFromStartTimeDtoList(sampleList);
+	ASSERT_THAT(*startTimeContainer, SizeIs(sampleList.size()));
 
-		for (size_t i = 0; i < expectedSize; i++) {
-			EXPECT_THAT(
-					std::next(startTimeContainer->begin(), i)->second,
-					Eq(mockStartTimeFactory->mockStartTimes[mockStartTimeFactory->mockStartTimes.size() - expectedSize + i])
-				);
-		}
+	for (size_t i = 0; i < sampleList.size(); ++i) {
+		const IdType id(std::next(sampleList.begin(), i)->getId());
+		const auto actualStartTime = startTimeContainer->at(id);
+		const auto expectedStartTime = *std::next(mockStartTimeFactory->mockStartTimes.begin(), i);
+
+		EXPECT_THAT(actualStartTime, Eq(expectedStartTime));
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(StartTimeContainerImplFromDtoTest, updateFromStartTimeDtoList_zero) {
-	ASSERT_THAT(*startTimeContainer, SizeIs(0));
-	checkUpdateFromStartTimeDtoList();
+void StartTimeContainerImplDtoTest::checkFromStartTimeDtoList_zeroItem() {
+	const auto& sampleList = sampleList_ZeroItem;
+	ASSERT_THAT(sampleList, SizeIs(0));
+	checkFromStartTimeDtoList(sampleList);
 }
 
-TEST_F(StartTimeContainerImplFromDtoTest, updateFromStartTimeDtoList_one) {
-	startTimeContainer->insert(IdType(), std::make_shared<StrictMock<MockStartTime>>());
-
-	ASSERT_THAT(*startTimeContainer, SizeIs(1));
-	checkUpdateFromStartTimeDtoList();
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_zero_zero) {
+	checkFromStartTimeDtoList_zeroItem();
 }
 
-TEST_F(StartTimeContainerImplFromDtoTest, updateFromStartTimeDtoList_more) {
-	startTimeContainer->insert(IdType(), std::make_shared<StrictMock<MockStartTime>>());
-	startTimeContainer->insert(IdType(), std::make_shared<StrictMock<MockStartTime>>());
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_one_zero) {
+	startTimeContainer->insert(IdType(100), std::make_shared<StrictMock<MockStartTime>>());
+	checkFromStartTimeDtoList_zeroItem();
+}
 
-	ASSERT_THAT(*startTimeContainer, SizeIs(2));
-	checkUpdateFromStartTimeDtoList();
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_more_zero) {
+	startTimeContainer->insert(IdType(100), std::make_shared<StrictMock<MockStartTime>>());
+	startTimeContainer->insert(IdType(101), std::make_shared<StrictMock<MockStartTime>>());
+	checkFromStartTimeDtoList_zeroItem();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void StartTimeContainerImplDtoTest::checkFromStartTimeDtoList_oneItem() {
+	const auto& sampleList = sampleList_OneItem;
+	ASSERT_THAT(sampleList, SizeIs(1));
+	checkFromStartTimeDtoList(sampleList);
+}
+
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_zero_one) {
+	checkFromStartTimeDtoList_oneItem();
+}
+
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_one_one) {
+	startTimeContainer->insert(IdType(100), std::make_shared<StrictMock<MockStartTime>>());
+	checkFromStartTimeDtoList_oneItem();
+}
+
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_more_one) {
+	startTimeContainer->insert(IdType(100), std::make_shared<StrictMock<MockStartTime>>());
+	startTimeContainer->insert(IdType(101), std::make_shared<StrictMock<MockStartTime>>());
+	checkFromStartTimeDtoList_oneItem();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void StartTimeContainerImplDtoTest::checkFromStartTimeDtoList_moreItem() {
+	const auto& sampleList = sampleList_MoreItem;
+	ASSERT_THAT(sampleList, SizeIs(Gt(1)));
+	checkFromStartTimeDtoList(sampleList);
+}
+
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_zero_more) {
+	checkFromStartTimeDtoList_moreItem();
+}
+
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_one_more) {
+	startTimeContainer->insert(IdType(100), std::make_shared<StrictMock<MockStartTime>>());
+	checkFromStartTimeDtoList_moreItem();
+}
+
+TEST_F(StartTimeContainerImplDtoTest, updateFromStartTimeDtoList_more_more) {
+	startTimeContainer->insert(IdType(100), std::make_shared<StrictMock<MockStartTime>>());
+	startTimeContainer->insert(IdType(101), std::make_shared<StrictMock<MockStartTime>>());
+	checkFromStartTimeDtoList_moreItem();
 }

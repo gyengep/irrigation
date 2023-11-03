@@ -32,8 +32,8 @@ public:
 	virtual mapped_type at(const key_type& key) = 0;				// throw NoSuchElementException
 
 	virtual ProgramDtoList toProgramDtoList() const = 0;
-	virtual void updateFromProgramDtoList(const ProgramDtoList& programDtoList) = 0;
-	virtual value_type& createFromProgramDto(const ProgramDto& programDto) = 0;
+	virtual void updateFromProgramDtoList(const ProgramDtoList& programDtoList) = 0; // throws IllegalArgumentException, ValueOutOfBoundsException
+	virtual value_type& createFromProgramDto(const ProgramDto& programDto) = 0;      // throws IllegalArgumentException, ValueOutOfBoundsException
 
 	virtual std::string toString() const = 0;
 };

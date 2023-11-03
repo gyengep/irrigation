@@ -9,7 +9,7 @@ class StartTimeImpl : public StartTime {
 
 public:
 	StartTimeImpl();
-	StartTimeImpl(unsigned hour, unsigned minute);
+	StartTimeImpl(unsigned hour, unsigned minute); // thows ValueOutOfBoundsException
 	virtual ~StartTimeImpl();
 
 	virtual bool less(const StartTime& other) const override;
@@ -20,7 +20,7 @@ public:
 	virtual unsigned getMinutes() const override;
 
 	virtual StartTimeDto toStartTimeDto() const override;
-	virtual void updateFromStartTimeDto(const StartTimeDto& startTimeDto) override;
+	virtual void updateFromStartTimeDto(const StartTimeDto& startTimeDto) override; // throws ValueOutOfBoundsException
 
 	virtual std::string toString() const override;
 	virtual std::string toShortString() const override;

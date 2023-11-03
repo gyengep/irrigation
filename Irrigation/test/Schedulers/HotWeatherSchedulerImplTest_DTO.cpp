@@ -1,75 +1,74 @@
 #include "HotWeatherSchedulerImplTest.h"
-#include "Dto2ObjectSamples/HotWeatherSchedulerSamples.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(HotWeatherSchedulerImplToDtoTest, toHotWeatherSchedulerDto) {
-	const Dto2ObjectTestSamples::HotWeatherSchedulerSampleList sampleList;
+const float HotWeatherSchedulerImplDtoTest::originalMinTemperature = 12.3f;
+const float HotWeatherSchedulerImplDtoTest::newMinTemperature = 23.4f;
 
-	ASSERT_THAT(sampleList, SizeIs(4));
+///////////////////////////////////////////////////////////////////////////////
 
-	for (const auto& sample : sampleList) {
-		const HotWeatherSchedulerImpl& actual = sample.getObject();
-		const HotWeatherSchedulerDto& expected = sample.getDto();
+void HotWeatherSchedulerImplDtoTest::SetUp() {
+	HotWeatherSchedulerImplTest::SetUp();
+	hotWeatherScheduler->setPeriod(std::chrono::seconds(originalPeriodInSeconds));
+	hotWeatherScheduler->setMinTemperature(originalMinTemperature);
+}
 
-		EXPECT_THAT(actual.toHotWeatherSchedulerDto(), Eq(expected));
-	}
+void HotWeatherSchedulerImplDtoTest::TearDown() {
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void HotWeatherSchedulerImplFromDtoTest::checkUpdateFromHotWeatherSchedulerDto(const UpdateType updateType) {
-	const auto sampleList = Dto2ObjectTestSamples::HotWeatherSchedulerSampleList();
+TEST_F(HotWeatherSchedulerImplDtoTest, toHotWeatherSchedulerDto) {
+	const HotWeatherSchedulerDto expectedHotWeatherSchedulerDto(
+			originalPeriodInSeconds,
+			originalMinTemperature
+		);
 
-	std::chrono::seconds expectedPeriod = hotWeatherScheduler->getPeriod();
-	float expectedMinTemperature = hotWeatherScheduler->getMinTemperature();
-
-	for (const auto& sample : sampleList) {
-		HotWeatherSchedulerDto actualHotWeatherSchedulerDto;
-
-		if (UpdateType::Period == updateType || UpdateType::All == updateType) {
-			expectedPeriod = std::chrono::seconds(sample.getDto().getPeriodInSeconds());
-			actualHotWeatherSchedulerDto.setPeriodInSeconds(std::chrono::duration_cast<std::chrono::seconds>(expectedPeriod).count());
-		}
-
-		if (UpdateType::MinTemperature == updateType || UpdateType::All == updateType) {
-			expectedMinTemperature = sample.getDto().getMinTemperature();
-			actualHotWeatherSchedulerDto.setMinTemperature(expectedMinTemperature);
-		}
-
-		hotWeatherScheduler->updateFromHotWeatherSchedulerDto(actualHotWeatherSchedulerDto);
-
-		EXPECT_THAT(hotWeatherScheduler->getPeriod(), Eq(expectedPeriod));
-		EXPECT_THAT(hotWeatherScheduler->getMinTemperature(), Eq(expectedMinTemperature));
-	}
+	EXPECT_THAT(hotWeatherScheduler->toHotWeatherSchedulerDto(), Eq(expectedHotWeatherSchedulerDto));
 }
 
-TEST_F(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_empty) {
-	hotWeatherScheduler->setMinTemperature(83);
-	hotWeatherScheduler->setPeriod(std::chrono::seconds(33));
+///////////////////////////////////////////////////////////////////////////////
 
-	checkUpdateFromHotWeatherSchedulerDto(UpdateType::Nothing);
+TEST_F(HotWeatherSchedulerImplDtoTest, updateFromHotWeatherSchedulerDto_empty) {
+	HotWeatherSchedulerDto hotWeatherSchedulerDto;
+
+	hotWeatherScheduler->updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDto);
+
+	EXPECT_THAT(hotWeatherScheduler->getPeriod(), Eq(std::chrono::seconds(originalPeriodInSeconds)));
+	EXPECT_THAT(hotWeatherScheduler->getMinTemperature(), Eq(originalMinTemperature));
 }
 
-TEST_F(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_partial_minTemperature) {
-	hotWeatherScheduler->setMinTemperature(84);
-	hotWeatherScheduler->setPeriod(std::chrono::seconds(34));
+TEST_F(HotWeatherSchedulerImplDtoTest, updateFromHotWeatherSchedulerDto_period) {
+	HotWeatherSchedulerDto hotWeatherSchedulerDto;
+	hotWeatherSchedulerDto.setPeriodInSeconds(newPeriodInSeconds);
 
-	checkUpdateFromHotWeatherSchedulerDto(UpdateType::MinTemperature);
+	hotWeatherScheduler->updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDto);
+
+	EXPECT_THAT(hotWeatherScheduler->getPeriod(), Eq(std::chrono::seconds(newPeriodInSeconds)));
+	EXPECT_THAT(hotWeatherScheduler->getMinTemperature(), Eq(originalMinTemperature));
 }
 
-TEST_F(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_partial_period) {
-	hotWeatherScheduler->setMinTemperature(85);
-	hotWeatherScheduler->setPeriod(std::chrono::seconds(35));
+TEST_F(HotWeatherSchedulerImplDtoTest, updateFromHotWeatherSchedulerDto_minTemperature) {
+	HotWeatherSchedulerDto hotWeatherSchedulerDto;
+	hotWeatherSchedulerDto.setMinTemperature(newMinTemperature);
 
-	checkUpdateFromHotWeatherSchedulerDto(UpdateType::Period);
+	hotWeatherScheduler->updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDto);
+
+	EXPECT_THAT(hotWeatherScheduler->getPeriod(), Eq(std::chrono::seconds(originalPeriodInSeconds)));
+	EXPECT_THAT(hotWeatherScheduler->getMinTemperature(), Eq(newMinTemperature));
 }
 
-TEST_F(HotWeatherSchedulerImplFromDtoTest, updateFromHotWeatherSchedulerDto_all) {
-	hotWeatherScheduler->setMinTemperature(56);
-	hotWeatherScheduler->setPeriod(std::chrono::seconds(36));
+TEST_F(HotWeatherSchedulerImplDtoTest, updateFromHotWeatherSchedulerDto_all) {
+	const HotWeatherSchedulerDto hotWeatherSchedulerDto(
+			newPeriodInSeconds,
+			newMinTemperature
+		);
 
-	checkUpdateFromHotWeatherSchedulerDto(UpdateType::All);
+	hotWeatherScheduler->updateFromHotWeatherSchedulerDto(hotWeatherSchedulerDto);
+
+	EXPECT_THAT(hotWeatherScheduler->getPeriod(), Eq(std::chrono::seconds(newPeriodInSeconds)));
+	EXPECT_THAT(hotWeatherScheduler->getMinTemperature(), Eq(newMinTemperature));
 }

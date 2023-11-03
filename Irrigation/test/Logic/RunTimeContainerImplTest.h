@@ -17,6 +17,8 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class RunTimeContainerImplFromDtoTest : public RunTimeContainerImplTest {
+class RunTimeContainerImplDtoTest : public RunTimeContainerImplTest {
 protected:
+
+	static const RunTimeDtoList sample;
 };

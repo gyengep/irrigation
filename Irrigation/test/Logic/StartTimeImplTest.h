@@ -15,15 +15,15 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class StartTimeImplFromDtoTest : public StartTimeImplTest {
+class StartTimeImplDtoTest : public StartTimeImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		Hours,
-		Minutes,
-		All
-	};
+	static const unsigned originalHours = 15;
+	static const unsigned originalMinutes = 25;
 
-    void checkUpdateFromStartTimeDto(const UpdateType updateType);
+	static const unsigned newHours = 16;
+	static const unsigned newMinutes = 46;
+
+    virtual void SetUp();
+    virtual void TearDown();
 };

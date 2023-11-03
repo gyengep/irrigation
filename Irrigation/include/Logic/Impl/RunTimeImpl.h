@@ -12,14 +12,14 @@ class RunTimeImpl : public RunTime {
 
 public:
 	RunTimeImpl();
-	RunTimeImpl(const std::chrono::seconds& time);
+	RunTimeImpl(const std::chrono::seconds& time); // thows ValueOutOfBoundsException
 	virtual ~RunTimeImpl() = default;
 
 	virtual std::chrono::seconds get() const override;
 	virtual void set(const std::chrono::seconds& time) override;	// throws ValueOutOfBoundsException
 
 	virtual RunTimeDto toRunTimeDto() const override;
-	virtual void updateFromRunTimeDto(const RunTimeDto& runTimeDto) override;
+	virtual void updateFromRunTimeDto(const RunTimeDto& runTimeDto) override; // throws ValueOutOfBoundsException
 
 	virtual std::string toString() const override;
 	virtual std::chrono::seconds toDuration() const override;

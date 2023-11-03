@@ -20,7 +20,7 @@ public:
 	unsigned getValue() const;
 	std::string toString() const;
 
-	static IdType from_string(const std::string& id);
+	static IdType from_string(const std::string& id); // throws IllegalArgumentException
 };
 
 ///////////////////////////////////////////////////////////////////////////////

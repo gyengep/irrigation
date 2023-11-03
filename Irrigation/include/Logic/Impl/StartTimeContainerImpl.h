@@ -41,8 +41,8 @@ public:
 	virtual mapped_type at(const key_type& key) override;									// throw NoSuchElementException
 
 	virtual StartTimeDtoList toStartTimeDtoList() const override;
-	virtual void updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) override;
-	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) override;
+	virtual void updateFromStartTimeDtoList(const StartTimeDtoList& startTimeDtoList) override; // throws ValueOutOfBoundsException
+	virtual value_type& createFromStartTimeDto(const StartTimeDto& startTimeDto) override;      // throws ValueOutOfBoundsException
 
 	virtual std::string toString() const override;
 };

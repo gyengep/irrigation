@@ -22,22 +22,25 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class ProgramImplFromDtoTest : public ProgramImplTest {
+class ProgramImplDtoTest : public ProgramImplTest {
 protected:
 
-	enum class UpdateType {
-		Nothing,
-		Enabled,
-		Name,
-		Adjustment,
-		SchedulerType,
-		SchedulerContainer,
-		RunTimeContainer,
-		StartTimeContainer,
-		All
-	};
+	static const bool originalEnabled = true;
+	static const std::string originalName;
+	static const unsigned originalAdjustment = 38;
+	static const SchedulerType originalSchedulerType = SchedulerType::HOT_WEATHER;
 
-    void checkUpdateFromProgramDto(const UpdateType updateType);
+	static const bool newEnabled = false;
+	static const std::string newName;
+	static const unsigned newAdjustment = 97;
+	static const SchedulerType newSchedulerType = SchedulerType::TEMPERATURE_DEPENDENT;
+
+	static const SchedulersDto schedulersDtoSample;
+	static const RunTimeDtoList runTimeDtoListSample;
+	static const StartTimeDtoList startTimeDtoListSample;
+
+    virtual void SetUp();
+    virtual void TearDown();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

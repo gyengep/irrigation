@@ -1,74 +1,91 @@
 #include "TemperatureDependentSchedulerImplTest.h"
-#include "Dto2ObjectSamples/TemperatureDependentSchedulerSamples.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(TemperatureDependentSchedulerImplToDtoTest, toTemperatureDependentSchedulerDto) {
-	const Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList sampleList;
+const float TemperatureDependentSchedulerImplDtoTest::originalRemainingCorrection = 5.678f;
+const float TemperatureDependentSchedulerImplDtoTest::newRemainingCorrection = 6.789f;
 
-	ASSERT_THAT(sampleList, SizeIs(4));
+///////////////////////////////////////////////////////////////////////////////
 
-	for (const auto& sample : sampleList) {
-		const TemperatureDependentSchedulerImpl& actual = sample.getObject();
-		const TemperatureDependentSchedulerDto& expected = sample.getDto();
+void TemperatureDependentSchedulerImplDtoTest::SetUp() {
+	TemperatureDependentSchedulerImplTest::SetUp();
+	temperatureDependentScheduler->setRemainingCorrection(originalRemainingCorrection);
+	temperatureDependentScheduler->setMinAdjustment(originalMinAdjustment);
+	temperatureDependentScheduler->setMaxAdjustment(originalMaxAdjustment);
+}
 
-		EXPECT_THAT(actual.toTemperatureDependentSchedulerDto(), Eq(expected));
-	}
+void TemperatureDependentSchedulerImplDtoTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void TemperatureDependentSchedulerImplFromDtoTest::checkUpdateFromTemperatureDependentSchedulerDto(const UpdateType updateType) {
-	const auto sampleList = Dto2ObjectTestSamples::TemperatureDependentSchedulerSampleList();
+TEST_F(TemperatureDependentSchedulerImplDtoTest, toTemperatureDependentSchedulerDto) {
+	TemperatureDependentSchedulerDto expectedTemperatureDependentSchedulerDto(
+			originalRemainingCorrection,
+			originalMinAdjustment,
+			originalMaxAdjustment
+		);
 
-	float expectedRemainingCorrection = temperatureDependentScheduler->getRemainingCorrection();
-	unsigned expectedMinAdjustment = temperatureDependentScheduler->getMinAdjustment();
-	unsigned expectedMaxAdjustment = temperatureDependentScheduler->getMaxAdjustment();
-
-	for (const auto& sample : sampleList) {
-		TemperatureDependentSchedulerDto actualTemperatureDependentSchedulerDto;
-
-		if (UpdateType::RemainingCorrection == updateType || UpdateType::All == updateType) {
-			expectedRemainingCorrection = sample.getDto().getRemainingCorrection();
-			actualTemperatureDependentSchedulerDto.setRemainingCorrection(expectedRemainingCorrection);
-		}
-
-		if (UpdateType::MinAdjustment == updateType || UpdateType::All == updateType) {
-			expectedMinAdjustment = sample.getDto().getMinAdjustment();
-			actualTemperatureDependentSchedulerDto.setMinAdjustment(expectedMinAdjustment);
-		}
-
-		if (UpdateType::MaxAdjustment == updateType || UpdateType::All == updateType) {
-			expectedMaxAdjustment = sample.getDto().getMaxAdjustment();
-			actualTemperatureDependentSchedulerDto.setMaxAdjustment(expectedMaxAdjustment);
-		}
-
-		temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(actualTemperatureDependentSchedulerDto);
-
-		EXPECT_THAT(temperatureDependentScheduler->getRemainingCorrection(), Eq(expectedRemainingCorrection));
-		EXPECT_THAT(temperatureDependentScheduler->getMinAdjustment(), Eq(expectedMinAdjustment));
-		EXPECT_THAT(temperatureDependentScheduler->getMaxAdjustment(), Eq(expectedMaxAdjustment));
-	}
+	EXPECT_THAT(temperatureDependentScheduler->toTemperatureDependentSchedulerDto(), Eq(expectedTemperatureDependentSchedulerDto));
 }
 
-TEST_F(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_empty) {
-	checkUpdateFromTemperatureDependentSchedulerDto(UpdateType::Nothing);
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(TemperatureDependentSchedulerImplDtoTest, updateFromTemperatureDependentSchedulerDto_empty) {
+	TemperatureDependentSchedulerDto temperatureDependentSchedulerDto;
+
+	temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
+
+	EXPECT_THAT(temperatureDependentScheduler->getRemainingCorrection(), Eq(originalRemainingCorrection));
+	EXPECT_THAT(temperatureDependentScheduler->getMinAdjustment(), Eq(originalMinAdjustment));
+	EXPECT_THAT(temperatureDependentScheduler->getMaxAdjustment(), Eq(originalMaxAdjustment));
 }
 
-TEST_F(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_partial_remainingCorrection) {
-	checkUpdateFromTemperatureDependentSchedulerDto(UpdateType::RemainingCorrection);
+TEST_F(TemperatureDependentSchedulerImplDtoTest, updateFromTemperatureDependentSchedulerDto_remainingCorrection) {
+	TemperatureDependentSchedulerDto temperatureDependentSchedulerDto;
+	temperatureDependentSchedulerDto.setRemainingCorrection(newRemainingCorrection);
+
+	temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
+
+	EXPECT_THAT(temperatureDependentScheduler->getRemainingCorrection(), Eq(newRemainingCorrection));
+	EXPECT_THAT(temperatureDependentScheduler->getMinAdjustment(), Eq(originalMinAdjustment));
+	EXPECT_THAT(temperatureDependentScheduler->getMaxAdjustment(), Eq(originalMaxAdjustment));
 }
 
-TEST_F(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_partial_minAdjustment) {
-	checkUpdateFromTemperatureDependentSchedulerDto(UpdateType::MinAdjustment);
+TEST_F(TemperatureDependentSchedulerImplDtoTest, updateFromTemperatureDependentSchedulerDto_minAdjustment) {
+	TemperatureDependentSchedulerDto temperatureDependentSchedulerDto;
+	temperatureDependentSchedulerDto.setMinAdjustment(newMinAdjustment);
+
+	temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
+
+	EXPECT_THAT(temperatureDependentScheduler->getRemainingCorrection(), Eq(originalRemainingCorrection));
+	EXPECT_THAT(temperatureDependentScheduler->getMinAdjustment(), Eq(newMinAdjustment));
+	EXPECT_THAT(temperatureDependentScheduler->getMaxAdjustment(), Eq(originalMaxAdjustment));
 }
 
-TEST_F(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_partial_maxAdjustment) {
-	checkUpdateFromTemperatureDependentSchedulerDto(UpdateType::MaxAdjustment);
+TEST_F(TemperatureDependentSchedulerImplDtoTest, updateFromTemperatureDependentSchedulerDto_maxAdjustment) {
+	TemperatureDependentSchedulerDto temperatureDependentSchedulerDto;
+	temperatureDependentSchedulerDto.setMaxAdjustment(newMaxAdjustment);
+
+	temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
+
+	EXPECT_THAT(temperatureDependentScheduler->getRemainingCorrection(), Eq(originalRemainingCorrection));
+	EXPECT_THAT(temperatureDependentScheduler->getMinAdjustment(), Eq(originalMinAdjustment));
+	EXPECT_THAT(temperatureDependentScheduler->getMaxAdjustment(), Eq(newMaxAdjustment));
 }
 
-TEST_F(TemperatureDependentSchedulerImplFromDtoTest, updateFromTemperatureDependentSchedulerDto_all) {
-	checkUpdateFromTemperatureDependentSchedulerDto(UpdateType::All);
+TEST_F(TemperatureDependentSchedulerImplDtoTest, updateFromTemperatureDependentSchedulerDto_all) {
+	const TemperatureDependentSchedulerDto temperatureDependentSchedulerDto(
+			newRemainingCorrection,
+			newMinAdjustment,
+			newMaxAdjustment
+		);
+
+	temperatureDependentScheduler->updateFromTemperatureDependentSchedulerDto(temperatureDependentSchedulerDto);
+
+	EXPECT_THAT(temperatureDependentScheduler->getRemainingCorrection(), Eq(newRemainingCorrection));
+	EXPECT_THAT(temperatureDependentScheduler->getMinAdjustment(), Eq(newMinAdjustment));
+	EXPECT_THAT(temperatureDependentScheduler->getMaxAdjustment(), Eq(newMaxAdjustment));
 }

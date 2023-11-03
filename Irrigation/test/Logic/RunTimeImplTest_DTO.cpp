@@ -1,78 +1,71 @@
 #include "RunTimeImplTest.h"
-#include "Dto2ObjectSamples/RunTimeSamples.h"
+#include "Exceptions/Exceptions.h"
 
 using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(RunTimeImplToDtoTest, toRunTimeDto) {
-	const Dto2ObjectTestSamples::RunTimeSampleList sampleList;
+void RunTimeImplDtoTest::SetUp() {
+	RunTimeImplTest::SetUp();
+	runTime->set(std::chrono::minutes(originalMinutes) + std::chrono::seconds(originalSeconds));
+}
 
-	ASSERT_THAT(sampleList, SizeIs(6));
-
-	for (const auto& sample : sampleList) {
-		const RunTimeImpl& actual = sample.getObject();
-		const RunTimeDto& expected = sample.getDto();
-
-		EXPECT_THAT(actual.toRunTimeDto(), Eq(expected));
-	}
+void RunTimeImplDtoTest::TearDown() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RunTimeImplFromDtoTest::checkUpdateFromRunTimeDto(const UpdateType updateType) {
-	const auto sampleList = Dto2ObjectTestSamples::RunTimeSampleList();
-
-	const std::chrono::seconds seconds = runTime->get();
-	unsigned expectedMinutes = seconds.count() / 60;
-	unsigned expectedSeconds = seconds.count() % 60;
-
-	for (const auto& sample : sampleList) {
-		RunTimeDto actualRunTimeDto;
-
-		if (UpdateType::Minutes == updateType) {
-			expectedMinutes = sample.getDto().getMinutes();
-			expectedSeconds = 0;
-			actualRunTimeDto.setMinutes(expectedMinutes);
-		}
-
-		if (UpdateType::Seconds == updateType) {
-			expectedMinutes = 0;
-			expectedSeconds = sample.getDto().getSeconds();
-			actualRunTimeDto.setSeconds(expectedSeconds);
-		}
-
-		if (UpdateType::All == updateType) {
-			expectedMinutes = sample.getDto().getMinutes();
-			expectedSeconds = sample.getDto().getSeconds();
-			actualRunTimeDto.setMinutes(expectedMinutes);
-			actualRunTimeDto.setSeconds(expectedSeconds);
-		}
-
-		runTime->updateFromRunTimeDto(actualRunTimeDto);
-
-		EXPECT_THAT(runTime->get(), Eq(std::chrono::minutes(expectedMinutes) + std::chrono::seconds(expectedSeconds)));
-	}
+TEST_F(RunTimeImplDtoTest, toRunTimeDto) {
+	const RunTimeDto expectedRunTimeDto(originalMinutes, originalSeconds);
+	EXPECT_THAT(runTime->toRunTimeDto(), Eq(expectedRunTimeDto));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_empty) {
-	runTime->set(std::chrono::minutes(15) + std::chrono::seconds(25));
-	checkUpdateFromRunTimeDto(UpdateType::Nothing);
+TEST_F(RunTimeImplDtoTest, updateFromRunTimeDto_empty) {
+	RunTimeDto runTimeDto;
+
+	runTime->updateFromRunTimeDto(runTimeDto);
+
+	EXPECT_THAT(runTime->get(), Eq(std::chrono::minutes(originalMinutes) + std::chrono::seconds(originalSeconds)));
 }
 
-TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_minutes) {
-	runTime->set(std::chrono::minutes(16) + std::chrono::seconds(26));
-	checkUpdateFromRunTimeDto(UpdateType::Minutes);
+TEST_F(RunTimeImplDtoTest, updateFromRunTimeDto_minutes) {
+	RunTimeDto runTimeDto;
+	runTimeDto.setMinutes(newMinutes);
+
+	runTime->updateFromRunTimeDto(runTimeDto);
+
+	EXPECT_THAT(runTime->get(), Eq(std::chrono::minutes(newMinutes) + std::chrono::seconds(0)));
 }
 
-TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_seconds) {
-	runTime->set(std::chrono::minutes(17) + std::chrono::seconds(27));
-	checkUpdateFromRunTimeDto(UpdateType::Seconds);
+TEST_F(RunTimeImplDtoTest, updateFromRunTimeDto_seconds) {
+	RunTimeDto runTimeDto;
+	runTimeDto.setSeconds(newSeconds);
+
+	runTime->updateFromRunTimeDto(runTimeDto);
+
+	EXPECT_THAT(runTime->get(), Eq(std::chrono::minutes(0) + std::chrono::seconds(newSeconds)));
 }
 
-TEST_F(RunTimeImplFromDtoTest, updateFromRunTimeDto_all) {
-	runTime->set(std::chrono::minutes(18) + std::chrono::seconds(28));
-	checkUpdateFromRunTimeDto(UpdateType::All);
+TEST_F(RunTimeImplDtoTest, updateFromRunTimeDto_all) {
+	const RunTimeDto runTimeDto(
+			newMinutes,
+			newSeconds
+		);
+
+	runTime->updateFromRunTimeDto(runTimeDto);
+
+	EXPECT_THAT(runTime->get(), Eq(std::chrono::minutes(newMinutes) + std::chrono::seconds(newSeconds)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(RunTimeImplDtoTest, updateFromRunTimeDto_ValueOutOfBoundsException) {
+	const unsigned maxMinutes = 24 * 60;
+	const unsigned maxSeconds = 0;
+
+	EXPECT_NO_THROW(runTime->updateFromRunTimeDto(RunTimeDto(maxMinutes, maxSeconds)));
+	EXPECT_THROW(runTime->updateFromRunTimeDto(RunTimeDto(maxMinutes + 1, maxSeconds)), ValueOutOfBoundsException);
+	EXPECT_THROW(runTime->updateFromRunTimeDto(RunTimeDto(maxMinutes, maxSeconds + 1)), ValueOutOfBoundsException);
 }

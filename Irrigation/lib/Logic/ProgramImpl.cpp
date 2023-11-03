@@ -1,4 +1,5 @@
 #include "Impl/ProgramImpl.h"
+#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include "Schedulers/EveryDayScheduler.h"
 #include "Schedulers/HotWeatherScheduler.h"
@@ -111,7 +112,7 @@ void ProgramImpl::updateFromProgramDto(const ProgramDto& programDto) {
 		} else if (weeklySchedulerText == programDto.getSchedulerType()) {
 			setSchedulerType(SchedulerType::WEEKLY);
 		} else {
-			throw std::invalid_argument("ProgramImpl::updateFromProgramDto(): invalid SchedulerType: " + programDto.getSchedulerType());
+			throw IllegalArgumentException("ProgramImpl::updateFromProgramDto(): invalid SchedulerType: " + programDto.getSchedulerType());
 		}
 	}
 

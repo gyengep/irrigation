@@ -40,7 +40,7 @@ public:
 	virtual WeeklyScheduler& getWeeklyScheduler() override;
 
 	virtual SchedulersDto toSchedulersDto() const override;
-	virtual void updateFromSchedulersDto(const SchedulersDto& schedulersDto) override;
+	virtual void updateFromSchedulersDto(const SchedulersDto& schedulersDto) override; // throws IllegalArgumentException
 
 	virtual std::string toString() const override;
 };
