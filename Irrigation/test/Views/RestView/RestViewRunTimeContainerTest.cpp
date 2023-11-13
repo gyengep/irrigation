@@ -29,7 +29,7 @@ void RestViewRunTimeContainerTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewRunTimeContainerTest, post) {
+TEST_F(RestViewRunTimeContainerTest, POST) {
 	checkResponse_405_Method_Not_Allowed(
 			POST_ContentType_Xml(createRunTimeContainerUrl(programId), sample.getXml())
 		);
@@ -37,7 +37,7 @@ TEST_F(RestViewRunTimeContainerTest, post) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewRunTimeContainerTest, get) {
+TEST_F(RestViewRunTimeContainerTest, GET) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -52,7 +52,7 @@ TEST_F(RestViewRunTimeContainerTest, get) {
 		);
 }
 
-TEST_F(RestViewRunTimeContainerTest, get_WithAcceptHeader) {
+TEST_F(RestViewRunTimeContainerTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -67,13 +67,13 @@ TEST_F(RestViewRunTimeContainerTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewRunTimeContainerTest, get_NotAcceptable) {
+TEST_F(RestViewRunTimeContainerTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createRunTimeContainerUrl(programId))
 		);
 }
 
-TEST_F(RestViewRunTimeContainerTest, get_ProgramNotExist) {
+TEST_F(RestViewRunTimeContainerTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -87,7 +87,7 @@ TEST_F(RestViewRunTimeContainerTest, get_ProgramNotExist) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewRunTimeContainerTest, patch) {
+TEST_F(RestViewRunTimeContainerTest, PATCH) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
@@ -103,7 +103,7 @@ TEST_F(RestViewRunTimeContainerTest, patch) {
 		);
 }
 
-TEST_F(RestViewRunTimeContainerTest, patch_ProgramNotExits) {
+TEST_F(RestViewRunTimeContainerTest, PATCH_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -115,13 +115,13 @@ TEST_F(RestViewRunTimeContainerTest, patch_ProgramNotExits) {
 		);
 }
 
-TEST_F(RestViewRunTimeContainerTest, patch_InvalidXml) {
+TEST_F(RestViewRunTimeContainerTest, PATCH_InvalidXml) {
 	checkResponse_400_Bad_Request(
 			PATCH_ContentType_Xml(createRunTimeContainerUrl(programId), "Invalid XML")
 		);
 }
 
-TEST_F(RestViewRunTimeContainerTest, patch_InvalidContentType) {
+TEST_F(RestViewRunTimeContainerTest, PATCH_InvalidContentType) {
 	checkResponse_415_Unsupported_Media_Type(
 			PATCH_ContentType_Json(createRunTimeContainerUrl(programId), "{ \"key\" : \"value\" }")
 		);
@@ -129,7 +129,7 @@ TEST_F(RestViewRunTimeContainerTest, patch_InvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewRunTimeContainerTest, delete) {
+TEST_F(RestViewRunTimeContainerTest, DELETE) {
 	checkResponse_405_Method_Not_Allowed(
 			DELETE(createRunTimeContainerUrl(programId))
 		);

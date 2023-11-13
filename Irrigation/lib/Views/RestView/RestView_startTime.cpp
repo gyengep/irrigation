@@ -31,10 +31,10 @@ std::unique_ptr<HttpResponse> RestView::onGetStartTimeList(const HttpRequest& re
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -63,13 +63,13 @@ std::unique_ptr<HttpResponse> RestView::onPostStartTimeList(const HttpRequest& r
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const ParserException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestBadRequest(restService->getErrorWriter(), e.what());
+		throw HTTP_400_Bad_Request(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -91,10 +91,10 @@ std::unique_ptr<HttpResponse> RestView::onGetStartTime(const HttpRequest& reques
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -120,16 +120,16 @@ std::unique_ptr<HttpResponse> RestView::onPatchStartTime(const HttpRequest& requ
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const ValueOutOfBoundsException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestUnprocessableContent(restService->getErrorWriter(), e.what());
+		throw HTTP_422_Unprocessable_Content(restService->getErrorWriter(), e.what());
 	} catch (const ParserException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestBadRequest(restService->getErrorWriter(), e.what());
+		throw HTTP_400_Bad_Request(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -153,9 +153,9 @@ std::unique_ptr<HttpResponse> RestView::onDeleteStartTime(const HttpRequest& req
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }

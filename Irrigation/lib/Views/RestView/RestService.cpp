@@ -43,14 +43,14 @@ unique_ptr<HttpResponse> RestService::onRequest(const HttpRequest& request) {
 		}
 
 		if (pathFound) {
-			throw RestMethodNotAllowed(errorWriter, request.getMethod());
+			throw HTTP_405_Method_Not_Allowed(errorWriter, request.getMethod());
 		} else {
-			throw RestNotFound(errorWriter, request.getUrl());
+			throw HTTP_404_Not_Found(errorWriter, request.getUrl());
 		}
 	} catch (const WebServerException& e) {
 		throw;
 	} catch (const exception& e) {
-		throw RestInternalServerError(errorWriter, e.what());
+		throw HTTP_500_Internal_Server_Error(errorWriter, e.what());
 	}
 }
 
@@ -61,7 +61,7 @@ void RestService::checkAccept(const HttpRequest& request) {
 
 		if (!isAcceptable(it->second)) {
 			LOGGER.debug("Not acceptable: %s", it->second.c_str());
-			throw RestNotAcceptable(errorWriter, request.getUrl());
+			throw HTTP_406_Not_Acceptable(errorWriter, request.getUrl());
 		}
 	}
 }
@@ -103,7 +103,7 @@ void RestService::checkContentType(const HttpRequest& request) {
 	if (request.getHeaders().end() != it) {
 		if (it->second != "application/xml") {
 			LOGGER.debug("Unsupported media type: %s", it->second.c_str());
-			throw RestUnsupportedMediaType(errorWriter, request.getUrl());
+			throw HTTP_415_Unsupported_Media_Type(errorWriter, request.getUrl());
 		}
 	}
 }

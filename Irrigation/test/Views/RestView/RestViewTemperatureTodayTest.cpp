@@ -23,7 +23,7 @@ std::string RestViewTemperatureTodayTest::createTemperatureTodayUrl(const std::s
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureTodayTest, get) {
+TEST_F(RestViewTemperatureTodayTest, GET) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDto(sample.getFrom(), sample.getNow(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto().first));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getNow(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto().second));
@@ -34,7 +34,7 @@ TEST_F(RestViewTemperatureTodayTest, get) {
 		);
 }
 
-TEST_F(RestViewTemperatureTodayTest, get_WithAcceptHeader) {
+TEST_F(RestViewTemperatureTodayTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDto(sample.getFrom(), sample.getNow(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto().first));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getNow(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto().second));
@@ -45,21 +45,21 @@ TEST_F(RestViewTemperatureTodayTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewTemperatureTodayTest, get_WithDatetimeFormat1) {
+TEST_F(RestViewTemperatureTodayTest, GET_WithDatetimeFormat1) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDto(sample.getFrom(), sample.getNow(), "abc")).Times(1).WillOnce(Return(sample.getDto().first));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getNow(), sample.getTo(), "abc")).Times(1).WillOnce(Return(sample.getDto().second));
 	GET(createTemperatureTodayUrl("datetime-format=abc"));
 }
 
-TEST_F(RestViewTemperatureTodayTest, get_WithDatetimeFormat2) {
+TEST_F(RestViewTemperatureTodayTest, GET_WithDatetimeFormat2) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDto(sample.getFrom(), sample.getNow(), "%a %b")).Times(1).WillOnce(Return(sample.getDto().first));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getNow(), sample.getTo(), "%a %b")).Times(1).WillOnce(Return(sample.getDto().second));
 	GET(createTemperatureTodayUrl("datetime-format=%a %b"));
 }
 
-TEST_F(RestViewTemperatureTodayTest, get_HistoryNotFound) {
+TEST_F(RestViewTemperatureTodayTest, GET_HistoryNotFound) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDto(sample.getFrom(), sample.getNow(), defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getNow(), sample.getTo(), defaultDateTimeFormat)).Times(0);
@@ -69,7 +69,7 @@ TEST_F(RestViewTemperatureTodayTest, get_HistoryNotFound) {
 		);
 }
 
-TEST_F(RestViewTemperatureTodayTest, get_ForecastNotFound) {
+TEST_F(RestViewTemperatureTodayTest, GET_ForecastNotFound) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureHistory, toTemperatureHistoryDto(sample.getFrom(), sample.getNow(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto().first));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getNow(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
@@ -79,7 +79,7 @@ TEST_F(RestViewTemperatureTodayTest, get_ForecastNotFound) {
 		);
 }
 
-TEST_F(RestViewTemperatureTodayTest, get_NotAcceptable) {
+TEST_F(RestViewTemperatureTodayTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createTemperatureTodayUrl())
 		);

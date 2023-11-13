@@ -34,7 +34,7 @@ void RestViewProgramTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramTest, post) {
+TEST_F(RestViewProgramTest, POST) {
 	checkResponse_405_Method_Not_Allowed(
 			POST_ContentType_Xml(createProgramUrl(programId), sample.getXml())
 		);
@@ -42,7 +42,7 @@ TEST_F(RestViewProgramTest, post) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramTest, get) {
+TEST_F(RestViewProgramTest, GET) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -56,7 +56,7 @@ TEST_F(RestViewProgramTest, get) {
 		);
 }
 
-TEST_F(RestViewProgramTest, get_WithAcceptHeader) {
+TEST_F(RestViewProgramTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -70,13 +70,13 @@ TEST_F(RestViewProgramTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewProgramTest, get_NotAcceptable) {
+TEST_F(RestViewProgramTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createProgramUrl(programId))
 		);
 }
 
-TEST_F(RestViewProgramTest, get_ProgramNotExist) {
+TEST_F(RestViewProgramTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -90,7 +90,7 @@ TEST_F(RestViewProgramTest, get_ProgramNotExist) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramTest, patch) {
+TEST_F(RestViewProgramTest, PATCH) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
@@ -105,7 +105,7 @@ TEST_F(RestViewProgramTest, patch) {
 		);
 }
 
-TEST_F(RestViewProgramTest, patch_ProgramNotExits) {
+TEST_F(RestViewProgramTest, PATCH_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -117,13 +117,13 @@ TEST_F(RestViewProgramTest, patch_ProgramNotExits) {
 		);
 }
 
-TEST_F(RestViewProgramTest, patch_InvalidXml) {
+TEST_F(RestViewProgramTest, PATCH_InvalidXml) {
 	checkResponse_400_Bad_Request(
 			PATCH_ContentType_Xml(createProgramUrl(programId), "Invalid XML")
 		);
 }
 
-TEST_F(RestViewProgramTest, patch_InvalidContentType) {
+TEST_F(RestViewProgramTest, PATCH_InvalidContentType) {
 	checkResponse_415_Unsupported_Media_Type(
 			PATCH_ContentType_Json(createProgramUrl(programId), "{ \"key\" : \"value\" }")
 		);
@@ -131,7 +131,7 @@ TEST_F(RestViewProgramTest, patch_InvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramTest, delete) {
+TEST_F(RestViewProgramTest, DELETE) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
@@ -144,7 +144,7 @@ TEST_F(RestViewProgramTest, delete) {
 		);
 }
 
-TEST_F(RestViewProgramTest, delete_ProgramNotExits) {
+TEST_F(RestViewProgramTest, DELETE_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);

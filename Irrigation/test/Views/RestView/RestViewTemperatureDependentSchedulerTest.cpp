@@ -30,7 +30,7 @@ void RestViewTemperatureDependentSchedulerTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, post) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, POST) {
 	checkResponse_405_Method_Not_Allowed(
 			POST_ContentType_Xml(createTemperatureDependentSchedulerUrl(programId), sample.getXml())
 		);
@@ -38,7 +38,7 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, post) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, get) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, GET) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -54,7 +54,7 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, get) {
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, get_WithAcceptHeader) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -70,13 +70,13 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, get_NotAcceptable) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createTemperatureDependentSchedulerUrl(programId))
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, get_ProgramNotExist) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -90,7 +90,7 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, get_ProgramNotExist) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, patch) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
@@ -107,7 +107,7 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, patch) {
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, patch_ProgramNotExits) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -119,13 +119,13 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, patch_ProgramNotExits) {
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, patch_InvalidXml) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH_InvalidXml) {
 	checkResponse_400_Bad_Request(
 			PATCH_ContentType_Xml(createTemperatureDependentSchedulerUrl(programId), "Invalid XML")
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, patch_InvalidContentType) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH_InvalidContentType) {
 	checkResponse_415_Unsupported_Media_Type(
 			PATCH_ContentType_Json(createTemperatureDependentSchedulerUrl(programId), "{ \"key\" : \"value\" }")
 		);
@@ -133,7 +133,7 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, patch_InvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, delete) {
+TEST_F(RestViewTemperatureDependentSchedulerTest, DELETE) {
 	checkResponse_405_Method_Not_Allowed(
 			DELETE(createTemperatureDependentSchedulerUrl(programId))
 		);

@@ -26,10 +26,10 @@ unique_ptr<HttpResponse> RestView::onGetTemperatureDependentScheduler(const Http
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -52,12 +52,12 @@ unique_ptr<HttpResponse> RestView::onPatchTemperatureDependentScheduler(const Ht
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const ParserException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestBadRequest(restService->getErrorWriter(), e.what());
+		throw HTTP_400_Bad_Request(restService->getErrorWriter(), e.what());
 	}
 }

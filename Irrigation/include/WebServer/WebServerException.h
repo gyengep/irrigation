@@ -11,7 +11,12 @@ class WebServerException : public std::runtime_error {
 	const KeyValue headers;
 
 public:
-	WebServerException(unsigned statusCode, const std::string& statusMessage, const std::string& errorMessage, const KeyValue& headers) :
+	WebServerException(
+		unsigned statusCode,
+		const std::string& statusMessage,
+		const std::string& errorMessage,
+		const KeyValue& headers
+	) :
 		std::runtime_error(errorMessage),
 		statusCode(statusCode),
 		statusMessage(statusMessage),

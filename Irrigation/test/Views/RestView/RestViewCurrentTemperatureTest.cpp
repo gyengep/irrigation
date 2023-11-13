@@ -23,7 +23,7 @@ std::string RestViewCurrentTemperatureTest::createCurrentTemperatureUrl(const st
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewCurrentTemperatureTest, get) {
+TEST_F(RestViewCurrentTemperatureTest, GET) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
@@ -32,7 +32,7 @@ TEST_F(RestViewCurrentTemperatureTest, get) {
 		);
 }
 
-TEST_F(RestViewCurrentTemperatureTest, get_WithAcceptHeader) {
+TEST_F(RestViewCurrentTemperatureTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
@@ -41,17 +41,17 @@ TEST_F(RestViewCurrentTemperatureTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat1) {
+TEST_F(RestViewCurrentTemperatureTest, GET_WithDatetimeFormat1) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto("abc")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createCurrentTemperatureUrl("datetime-format=abc"));
 }
 
-TEST_F(RestViewCurrentTemperatureTest, get_WithDatetimeFormat2) {
+TEST_F(RestViewCurrentTemperatureTest, GET_WithDatetimeFormat2) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto("%a %b")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createCurrentTemperatureUrl("datetime-format=%a %b"));
 }
 
-TEST_F(RestViewCurrentTemperatureTest, get_NotFound) {
+TEST_F(RestViewCurrentTemperatureTest, GET_NotFound) {
 	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
 
 	checkResponse_404_Not_Found(
@@ -59,7 +59,7 @@ TEST_F(RestViewCurrentTemperatureTest, get_NotFound) {
 		);
 }
 
-TEST_F(RestViewCurrentTemperatureTest, get_NotAcceptable) {
+TEST_F(RestViewCurrentTemperatureTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createCurrentTemperatureUrl())
 		);

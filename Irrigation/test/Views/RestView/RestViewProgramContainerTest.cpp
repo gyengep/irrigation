@@ -29,7 +29,7 @@ void RestViewProgramContainerTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramContainerTest, post) {
+TEST_F(RestViewProgramContainerTest, POST) {
 	IdType programId(951);
 	ProgramContainer::value_type result = std::make_pair(programId, std::make_shared<NiceMock<MockProgram>>());
 
@@ -46,13 +46,13 @@ TEST_F(RestViewProgramContainerTest, post) {
 		);
 }
 
-TEST_F(RestViewProgramContainerTest, patch_InvalidXml) {
+TEST_F(RestViewProgramContainerTest, POST_InvalidXml) {
 	checkResponse_400_Bad_Request(
 			POST_ContentType_Xml(createProgramContainerUrl(), "Invalid XML")
 		);
 }
 
-TEST_F(RestViewProgramContainerTest, patch_InvalidContentType) {
+TEST_F(RestViewProgramContainerTest, POST_InvalidContentType) {
 	checkResponse_415_Unsupported_Media_Type(
 			POST_ContentType_Json(createProgramContainerUrl(), "{ \"key\" : \"value\" }")
 		);
@@ -60,7 +60,7 @@ TEST_F(RestViewProgramContainerTest, patch_InvalidContentType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramContainerTest, get) {
+TEST_F(RestViewProgramContainerTest, GET) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -73,7 +73,7 @@ TEST_F(RestViewProgramContainerTest, get) {
 		);
 }
 
-TEST_F(RestViewProgramContainerTest, get_WithAcceptHeader) {
+TEST_F(RestViewProgramContainerTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
@@ -86,7 +86,7 @@ TEST_F(RestViewProgramContainerTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewProgramContainerTest, get_NotAcceptable) {
+TEST_F(RestViewProgramContainerTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createProgramContainerUrl())
 		);
@@ -94,7 +94,7 @@ TEST_F(RestViewProgramContainerTest, get_NotAcceptable) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramContainerTest, patch) {
+TEST_F(RestViewProgramContainerTest, PATCH) {
 	checkResponse_405_Method_Not_Allowed(
 			PATCH_ContentType_Xml(createProgramContainerUrl(), sample.getXml())
 		);
@@ -102,7 +102,7 @@ TEST_F(RestViewProgramContainerTest, patch) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewProgramContainerTest, delete) {
+TEST_F(RestViewProgramContainerTest, DELETE) {
 	checkResponse_405_Method_Not_Allowed(
 			DELETE(createProgramContainerUrl())
 		);

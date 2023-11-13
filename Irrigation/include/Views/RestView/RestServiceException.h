@@ -6,10 +6,14 @@
 #include "ErrorWriter.h"
 
 
-class RestServiceException : public WebServerException {
+class HTTP_Exception : public WebServerException {
 public:
-	RestServiceException(
-			const std::shared_ptr<ErrorWriter>& errorWriter, unsigned statusCode, const std::string& genericMessage, const std::string& detailedMessage) :
+	HTTP_Exception(
+		const std::shared_ptr<ErrorWriter>& errorWriter,
+		unsigned statusCode,
+		const std::string& genericMessage,
+		const std::string& detailedMessage
+	) :
 		WebServerException(
 				statusCode,
 				genericMessage,
@@ -21,58 +25,58 @@ public:
 };
 
 
-class RestBadRequest : public RestServiceException {
+class HTTP_400_Bad_Request : public HTTP_Exception {
 public:
-	RestBadRequest(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 400, "Bad Request", message)
+	HTTP_400_Bad_Request(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 400, "Bad Request", message)
 	{
 	}
 };
 
-class RestNotFound : public RestServiceException {
+class HTTP_404_Not_Found : public HTTP_Exception {
 public:
-	RestNotFound(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 404, "Not Found", message)
+	HTTP_404_Not_Found(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 404, "Not Found", message)
 	{
 	}
 };
 
-class RestMethodNotAllowed : public RestServiceException {
+class HTTP_405_Method_Not_Allowed : public HTTP_Exception {
 public:
-	RestMethodNotAllowed(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 405, "Method Not Allowed", message)
+	HTTP_405_Method_Not_Allowed(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 405, "Method Not Allowed", message)
 	{
 	}
 };
 
-class RestNotAcceptable : public RestServiceException {
+class HTTP_406_Not_Acceptable : public HTTP_Exception {
 public:
-	RestNotAcceptable(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 406, "Not Acceptable", message)
+	HTTP_406_Not_Acceptable(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 406, "Not Acceptable", message)
 	{
 	}
 };
 
-class RestUnsupportedMediaType : public RestServiceException {
+class HTTP_415_Unsupported_Media_Type : public HTTP_Exception {
 public:
-	RestUnsupportedMediaType(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 415, "Unsupported Media Type", message)
+	HTTP_415_Unsupported_Media_Type(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 415, "Unsupported Media Type", message)
 	{
 	}
 };
 
-class RestUnprocessableContent : public RestServiceException {
+class HTTP_422_Unprocessable_Content : public HTTP_Exception {
 public:
-	RestUnprocessableContent(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 422, "Unprocessable Content", message)
+	HTTP_422_Unprocessable_Content(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 422, "Unprocessable Content", message)
 	{
 	}
 };
 
-class RestInternalServerError : public RestServiceException {
+class HTTP_500_Internal_Server_Error : public HTTP_Exception {
 public:
-	RestInternalServerError(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
-		RestServiceException(errorWriter, 500, "Internal Server Error", message)
+	HTTP_500_Internal_Server_Error(const std::shared_ptr<ErrorWriter>& errorWriter, const std::string& message) :
+		HTTP_Exception(errorWriter, 500, "Internal Server Error", message)
 	{
 	}
 };

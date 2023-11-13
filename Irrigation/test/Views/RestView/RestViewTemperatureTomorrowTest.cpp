@@ -23,7 +23,7 @@ std::string RestViewTemperatureTomorrowTest::createTemperatureTomorrowUrl(const 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureTomorrowTest, get) {
+TEST_F(RestViewTemperatureTomorrowTest, GET) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
@@ -33,7 +33,7 @@ TEST_F(RestViewTemperatureTomorrowTest, get) {
 		);
 }
 
-TEST_F(RestViewTemperatureTomorrowTest, get_WithAcceptHeader) {
+TEST_F(RestViewTemperatureTomorrowTest, GET_WithAcceptHeader) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
@@ -43,19 +43,19 @@ TEST_F(RestViewTemperatureTomorrowTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewTemperatureTomorrowTest, get_WithDatetimeFormat1) {
+TEST_F(RestViewTemperatureTomorrowTest, GET_WithDatetimeFormat1) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureForecast,toTemperatureForecastDto(sample.getFrom(), sample.getTo(), "abc")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createTemperatureTomorrowUrl("datetime-format=abc"));
 }
 
-TEST_F(RestViewTemperatureTomorrowTest, get_WithDatetimeFormat2) {
+TEST_F(RestViewTemperatureTomorrowTest, GET_WithDatetimeFormat2) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureForecast,toTemperatureForecastDto(sample.getFrom(), sample.getTo(), "%a %b")).Times(1).WillOnce(Return(sample.getDto()));
 	GET(createTemperatureTomorrowUrl("datetime-format=%a %b"));
 }
 
-TEST_F(RestViewTemperatureTomorrowTest, get_NotFound) {
+TEST_F(RestViewTemperatureTomorrowTest, GET_NotFound) {
 	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
 	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
 
@@ -64,7 +64,7 @@ TEST_F(RestViewTemperatureTomorrowTest, get_NotFound) {
 		);
 }
 
-TEST_F(RestViewTemperatureTomorrowTest, get_NotAcceptable) {
+TEST_F(RestViewTemperatureTomorrowTest, GET_NotAcceptable) {
 	checkResponse_406_Not_Acceptable(
 			GET_Accept_Json(createTemperatureTomorrowUrl())
 		);

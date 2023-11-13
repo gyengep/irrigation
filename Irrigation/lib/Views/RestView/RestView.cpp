@@ -172,7 +172,7 @@ std::unique_ptr<HttpResponse> RestView::getFile(const std::string fileName) {
 
 	} catch (const FileNotFoundException& e) {
 		LOGGER.warning("File not found", e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -207,7 +207,7 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 		if (irrigationActionDto.action.get() == nullptr) {
 			const char* message = "The 'action' element tag not found";
 			LOGGER.warning(message);
-			throw RestBadRequest(restService->getErrorWriter(), message);
+			throw HTTP_400_Bad_Request(restService->getErrorWriter(), message);
 		}
 
 		const string action = *irrigationActionDto.action.get();
@@ -221,7 +221,7 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 		} else {
 			const string message = "Invalid value of 'action' element: " + action;
 			LOGGER.warning(message.c_str());
-			throw RestBadRequest(restService->getErrorWriter(), message);
+			throw HTTP_400_Bad_Request(restService->getErrorWriter(), message);
 		}
 
 		return HttpResponse::Builder().
@@ -230,13 +230,13 @@ unique_ptr<HttpResponse> RestView::onPatchIrrigation(const HttpRequest& request,
 
 	} catch (const NoSuchElementException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const IllegalArgumentException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	} catch (const ParserException& e) {
 		LOGGER.warning(logMessage, e);
-		throw RestBadRequest(restService->getErrorWriter(), e.what());
+		throw HTTP_400_Bad_Request(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -244,7 +244,7 @@ void RestView::onPatchIrrigation_startCustom(const IrrigationActionDto& irrigati
 	if (irrigationActionDto.runTimeDtoList.get() == nullptr) {
 		const char* message = "The 'runtimes' element tag not found";
 		LOGGER.warning(message);
-		throw RestBadRequest(restService->getErrorWriter(), message);
+		throw HTTP_400_Bad_Request(restService->getErrorWriter(), message);
 	}
 
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
@@ -259,7 +259,7 @@ void RestView::onPatchIrrigation_startProgram(const IrrigationActionDto& irrigat
 	if (irrigationActionDto.programId.get() == nullptr) {
 		const char* message = "The 'program-id' element tag not found";
 		LOGGER.warning(message);
-		throw RestBadRequest(restService->getErrorWriter(), message);
+		throw HTTP_400_Bad_Request(restService->getErrorWriter(), message);
 	}
 
 	unique_lock<IrrigationDocument> lock(irrigationDocument);
@@ -283,7 +283,7 @@ std::unique_ptr<HttpResponse> RestView::onPatchReboot(const HttpRequest& request
 	try {
 		shutdownManager->reboot();
 	} catch(const std::exception& e) {
-		throw RestInternalServerError(restService->getErrorWriter(), std::string("Can not execute reboot. Error: ") + e.what());
+		throw HTTP_500_Internal_Server_Error(restService->getErrorWriter(), std::string("Can not execute reboot. Error: ") + e.what());
 	}
 
 	return HttpResponse::Builder().
@@ -295,7 +295,7 @@ std::unique_ptr<HttpResponse> RestView::onPatchShutdown(const HttpRequest& reque
 	try {
 		shutdownManager->powerOff();
 	} catch(const std::exception& e) {
-		throw RestInternalServerError(restService->getErrorWriter(), std::string("Can not execute power off. Error: ") + e.what());
+		throw HTTP_500_Internal_Server_Error(restService->getErrorWriter(), std::string("Can not execute power off. Error: ") + e.what());
 	}
 
 	return HttpResponse::Builder().

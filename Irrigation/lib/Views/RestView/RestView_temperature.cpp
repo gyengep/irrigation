@@ -31,7 +31,7 @@ unique_ptr<HttpResponse> RestView::onGetCurrentTemperature(const HttpRequest& re
 
 	} catch (const TemperatureException& e) {
 		LOGGER.warning("Can not retrieve temperature", e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -53,7 +53,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureYesterday(const HttpRequ
 
 	} catch (const TemperatureException& e) {
 		LOGGER.warning("Can not retrieve temperature", e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -76,7 +76,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureToday(const HttpRequest&
 
 	} catch (const TemperatureException& e) {
 		LOGGER.warning("Can not retrieve temperature", e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
 
@@ -98,6 +98,6 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureTomorrow(const HttpReque
 
 	} catch (const TemperatureException& e) {
 		LOGGER.warning("Can not retrieve temperature", e);
-		throw RestNotFound(restService->getErrorWriter(), e.what());
+		throw HTTP_404_Not_Found(restService->getErrorWriter(), e.what());
 	}
 }
