@@ -29,7 +29,7 @@ protected:
 	void onZoneHandlerActivate(size_t zoneId);
 	void onZoneHandlerDeactivate();
 
-	std::shared_ptr<testing::NiceMock<MockZoneHandler>> zoneHandler;
+	std::shared_ptr<MockZoneHandler> mockZoneHandler;
 	std::shared_ptr<WateringController> wateringController;
 
 	virtual void SetUp();

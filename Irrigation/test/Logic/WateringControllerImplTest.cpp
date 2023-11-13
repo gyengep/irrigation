@@ -29,11 +29,11 @@ void WateringControllerImplTimingTest::onZoneHandlerDeactivate() {
 }
 
 void WateringControllerImplTimingTest::SetUp() {
-	zoneHandler = make_shared<NiceMock<MockZoneHandler>>();
-	wateringController = make_shared<WateringControllerImpl>(zoneHandler);
+	mockZoneHandler = make_shared<NiceMock<MockZoneHandler>>();
+	wateringController = make_shared<WateringControllerImpl>(mockZoneHandler);
 
-	ON_CALL(*zoneHandler, activate(testing::_)).WillByDefault(Invoke(this, &WateringControllerImplTimingTest::onZoneHandlerActivate));
-	ON_CALL(*zoneHandler, deactivate()).WillByDefault(Invoke(this, &WateringControllerImplTimingTest::onZoneHandlerDeactivate));
+	ON_CALL(*mockZoneHandler, activate(testing::_)).WillByDefault(Invoke(this, &WateringControllerImplTimingTest::onZoneHandlerActivate));
+	ON_CALL(*mockZoneHandler, deactivate()).WillByDefault(Invoke(this, &WateringControllerImplTimingTest::onZoneHandlerDeactivate));
 }
 
 void WateringControllerImplTimingTest::TearDown() {
