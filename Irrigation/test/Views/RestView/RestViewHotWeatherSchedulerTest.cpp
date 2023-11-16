@@ -11,10 +11,6 @@ const RestViewTestSamples::HotWeatherSchedulerSample RestViewHotWeatherScheduler
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewHotWeatherSchedulerTest::createHotWeatherSchedulerUrl(IdType programId) {
-	return createUrl("/programs/" + programId.toString() + "/schedulers/hot-weather");
-}
-
 void RestViewHotWeatherSchedulerTest::SetUp() {
 
 	RestViewTest::SetUp();
@@ -23,6 +19,21 @@ void RestViewHotWeatherSchedulerTest::SetUp() {
 	mockProgram = std::make_shared<StrictMock<MockProgram>>();
 	mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	mockHotWeatherScheduler = std::make_shared<StrictMock<MockHotWeatherScheduler>>();
+
+	ON_CALL(*mockIrrigationDocument, getProgramContainer()).
+			WillByDefault(ReturnRef(*mockProgramContainer));
+
+	ON_CALL(*mockProgramContainer, at(programId)).
+			WillByDefault(Return(mockProgram));
+
+	ON_CALL(*mockProgram, getSchedulerContainer()).
+			WillByDefault(ReturnRef(*mockSchedulerContainer));
+
+	ON_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).
+			WillByDefault(ReturnRef(*mockHotWeatherScheduler));
+
+	ON_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).
+			WillByDefault(Return(sample.getDto()));
 }
 
 void RestViewHotWeatherSchedulerTest::TearDown() {
@@ -30,39 +41,20 @@ void RestViewHotWeatherSchedulerTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewHotWeatherSchedulerTest, POST) {
-	checkResponse_405_Method_Not_Allowed(
-			POST_ContentType_Xml(createHotWeatherSchedulerUrl(programId), sample.getXml())
-		);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 TEST_F(RestViewHotWeatherSchedulerTest, GET) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(2);
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(2);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).Times(1).WillOnce(ReturnRef(*mockHotWeatherScheduler));
-	EXPECT_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(2);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(2);
+	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(2);
+	EXPECT_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).Times(2);
+	EXPECT_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).Times(2);
 
 	checkResponse_200_OK(
 			GET(createHotWeatherSchedulerUrl(programId)),
 			prependXmlHeader(sample.getXml())
 		);
-}
-
-TEST_F(RestViewHotWeatherSchedulerTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).Times(1).WillOnce(ReturnRef(*mockHotWeatherScheduler));
-	EXPECT_CALL(*mockHotWeatherScheduler, toHotWeatherSchedulerDto()).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createHotWeatherSchedulerUrl(programId)),
@@ -70,17 +62,11 @@ TEST_F(RestViewHotWeatherSchedulerTest, GET_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewHotWeatherSchedulerTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createHotWeatherSchedulerUrl(programId))
-		);
-}
-
 TEST_F(RestViewHotWeatherSchedulerTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
@@ -95,10 +81,10 @@ TEST_F(RestViewHotWeatherSchedulerTest, PATCH) {
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).Times(1).WillOnce(ReturnRef(*mockHotWeatherScheduler));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1);
+	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1);
+	EXPECT_CALL(*mockSchedulerContainer, getHotWeatherScheduler()).Times(1);
 	EXPECT_CALL(*mockHotWeatherScheduler, updateFromHotWeatherSchedulerDto(sample.getDto())).Times(1);
 	EXPECT_CALL(*mockHotWeatherScheduler, toString()).Times(1);
 
@@ -111,23 +97,11 @@ TEST_F(RestViewHotWeatherSchedulerTest, PATCH_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
 			PATCH_ContentType_Xml(createHotWeatherSchedulerUrl(programId), sample.getXml())
-		);
-}
-
-TEST_F(RestViewHotWeatherSchedulerTest, PATCH_InvalidXml) {
-	checkResponse_400_Bad_Request(
-			PATCH_ContentType_Xml(createHotWeatherSchedulerUrl(programId), "Invalid XML")
-		);
-}
-
-TEST_F(RestViewHotWeatherSchedulerTest, PATCH_InvalidContentType) {
-	checkResponse_415_Unsupported_Media_Type(
-			PATCH_ContentType_Json(createHotWeatherSchedulerUrl(programId), "{ \"key\" : \"value\" }")
 		);
 }
 

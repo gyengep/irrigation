@@ -27,7 +27,4 @@ public:
 
     virtual void SetUp();
     virtual void TearDown();
-
-    static std::string createStartTimeUrl(IdType programId, IdType startTimeId);
-    static std::string createStartTimeLocation(IdType programId, IdType startTimeId);
 };

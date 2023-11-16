@@ -17,6 +17,11 @@
 
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string RestView::defaultDateTimeFormat("%a, %d %b %G %H:%M:%S %z");
+
+///////////////////////////////////////////////////////////////////////////////
 
 RestView::RestView(IrrigationDocument& irrigationDocument, uint16_t port,
 		const std::shared_ptr<CurrentTemperature>& currentTemperature,

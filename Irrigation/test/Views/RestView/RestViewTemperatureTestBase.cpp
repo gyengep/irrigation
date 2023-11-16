@@ -7,7 +7,7 @@ using namespace testing;
 void RestViewTemperatureTestBase::SetUp() {
 	RestViewTest::SetUp();
 
-	mockTimefunc = std::make_shared<MockTimefunc>();
+	mockTimefunc = std::make_shared<StrictMock<MockTimefunc>>();
 	DateTime::setTimefunc(mockTimefunc);
 }
 

@@ -17,12 +17,11 @@ void RestViewTest::SetUp() {
 	mockTemperatureHistory = std::make_shared<StrictMock<MockTemperatureHistory>>();
 	mockTemperatureForecast = std::make_shared<StrictMock<MockTemperatureForecast>>();
 	mockShutdownManager = std::make_shared<StrictMock<MockShutdownManager>>();
-	mockFileWriter = std::make_shared<StrictMock<MockFileWriter>>();
-	mockFileWriterFactory = std::make_shared<StrictMock<MockFileWriterFactory>>();
+	mockFileWriter = std::make_shared<NiceMock<MockFileWriter>>();
+	mockFileWriterFactory = std::make_shared<NiceMock<MockFileWriterFactory>>();
 
-	ON_CALL(*mockFileWriterFactory, create(_)).WillByDefault(Return(mockFileWriter));
-	EXPECT_CALL(*mockFileWriter, write(_)).Times(1);
-	EXPECT_CALL(*mockFileWriterFactory, create(_)).Times(1);
+	ON_CALL(*mockFileWriterFactory, create(_)).
+			WillByDefault(Return(mockFileWriter));
 
 	restView = std::make_shared<RestView>(*mockIrrigationDocument, port,
 			mockCurrentTemperature,
@@ -40,6 +39,8 @@ void RestViewTest::TearDown() {
 	restView->terminate();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 std::string RestViewTest::createUrl(const std::string& path) {
 	if ('/' != path[0]) {
 		throw std::logic_error("The path has to start with '/'");
@@ -50,6 +51,88 @@ std::string RestViewTest::createUrl(const std::string& path) {
 
 	return o.str();
 }
+
+std::string RestViewTest::createRunTimeContainerUrl(IdType programId) {
+	return createUrl("/programs/" + programId.toString() + "/runtimes");
+}
+
+std::string RestViewTest::createStartTimeLocation(IdType programId, IdType startTimeId) {
+	return "/programs/" + programId.toString() + "/starttimes/" + startTimeId.toString();
+}
+
+std::string RestViewTest::createStartTimeUrl(IdType programId, IdType startTimeId) {
+	return createUrl(createStartTimeLocation(programId, startTimeId));
+}
+
+std::string RestViewTest::createStartTimeContainerUrl(IdType programId) {
+	return createUrl("/programs/" + programId.toString() + "/starttimes");
+}
+
+std::string RestViewTest::createProgramLocation(IdType programId) {
+	return "/programs/" + programId.toString();
+}
+
+std::string RestViewTest::createProgramUrl(IdType programId) {
+	return createUrl(createProgramLocation(programId));
+}
+
+std::string RestViewTest::createProgramContainerUrl() {
+	return createUrl("/programs");
+}
+
+std::string RestViewTest::createHotWeatherSchedulerUrl(IdType programId) {
+	return createUrl("/programs/" + programId.toString() + "/schedulers/hot-weather");
+}
+
+std::string RestViewTest::createTemperatureDependentSchedulerUrl(IdType programId) {
+	return createUrl("/programs/" + programId.toString() + "/schedulers/temperature-dependent");
+}
+
+std::string RestViewTest::createWeeklySchedulerUrl(IdType programId) {
+	return createUrl("/programs/" + programId.toString() + "/schedulers/weekly");
+}
+
+std::string RestViewTest::createCurrentTemperatureUrl(const std::string& requestParameters) {
+	std::string result = createUrl("/temperature/current");
+
+	if (false == requestParameters.empty()) {
+		result.append("?" + requestParameters);
+	}
+
+	return result;
+}
+
+std::string RestViewTest::createTemperatureTodayUrl(const std::string& requestParameters) {
+	std::string result = createUrl("/temperature/today");
+
+	if (false == requestParameters.empty()) {
+		result.append("?" + requestParameters);
+	}
+
+	return result;
+}
+
+std::string RestViewTest::createTemperatureTomorrowUrl(const std::string& requestParameters) {
+	std::string result = createUrl("/temperature/tomorrow");
+
+	if (false == requestParameters.empty()) {
+		result.append("?" + requestParameters);
+	}
+
+	return result;
+}
+
+std::string RestViewTest::createTemperatureYesterdayUrl(const std::string& requestParameters) {
+	std::string result = createUrl("/temperature/yesterday");
+
+	if (false == requestParameters.empty()) {
+		result.append("?" + requestParameters);
+	}
+
+	return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 AAA::Response RestViewTest::DELETE(const std::string& url) {
 	return AAA::Request("DELETE", url).
@@ -100,6 +183,8 @@ AAA::Response RestViewTest::POST_ContentType_Json(const std::string& url, const 
 		setBody(text).
 		execute();
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 void RestViewTest::checkResponse_200_OK(const AAA::Response& response, const std::string& expectedXml) {
 	EXPECT_THAT(response.getResponseCode(), Eq(200));

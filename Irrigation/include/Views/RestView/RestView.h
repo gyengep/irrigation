@@ -23,6 +23,8 @@ class IrrigationDocument;
 
 
 class RestView : public View {
+	static const std::string defaultDateTimeFormat;
+
 	const uint16_t port;
 	const std::shared_ptr<CurrentTemperature> currentTemperature;
 	const std::shared_ptr<TemperatureForecast> temperatureForecast;
@@ -72,6 +74,8 @@ class RestView : public View {
 	void onPatchIrrigation_startCustom(const IrrigationActionDto& irrigationActionDto);
 	void onPatchIrrigation_startProgram(const IrrigationActionDto& irrigationActionDto);
 	void onPatchIrrigation_stop(const IrrigationActionDto& irrigationActionDto);
+
+	static std::string getDatetimeFormat(const KeyValue& parameters);
 
 	static IdType getProgramId(const KeyValue& pathParameters);
 	static IdType getStartTimeId(const KeyValue& pathParameters);

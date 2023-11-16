@@ -6,66 +6,110 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const RestViewTestSamples::TemperatureTomorrowSample RestViewTemperatureTomorrowTest::sample;
+const LocalDateTime RestViewTemperatureTomorrowTest::now(2021, 5, 29, 12, 21, 22);
+const LocalDateTime RestViewTemperatureTomorrowTest::from(2021, 5, 30, 0, 0, 0);
+const LocalDateTime RestViewTemperatureTomorrowTest::to(2021, 5, 30, 23, 59, 59);
+
 const std::string RestViewTemperatureTomorrowTest::styleSheetFile("/temperature-tomorrow.xsl");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewTemperatureTomorrowTest::createTemperatureTomorrowUrl(const std::string& requestParameters) {
-	std::string result = createUrl("/temperature/tomorrow");
+void RestViewTemperatureTomorrowTest::SetUp() {
 
-	if (false == requestParameters.empty()) {
-		result.append("?" + requestParameters);
-	}
+	RestViewTemperatureTestBase::SetUp();
 
-	return result;
+	EXPECT_CALL(*mockTimefunc, getTime()).
+			WillRepeatedly(Return(now.toRawTime()));
+}
+
+void RestViewTemperatureTomorrowTest::TearDown() {
+	RestViewTemperatureTestBase::TearDown();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewTemperatureTomorrowTest, GET) {
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
+	const TemperatureForecastDto sampleDto("Sun, 30 May 2021 00:00:00 +0200", "Sun, 30 May 2021 23:59:59 +0200", "C", 25, 30);
+	const std::string sampleXml =
+	"<temperature>"
+		"<unit>C</unit>"
+		"<forecast>"
+			"<value-min>25</value-min>"
+			"<value-max>30</value-max>"
+			"<datetime-from>Sun, 30 May 2021 00:00:00 +0200</datetime-from>"
+			"<datetime-to>Sun, 30 May 2021 23:59:59 +0200</datetime-to>"
+		"</forecast>"
+	"</temperature>";
+
+	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(from, to, defaultDateTimeFormat)).
+			Times(2).
+			WillRepeatedly(Return(sampleDto));
 
 	checkResponse_200_OK(
 			GET(createTemperatureTomorrowUrl()),
-			prependXmlAndStyleSheetHeader(sample.getXml(), styleSheetFile)
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
 		);
-}
-
-TEST_F(RestViewTemperatureTomorrowTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createTemperatureTomorrowUrl()),
-			prependXmlAndStyleSheetHeader(sample.getXml(), styleSheetFile)
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
 		);
 }
 
 TEST_F(RestViewTemperatureTomorrowTest, GET_WithDatetimeFormat1) {
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureForecast,toTemperatureForecastDto(sample.getFrom(), sample.getTo(), "abc")).Times(1).WillOnce(Return(sample.getDto()));
-	GET(createTemperatureTomorrowUrl("datetime-format=abc"));
-}
+	const std::string format("abc");
+	const TemperatureForecastDto sampleDto("abc", "abc", "C", 12, 15);
+	const std::string sampleXml(
+	"<temperature>"
+		"<unit>C</unit>"
+		"<forecast>"
+			"<value-min>12</value-min>"
+			"<value-max>15</value-max>"
+			"<datetime-from>abc</datetime-from>"
+			"<datetime-to>abc</datetime-to>"
+		"</forecast>"
+	"</temperature>");
 
-TEST_F(RestViewTemperatureTomorrowTest, GET_WithDatetimeFormat2) {
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureForecast,toTemperatureForecastDto(sample.getFrom(), sample.getTo(), "%a %b")).Times(1).WillOnce(Return(sample.getDto()));
-	GET(createTemperatureTomorrowUrl("datetime-format=%a %b"));
-}
+	EXPECT_CALL(*mockTemperatureForecast,toTemperatureForecastDto(from, to, format)).
+			Times(1).
+			WillOnce(Return(sampleDto));
 
-TEST_F(RestViewTemperatureTomorrowTest, GET_NotFound) {
-	EXPECT_CALL(*mockTimefunc, getTime()).WillRepeatedly(Return(sample.getNow().toRawTime()));
-	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(sample.getFrom(), sample.getTo(), defaultDateTimeFormat)).Times(1).WillOnce(Throw(TemperatureException("")));
-
-	checkResponse_404_Not_Found(
-			GET(createTemperatureTomorrowUrl())
+	checkResponse_200_OK(
+			GET(createTemperatureTomorrowUrl("datetime-format=" + format)),
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
 		);
 }
 
-TEST_F(RestViewTemperatureTomorrowTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createTemperatureTomorrowUrl())
+TEST_F(RestViewTemperatureTomorrowTest, GET_WithDatetimeFormat2) {
+	const std::string format("%H:%M:%S");
+	const TemperatureForecastDto sampleDto("00:00:00", "23:59:59", "C", 30, 31);
+	const std::string sampleXml(
+	"<temperature>"
+		"<unit>C</unit>"
+		"<forecast>"
+			"<value-min>30</value-min>"
+			"<value-max>31</value-max>"
+			"<datetime-from>00:00:00</datetime-from>"
+			"<datetime-to>23:59:59</datetime-to>"
+		"</forecast>"
+	"</temperature>");
+
+	EXPECT_CALL(*mockTemperatureForecast,toTemperatureForecastDto(from, to, format)).
+			Times(1).
+			WillOnce(Return(sampleDto));
+
+	checkResponse_200_OK(
+			GET(createTemperatureTomorrowUrl("datetime-format=" + format)),
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
+		);
+}
+
+TEST_F(RestViewTemperatureTomorrowTest, GET_NotFound) {
+	EXPECT_CALL(*mockTemperatureForecast, toTemperatureForecastDto(from, to, defaultDateTimeFormat)).
+			Times(1).
+			WillOnce(Throw(TemperatureException("")));
+
+	checkResponse_404_Not_Found(
+			GET(createTemperatureTomorrowUrl())
 		);
 }

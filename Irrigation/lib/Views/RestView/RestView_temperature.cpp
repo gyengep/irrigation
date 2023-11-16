@@ -8,11 +8,11 @@
 
 using namespace std;
 
-std::string getDatetimeFormatParameter(const KeyValue& parameters) {
+std::string RestView::getDatetimeFormat(const KeyValue& parameters) {
 	const auto it = parameters.find("datetime-format");
 
 	if (parameters.end() == it) {
-		return "%a, %d %b %G %H:%M:%S %z";
+		return defaultDateTimeFormat;
 	}
 
 	return it->second;
@@ -20,7 +20,7 @@ std::string getDatetimeFormatParameter(const KeyValue& parameters) {
 
 unique_ptr<HttpResponse> RestView::onGetCurrentTemperature(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
+		const std::string datetimeFormat = getDatetimeFormat(request.getParameters());
 		const auto dto = currentTemperature->toCurrentTemperatureDto(datetimeFormat);
 
 		return HttpResponse::Builder().
@@ -37,7 +37,7 @@ unique_ptr<HttpResponse> RestView::onGetCurrentTemperature(const HttpRequest& re
 
 std::unique_ptr<HttpResponse> RestView::onGetTemperatureYesterday(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
+		const std::string datetimeFormat = getDatetimeFormat(request.getParameters());
 
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(-1);
 		const LocalDateTime from(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);
@@ -59,7 +59,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureYesterday(const HttpRequ
 
 std::unique_ptr<HttpResponse> RestView::onGetTemperatureToday(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
+		const std::string datetimeFormat = getDatetimeFormat(request.getParameters());
 
 		const LocalDateTime now = LocalDateTime::now();
 		const LocalDateTime from(now.getYears(), now.getMonths(), now.getDays(), 0, 0, 0);
@@ -82,7 +82,7 @@ std::unique_ptr<HttpResponse> RestView::onGetTemperatureToday(const HttpRequest&
 
 std::unique_ptr<HttpResponse> RestView::onGetTemperatureTomorrow(const HttpRequest& request, const KeyValue& pathParameters) {
 	try {
-		const std::string datetimeFormat = getDatetimeFormatParameter(request.getParameters());
+		const std::string datetimeFormat = getDatetimeFormat(request.getParameters());
 
 		const LocalDateTime dateTime = LocalDateTime::now().addDays(1);
 		const LocalDateTime from(dateTime.getYears(), dateTime.getMonths(), dateTime.getDays(), 0, 0, 0);

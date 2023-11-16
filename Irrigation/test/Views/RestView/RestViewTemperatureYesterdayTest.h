@@ -1,12 +1,16 @@
 #pragma once
-#include "Samples/TemperatureYesterdaySample.h"
 #include "RestViewTemperatureTestBase.h"
 
 
 class RestViewTemperatureYesterdayTest : public RestViewTemperatureTestBase {
 protected:
 
-	static const RestViewTestSamples::TemperatureYesterdaySample sample;
+    virtual void SetUp();
+    virtual void TearDown();
+
+	static const LocalDateTime now;
+	static const LocalDateTime from;
+	static const LocalDateTime to;
+
 	static const std::string styleSheetFile;
-	static std::string createTemperatureYesterdayUrl(const std::string& requestParameters = "");
 };

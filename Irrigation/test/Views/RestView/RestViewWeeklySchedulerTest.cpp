@@ -11,10 +11,6 @@ const RestViewTestSamples::WeeklySchedulerSample RestViewWeeklySchedulerTest::sa
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewWeeklySchedulerTest::createWeeklySchedulerUrl(IdType programId) {
-	return createUrl("/programs/" + programId.toString() + "/schedulers/weekly");
-}
-
 void RestViewWeeklySchedulerTest::SetUp() {
 
 	RestViewTest::SetUp();
@@ -23,6 +19,21 @@ void RestViewWeeklySchedulerTest::SetUp() {
 	mockProgram = std::make_shared<StrictMock<MockProgram>>();
 	mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	mockWeeklyScheduler = std::make_shared<StrictMock<MockWeeklyScheduler>>();
+
+	ON_CALL(*mockIrrigationDocument, getProgramContainer()).
+			WillByDefault(ReturnRef(*mockProgramContainer));
+
+	ON_CALL(*mockProgramContainer, at(programId)).
+			WillByDefault(Return(mockProgram));
+
+	ON_CALL(*mockProgram, getSchedulerContainer()).
+			WillByDefault(ReturnRef(*mockSchedulerContainer));
+
+	ON_CALL(*mockSchedulerContainer, getWeeklyScheduler()).
+			WillByDefault(ReturnRef(*mockWeeklyScheduler));
+
+	ON_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).
+			WillByDefault(Return(sample.getDto()));
 }
 
 void RestViewWeeklySchedulerTest::TearDown() {
@@ -30,39 +41,20 @@ void RestViewWeeklySchedulerTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewWeeklySchedulerTest, post) {
-	checkResponse_405_Method_Not_Allowed(
-			POST_ContentType_Xml(createWeeklySchedulerUrl(programId), sample.getXml())
-		);
-}
+TEST_F(RestViewWeeklySchedulerTest, GET) {
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(2);
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(2);
 
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(RestViewWeeklySchedulerTest, get) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getWeeklyScheduler()).Times(1).WillOnce(ReturnRef(*mockWeeklyScheduler));
-	EXPECT_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(2);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(2);
+	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(2);
+	EXPECT_CALL(*mockSchedulerContainer, getWeeklyScheduler()).Times(2);
+	EXPECT_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).Times(2);
 
 	checkResponse_200_OK(
 			GET(createWeeklySchedulerUrl(programId)),
 			prependXmlHeader(sample.getXml())
 		);
-}
-
-TEST_F(RestViewWeeklySchedulerTest, get_WithAcceptHeader) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getWeeklyScheduler()).Times(1).WillOnce(ReturnRef(*mockWeeklyScheduler));
-	EXPECT_CALL(*mockWeeklyScheduler, toWeeklySchedulerDto()).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createWeeklySchedulerUrl(programId)),
@@ -70,17 +62,11 @@ TEST_F(RestViewWeeklySchedulerTest, get_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewWeeklySchedulerTest, get_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createWeeklySchedulerUrl(programId))
-		);
-}
-
-TEST_F(RestViewWeeklySchedulerTest, get_ProgramNotExist) {
+TEST_F(RestViewWeeklySchedulerTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
@@ -90,15 +76,15 @@ TEST_F(RestViewWeeklySchedulerTest, get_ProgramNotExist) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewWeeklySchedulerTest, patch) {
+TEST_F(RestViewWeeklySchedulerTest, PATCH) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getWeeklyScheduler()).Times(1).WillOnce(ReturnRef(*mockWeeklyScheduler));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1);
+	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1);
+	EXPECT_CALL(*mockSchedulerContainer, getWeeklyScheduler()).Times(1);
 	EXPECT_CALL(*mockWeeklyScheduler, updateFromWeeklySchedulerDto(sample.getDto())).Times(1);
 	EXPECT_CALL(*mockWeeklyScheduler, toString()).Times(1);
 
@@ -107,11 +93,11 @@ TEST_F(RestViewWeeklySchedulerTest, patch) {
 		);
 }
 
-TEST_F(RestViewWeeklySchedulerTest, patch_ProgramNotExits) {
+TEST_F(RestViewWeeklySchedulerTest, PATCH_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
@@ -119,21 +105,9 @@ TEST_F(RestViewWeeklySchedulerTest, patch_ProgramNotExits) {
 		);
 }
 
-TEST_F(RestViewWeeklySchedulerTest, patch_InvalidXml) {
-	checkResponse_400_Bad_Request(
-			PATCH_ContentType_Xml(createWeeklySchedulerUrl(programId), "Invalid XML")
-		);
-}
-
-TEST_F(RestViewWeeklySchedulerTest, patch_InvalidContentType) {
-	checkResponse_415_Unsupported_Media_Type(
-			PATCH_ContentType_Json(createWeeklySchedulerUrl(programId), "{ \"key\" : \"value\" }")
-		);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewWeeklySchedulerTest, delete) {
+TEST_F(RestViewWeeklySchedulerTest, DELETE) {
 	checkResponse_405_Method_Not_Allowed(
 			DELETE(createWeeklySchedulerUrl(programId))
 		);

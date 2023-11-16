@@ -17,6 +17,4 @@ protected:
 
     virtual void SetUp();
     virtual void TearDown();
-
-    static std::string createProgramContainerUrl();
 };

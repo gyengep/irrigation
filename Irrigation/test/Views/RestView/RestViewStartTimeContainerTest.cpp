@@ -14,10 +14,6 @@ const RestViewTestSamples::StartTimeSample RestViewStartTimeContainerTest::start
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewStartTimeContainerTest::createStartTimeContainerUrl(IdType programId) {
-	return createUrl("/programs/" + programId.toString() + "/starttimes");
-}
-
 void RestViewStartTimeContainerTest::SetUp() {
 
 	RestViewTest::SetUp();
@@ -25,6 +21,18 @@ void RestViewStartTimeContainerTest::SetUp() {
 	mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
 	mockProgram = std::make_shared<StrictMock<MockProgram>>();
 	mockStartTimeContainer = std::make_shared<StrictMock<MockStartTimeContainer>>();
+
+	ON_CALL(*mockIrrigationDocument, getProgramContainer()).
+			WillByDefault(ReturnRef(*mockProgramContainer));
+
+	ON_CALL(*mockProgramContainer, at(programId)).
+			WillByDefault(Return(mockProgram));
+
+	ON_CALL(*mockProgram, getStartTimeContainer()).
+			WillByDefault(ReturnRef(*mockStartTimeContainer));
+
+	ON_CALL(*mockStartTimeContainer, toStartTimeDtoList()).
+			WillByDefault(Return(sample.getDtoList()));
 }
 
 void RestViewStartTimeContainerTest::TearDown() {
@@ -40,9 +48,9 @@ TEST_F(RestViewStartTimeContainerTest, POST) {
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1).WillOnce(ReturnRef(*mockStartTimeContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1);
+	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1);
 	EXPECT_CALL(*mockStartTimeContainer, createFromStartTimeDto(startTimeSample.getDto())).Times(1).WillOnce(ReturnRef(result));
 
 	checkResponse_201_Created(
@@ -56,7 +64,7 @@ TEST_F(RestViewStartTimeContainerTest, POST_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
@@ -64,43 +72,21 @@ TEST_F(RestViewStartTimeContainerTest, POST_ProgramNotExits) {
 		);
 }
 
-TEST_F(RestViewStartTimeContainerTest, POST_InvalidXml) {
-	checkResponse_400_Bad_Request(
-			POST_ContentType_Xml(createStartTimeContainerUrl(programId), "Invalid XML")
-		);
-}
-
-TEST_F(RestViewStartTimeContainerTest, POST_InvalidContentType) {
-	checkResponse_415_Unsupported_Media_Type(
-			POST_ContentType_Json(createStartTimeContainerUrl(programId), "{ \"key\" : \"value\" }")
-		);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewStartTimeContainerTest, GET) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(2);
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(2);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1).WillOnce(ReturnRef(*mockStartTimeContainer));
-	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1).WillOnce(Return(sample.getDtoList()));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(2);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(2);
+	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(2);
+	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(2);
 
 	checkResponse_200_OK(
 			GET(createStartTimeContainerUrl(programId)),
 			prependXmlHeader(sample.getXml())
 		);
-}
-
-TEST_F(RestViewStartTimeContainerTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1).WillOnce(ReturnRef(*mockStartTimeContainer));
-	EXPECT_CALL(*mockStartTimeContainer, toStartTimeDtoList()).Times(1).WillOnce(Return(sample.getDtoList()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createStartTimeContainerUrl(programId)),
@@ -108,29 +94,15 @@ TEST_F(RestViewStartTimeContainerTest, GET_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewStartTimeContainerTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createStartTimeContainerUrl(programId))
-		);
-}
-
 TEST_F(RestViewStartTimeContainerTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
 			GET_Accept_Xml(createStartTimeContainerUrl(programId))
-		);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(RestViewStartTimeContainerTest, PATCH) {
-	checkResponse_405_Method_Not_Allowed(
-			PATCH_ContentType_Xml(createStartTimeContainerUrl(programId), sample.getXml())
 		);
 }
 

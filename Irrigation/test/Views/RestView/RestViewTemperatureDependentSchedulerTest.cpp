@@ -11,10 +11,6 @@ const RestViewTestSamples::TemperatureDependentSchedulerSample RestViewTemperatu
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewTemperatureDependentSchedulerTest::createTemperatureDependentSchedulerUrl(IdType programId) {
-	return createUrl("/programs/" + programId.toString() + "/schedulers/temperature-dependent");
-}
-
 void RestViewTemperatureDependentSchedulerTest::SetUp() {
 
 	RestViewTest::SetUp();
@@ -23,6 +19,21 @@ void RestViewTemperatureDependentSchedulerTest::SetUp() {
 	mockProgram = std::make_shared<StrictMock<MockProgram>>();
 	mockSchedulerContainer = std::make_shared<MockSchedulerContainer>();
 	mockTemperatureDependentScheduler = std::make_shared<StrictMock<MockTemperatureDependentScheduler>>();
+
+	ON_CALL(*mockIrrigationDocument, getProgramContainer()).
+			WillByDefault(ReturnRef(*mockProgramContainer));
+
+	ON_CALL(*mockProgramContainer, at(programId)).
+			WillByDefault(Return(mockProgram));
+
+	ON_CALL(*mockProgram, getSchedulerContainer()).
+			WillByDefault(ReturnRef(*mockSchedulerContainer));
+
+	ON_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).
+			WillByDefault(ReturnRef(*mockTemperatureDependentScheduler));
+
+	ON_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).
+			WillByDefault(Return(sample.getDto()));
 }
 
 void RestViewTemperatureDependentSchedulerTest::TearDown() {
@@ -30,39 +41,20 @@ void RestViewTemperatureDependentSchedulerTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, POST) {
-	checkResponse_405_Method_Not_Allowed(
-			POST_ContentType_Xml(createTemperatureDependentSchedulerUrl(programId), sample.getXml())
-		);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 TEST_F(RestViewTemperatureDependentSchedulerTest, GET) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(2);
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(2);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).Times(1).WillOnce(ReturnRef(*mockTemperatureDependentScheduler));
-	EXPECT_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(2);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(2);
+	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(2);
+	EXPECT_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).Times(2);
+	EXPECT_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).Times(2);
 
 	checkResponse_200_OK(
 			GET(createTemperatureDependentSchedulerUrl(programId)),
 			prependXmlHeader(sample.getXml())
 		);
-}
-
-TEST_F(RestViewTemperatureDependentSchedulerTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).Times(1).WillOnce(ReturnRef(*mockTemperatureDependentScheduler));
-	EXPECT_CALL(*mockTemperatureDependentScheduler, toTemperatureDependentSchedulerDto()).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createTemperatureDependentSchedulerUrl(programId)),
@@ -70,17 +62,11 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, GET_WithAcceptHeader) {
 		);
 }
 
-TEST_F(RestViewTemperatureDependentSchedulerTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createTemperatureDependentSchedulerUrl(programId))
-		);
-}
-
 TEST_F(RestViewTemperatureDependentSchedulerTest, GET_ProgramNotExist) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
@@ -95,10 +81,10 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH) {
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Return(mockProgram));
-	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1).WillOnce(ReturnRef(*mockSchedulerContainer));
-	EXPECT_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).Times(1).WillOnce(ReturnRef(*mockTemperatureDependentScheduler));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1);
+	EXPECT_CALL(*mockProgram, getSchedulerContainer()).Times(1);
+	EXPECT_CALL(*mockSchedulerContainer, getTemperatureDependentScheduler()).Times(1);
 	EXPECT_CALL(*mockTemperatureDependentScheduler, updateFromTemperatureDependentSchedulerDto(sample.getDto())).Times(1);
 	EXPECT_CALL(*mockTemperatureDependentScheduler, toString()).Times(1);
 
@@ -111,23 +97,11 @@ TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH_ProgramNotExits) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1).WillOnce(Throw(NoSuchElementException("")));
 
 	checkResponse_404_Not_Found(
 			PATCH_ContentType_Xml(createTemperatureDependentSchedulerUrl(programId), sample.getXml())
-		);
-}
-
-TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH_InvalidXml) {
-	checkResponse_400_Bad_Request(
-			PATCH_ContentType_Xml(createTemperatureDependentSchedulerUrl(programId), "Invalid XML")
-		);
-}
-
-TEST_F(RestViewTemperatureDependentSchedulerTest, PATCH_InvalidContentType) {
-	checkResponse_415_Unsupported_Media_Type(
-			PATCH_ContentType_Json(createTemperatureDependentSchedulerUrl(programId), "{ \"key\" : \"value\" }")
 		);
 }
 

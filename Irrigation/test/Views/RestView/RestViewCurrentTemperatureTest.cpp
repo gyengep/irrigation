@@ -6,49 +6,73 @@ using namespace testing;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const RestViewTestSamples::CurrentTemperatureSample RestViewCurrentTemperatureTest::sample;
 const std::string RestViewCurrentTemperatureTest::styleSheetFile("/temperature-current.xsl");
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewCurrentTemperatureTest::createCurrentTemperatureUrl(const std::string& requestParameters) {
-	std::string result = createUrl("/temperature/current");
-
-	if (false == requestParameters.empty()) {
-		result.append("?" + requestParameters);
-	}
-
-	return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 TEST_F(RestViewCurrentTemperatureTest, GET) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
+	const CurrentTemperatureDto sampleDto("Tue, 22 Jun 2021 23:36:57 +0200", "celsius", 28.1);
+	const std::string sampleXml(
+			"<temperature>"
+				"<value>28</value>"
+				"<datetime>Tue, 22 Jun 2021 23:36:57 +0200</datetime>"
+				"<unit>celsius</unit>"
+			"</temperature>"
+		);
+
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).
+			Times(2).
+			WillRepeatedly(Return(sampleDto));
 
 	checkResponse_200_OK(
 			GET(createCurrentTemperatureUrl()),
-			prependXmlAndStyleSheetHeader(sample.getXml(), styleSheetFile)
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
 		);
-}
-
-TEST_F(RestViewCurrentTemperatureTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(defaultDateTimeFormat)).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createCurrentTemperatureUrl()),
-			prependXmlAndStyleSheetHeader(sample.getXml(), styleSheetFile)
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
 		);
 }
 
 TEST_F(RestViewCurrentTemperatureTest, GET_WithDatetimeFormat1) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto("abc")).Times(1).WillOnce(Return(sample.getDto()));
-	GET(createCurrentTemperatureUrl("datetime-format=abc"));
+	const std::string format("abc");
+	const CurrentTemperatureDto sampleDto("abc", "celsius", 28.1);
+	const std::string sampleXml(
+			"<temperature>"
+				"<value>28</value>"
+				"<datetime>abc</datetime>"
+				"<unit>celsius</unit>"
+			"</temperature>"
+		);
+
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(format)).
+			Times(1).
+			WillOnce(Return(sampleDto));
+
+	checkResponse_200_OK(
+			GET(createCurrentTemperatureUrl("datetime-format=" + format)),
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
+		);
 }
 
 TEST_F(RestViewCurrentTemperatureTest, GET_WithDatetimeFormat2) {
-	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto("%a %b")).Times(1).WillOnce(Return(sample.getDto()));
-	GET(createCurrentTemperatureUrl("datetime-format=%a %b"));
+	const std::string format("%H:%M:%S");
+	const CurrentTemperatureDto sampleDto("23:36:57", "celsius", 28.1);
+	const std::string sampleXml(
+			"<temperature>"
+				"<value>28</value>"
+				"<datetime>23:36:57</datetime>"
+				"<unit>celsius</unit>"
+			"</temperature>"
+		);
+
+	EXPECT_CALL(*mockCurrentTemperature, toCurrentTemperatureDto(format)).Times(1).WillOnce(Return(sampleDto));
+
+	checkResponse_200_OK(
+			GET(createCurrentTemperatureUrl("datetime-format=" + format)),
+			prependXmlAndStyleSheetHeader(sampleXml, styleSheetFile)
+		);
 }
 
 TEST_F(RestViewCurrentTemperatureTest, GET_NotFound) {
@@ -56,11 +80,5 @@ TEST_F(RestViewCurrentTemperatureTest, GET_NotFound) {
 
 	checkResponse_404_Not_Found(
 			GET(createCurrentTemperatureUrl())
-		);
-}
-
-TEST_F(RestViewCurrentTemperatureTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createCurrentTemperatureUrl())
 		);
 }

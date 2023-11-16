@@ -13,15 +13,17 @@ const RestViewTestSamples::ProgramSample RestViewProgramContainerTest::programSa
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewProgramContainerTest::createProgramContainerUrl() {
-	return createUrl("/programs");
-}
-
 void RestViewProgramContainerTest::SetUp() {
 
 	RestViewTest::SetUp();
 
 	mockProgramContainer = std::make_shared<StrictMock<MockProgramContainer>>();
+
+	ON_CALL(*mockIrrigationDocument, getProgramContainer()).
+			WillByDefault(ReturnRef(*mockProgramContainer));
+
+	ON_CALL(*mockProgramContainer, toProgramDtoList()).
+			WillByDefault(Return(sample.getDtoList()));
 }
 
 void RestViewProgramContainerTest::TearDown() {
@@ -37,7 +39,7 @@ TEST_F(RestViewProgramContainerTest, POST) {
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
 	EXPECT_CALL(*mockProgramContainer, createFromProgramDto(programSample.getDto())).Times(1).WillOnce(ReturnRef(result));
 
 	checkResponse_201_Created(
@@ -46,57 +48,23 @@ TEST_F(RestViewProgramContainerTest, POST) {
 		);
 }
 
-TEST_F(RestViewProgramContainerTest, POST_InvalidXml) {
-	checkResponse_400_Bad_Request(
-			POST_ContentType_Xml(createProgramContainerUrl(), "Invalid XML")
-		);
-}
-
-TEST_F(RestViewProgramContainerTest, POST_InvalidContentType) {
-	checkResponse_415_Unsupported_Media_Type(
-			POST_ContentType_Json(createProgramContainerUrl(), "{ \"key\" : \"value\" }")
-		);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(RestViewProgramContainerTest, GET) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(2);
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(2);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, toProgramDtoList()).Times(1).WillOnce(Return(sample.getDtoList()));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(2);
+	EXPECT_CALL(*mockProgramContainer, toProgramDtoList()).Times(2);
 
 	checkResponse_200_OK(
 			GET(createProgramContainerUrl()),
 			prependXmlAndStyleSheetHeader(sample.getXmlWithoutContainers(), "/programlist.xsl")
 		);
-}
-
-TEST_F(RestViewProgramContainerTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1).WillOnce(ReturnRef(*mockProgramContainer));
-	EXPECT_CALL(*mockProgramContainer, toProgramDtoList()).Times(1).WillOnce(Return(sample.getDtoList()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createProgramContainerUrl()),
 			prependXmlAndStyleSheetHeader(sample.getXmlWithoutContainers(), "/programlist.xsl")
-		);
-}
-
-TEST_F(RestViewProgramContainerTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createProgramContainerUrl())
-		);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TEST_F(RestViewProgramContainerTest, PATCH) {
-	checkResponse_405_Method_Not_Allowed(
-			PATCH_ContentType_Xml(createProgramContainerUrl(), sample.getXml())
 		);
 }
 

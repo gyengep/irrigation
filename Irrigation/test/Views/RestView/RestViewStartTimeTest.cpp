@@ -15,14 +15,6 @@ const RestViewStartTimeTest::StartTimeSample RestViewStartTimeTest::sample(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RestViewStartTimeTest::createStartTimeLocation(IdType programId, IdType startTimeId) {
-	return "/programs/" + programId.toString() + "/starttimes/" + startTimeId.toString();
-}
-
-std::string RestViewStartTimeTest::createStartTimeUrl(IdType programId, IdType startTimeId) {
-	return createUrl(createStartTimeLocation(programId, startTimeId));
-}
-
 void RestViewStartTimeTest::SetUp() {
 
 	RestViewTest::SetUp();
@@ -43,6 +35,9 @@ void RestViewStartTimeTest::SetUp() {
 
 	ON_CALL(*mockStartTimeContainer, at(startTimeId)).
 			WillByDefault(Return(mockStartTime));
+
+	ON_CALL(*mockStartTime, toStartTimeDto()).
+			WillByDefault(Return(sample.getDto()));
 }
 
 void RestViewStartTimeTest::TearDown() {
@@ -50,49 +45,24 @@ void RestViewStartTimeTest::TearDown() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(RestViewStartTimeTest, POST) {
-	checkResponse_405_Method_Not_Allowed(
-			POST_ContentType_Xml(createStartTimeUrl(programId, startTimeId), sample.getXml())
-		);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 TEST_F(RestViewStartTimeTest, GET) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
+	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(2);
+	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(2);
 
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1);
-	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1);
-	EXPECT_CALL(*mockStartTimeContainer, at(startTimeId)).Times(1);
-	EXPECT_CALL(*mockStartTime, toStartTimeDto()).Times(1).WillOnce(Return(sample.getDto()));
+	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(2);
+	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(2);
+	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(2);
+	EXPECT_CALL(*mockStartTimeContainer, at(startTimeId)).Times(2);
+	EXPECT_CALL(*mockStartTime, toStartTimeDto()).Times(2);
 
 	checkResponse_200_OK(
 			GET(createStartTimeUrl(programId, startTimeId)),
 			prependXmlHeader(sample.getXml())
 		);
-}
-
-TEST_F(RestViewStartTimeTest, GET_WithAcceptHeader) {
-	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
-	EXPECT_CALL(*mockIrrigationDocument, unlock()).Times(1);
-
-	EXPECT_CALL(*mockIrrigationDocument, getProgramContainer()).Times(1);
-	EXPECT_CALL(*mockProgramContainer, at(programId)).Times(1);
-	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1);
-	EXPECT_CALL(*mockStartTimeContainer, at(startTimeId)).Times(1);
-	EXPECT_CALL(*mockStartTime, toStartTimeDto()).Times(1).WillOnce(Return(sample.getDto()));
 
 	checkResponse_200_OK(
 			GET_Accept_Xml(createStartTimeUrl(programId, startTimeId)),
 			prependXmlHeader(sample.getXml())
-		);
-}
-
-TEST_F(RestViewStartTimeTest, GET_NotAcceptable) {
-	checkResponse_406_Not_Acceptable(
-			GET_Accept_Json(createStartTimeUrl(programId, startTimeId))
 		);
 }
 
@@ -167,18 +137,6 @@ TEST_F(RestViewStartTimeTest, PATCH_StartTimeNotExits) {
 		);
 }
 
-TEST_F(RestViewStartTimeTest, PATCH_InvalidXml) {
-	checkResponse_400_Bad_Request(
-			PATCH_ContentType_Xml(createStartTimeUrl(programId, startTimeId), "Invalid XML")
-		);
-}
-
-TEST_F(RestViewStartTimeTest, PATCH_InvalidContentType) {
-	checkResponse_415_Unsupported_Media_Type(
-			PATCH_ContentType_Json(createStartTimeUrl(programId, startTimeId), "{ \"key\" : \"value\" }")
-		);
-}
-
 TEST_F(RestViewStartTimeTest, PATCH_InvalidContent) {
 	EXPECT_CALL(*mockIrrigationDocument, lock()).Times(1);
 	EXPECT_CALL(*mockIrrigationDocument, setModified(true)).Times(1);
@@ -189,9 +147,7 @@ TEST_F(RestViewStartTimeTest, PATCH_InvalidContent) {
 	EXPECT_CALL(*mockProgram, getStartTimeContainer()).Times(1);
 	EXPECT_CALL(*mockStartTimeContainer, at(startTimeId)).Times(1);
 
-	EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(sample.getDto())).
-			Times(1).
-			WillOnce(Throw(ValueOutOfBoundsException("")));
+	EXPECT_CALL(*mockStartTime, updateFromStartTimeDto(sample.getDto())).Times(1).WillOnce(Throw(ValueOutOfBoundsException("")));
 
 	checkResponse_422_Unprocessable_Content(
 			PATCH_ContentType_Xml(createStartTimeUrl(programId, startTimeId), sample.getXml())

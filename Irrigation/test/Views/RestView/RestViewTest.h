@@ -35,16 +35,28 @@ protected:
     virtual void TearDown();
 
     static std::string createUrl(const std::string& path);
+    static std::string createRunTimeContainerUrl(IdType programId);
+    static std::string createStartTimeUrl(IdType programId, IdType startTimeId);
+    static std::string createStartTimeContainerUrl(IdType programId);
+    static std::string createProgramUrl(IdType programId);
+    static std::string createProgramContainerUrl();
+    static std::string createHotWeatherSchedulerUrl(IdType programId);
+    static std::string createTemperatureDependentSchedulerUrl(IdType programId);
+    static std::string createWeeklySchedulerUrl(IdType programId);
+	static std::string createTemperatureTodayUrl(const std::string& requestParameters = "");
+	static std::string createTemperatureTomorrowUrl(const std::string& requestParameters = "");
+	static std::string createTemperatureYesterdayUrl(const std::string& requestParameters = "");
+    static std::string createCurrentTemperatureUrl(const std::string& requestParameters = "");
+
+    static std::string createProgramLocation(IdType programId);
+    static std::string createStartTimeLocation(IdType programId, IdType startTimeId);
 
     static AAA::Response DELETE(const std::string& url);
-
     static AAA::Response GET(const std::string& url);
     static AAA::Response GET_Accept_Xml(const std::string& url);
     static AAA::Response GET_Accept_Json(const std::string& url);
-
     static AAA::Response PATCH_ContentType_Xml(const std::string& url, const std::string& text);
     static AAA::Response PATCH_ContentType_Json(const std::string& url, const std::string& text);
-
     static AAA::Response POST_ContentType_Xml(const std::string& url, const std::string& text);
     static AAA::Response POST_ContentType_Json(const std::string& url, const std::string& text);
 

@@ -23,6 +23,4 @@ protected:
 
     virtual void SetUp();
     virtual void TearDown();
-
-    static std::string createHotWeatherSchedulerUrl(IdType programId);
 };

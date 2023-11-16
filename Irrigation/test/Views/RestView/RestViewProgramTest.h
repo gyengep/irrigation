@@ -21,7 +21,4 @@ public:
 
     virtual void SetUp();
     virtual void TearDown();
-
-    static std::string createProgramUrl(IdType programId);
-    static std::string createProgramLocation(IdType programId);
 };
