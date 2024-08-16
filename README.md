@@ -7,6 +7,13 @@
 - apt install libssl-dev (1.1.1n)
 
 
+Enable NTP sync
+- apt-get install ntp
+- add to config file: /etc/ntp.conf
+  server pool.ntp.org         # NTP pool project world-wide servers
+  server time-a-g.nist.gov    # NIST internet time service
+
+
 Disable eth0:
 sudo ifconfig eth0 down
 
