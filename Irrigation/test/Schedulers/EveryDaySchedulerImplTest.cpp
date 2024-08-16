@@ -1,4 +1,4 @@
-#include "schedulers/Impl/EveryDaySchedulerImpl.h"
+#include "Schedulers/Impl/EveryDaySchedulerImpl.h"
 #include "Dto2ObjectSamples/EveryDaySchedulerSamples.h"
 #include <gmock/gmock.h>
 

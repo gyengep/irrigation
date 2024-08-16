@@ -1,7 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <memory>
-#include "schedulers/Impl/WeeklySchedulerImpl.h"
+#include "Schedulers/Impl/WeeklySchedulerImpl.h"
 
 
 class WeeklySchedulerImplTest : public ::testing::Test {

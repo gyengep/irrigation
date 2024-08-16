@@ -1,7 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <memory>
-#include "schedulers/Impl/HotWeatherSchedulerImpl.h"
+#include "Schedulers/Impl/HotWeatherSchedulerImpl.h"
 #include "Mocks/MockTemperatureHistory.h"
 
 
