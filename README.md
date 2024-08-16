@@ -7,6 +7,11 @@
 - apt install libssl-dev (1.1.1n)
 
 
+SendInBlue key:
+add the following line to end of the ~/.profile
+export SENDINBLUE_SMTP_KEY=<key>
+
+
 Enable NTP sync
 - apt-get install ntp
 - add to config file: /etc/ntp.conf
