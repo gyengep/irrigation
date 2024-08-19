@@ -12,10 +12,10 @@ ShutdownManagerImpl::ShutdownManagerImpl() :
 ShutdownManagerImpl::~ShutdownManagerImpl() {
 	switch (task) {
 	case Task::Poweroff:
-		execute("shutdown --poweroff now");
+		execute("poweroff");
 		break;
 	case Task::Reboot:
-		execute("shutdown --reboot now");
+		execute("reboot");
 		break;
 	default:
 		break;
